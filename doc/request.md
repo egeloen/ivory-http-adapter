@@ -1,0 +1,92 @@
+# Request
+
+The request class follows the [PSR-7 Standard](https://github.com/php-fig/fig-standards/blob/master/proposed/http-message.md).
+That means it implements the `Psr\Http\Message\RequestInterface`. Additionally, the library adds some features on top of
+it through the `Ivory\HttpAdapter\Message\MessageInterface` and `Ivory\HttpAdapter\Message\RequestInterface`.
+
+## Create you request
+
+``` php
+use Ivory\HttpAdapter\Message\Request;
+
+$request = new Request($url, $method);
+```
+
+A request needs at least an url and a method.
+
+## Protocol version
+
+The protocol version defines the version for the http request sent (1.0 or 1.1, default: 1.1). If you want to get/set
+it, you can use:
+
+``` php
+use Ivory\HttpAdapter\Message\RequestInterface;
+
+$protocolVersion = $request->getProtocolVersion();
+
+$request->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_10);
+// or
+$request->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_11);
+```
+
+Note that the request protocol version will be used instead of the one configured on the http adapter.
+
+## Url
+
+The url defines the remote server where the request will be sent. If you want to get/set it, you can use:
+
+``` php
+$url = $request->getUrl();
+$request->setUrl('http://egeloen.fr/');
+```
+
+## Method
+
+The method defines the http verb used for the request. If you want to get/set it, you can use:
+
+``` php
+use Ivory\HttpAdapter\Message\RequestInterface;
+
+$method = $request->getMethod();
+$request->setMethod(RequestInterface::METHOD_GET);
+```
+
+All methods are described by the `Ivory\HttpAdapter\Message\RequestInterface::METHOD_*` constants.
+
+## Headers
+
+The headers defines the metadatas which will be sent to the remote address. If you want to get/set them, you can use:
+
+``` php
+$hasHeaders = $request->hasHeaders();
+$headers = $request->getHeaders();
+$request->setHeaders(array(
+    'connection'      => 'close',
+    'accept-language' => array('en', 'fr'),
+));
+$request->addHeaders(array('accept-language' => 'it'));
+$request->removeHeaders(array('connection', 'accept-language'));
+
+$hasHeader = $request->hasHeader('connection');
+$header = $request->getHeader('connection');
+$headerAsArray = $request->getHeaderAsArray('connection');
+$request->setHeader('connection', 'close');
+$request->addHeader('accept-language', 'pt');
+$request->removeHeader('connection');
+```
+
+## Body
+
+The body represents the content of the request and is defined by the `Psr\Http\Message\StreamInterface`. If you want to
+get/set it, you can use:
+
+``` php
+$hasBody = $request->hasBody();
+$body = $request->getBody();
+
+$request->setBody($body);
+// or
+$request->setBody(null);
+```
+
+If you want to learn more about the stream body, you can read this [doc](/doc/stream.md).

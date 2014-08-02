@@ -1,0 +1,46 @@
+language: php
+
+php:
+    - 5.3.3
+    - 5.3
+    - 5.4
+    - 5.5
+    - 5.6
+    - hhvm
+    - hhvm-nightly
+
+env:
+    global:
+        - TEST_SERVER=http://localhost:10000/server.php
+        - PHP_FCGI_CHILDREN=10
+    matrix:
+        - ENABLE_CURL=true
+        - ENABLE_CURL=false
+
+before_install:
+    - echo "" | sudo add-apt-repository ppa:nginx/stable
+    - sudo apt-get update
+    - sudo apt-get install nginx
+    - sudo nginx -p $(pwd)/tests/Ivory/Tests/HttpAdapter/Fixtures -c etc/nginx.conf
+    - if [[ "$ENABLE_CURL" = false ]]; then mkdir -p ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d; fi
+    - if [[ "$ENABLE_CURL" = false ]]; then echo "disable_functions = curl_init" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = "5.6" ]]; then echo "always_populate_raw_post_data = -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = "5.3" ]]; then sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = "5.3" ]]; then ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm; fi
+    - if [[ "$TRAVIS_PHP_VERSION" != "5.3" && "$TRAVIS_PHP_VERSION" != hhvm* ]]; then php-cgi -b 127.0.0.1:9000 & fi
+    - if [[ "$TRAVIS_PHP_VERSION" = hhvm* ]]; then hhvm --mode server -vServer.Type=fastcgi -vServer.Port=9000 & fi
+
+before_script:
+    - composer self-update
+    - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove guzzlehttp/guzzle guzzlehttp/streams --dev --no-update; fi
+    - composer install --prefer-source
+
+script: bin/phpunit
+
+matrix:
+    allow_failures:
+        - php: hhvm
+        - php: hhvm-nightly
+
+notifications:
+    email: geloen.eric@gmail.com

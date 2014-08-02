@@ -1,0 +1,94 @@
+# Configuration
+
+The available configuration is defined through the `Ivory\HttpAdapter\HttpAdapterConfigInterface`. All adapters are
+able to be configured as explain above.
+
+## Message factory
+
+The message factory allows to create an empty response which will be populated by the http adapter after the request
+has been processed. By default, the factory is the `Ivory\HttpAdapter\Message\MessageFactory` which returns an
+`Ivory\HttpAdapter\Message\Response`. So, if you want to use your own response class in order to add extra behaviors,
+you can define your own which implements the `Ivory\HttpAdapter\Message\ResponseInterface` or extends the
+`Ivory\HttpAdapter\Message\Response`. Then, instantiate it in your custom factory which implements the
+`Ivory\HttpAdapter\Message\MessageFactoryInterface` or extends the `Ivory\HttpAdapter\Message\MessageFactory`. Then,
+to use it, just need to pass it as last parameter of all adapters constructor or through his setter. For example, for
+the curl adapter, you can use:
+
+``` php
+use Ivory\HttpAdapter\CurlHttpAdapter;
+use My\MessageFactory;
+
+$httpAdapter = new CurlHttpAdapter(new MessageFactory());
+// or
+$messageFactory = $httpAdapter->getMessageFactory();
+$httpAdapter->setMessageFactory(new MessageFactory());
+```
+
+## Protocol version
+
+The protocol version defines the version for the http request sent (1.0 or 1.1, default: 1.1). If you want to get/set
+it, you can use:
+
+``` php
+use Ivory\HttpAdapter\Message\RequestInterface;
+
+$protocolVersion = $httpAdapter->getProtocolVersion();
+
+$httpAdapter->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_10);
+// or
+$httpAdapter->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_11);
+```
+
+## Keep alive
+
+The keep alive flag allows to define if the connection should be kept alive or not (default: false). Basically, if you
+don't provide the `connection` header, it will be automatically populated by the library according to the keep alive
+flag. So, if you provide the `connection` headers, the keep alive flag is ignored. If you want to get/set it, you can
+use:
+
+``` php
+$keepAlive = $httpAdapter->getKeepAlive();
+$httpAdapter->setKeepAlive(true);
+```
+
+## Encoding type
+
+The encoding type defines the encoding of the request (url encoded, form data or none). The content type is
+automatically populated according to the data/files you provide but if you encode yourself the data as string, you
+need to set it explicitely or pass the `content-type` header yourself. Then, if you want to get/set it, you can use:
+
+``` php
+$hasEncodingType = $httpAdapter->hasEncodingType();
+$encodingType = $httpAdapter->getEncodingType();
+
+$httpAdapter->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_URLENCODED);
+// or
+$httpAdapter->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_FORMDATA);
+// or
+$httpAdapter->setEncodingType(null);
+```
+
+## Boundary
+
+The boundary is a complement to the encoding type. If you configure it with form data, the multipart payload is
+separated by a boundary which needs to be append to the `content-type` header. If you provide data/files, it will be
+automatically populated but, if you encode yourself the data as string, you need to set it explicitely or pass the
+`content-type` header yourself. Then, if you want to get/set it, you can use:
+
+``` php
+$boundary = $httpAdapter->getBoundary();
+$httpAdapter->setBoundary('abcdefg');
+```
+
+## Maximum redirection
+
+The maximum redirects allows to configure the number of redirects the http adapter is allowed to follow. If you want
+to get/set it, you can use:
+
+``` php
+$hasMaxRedirects = $httpAdapter->hasMaxRedirects();
+$maxRedirects = $httpAdapter->getMaxRedirects();
+$httpAdapter->setMaxRedirects(10);
+```
+
+If you want to disable it, just set it to zero.

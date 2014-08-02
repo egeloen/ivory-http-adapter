@@ -1,0 +1,42 @@
+# README
+
+[![Build Status](https://secure.travis-ci.org/egeloen/ivory-http-adapter.png)](http://travis-ci.org/egeloen/ivory-http-adapter)
+
+The library allows to issue HTTP requests with PHP 5.3+. The supported adapters are:
+
+ - [cURL](http://curl.haxx.se/)
+ - [Fopen](http://php.net/manual/en/function.fopen.php)
+ - [FileGetContents](http://php.net/manual/en/function.file-get-contents.php)
+ - [Socket](http://php.net/manual/en/function.stream-socket-client.php)
+ - [Buzz](https://github.com/kriswallsmith/Buzz)
+ - [Guzzle3](http://guzzle3.readthedocs.org/)
+ - [Guzzle4](http://guzzle.readthedocs.org/)
+ - [Httpful](http://phphttpclient.com/)
+ - [Zend2](http://framework.zend.com/manual/2.0/en/modules/zend.http.client.html)
+
+Additionally, it follows the [PSR-7 Standard](https://github.com/php-fig/fig-standards/blob/master/proposed/http-message.md)
+which defines how http message should be implemented.
+
+## Documentation
+
+ 1. [Installation](/doc/installation.md)
+ 2. [Adapters](/doc/adapters.md)
+ 3. [Configuration](/doc/configuration.md)
+ 4. [Usage](/doc/usage.md)
+ 5. [Request](/doc/request.md)
+ 6. [Response](/doc/response.md)
+ 7. [Stream](/doc/stream.md)
+
+## Testing
+
+The library is fully unit tested by [PHPUnit](http://www.phpunit.de/) with a code coverage close to **100%**. To
+execute the test suite, check the travis [configuration](/.travis.yml).
+
+## Contribute
+
+We love contributors! The library is open source, if you'd like to contribute, feel free to propose a PR!
+
+## License
+
+The Ivory Http Adapter is under the MIT license. For the full copyright and license information, please read the
+[LICENSE](/LICENSE) file that was distributed with this source code.

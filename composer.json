@@ -1,0 +1,52 @@
+{
+    "name": "egeloen/http-adapter",
+    "description": "Issue HTTP request for PHP 5.3+.",
+    "keywords": [ "request", "http" ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eric GELOEN",
+            "email": "geloen.eric@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "psr/http-message": "~1.0@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "ext-curl": "*",
+        "guzzle/guzzle": "dev-master",
+        "guzzlehttp/guzzle": "dev-master",
+        "guzzlehttp/streams": "dev-master",
+        "kriswallsmith/buzz": "dev-stream-max-redirects",
+        "nategood/httpful": "*",
+        "zendframework/zend-http": "*"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/egeloen/Buzz.git"
+        }
+    ],
+    "suggest": {
+        "ext-curl": "Allows you to use the cURL adapter",
+        "guzzle/guzzle": "Allows you to use the Guzzle 3 adapter",
+        "guzzlehttp/guzzle": "Allows you to use the Guzzle 4 adapter",
+        "kriswallsmith/buzz": "Allows you to use the Buzz adapter",
+        "nategood/httpful": "Allows you to use the httpful adapter",
+        "zendframework/zend-http": "Allows you to use the Zend adapter"
+    },
+    "autoload": {
+        "psr-4": { "Ivory\\HttpAdapter\\": "src/Ivory/HttpAdapter/" }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

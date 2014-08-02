@@ -1,0 +1,8 @@
+# Composer
+/bin
+/composer.lock
+/vendor
+
+# PHPUnit
+/phpunit.xml
+/report
