@@ -76,6 +76,16 @@ use Ivory\HttpAdapter\HttpfulHttpAdapter;
 $httpAdapter = new HttpfulHttpAdapter();
 ```
 
+## Zend 1
+
+``` php
+use Ivory\HttpAdapter\Zend1HttpAdapter;
+
+$zend1HttpAdapter = new Zend1HttpAdapter();
+// or
+$zend1HttpAdapter = new Zend1HttpAdapter(new \Zend_Http_Client());
+```
+
 ## Zend 2
 
 ``` php
