@@ -89,5 +89,5 @@ $effectiveUrl = $response->getEffectiveUrl();
 $response->setEffectiveUrl('http://egeloen.fr');
 ```
 
-Additionally, the effective url is not supported by all adapters. Buzz, Httpful and Zend2 does not support it, they
-will always return the original url as effective url.
+Additionally, the effective url is not supported by all adapters. Buzz, Httpful, Zend 1 and Zend 2 does not support it,
+they will always return the original url as effective url.

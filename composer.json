@@ -22,12 +22,17 @@
         "guzzlehttp/streams": "dev-master",
         "kriswallsmith/buzz": "dev-stream-max-redirects",
         "nategood/httpful": "*",
+        "zendframework/zendframework1": "dev-http-curl-adapter",
         "zendframework/zend-http": "*"
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/Buzz.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/egeloen/zf1.git"
         }
     ],
     "suggest": {
@@ -36,7 +41,8 @@
         "guzzlehttp/guzzle": "Allows you to use the Guzzle 4 adapter",
         "kriswallsmith/buzz": "Allows you to use the Buzz adapter",
         "nategood/httpful": "Allows you to use the httpful adapter",
-        "zendframework/zend-http": "Allows you to use the Zend adapter"
+        "zendframework/zendframework1": "Allows you to use the Zend 1 adapter",
+        "zendframework/zend-http": "Allows you to use the Zend 2 adapter"
     },
     "autoload": {
         "psr-4": { "Ivory\\HttpAdapter\\": "src/Ivory/HttpAdapter/" }

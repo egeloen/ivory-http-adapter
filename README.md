@@ -12,7 +12,8 @@ The library allows to issue HTTP requests with PHP 5.3+. The supported adapters 
  - [Guzzle3](http://guzzle3.readthedocs.org/)
  - [Guzzle4](http://guzzle.readthedocs.org/)
  - [Httpful](http://phphttpclient.com/)
- - [Zend2](http://framework.zend.com/manual/2.0/en/modules/zend.http.client.html)
+ - [Zend1](http://framework.zend.com/manual/1.12/en/zend.http.html)
+ - [Zend2](http://framework.zend.com/manual/2.0/en/modules/zend.http.html)
 
 Additionally, it follows the [PSR-7 Standard](https://github.com/php-fig/fig-standards/blob/master/proposed/http-message.md)
 which defines how http message should be implemented.
