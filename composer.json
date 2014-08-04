@@ -22,7 +22,7 @@
         "guzzlehttp/guzzle": "dev-master",
         "guzzlehttp/streams": "dev-master",
         "kriswallsmith/buzz": "dev-stream-max-redirects",
-        "nategood/httpful": "*",
+        "nategood/httpful": "dev-timeout",
         "zendframework/zendframework1": "dev-http-curl-adapter",
         "zendframework/zendframework": "dev-http-curl-adapter"
     },
@@ -30,6 +30,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/Buzz.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/egeloen/httpful.git"
         },
         {
             "type": "vcs",

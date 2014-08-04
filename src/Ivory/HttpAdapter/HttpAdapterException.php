@@ -103,4 +103,18 @@ class HttpAdapterException extends \Exception
             is_object($resource) ? get_class($resource) : gettype($resource)
         ));
     }
+
+    /**
+     * Gets the "TIMEOUT EXCEEDED" exception.
+     *
+     * @param string $url     The url.
+     * @param float  $timeout The timeout.
+     * @param string $adapter The adapter name.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "TIMEOUT EXCEEDED" exception.
+     */
+    public static function timeoutExceeded($url, $timeout, $adapter)
+    {
+        return self::cannotFetchUrl($url, $adapter, sprintf('Timeout exceeded (%.2f)', $timeout));
+    }
 }

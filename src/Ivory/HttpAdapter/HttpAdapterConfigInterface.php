@@ -104,6 +104,20 @@ interface HttpAdapterConfigInterface
     public function setBoundary($boundary);
 
     /**
+     * Gets the timeout (in seconds).
+     *
+     * @return float The timeout.
+     */
+    public function getTimeout();
+
+    /**
+     * Sets the timeout (in seconds).
+     *
+     * @param float $timeout The timeout.
+     */
+    public function setTimeout($timeout);
+
+    /**
      * Checks if there is a max redirects.
      *
      * @return boolean TRUE if there is a max redirects else FALSE.

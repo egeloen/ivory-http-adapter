@@ -31,6 +31,7 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
                 'method'           => $this->prepareMethod($method),
                 'header'           => $this->prepareHeaders($headers, $data, $files, false),
                 'content'          => $this->prepareData($data, $files),
+                'timeout'          => $this->timeout,
                 'ignore_errors'    => !$this->hasMaxRedirects() && PHP_VERSION_ID === 50303,
             )
         ));

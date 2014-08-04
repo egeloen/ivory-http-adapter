@@ -40,6 +40,9 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /** @var string */
     protected $boundary;
 
+    /** @var float */
+    protected $timeout = 10;
+
     /** @var integer */
     protected $maxRedirects = 5;
 
@@ -140,6 +143,22 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function setBoundary($boundary)
     {
         $this->boundary = $boundary;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
     }
 
     /**

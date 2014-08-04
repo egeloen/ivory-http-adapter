@@ -43,6 +43,13 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->prepareHeaders($headers, array(), array(), false));
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        if (defined('CURLOPT_TIMEOUT_MS')) {
+            curl_setopt($curl, CURLOPT_TIMEOUT_MS, $this->timeout * 1000);
+        } else { // @codeCoverageIgnoreStart
+            curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+        } // @codeCoverageIgnoreEnd
+
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, $this->hasMaxRedirects());
 
         if ($this->hasMaxRedirects()) {

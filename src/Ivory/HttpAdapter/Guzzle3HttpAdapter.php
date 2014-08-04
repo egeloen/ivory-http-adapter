@@ -48,7 +48,8 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
             $this->prepareMethod($method),
             $this->prepareUrl($url),
             $this->prepareHeaders($headers, $data, $files),
-            $data
+            $data,
+            array('timeout' => $this->timeout)
         );
 
         foreach ($files as $key => $file) {

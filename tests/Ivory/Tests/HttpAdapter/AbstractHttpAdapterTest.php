@@ -155,6 +155,16 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertRequest($method, $headers, $data);
     }
 
+    /**
+     * @dataProvider timeoutProvider
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSendWithTimeoutExceeded($timeout)
+    {
+        $this->httpAdapter->setTimeout($timeout);
+        $this->httpAdapter->send($this->getDelayUrl($timeout), Request::METHOD_GET);
+    }
+
     public function testSendWithSingleRedirect()
     {
         $this->assertResponse(
@@ -286,6 +296,19 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Gets the timeout provider.
+     *
+     * @return array The timeout provider.
+     */
+    public function timeoutProvider()
+    {
+        return array(
+            array(0.5),
+            array(1),
+        );
+    }
+
+    /**
      * Creates the http adapter.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterInterface The created http adapter.
@@ -300,6 +323,18 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function getUrl()
     {
         return PHPUnitUtility::getUrl();
+    }
+
+    /**
+     * Gets the delay url.
+     *
+     * @param float $delay The delay.
+     *
+     * @return string The delay url.
+     */
+    protected function getDelayUrl($delay = 1)
+    {
+        return $this->getUrl().'?'.http_build_query(array('delay' => $delay + 0.1));
     }
 
     /**

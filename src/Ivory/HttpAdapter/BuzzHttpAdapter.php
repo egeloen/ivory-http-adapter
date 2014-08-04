@@ -61,8 +61,9 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSend($url, $method, array $headers = array(), $data = array(), array $files = array())
     {
-        $this->browser->getClient()->setIgnoreErrors(!$this->hasMaxRedirects() && PHP_VERSION_ID === 50303);
+        $this->browser->getClient()->setTimeout($this->timeout);
         $this->browser->getClient()->setMaxRedirects($this->maxRedirects);
+        $this->browser->getClient()->setIgnoreErrors(!$this->hasMaxRedirects() && PHP_VERSION_ID === 50303);
 
         $request = $this->browser->getMessageFactory()->createRequest(
             $this->prepareMethod($method),
