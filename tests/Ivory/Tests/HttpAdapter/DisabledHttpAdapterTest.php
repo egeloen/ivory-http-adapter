@@ -67,7 +67,7 @@ class DisabledHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testGuzzle4HttpAdapterWithoutCurl()
     {
-        if (function_exists('curl_init')) {
+        if (function_exists('curl_init') || !class_exists('GuzzleHttp/Client')) {
             $this->markTestSkipped();
         }
 
