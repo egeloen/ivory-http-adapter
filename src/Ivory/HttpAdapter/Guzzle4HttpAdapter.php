@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Message\Stream\Guzzle4Stream;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle4HttpAdapter extends AbstractHttpAdapter
+class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
 {
     /** @var \GuzzleHttp\ClientInterface */
     protected $client;
