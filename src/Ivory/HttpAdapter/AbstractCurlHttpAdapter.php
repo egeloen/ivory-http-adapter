@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\MessageInterface;
 
 /**
@@ -20,6 +21,23 @@ use Ivory\HttpAdapter\Message\MessageInterface;
  */
 abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
 {
+    /**
+     * Creates a curl http adapter.
+     *
+     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
+     * @param boolean                                                 $checkExtension TRUE if the extension should be checked else FALSE.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If the check extension flag is enabled and the curl extension is not loaded.
+     */
+    public function __construct(MessageFactoryInterface $messageFactory = null, $checkExtension = true)
+    {
+        if ($checkExtension && !function_exists('curl_init')) {
+            throw HttpAdapterException::extensionIsNotLoaded('curl', $this->getName());
+        }
+
+        parent::__construct($messageFactory);
+    }
+
     /**
      * Prepares the protocol version.
      *

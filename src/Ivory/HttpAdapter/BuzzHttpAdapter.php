@@ -35,7 +35,6 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
      * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the browser client is multi curl.
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the browser client is curl and the extension is not loaded.
      */
     public function __construct(Browser $browser = null, MessageFactoryInterface $messageFactory = null)
     {
@@ -47,12 +46,12 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
                 );
             }
 
-            if ($browser->getClient() instanceof Curl && !function_exists('curl_init')) {
-                throw HttpAdapterException::extensionIsNotLoaded('curl', $this->getName());
+            if ($browser->getClient() instanceof Curl) {
+                parent::__construct($messageFactory);
+            } else {
+                parent::__construct($messageFactory, false);
             }
         }
-
-        parent::__construct($messageFactory);
 
         $this->browser = $browser ?: new Browser();
     }

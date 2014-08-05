@@ -22,16 +22,12 @@ use Ivory\HttpAdapter\Message\RequestInterface;
 class CurlHttpAdapter extends AbstractCurlHttpAdapter
 {
     /**
-     * {@inheritdoc}
+     * Creates a curl http adapter.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the curl extension is not loaded.
+     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
      */
     public function __construct(MessageFactoryInterface $messageFactory = null)
     {
-        if (!function_exists('curl_init')) {
-            throw HttpAdapterException::extensionIsNotLoaded('curl', $this->getName());
-        }
-
         parent::__construct($messageFactory);
     }
 

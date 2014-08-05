@@ -31,15 +31,9 @@ class Guzzle4HttpAdapter extends AbstractHttpAdapter
      *
      * @param \GuzzleHttp\ClientInterface|null                        $client         The guzzle 4 client.
      * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the curl extension is not loaded.
      */
     public function __construct(ClientInterface $client = null, MessageFactoryInterface $messageFactory = null)
     {
-        if (!function_exists('curl_init')) {
-            throw HttpAdapterException::extensionIsNotLoaded('curl', $this->getName());
-        }
-
         parent::__construct($messageFactory);
 
         $this->client = $client ?: new Client();
