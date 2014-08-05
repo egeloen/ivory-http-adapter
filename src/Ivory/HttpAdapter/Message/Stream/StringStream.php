@@ -49,7 +49,7 @@ class StringStream extends AbstractStream
     {
         $this->string = (string) $string;
         $this->modeMask = $modeMask ?: self::MODE_SEEK | self::MODE_READ | self::MODE_WRITE;
-        $this->size = strlen($string);
+        $this->size = strlen($this->string);
     }
 
     /**
