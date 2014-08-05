@@ -33,6 +33,7 @@ before_install:
 before_script:
     - composer self-update
     - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove guzzlehttp/guzzle guzzlehttp/streams --dev --no-update; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = "5.3.3" ]]; then composer remove zendframework/zendframework --dev --no-update; fi
     - composer install --prefer-source
 
 script: bin/phpunit

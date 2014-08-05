@@ -22,6 +22,18 @@ use Zend\Http\Client;
  */
 abstract class AbstractZend2HttpAdapterTest extends AbstractHttpAdapterTest
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        if (!class_exists('Zend\Http\Client')) {
+            $this->markTestSkipped();
+        }
+
+        parent::setUp();
+    }
+
     public function testSendWithSingleRedirect()
     {
         $this->assertResponse(
@@ -43,33 +55,6 @@ abstract class AbstractZend2HttpAdapterTest extends AbstractHttpAdapterTest
         );
 
         $this->assertRequest($method);
-    }
-
-    /**
-     * @dataProvider fullProvider
-     *
-     * FIXME - https://github.com/zendframework/zf2/pull/6492
-     */
-    public function testOptions($url, array $headers = array(), array $data = array(), array $files = array())
-    {
-        $data = array();
-        $files = array();
-
-        parent::testOptions($url, $headers, $data, $files);
-    }
-
-    /**
-     * @dataProvider requestProvider
-     *
-     * FIXME - https://github.com/zendframework/zf2/pull/6492
-     */
-    public function testSendRequest($url, $method, array $headers = array(), array $data = array())
-    {
-        if ($method === RequestInterface::METHOD_OPTIONS) {
-            $data = array();
-        }
-
-        parent::testSendRequest($url, $method, $headers, $data);
     }
 
     public function testGetName()

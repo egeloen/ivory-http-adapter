@@ -23,7 +23,7 @@
         "kriswallsmith/buzz": "dev-stream-max-redirects",
         "nategood/httpful": "*",
         "zendframework/zendframework1": "dev-http-curl-adapter",
-        "zendframework/zend-http": "*"
+        "zendframework/zendframework": "dev-http-curl-adapter"
     },
     "repositories": [
         {
@@ -33,6 +33,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/zf1.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/egeloen/zf2.git"
         }
     ],
     "suggest": {
