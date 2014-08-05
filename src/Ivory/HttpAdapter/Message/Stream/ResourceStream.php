@@ -203,9 +203,8 @@ class ResourceStream extends AbstractStream
      */
     protected function doToString()
     {
-        $cursor = $this->tell();
-
         if ($this->isSeekable()) {
+            $cursor = $this->tell();
             $this->seek(0);
         }
 

@@ -148,9 +148,16 @@ class Guzzle4Stream extends AbstractStream
      */
     protected function doToString()
     {
-        $offset = $this->tell();
+        if ($this->isSeekable()) {
+            $offset = $this->tell();
+            $this->seek(0);
+        }
+
         $string = (string) $this->stream;
-        $this->seek($offset);
+
+        if ($this->isSeekable()) {
+            $this->seek($offset);
+        }
 
         return $string;
     }
