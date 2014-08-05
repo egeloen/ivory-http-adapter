@@ -68,7 +68,7 @@ class Guzzle3HttpAdapter extends AbstractHttpAdapter
         try {
             $response = $request->send();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($request->getUrl(), $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(
