@@ -34,7 +34,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
     {
         parent::__construct($messageFactory);
 
-        $this->client = $client ?: new Zend_Http_Client();
+        $this->client = $client ?: new \Zend_Http_Client();
     }
 
     /**
