@@ -36,7 +36,9 @@ before_script:
     - if [[ "$TRAVIS_PHP_VERSION" = "5.3.3" ]]; then composer remove zendframework/zendframework --dev --no-update; fi
     - composer install --prefer-source
 
-script: bin/phpunit
+script: bin/phpunit --coverage-clover clover.xml
+
+after_script: bin/coveralls
 
 matrix:
     allow_failures:

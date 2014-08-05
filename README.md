@@ -1,6 +1,14 @@
 # README
 
 [![Build Status](https://secure.travis-ci.org/egeloen/ivory-http-adapter.png)](http://travis-ci.org/egeloen/ivory-http-adapter)
+[![Coverage Status](https://coveralls.io/repos/egeloen/ivory-http-adapter/badge.png?branch=master)](https://coveralls.io/r/egeloen/ivory-http-adapter?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/?branch=master)
+[![Dependency Status](http://www.versioneye.com/php/egeloen:http-adapter/badge.svg)](http://www.versioneye.com/php/egeloen:http-adapter)
+
+[![Latest Stable Version](https://poser.pugx.org/egeloen/http-adapter/v/stable.svg)](https://packagist.org/packages/egeloen/http-adapter)
+[![Latest Unstable Version](https://poser.pugx.org/egeloen/http-adapter/v/unstable.svg)](https://packagist.org/packages/egeloen/http-adapter)
+[![Total Downloads](https://poser.pugx.org/egeloen/http-adapter/downloads.svg)](https://packagist.org/packages/egeloen/http-adapter)
+[![License](https://poser.pugx.org/egeloen/http-adapter/license.svg)](https://packagist.org/packages/egeloen/http-adapter)
 
 The library allows to issue HTTP requests with PHP 5.3+. The supported adapters are:
 

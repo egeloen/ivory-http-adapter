@@ -16,6 +16,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
+        "satooshi/php-coveralls": "~0.6",
         "ext-curl": "*",
         "guzzle/guzzle": "dev-master",
         "guzzlehttp/guzzle": "dev-master",
