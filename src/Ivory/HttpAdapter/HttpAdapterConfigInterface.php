@@ -36,7 +36,7 @@ interface HttpAdapterConfigInterface
     /**
      * Sets the message factory.
      *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $factory The message factory.
+     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
      */
     public function setMessageFactory(MessageFactoryInterface $messageFactory);
 

@@ -25,7 +25,7 @@ class HttpAdapterException extends \Exception
      * @param string $adapter The adapter name.
      * @param string $error   The error.
      *
-     * @return \Ivory\HttpAdapterBundle\Exception\HttpAdapterException The "CANNOT FETCH URL" exception.
+     * @return \Ivory\HttpAdapterBundle\HttpAdapterException The "CANNOT FETCH URL" exception.
      */
     public static function cannotFetchUrl($url, $adapter, $error)
     {
@@ -40,8 +40,7 @@ class HttpAdapterException extends \Exception
     /**
      * Gets the "DOES NOT SUPPORT DATA AS STRING AND FILES" exception.
      *
-     * @param string      $adapter    The adapter name.
-     * @param string|null $subAdapter The sub adapter name.
+     * @param string $adapter The adapter name.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT DATA AS STRING AND FILES" exception.
      */
@@ -67,6 +66,7 @@ class HttpAdapterException extends \Exception
      * Gets the "EXTENSION IS NOT LOADED" exception.
      *
      * @param string $extension The extension name.
+     * @param string $adapter   The adapter name.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException The "EXTENSION IS NOT LOADED" exception.
      */
