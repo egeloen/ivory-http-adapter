@@ -21,15 +21,11 @@ class FileGetContentsHttpAdapter extends AbstractStreamHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers = array(), $data = array(), array $files = array())
+    protected function process($url, $context)
     {
-        $context = $this->createContext($method, $headers, $data, $files);
+        $http_response_header = array();
 
-        if (($body = @file_get_contents($this->prepareUrl($url), false, $context)) === false) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), print_r(error_get_last(), true));
-        }
-
-        return $this->createStreamResponse($url, $method, $http_response_header, $body);
+        return array(@file_get_contents($url, false, $context), $http_response_header);
     }
 
     /**

@@ -19,20 +19,11 @@ namespace Ivory\HttpAdapter;
 abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
 {
     /**
-     * Creates a context.
-     *
-     * @param string       $method  The method.
-     * @param array        $headers The headers.
-     * @param array|string $data    The data.
-     * @param array        $files   The files.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If there are files.
-     *
-     * @return resource The created context.
+     * {@inhertdoc}
      */
-    protected function createContext($method, array $headers = array(), $data = array(), array $files = array())
+    protected function doSend($url, $method, array $headers, $data, array $files)
     {
-        $context = array(
+        $context = stream_context_create(array(
             'http' => array(
                 'protocol_version' => $this->protocolVersion,
                 'follow_location'  => $this->hasMaxRedirects(),
@@ -42,23 +33,14 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
                 'content'          => $this->prepareData($data, $files),
                 'ignore_errors'    => !$this->hasMaxRedirects() && PHP_VERSION_ID === 50303,
             )
-        );
+        ));
 
-        return stream_context_create($context);
-    }
+        list($body, $headers) = $this->process($this->prepareUrl($url), $context);
 
-    /**
-     * Creates a stream response.
-     *
-     * @param string          $url     The url.
-     * @param string          $method  The method.
-     * @param array           $headers The headers.
-     * @param resource|string $body    The body.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The created stream response.
-     */
-    protected function createStreamResponse($url, $method, array $headers, $body)
-    {
+        if ($body === false) {
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), print_r(error_get_last(), true));
+        }
+
         return $this->createResponse(
             $this->parseProtocolVersion($headers),
             $this->parseStatusCode($headers),
@@ -69,4 +51,14 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             $this->parseEffectiveUrl($headers, $url)
         );
     }
+
+    /**
+     * Processes the url/context.
+     *
+     * @param string   $url     The url.
+     * @param resource $context The context.
+     *
+     * @return array The processed url/context (0 => body, 1 => headers).
+     */
+    abstract protected function process($url, $context);
 }

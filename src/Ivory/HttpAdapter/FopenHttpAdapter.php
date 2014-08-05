@@ -21,15 +21,11 @@ class FopenHttpAdapter extends AbstractStreamHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers = array(), $data = array(), array $files = array())
+    protected function process($url, $context)
     {
-        $context = $this->createContext($method, $headers, $data, $files);
+        $http_response_header = array();
 
-        if (($resource = @fopen($this->prepareUrl($url), 'rb', false, $context)) === false) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), print_r(error_get_last(), true));
-        }
-
-        return $this->createStreamResponse($url, $method, $http_response_header, $resource);
+        return array(@fopen($url, 'rb', false, $context), $http_response_header);
     }
 
     /**
