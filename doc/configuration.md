@@ -80,10 +80,20 @@ $boundary = $httpAdapter->getBoundary();
 $httpAdapter->setBoundary('abcdefg');
 ```
 
+## Timeout
+
+The timeout defines the maximum number of seconds the connection should be active since we consider it invalid
+(default: 10). If you want to get/set it, you can use:
+
+``` php
+$timeout = $httpAdapter->getTimeout();
+$httpAdapter->setTimeout(30);
+```
+
 ## Maximum redirection
 
-The maximum redirects allows to configure the number of redirects the http adapter is allowed to follow. If you want
-to get/set it, you can use:
+The maximum redirects allows to configure the number of redirects the http adapter is allowed to follow (default: 5).
+If you want to get/set it, you can use:
 
 ``` php
 $hasMaxRedirects = $httpAdapter->hasMaxRedirects();
