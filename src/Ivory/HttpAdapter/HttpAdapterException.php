@@ -25,7 +25,7 @@ class HttpAdapterException extends \Exception
      * @param string $adapter The adapter name.
      * @param string $error   The error.
      *
-     * @return \Ivory\HttpAdapterBundle\HttpAdapterException The "CANNOT FETCH URL" exception.
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT FETCH URL" exception.
      */
     public static function cannotFetchUrl($url, $adapter, $error)
     {
