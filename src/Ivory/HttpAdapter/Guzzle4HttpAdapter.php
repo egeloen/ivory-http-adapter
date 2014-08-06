@@ -53,6 +53,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
             $this->prepareUrl($url),
             array(
                 'version'         => $this->protocolVersion,
+                'timeout'         => $this->timeout,
                 'allow_redirects' => $this->hasMaxRedirects() ? array('max' => $this->getMaxRedirects()) : false,
                 'headers'         => $this->prepareHeaders($headers, $data, $files),
                 'body'            => $data,

@@ -54,8 +54,9 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $errstr);
         }
 
+        stream_set_timeout($socket, $this->timeout);
         fwrite($socket, $this->prepareRequest($method, $path, $host, $port, $headers, $data, $files));
-        list($statusLine, $responseHeaders, $body) = $this->parseResponse($socket);
+        list($statusLine, $responseHeaders, $body) = $this->parseResponse($socket, $url);
 
         if (($effectiveUrl = $this->parseEffectiveUrl($responseHeaders, $url)) !== $url) {
             return $this->doSend($effectiveUrl, $method, $headers, $data, $files);
@@ -113,16 +114,17 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      * Parses the response.
      *
      * @param resource $socket The socket.
+     * @param string   $url    The url.
      *
      * @return array The response (0 => status line, 1 => headers, 2 => body).
      */
-    protected function parseResponse($socket)
+    protected function parseResponse($socket, $url)
     {
         $headers = '';
         $body = '';
         $processHeaders = true;
 
-        while (!feof($socket)) {
+        while (!feof($socket) && !$this->detectTimeout($socket)) {
             $line = fgets($socket);
 
             if ($line === "\r\n") {
@@ -132,6 +134,10 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             } else {
                 $body .= $line;
             }
+        }
+
+        if ($this->detectTimeout($socket)) {
+            throw HttpAdapterException::timeoutExceeded($url, $this->timeout, $this->getName());
         }
 
         $statusLine = $this->parseStatusLine($headers);
@@ -206,5 +212,19 @@ class SocketHttpAdapter extends AbstractHttpAdapter
         }
 
         return $url;
+    }
+
+    /**
+     * Detects a timeout.
+     *
+     * @param resource $socket The socket.
+     *
+     * @return boolean TRUE if the socket has timeout else FALSE.
+     */
+    protected function detectTimeout($socket)
+    {
+        $info = stream_get_meta_data($socket);
+
+        return $info['timed_out'];
     }
 }

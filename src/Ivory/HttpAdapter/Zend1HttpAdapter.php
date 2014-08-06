@@ -46,6 +46,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             ->resetParameters(true)
             ->setConfig(array(
                 'httpversion'  => $this->protocolVersion,
+                'timeout'      => $this->timeout,
                 'maxredirects' => $this->maxRedirects + 1,
             ))
             ->setUri($this->prepareUrl($url))

@@ -39,7 +39,8 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
         $request = Request::init($this->prepareMethod($method))
             ->whenError(function () {})
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($this->protocolVersion))
-            ->followRedirects($this->getMaxRedirects())
+            ->timeout($this->timeout)
+            ->followRedirects($this->maxRedirects)
             ->uri($this->prepareUrl($url))
             ->addHeaders($this->prepareHeaders($headers, $data, $files));
 

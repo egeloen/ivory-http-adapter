@@ -9,7 +9,12 @@
  * file that was distributed with this source code.
  */
 
+$delay = isset($_GET['delay']) ? $_GET['delay'] : 0;
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 0;
+
+if ($delay > 0) {
+    usleep($delay * 1000000);
+}
 
 if ($redirect > 0) {
     $query = ($redirect - 1) > 0 ? '?'.http_build_query(array('redirect' => $redirect - 1)) : '';

@@ -47,6 +47,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->httpAdapter->getKeepAlive());
         $this->assertNull($this->httpAdapter->getEncodingType());
         $this->assertInternalType('string', $this->httpAdapter->getBoundary());
+        $this->assertSame(10, $this->httpAdapter->getTimeout());
         $this->assertTrue($this->httpAdapter->hasMaxRedirects());
         $this->assertSame(5, $this->httpAdapter->getMaxRedirects());
     }
@@ -93,6 +94,13 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->httpAdapter->setBoundary($boundary = 'foo');
 
         $this->assertSame($boundary, $this->httpAdapter->getBoundary());
+    }
+
+    public function testSetTimeout()
+    {
+        $this->httpAdapter->setTimeout($timeout = 2.5);
+
+        $this->assertSame($timeout, $this->httpAdapter->getTimeout());
     }
 
     public function testSetMaxRedirects()
