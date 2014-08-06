@@ -52,20 +52,11 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(5, $this->httpAdapter->getMaxRedirects());
     }
 
-    public function testInitialState()
+    public function testSetMessageFactory()
     {
-        $this->httpAdapter = $this->createHttpAdapterMockBuilder()
-            ->setConstructorArgs(array($factory = $this->createFactoryMock()))
-            ->getMockForAbstractClass();
+        $this->httpAdapter->setMessageFactory($messageFactory = $this->createFactoryMock());
 
-        $this->assertSame($factory, $this->httpAdapter->getMessageFactory());
-    }
-
-    public function testSetFactory()
-    {
-        $this->httpAdapter->setMessageFactory($factory = $this->createFactoryMock());
-
-        $this->assertSame($factory, $this->httpAdapter->getMessageFactory());
+        $this->assertSame($messageFactory, $this->httpAdapter->getMessageFactory());
     }
 
     public function testSetProtocolVersion()

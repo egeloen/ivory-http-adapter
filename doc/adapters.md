@@ -96,6 +96,3 @@ $zend2HttpAdapter = new Zend2HttpAdapter();
 // or
 $zend2HttpAdapter = new Zend2HttpAdapter(new Client());
 ```
-
-Additionally, all adapters accept an additional parameter which represents the message factory. If you want to learn
-more, you can read this [doc](/doc/configuration.md#message-factory)

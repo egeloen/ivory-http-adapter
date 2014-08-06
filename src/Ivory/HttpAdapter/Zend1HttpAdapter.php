@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
 
 /**
@@ -27,12 +26,11 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
     /**
      * Creates a zend 1 http adapter.
      *
-     * @param \Zend_Http_Client                                  $client         The zend 1 client.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
+     * @param \Zend_Http_Client $client The zend 1 client.
      */
-    public function __construct(\Zend_Http_Client $client = null, MessageFactoryInterface $messageFactory = null)
+    public function __construct(\Zend_Http_Client $client = null)
     {
-        parent::__construct($messageFactory);
+        parent::__construct();
 
         $this->client = $client ?: new \Zend_Http_Client();
     }

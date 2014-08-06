@@ -48,12 +48,10 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
 
     /**
      * Creates an http adapter.
-     *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
      */
-    public function __construct(MessageFactoryInterface $messageFactory = null)
+    public function __construct()
     {
-        $this->setMessageFactory($messageFactory ?: new MessageFactory());
+        $this->setMessageFactory(new MessageFactory());
         $this->setBoundary(sha1(microtime()));
     }
 

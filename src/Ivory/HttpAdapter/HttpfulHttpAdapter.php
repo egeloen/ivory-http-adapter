@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 use Httpful\Request;
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 
 /**
  * Httpful http adapter.
@@ -23,12 +22,10 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
 {
     /**
      * Creates an httpful http adapter.
-     *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
      */
-    public function __construct(MessageFactoryInterface $messageFactory = null)
+    public function __construct()
     {
-        parent::__construct($messageFactory);
+        parent::__construct();
     }
 
     /**

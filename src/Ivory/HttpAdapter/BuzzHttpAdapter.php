@@ -14,9 +14,7 @@ namespace Ivory\HttpAdapter;
 use Buzz\Browser;
 use Buzz\Client\AbstractCurl;
 use Buzz\Client\AbstractStream;
-use Buzz\Client\Curl;
 use Buzz\Client\MultiCurl;
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 
 /**
  * Buzz http adapter.
@@ -31,29 +29,24 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * Creates a buzz http adapter.
      *
-     * @param \Buzz\Browser                                           $browser        The buzz browser.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
+     * @param \Buzz\Browser $browser The buzz browser.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the browser client is multi curl.
      */
-    public function __construct(Browser $browser = null, MessageFactoryInterface $messageFactory = null)
+    public function __construct(Browser $browser = null)
     {
-        if ($browser !== null) {
-            if ($browser->getClient() instanceof MultiCurl) {
-                throw HttpAdapterException::doesNotSupportSubAdapter(
-                    $this->getName(),
-                    get_class($browser->getClient())
-                );
-            }
+        $browser = $browser ?: new Browser();
 
-            if ($browser->getClient() instanceof Curl) {
-                parent::__construct($messageFactory);
-            } else {
-                parent::__construct($messageFactory, false);
-            }
+        if ($browser->getClient() instanceof MultiCurl) {
+            throw HttpAdapterException::doesNotSupportSubAdapter(
+                $this->getName(),
+                get_class($browser->getClient())
+            );
         }
 
-        $this->browser = $browser ?: new Browser();
+        parent::__construct($browser->getClient() instanceof AbstractCurl);
+
+        $this->browser = $browser;
     }
 
     /**

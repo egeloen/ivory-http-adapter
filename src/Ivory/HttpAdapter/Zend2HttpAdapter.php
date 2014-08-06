@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Zend\Http\Client;
 use Zend\Http\Response\Stream;
 
@@ -29,12 +28,11 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
     /**
      * Creates a zend 2 http adapter.
      *
-     * @param \Zend\Http\Client                                       $client         The zend 2 client.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
+     * @param \Zend\Http\Client $client The zend 2 client.
      */
-    public function __construct(Client $client = null, MessageFactoryInterface $messageFactory = null)
+    public function __construct(Client $client = null)
     {
-        parent::__construct($messageFactory);
+        parent::__construct();
 
         $this->client = $client ?: new Client();
     }

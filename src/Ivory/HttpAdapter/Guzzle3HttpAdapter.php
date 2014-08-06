@@ -13,7 +13,6 @@ namespace Ivory\HttpAdapter;
 
 use Guzzle\Http\Client;
 use Guzzle\Http\ClientInterface;
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\Stream\Guzzle3Stream;
 
 /**
@@ -29,12 +28,11 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * Creates a guzzle 3 http adapter.
      *
-     * @param \Guzzle\Http\ClientInterface                            $client         The guzzle 3 client.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
+     * @param \Guzzle\Http\ClientInterface $client The guzzle 3 client.
      */
-    public function __construct(ClientInterface $client = null, MessageFactoryInterface $messageFactory = null)
+    public function __construct(ClientInterface $client = null)
     {
-        parent::__construct($messageFactory);
+        parent::__construct();
 
         $this->client = $client ?: new Client();
     }

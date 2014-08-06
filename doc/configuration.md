@@ -10,16 +10,12 @@ has been processed. By default, the factory is the `Ivory\HttpAdapter\Message\Me
 `Ivory\HttpAdapter\Message\Response`. So, if you want to use your own response class in order to add extra behaviors,
 you can define your own which implements the `Ivory\HttpAdapter\Message\ResponseInterface` or extends the
 `Ivory\HttpAdapter\Message\Response`. Then, instantiate it in your custom factory which implements the
-`Ivory\HttpAdapter\Message\MessageFactoryInterface` or extends the `Ivory\HttpAdapter\Message\MessageFactory`. Then,
-to use it, just need to pass it as last parameter of all adapters constructor or through his setter. For example, for
-the curl adapter, you can use:
+`Ivory\HttpAdapter\Message\MessageFactoryInterface` or extends the `Ivory\HttpAdapter\Message\MessageFactory`. Finally,
+to get/set it, you can use:
 
 ``` php
-use Ivory\HttpAdapter\CurlHttpAdapter;
 use My\MessageFactory;
 
-$httpAdapter = new CurlHttpAdapter(new MessageFactory());
-// or
 $messageFactory = $httpAdapter->getMessageFactory();
 $httpAdapter->setMessageFactory(new MessageFactory());
 ```

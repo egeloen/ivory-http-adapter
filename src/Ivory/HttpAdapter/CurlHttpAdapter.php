@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
 
 /**
@@ -23,12 +22,10 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
 {
     /**
      * Creates a curl http adapter.
-     *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
      */
-    public function __construct(MessageFactoryInterface $messageFactory = null)
+    public function __construct()
     {
-        parent::__construct($messageFactory);
+        parent::__construct();
     }
 
     /**

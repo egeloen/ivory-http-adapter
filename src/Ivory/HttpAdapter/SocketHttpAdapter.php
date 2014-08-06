@@ -11,8 +11,6 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
-
 /**
  * Socket http adapter.
  *
@@ -26,9 +24,9 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    public function __construct(MessageFactoryInterface $messageFactory = null)
+    public function __construct()
     {
-        parent::__construct($messageFactory);
+        parent::__construct();
 
         $this->remainingRedirects = $this->maxRedirects;
     }
