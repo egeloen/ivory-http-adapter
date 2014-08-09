@@ -1,6 +1,6 @@
 # README
 
-[![Build Status](https://secure.travis-ci.org/egeloen/ivory-http-adapter.png)](http://travis-ci.org/egeloen/ivory-http-adapter)
+[![Build Status](https://secure.travis-ci.org/egeloen/ivory-http-adapter.png?branch=master)](http://travis-ci.org/egeloen/ivory-http-adapter)
 [![Coverage Status](https://coveralls.io/repos/egeloen/ivory-http-adapter/badge.png?branch=master)](https://coveralls.io/r/egeloen/ivory-http-adapter?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/?branch=master)
 [![Dependency Status](http://www.versioneye.com/php/egeloen:http-adapter/badge.svg)](http://www.versioneye.com/php/egeloen:http-adapter)
