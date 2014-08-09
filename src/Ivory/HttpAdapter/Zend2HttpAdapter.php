@@ -11,7 +11,8 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Zend\Http\Client;
 use Zend\Http\Response\Stream;
 
@@ -40,49 +41,55 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers = array(), $data = array(), array $files = array())
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
         $this->client
             ->resetParameters(true)
             ->setOptions(array(
-                'httpversion'  => $this->protocolVersion,
+                'httpversion'  => $internalRequest->getProtocolVersion(),
                 'timeout'      => $this->timeout,
                 'maxredirects' => $this->maxRedirects,
             ))
-            ->setUri($this->prepareUrl($url))
-            ->setMethod($this->prepareMethod($method))
-            ->setHeaders($this->prepareHeaders($headers));
+            ->setUri($internalRequest->getUrl())
+            ->setMethod($internalRequest->getMethod())
+            ->setHeaders($this->prepareHeaders($internalRequest, true, $internalRequest->hasStringData()));
 
-        if (is_string($data)) {
-            $this->client->setRawBody($data);
+        if ($internalRequest->hasStringData()) {
+            $this->client->setRawBody($this->prepareBody($internalRequest));
         } else {
-            $this->client->setParameterPost($data);
-        }
+            $this->client->setParameterPost($internalRequest->getData());
 
-        foreach ($files as $key => $file) {
-            $this->client->setFileUpload($file, $key);
+            foreach ($internalRequest->getFiles() as $key => $file) {
+                $this->client->setFileUpload($file, $key);
+            }
         }
 
         try {
             $response = $this->client->send();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
         if ($this->hasMaxRedirects() && $this->client->getRedirectionsCount() > $this->maxRedirects) {
-            throw HttpAdapterException::maxRedirectsExceeded($url, $this->maxRedirects, $this->getName());
+            throw HttpAdapterException::maxRedirectsExceeded(
+                $internalRequest->getUrl(),
+                $this->maxRedirects,
+                $this->getName()
+            );
         }
 
         return $this->createResponse(
             $response->getVersion(),
             $response->getStatusCode(),
             $response->getReasonPhrase(),
-            $method,
             $response->getHeaders()->toArray(),
-            function () use ($response) {
-                return $response instanceof Stream ? $response->getStream() : $response->getBody();
-            },
-            $url
+            BodyNormalizer::normalize(
+                function () use ($response) {
+                    return $response instanceof Stream ? $response->getStream() : $response->getBody();
+                },
+                $internalRequest->getMethod()
+            ),
+            $internalRequest->getUrl()
         );
     }
 

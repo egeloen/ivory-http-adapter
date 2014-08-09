@@ -11,6 +11,10 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
+use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
+use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
 use Httpful\Request;
 
 /**
@@ -31,36 +35,35 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers, $data, array $files)
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
-        $request = Request::init($this->prepareMethod($method))
+        $request = Request::init($internalRequest->getMethod())
             ->whenError(function () {})
-            ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($this->protocolVersion))
+            ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
             ->timeout($this->timeout)
             ->followRedirects($this->maxRedirects)
-            ->uri($this->prepareUrl($url))
-            ->addHeaders($this->prepareHeaders($headers, $data, $files));
+            ->uri($internalRequest->getUrl())
+            ->addHeaders($this->prepareHeaders($internalRequest));
 
-        if (empty($files)) {
-            $request->body($this->prepareData($data));
+        if (!$internalRequest->hasFiles()) {
+            $request->body($this->prepareBody($internalRequest));
         } else {
-            $request->body($data)->attach($files);
+            $request->body($internalRequest->getData())->attach($internalRequest->getFiles());
         }
 
         try {
             $response = $request->send();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(
-            $this->parseProtocolVersion($response->raw_headers),
+            ProtocolVersionParser::parse($response->raw_headers),
             $response->code,
-            $this->parseReasonPhrase($response->raw_headers),
-            $method,
+            ReasonPhraseParser::parse($response->raw_headers),
             $response->headers->toArray(),
-            $response->body,
-            $url
+            BodyNormalizer::normalize($response->body, $internalRequest->getMethod()),
+            $internalRequest->getUrl()
         );
     }
 

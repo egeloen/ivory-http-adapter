@@ -38,15 +38,23 @@ class HttpAdapterException extends \Exception
     }
 
     /**
+     * Gets the "DOES NOT SUPPORT BODY" exception.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT BODY" exception.
+     */
+    public static function doesNotSupportBody()
+    {
+        return new self('The internal request does not support body, you should rely on data/files instead.');
+    }
+
+    /**
      * Gets the "DOES NOT SUPPORT DATA AS STRING AND FILES" exception.
      *
-     * @param string $adapter The adapter name.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT DATA AS STRING AND FILES" exception.
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT DATA AS STRING AND FILES" exception.
      */
-    public static function doesNotSupportDataAsStringAndFiles($adapter)
+    public static function doesNotSupportDataAsStringAndFiles()
     {
-        return new self(sprintf('The adapter "%s" does not support data as string and files.', $adapter));
+        return new self('The internal request does not support data as string and files.');
     }
 
     /**

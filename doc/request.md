@@ -2,9 +2,10 @@
 
 The request class follows the [PSR-7 Standard](https://github.com/php-fig/fig-standards/blob/master/proposed/http-message.md).
 That means it implements the `Psr\Http\Message\RequestInterface`. Additionally, the library adds some features on top of
-it through the `Ivory\HttpAdapter\Message\MessageInterface` and `Ivory\HttpAdapter\Message\RequestInterface`.
+it through the `Ivory\HttpAdapter\Message\MessageInterface` and `Ivory\HttpAdapter\Message\RequestInterface` but can be
+customized as explained [here](/doc/configuration.md#message-factory).
 
-## Create you request
+## Create your request
 
 ``` php
 use Ivory\HttpAdapter\Message\Request;

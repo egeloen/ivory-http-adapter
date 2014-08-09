@@ -69,3 +69,14 @@ $response = $httpAdapter->sendRequest(new Request($url, $method));
 ```
 
 If you want to learn more about the `Ivory\HttpAdapter\Message\Request`, your can read this [doc](/doc/request.md).
+
+## Send an internal request
+
+``` php
+use Ivory\HttpAdapter\Message\InternalRequest;
+
+$response = $httpAdapter->sendRequest(new InternalRequest($url, $method));
+```
+
+If you want to learn more about the `Ivory\HttpAdapter\Message\InternalRequest`, your can read this
+[doc](/doc/internal_request.md).

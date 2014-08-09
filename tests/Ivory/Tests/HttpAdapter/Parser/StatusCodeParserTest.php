@@ -9,23 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter;
+namespace Ivory\Tests\HttpAdapter\Parser;
 
-use Buzz\Client\FileGetContents;
-use Ivory\HttpAdapter\Message\RequestInterface;
+use Ivory\HttpAdapter\Parser\StatusCodeParser;
 
 /**
- * Buzz stream http adapter test.
+ * Status code parser test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class BuzzStreamHttpAdapterTest extends AbstractBuzzHttpAdapterTest
+class StatusCodeParserTest extends AbstractParserTest
 {
     /**
-     * {@inheritdoc}
+     * @dataProvider headersProvider
      */
-    protected function createClient()
+    public function testParse($headers)
     {
-        return new FileGetContents();
+        $this->assertSame(200, StatusCodeParser::parse($headers));
     }
 }

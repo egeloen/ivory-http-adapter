@@ -9,22 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Utils;
+namespace Ivory\Tests\HttpAdapter\Parser;
+
+use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
 
 /**
- * PHPUnit utility.
+ * Reason phrase parser test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PHPUnitUtility
+class ReasonPhraseParserTest extends AbstractParserTest
 {
     /**
-     * Gets the url.
-     *
-     * @return string|boolean The url or FALSE if there is none.
+     * @dataProvider headersProvider
      */
-    public static function getUrl()
+    public function testParse($headers)
     {
-        return isset($_SERVER['TEST_SERVER']) ? $_SERVER['TEST_SERVER'] : false;
+        $this->assertSame('OK', ReasonPhraseParser::parse($headers));
     }
 }

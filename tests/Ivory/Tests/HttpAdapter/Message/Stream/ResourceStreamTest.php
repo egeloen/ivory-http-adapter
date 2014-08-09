@@ -12,7 +12,7 @@
 namespace Ivory\Tests\HttpAdapter\Message\Stream;
 
 use Ivory\HttpAdapter\Message\Stream\ResourceStream;
-use Ivory\Tests\HttpAdapter\Utils\PHPUnitUtility;
+use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
 /**
  * Resource stream test.

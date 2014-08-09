@@ -61,18 +61,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testInitialState()
     {
-        $this->request = new Request(
-            $this->url,
-            $method = Request::METHOD_POST,
-            $headers = array('foo' => array('bar')),
-            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
-            $protocolVersion = Request::PROTOCOL_VERSION_10
-        );
+        $this->request = new Request($this->url, $method = Request::METHOD_POST);
 
         $this->assertSame($method, $this->request->getMethod());
-        $this->assertSame($headers, $this->request->getHeaders());
-        $this->assertSame($body, $this->request->getBody());
-        $this->assertSame($protocolVersion, $this->request->getProtocolVersion());
+        $this->assertFalse($this->request->hasHeaders());
+        $this->assertFalse($this->request->hasBody());
+        $this->assertSame(Request::PROTOCOL_VERSION_11, $this->request->getProtocolVersion());
     }
 
     public function testSetUrl()
@@ -82,10 +76,24 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($url, $this->request->getUrl());
     }
 
+    public function testSetUrlWithoutScheme()
+    {
+        $this->request->setUrl($url = 'www.google.com');
+
+        $this->assertSame('http://'.$url, $this->request->getUrl());
+    }
+
     public function testSetMethod()
     {
         $this->request->setMethod($method = Request::METHOD_POST);
 
         $this->assertSame($method, $this->request->getMethod());
+    }
+
+    public function testSetMethodLowercase()
+    {
+        $this->request->setMethod('post');
+
+        $this->assertSame(Request::METHOD_POST, $this->request->getMethod());
     }
 }

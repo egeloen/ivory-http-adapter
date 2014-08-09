@@ -131,7 +131,7 @@ abstract class AbstractMessage implements MessageInterface
     {
         $this->headers[$this->fixHeader($header)] = array_merge(
             $this->getHeaderAsArray($header),
-            array_map('trim', is_string($value) ? explode(',', $value) : $value)
+            array_map('trim', is_array($value) ? $value : explode(',', $value))
         );
     }
 
