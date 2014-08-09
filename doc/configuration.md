@@ -5,13 +5,10 @@ able to be configured as explain above.
 
 ## Message factory
 
-The message factory allows to create an empty response which will be populated by the http adapter after the request
-has been processed. By default, the factory is the `Ivory\HttpAdapter\Message\MessageFactory` which returns an
-`Ivory\HttpAdapter\Message\Response`. So, if you want to use your own response class in order to add extra behaviors,
-you can define your own which implements the `Ivory\HttpAdapter\Message\ResponseInterface` or extends the
-`Ivory\HttpAdapter\Message\Response`. Then, instantiate it in your custom factory which implements the
-`Ivory\HttpAdapter\Message\MessageFactoryInterface` or extends the `Ivory\HttpAdapter\Message\MessageFactory`. Finally,
-to get/set it, you can use:
+The message factory allows to create a PSR-7 request, an internal request and an empty response. So, if you want to
+use your own classes in order to add extra behaviors, you can define your own and instantiate it in your custom
+factory which implements the `Ivory\HttpAdapter\Message\MessageFactoryInterface` or extends the
+`Ivory\HttpAdapter\Message\MessageFactory`. Then, to get/set it, you can use:
 
 ``` php
 use My\MessageFactory;

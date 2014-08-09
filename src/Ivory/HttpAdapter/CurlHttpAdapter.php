@@ -11,7 +11,13 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
+use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
+use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
+use Ivory\HttpAdapter\Parser\StatusCodeParser;
 
 /**
  * Curl http adapter.
@@ -31,15 +37,20 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers = array(), $data = array(), array $files = array())
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, $this->prepareUrl($url));
-        curl_setopt($curl, CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($this->protocolVersion));
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->prepareHeaders($headers, array(), array(), false));
+        curl_setopt($curl, CURLOPT_URL, $internalRequest->getUrl());
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest));
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        curl_setopt(
+            $curl,
+            CURLOPT_HTTPHEADER,
+            $this->prepareHeaders($internalRequest, false, $internalRequest->hasStringData())
+        );
 
         if (defined('CURLOPT_TIMEOUT_MS')) {
             curl_setopt($curl, CURLOPT_TIMEOUT_MS, $this->timeout * 1000);
@@ -53,27 +64,27 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             curl_setopt($curl, CURLOPT_MAXREDIRS, $this->maxRedirects);
         }
 
-        if (!empty($files) && $this->isSafeUpload()) {
+        if ($internalRequest->hasFiles() && $this->isSafeUpload()) {
             curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
         }
 
-        switch ($this->prepareMethod($method)) {
+        switch ($internalRequest->getMethod()) {
             case RequestInterface::METHOD_HEAD:
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $internalRequest->getMethod());
                 curl_setopt($curl, CURLOPT_NOBODY, true);
                 break;
 
             case RequestInterface::METHOD_POST:
                 curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareFiles($data, $files));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareData($internalRequest));
                 break;
 
             case RequestInterface::METHOD_PUT:
             case RequestInterface::METHOD_PATCH:
             case RequestInterface::METHOD_DELETE:
             case RequestInterface::METHOD_OPTIONS:
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareFiles($data, $files));
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $internalRequest->getMethod());
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareData($internalRequest));
                 break;
         }
 
@@ -81,7 +92,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             $error = curl_error($curl);
             curl_close($curl);
 
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error);
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $error);
         }
 
         $headersSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
@@ -93,12 +104,11 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         $body = substr($response, $headersSize);
 
         return $this->createResponse(
-            $this->parseProtocolVersion($headers),
-            $this->parseStatusCode($headers),
-            $this->parseReasonPhrase($headers),
-            $method,
-            $headers,
-            $body,
+            ProtocolVersionParser::parse($headers),
+            StatusCodeParser::parse($headers),
+            ReasonPhraseParser::parse($headers),
+            HeadersNormalizer::normalize($headers),
+            BodyNormalizer::normalize($body, $internalRequest->getMethod()),
             $effectiveUrl
         );
     }

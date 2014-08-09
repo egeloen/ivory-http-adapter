@@ -45,7 +45,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\MessageFactory', $this->httpAdapter->getMessageFactory());
         $this->assertSame(MessageInterface::PROTOCOL_VERSION_11, $this->httpAdapter->getProtocolVersion());
         $this->assertFalse($this->httpAdapter->getKeepAlive());
-        $this->assertNull($this->httpAdapter->getEncodingType());
+        $this->assertFalse($this->httpAdapter->hasEncodingType());
         $this->assertInternalType('string', $this->httpAdapter->getBoundary());
         $this->assertSame(10, $this->httpAdapter->getTimeout());
         $this->assertTrue($this->httpAdapter->hasMaxRedirects());

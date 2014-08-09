@@ -11,7 +11,8 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Psr\Http\Message\StreamInterface;
+use Ivory\HttpAdapter\Normalizer\MethodNormalizer;
+use Ivory\HttpAdapter\Normalizer\UrlNormalizer;
 
 /**
  * Request.
@@ -20,7 +21,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class Request extends AbstractMessage implements RequestInterface
 {
-    /** @var string|object */
+    /** @var string */
     protected $url;
 
     /** @var string */
@@ -29,24 +30,14 @@ class Request extends AbstractMessage implements RequestInterface
     /**
      * Creates a request.
      *
-     * @param string|object                          $url             The url.
-     * @param string                                 $method          The method.
-     * @param array                                  $headers         The headers.
-     * @param \Psr\Http\Message\StreamInterface|null $body            The body.
-     * @param string                                 $protocolVersion The protocol version.
+     * @param string|object $url    The url.
+     * @param string        $method The method.
      */
-    public function __construct(
-        $url,
-        $method = self::METHOD_GET,
-        array $headers = array(),
-        StreamInterface $body = null,
-        $protocolVersion = self::PROTOCOL_VERSION_11
-    ) {
+    public function __construct($url, $method = self::METHOD_GET)
+    {
+        $this->setProtocolVersion(self::PROTOCOL_VERSION_11);
         $this->setUrl($url);
         $this->setMethod($method);
-        $this->setHeaders($headers);
-        $this->setBody($body);
-        $this->setProtocolVersion($protocolVersion);
     }
 
     /**
@@ -62,7 +53,7 @@ class Request extends AbstractMessage implements RequestInterface
      */
     public function setUrl($url)
     {
-        $this->url = $url;
+        $this->url = UrlNormalizer::normalize($url);
     }
 
     /**
@@ -78,6 +69,6 @@ class Request extends AbstractMessage implements RequestInterface
      */
     public function setMethod($method)
     {
-        $this->method = strtoupper($method);
+        $this->method = MethodNormalizer::normalize($method);
     }
 }

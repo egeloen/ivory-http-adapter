@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageInterface;
 
 /**
@@ -39,13 +40,13 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     /**
      * Prepares the protocol version.
      *
-     * @param string $protocolVersion The protocol version.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
      * @return integer The prepared protocol version.
      */
-    protected function prepareProtocolVersion($protocolVersion)
+    protected function prepareProtocolVersion(InternalRequestInterface $internalRequest)
     {
-        if ($protocolVersion === MessageInterface::PROTOCOL_VERSION_10) {
+        if ($internalRequest->getProtocolVersion() === MessageInterface::PROTOCOL_VERSION_10) {
             return CURL_HTTP_VERSION_1_0;
         }
 
@@ -53,24 +54,25 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Prepares the files.
+     * Prepares the data.
      *
-     * @param array|string $data  The data.
-     * @param array        $files The files.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
-     * @return array|string The prepared files.
+     * @return array|string The prepared data.
      */
-    protected function prepareFiles($data, array $files)
+    protected function prepareData(InternalRequestInterface $internalRequest)
     {
-        if (empty($files)) {
-            return $this->prepareData($data);
+        if (!$internalRequest->hasFiles()) {
+            return $this->prepareBody($internalRequest);
         }
 
-        foreach ($files as $key => $file) {
+        $files = array();
+
+        foreach ($internalRequest->getFiles() as $key => $file) {
             $files[$key] = $this->isSafeUpload() ? new \CurlFile($file) : '@'.$file;
         }
 
-        return array_merge($data, $files);
+        return array_merge($internalRequest->getData(), $files);
     }
 
     /**

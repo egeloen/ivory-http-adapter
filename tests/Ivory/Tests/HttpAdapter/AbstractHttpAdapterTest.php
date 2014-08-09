@@ -12,9 +12,10 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\HttpAdapterConfigInterface;
+use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
-use Ivory\Tests\HttpAdapter\Utils\PHPUnitUtility;
+use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
 /**
  * Abstract http adapter test.
@@ -132,6 +133,30 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertResponse($this->httpAdapter->sendRequest($request), $options);
         $this->assertRequest($method, $headers, $data);
+    }
+
+    /**
+     * @dataProvider internalRequestProvider
+     */
+    public function testSendInternalRequest(
+        $url,
+        $method,
+        array $headers = array(),
+        array $data = array(),
+        array $files = array()
+    ) {
+        $internalRequest = new InternalRequest($url, $method);
+        $internalRequest->setHeaders($headers);
+        $internalRequest->setData($data);
+        $internalRequest->setFiles($files);
+
+        $options = array();
+        if ($method === Request::METHOD_HEAD) {
+            $options['body'] = null;
+        }
+
+        $this->assertResponse($this->httpAdapter->sendRequest($internalRequest), $options);
+        $this->assertRequest($method, $headers, $data, $files);
     }
 
     public function testSendWithProtocolVersion10()
@@ -292,6 +317,41 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             array($this->getUrl(), Request::METHOD_OPTIONS),
             array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders()),
             array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
+        );
+    }
+
+    /**
+     * Gets the internal request provider.
+     *
+     * @return array The internal request provider.
+     */
+    public function internalRequestProvider()
+    {
+        return array(
+            array($this->getUrl(), Request::METHOD_GET),
+            array($this->getUrl(), Request::METHOD_GET, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_HEAD),
+            array($this->getUrl(), Request::METHOD_HEAD, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_POST),
+            array($this->getUrl(), Request::METHOD_POST, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_POST, $this->getHeaders(), $this->getData()),
+            array($this->getUrl(), Request::METHOD_POST, $this->getHeaders(), $this->getData(), $this->getFiles()),
+            array($this->getUrl(), Request::METHOD_PUT),
+            array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders(), $this->getData()),
+            array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders(), $this->getData(), $this->getFiles()),
+            array($this->getUrl(), Request::METHOD_PATCH),
+            array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders(), $this->getData()),
+            array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders(), $this->getData(), $this->getFiles()),
+            array($this->getUrl(), Request::METHOD_DELETE),
+            array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders(), $this->getData()),
+            array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders(), $this->getData(), $this->getFiles()),
+            array($this->getUrl(), Request::METHOD_OPTIONS),
+            array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
+            array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData(), $this->getFiles()),
         );
     }
 

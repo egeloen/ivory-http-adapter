@@ -11,6 +11,8 @@
 
 namespace Ivory\HttpAdapter\Message;
 
+use Ivory\HttpAdapter\Message\RequestInterface;
+
 /**
  * Message factory interface.
  *
@@ -18,6 +20,26 @@ namespace Ivory\HttpAdapter\Message;
  */
 interface MessageFactoryInterface
 {
+    /**
+     * Creates a request.
+     *
+     * @param string $url    The url.
+     * @param string $method The method.
+     *
+     * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
+     */
+    public function createRequest($url, $method = RequestInterface::METHOD_GET);
+
+    /**
+     * Creates an internal request.
+     *
+     * @param string $url    The url.
+     * @param string $method The method.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The internal request.
+     */
+    public function createInternalRequest($url, $method = RequestInterface::METHOD_GET);
+
     /**
      * Creates a response.
      *

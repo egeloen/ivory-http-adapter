@@ -13,7 +13,9 @@ namespace Ivory\HttpAdapter;
 
 use Guzzle\Http\Client;
 use Guzzle\Http\ClientInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\Stream\Guzzle3Stream;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
  * Guzzle 3 http adapter.
@@ -40,39 +42,41 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers = array(), $data = array(), array $files = array())
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
         $request = $this->client->createRequest(
-            $this->prepareMethod($method),
-            $this->prepareUrl($url),
-            $this->prepareHeaders($headers, $data, $files),
-            $data,
+            $internalRequest->getMethod(),
+            $internalRequest->getUrl(),
+            $this->prepareHeaders($internalRequest),
+            $internalRequest->getData(),
             array('timeout' => $this->timeout)
         );
 
-        foreach ($files as $key => $file) {
+        foreach ($internalRequest->getFiles() as $key => $file) {
             $request->addPostFile($key, $file);
         }
 
-        $request->setProtocolVersion($this->protocolVersion);
+        $request->setProtocolVersion($internalRequest->getProtocolVersion());
         $request->getParams()->set('redirect.disable', !$this->hasMaxRedirects());
         $request->getParams()->set('redirect.max', $this->maxRedirects);
 
         try {
             $response = $request->send();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(
             $response->getProtocolVersion(),
             $response->getStatusCode(),
             $response->getReasonPhrase(),
-            $method,
             $response->getHeaders()->toArray(),
-            function () use ($response) {
-                return new Guzzle3Stream($response->getBody());
-            },
+            BodyNormalizer::normalize(
+                function () use ($response) {
+                    return new Guzzle3Stream($response->getBody());
+                },
+                $internalRequest->getMethod()
+            ),
             $response->getEffectiveUrl()
         );
     }

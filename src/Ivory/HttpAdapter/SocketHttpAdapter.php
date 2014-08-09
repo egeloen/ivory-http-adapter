@@ -11,6 +11,14 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
+use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Ivory\HttpAdapter\Parser\EffectiveUrlParser;
+use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
+use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
+use Ivory\HttpAdapter\Parser\StatusCodeParser;
+
 /**
  * Socket http adapter.
  *
@@ -44,30 +52,32 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers, $data, array $files)
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
-        list($protocol, $host, $port, $path) = $this->parseUrl($url);
+        list($protocol, $host, $port, $path) = $this->parseUrl($internalRequest->getUrl());
 
         if (($socket = @stream_socket_client($protocol.'://'.$host.':'.$port, $errno, $errstr)) === false) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $errstr);
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $errstr);
         }
 
         stream_set_timeout($socket, $this->timeout);
-        fwrite($socket, $this->prepareRequest($method, $path, $host, $port, $headers, $data, $files));
-        list($statusLine, $responseHeaders, $body) = $this->parseResponse($socket, $url);
+        fwrite($socket, $this->prepareRequest($internalRequest, $path, $host, $port));
+        list($responseHeaders, $body) = $this->parseResponse($socket, $internalRequest->getUrl());
+        $effectiveUrl = $this->parseEffectiveUrl($responseHeaders, $internalRequest->getUrl());
 
-        if (($effectiveUrl = $this->parseEffectiveUrl($responseHeaders, $url)) !== $url) {
-            return $this->doSend($effectiveUrl, $method, $headers, $data, $files);
+        if ($effectiveUrl !== $internalRequest->getUrl()) {
+            $internalRequest->setUrl($effectiveUrl);
+
+            return $this->doSend($internalRequest);
         }
 
         return $this->createResponse(
-            $this->parseProtocolVersion($statusLine),
-            $this->parseStatusCode($statusLine),
-            $this->parseReasonPhrase($statusLine),
-            $method,
-            $responseHeaders,
-            $body,
-            $url
+            ProtocolVersionParser::parse($responseHeaders),
+            StatusCodeParser::parse($responseHeaders),
+            ReasonPhraseParser::parse($responseHeaders),
+            $responseHeaders = HeadersNormalizer::normalize($responseHeaders),
+            BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod()),
+            $internalRequest->getUrl()
         );
     }
 
@@ -82,28 +92,25 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     /**
      * Prepares the request.
      *
-     * @param string       $method  The method.
-     * @param string       $path    The path.
-     * @param string       $host    The host.
-     * @param array        $headers The headers.
-     * @param array|string $data    The data.
-     * @param array        $files   The files.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param string                                              $path            The path.
+     * @param string                                              $host            The host.
+     * @param integer                                             $port            The port.
      *
      * @return string The prepared request.
      */
-    protected function prepareRequest($method, $path, $host, $port, array $headers, $data, array $files)
+    protected function prepareRequest(InternalRequestInterface $internalRequest, $path, $host, $port)
     {
-        $headers = $this->prepareHeaders($headers, $data, $files);
-        $data = $this->prepareData($data, $files);
+        $body = $this->prepareBody($internalRequest);
 
-        if (!isset($headers['content-length']) && ($contentLength = strlen($data)) > 0) {
-            $headers['content-length'] = $contentLength;
+        if (!$internalRequest->hasHeader('content-length') && ($contentLength = strlen($body)) > 0) {
+            $internalRequest->setHeader('content-length', $contentLength);
         }
 
-        $request = $this->prepareMethod($method).' '.$path.' HTTP/'.$this->protocolVersion."\r\n";
+        $request = $internalRequest->getMethod().' '.$path.' HTTP/'.$internalRequest->getProtocolVersion()."\r\n";
         $request .= 'Host: '.$host.($port !== 80 ? ':'.$port : '')."\r\n";
-        $request .= implode("\r\n", $this->normalizeHeaders($headers, false))."\r\n\r\n";
-        $request .= $data."\r\n";
+        $request .= implode("\r\n", $this->prepareHeaders($internalRequest, false))."\r\n\r\n";
+        $request .= $body."\r\n";
 
         return $request;
     }
@@ -114,7 +121,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      * @param resource $socket The socket.
      * @param string   $url    The url.
      *
-     * @return array The response (0 => status line, 1 => headers, 2 => body).
+     * @return array The response (0 => headers, 1 => body).
      */
     protected function parseResponse($socket, $url)
     {
@@ -138,11 +145,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::timeoutExceeded($url, $this->timeout, $this->getName());
         }
 
-        $statusLine = $this->parseStatusLine($headers);
-        $headers = $this->normalizeHeaders($headers);
-        $body = $this->decodeBody($headers, $body);
-
-        return array($statusLine, $headers, $body);
+        return array($headers, $body);
     }
 
     /**
@@ -193,11 +196,16 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * {@inheritdoc}
+     * Parses the effective url.
+     *
+     * @param string $headers The headers.
+     * @param string $url     The url.
+     *
+     * @return string The parsed effective url.
      */
     protected function parseEffectiveUrl($headers, $url)
     {
-        $effectiveUrl = parent::parseEffectiveUrl($headers, $url);
+        $effectiveUrl = EffectiveUrlParser::parse($headers, $url, $this->hasMaxRedirects());
 
         if ($effectiveUrl === $url) {
             $this->remainingRedirects = $this->maxRedirects;

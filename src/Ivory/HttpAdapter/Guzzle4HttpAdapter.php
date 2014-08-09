@@ -13,7 +13,9 @@ namespace Ivory\HttpAdapter;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\Stream\Guzzle4Stream;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
  * Guzzle 4 http adapter.
@@ -40,20 +42,22 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers, $data, array $files)
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
-        foreach ($files as $name => $file) {
+        $data = $internalRequest->getData();
+
+        foreach ($internalRequest->getFiles() as $name => $file) {
             $data[$name] = fopen($file, 'r');
         }
 
         $request = $this->client->createRequest(
-            $this->prepareMethod($method),
-            $this->prepareUrl($url),
+            $internalRequest->getMethod(),
+            $internalRequest->getUrl(),
             array(
-                'version'         => $this->protocolVersion,
+                'version'         => $internalRequest->getProtocolVersion(),
                 'timeout'         => $this->timeout,
                 'allow_redirects' => $this->hasMaxRedirects() ? array('max' => $this->getMaxRedirects()) : false,
-                'headers'         => $this->prepareHeaders($headers, $data, $files),
+                'headers'         => $this->prepareHeaders($internalRequest),
                 'body'            => $data,
             )
         );
@@ -61,18 +65,20 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
         try {
             $response = $this->client->send($request);
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(
             $response->getProtocolVersion(),
             (integer) $response->getStatusCode(),
             $response->getReasonPhrase(),
-            $method,
             $response->getHeaders(),
-            function () use ($response) {
-                return new Guzzle4Stream($response->getBody());
-            },
+            BodyNormalizer::normalize(
+                function () use ($response) {
+                    return new Guzzle4Stream($response->getBody());
+                },
+                $internalRequest->getMethod()
+            ),
             $response->getEffectiveUrl()
         );
     }

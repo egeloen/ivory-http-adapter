@@ -11,7 +11,9 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
  * Zend 1 http adapter.
@@ -38,28 +40,25 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers, $data, array $files)
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
         $this->client
             ->resetParameters(true)
             ->setConfig(array(
-                'httpversion'  => $this->protocolVersion,
+                'httpversion'  => $internalRequest->getProtocolVersion(),
                 'timeout'      => $this->timeout,
                 'maxredirects' => $this->maxRedirects + 1,
             ))
-            ->setUri($this->prepareUrl($url))
-            ->setMethod($this->prepareMethod($method));
+            ->setUri($internalRequest->getUrl())
+            ->setMethod($internalRequest->getMethod())
+            ->setHeaders($this->prepareHeaders($internalRequest));
 
-        if ($this->prepareMethod($method) !== RequestInterface::METHOD_POST || is_string($data)) {
-            $this->client
-                ->setHeaders($this->prepareHeaders($headers, $data, $files))
-                ->setRawData($this->prepareData($data, $files));
+        if ($internalRequest->getMethod() !== RequestInterface::METHOD_POST || $internalRequest->hasStringData()) {
+            $this->client->setRawData($this->prepareBody($internalRequest));
         } else {
-            $this->client
-                ->setHeaders($this->prepareHeaders($headers))
-                ->setParameterPost($data);
+            $this->client->setParameterPost($internalRequest->getData());
 
-            foreach ($files as $name => $file) {
+            foreach ($internalRequest->getFiles() as $name => $file) {
                 $this->client->setFileUpload($file, $name);
             }
         }
@@ -67,21 +66,27 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
         try {
             $response = $this->client->request();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
         if ($this->hasMaxRedirects() && $this->client->getRedirectionsCount() > $this->maxRedirects) {
-            throw HttpAdapterException::maxRedirectsExceeded($url, $this->maxRedirects, $this->getName());
+            throw HttpAdapterException::maxRedirectsExceeded(
+                $internalRequest->getUrl(),
+                $this->maxRedirects,
+                $this->getName()
+            );
         }
 
         return $this->createResponse(
             $response->getVersion(),
             $response->getStatus(),
             $response->getMessage(),
-            $method,
             $response->getHeaders(),
-            $response instanceof \Zend_Http_Client_Adapter_Stream ? $response->getStream() : $response->getBody(),
-            $url
+            BodyNormalizer::normalize(
+                $response instanceof \Zend_Http_Client_Adapter_Stream ? $response->getStream() : $response->getBody(),
+                $internalRequest->getMethod()
+            ),
+            $internalRequest->getUrl()
         );
     }
 

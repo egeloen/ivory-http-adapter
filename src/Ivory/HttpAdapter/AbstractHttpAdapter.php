@@ -11,12 +11,14 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactory;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\MessageInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\Message\Stream\ResourceStream;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
+use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
  * Abstract http adapter.
@@ -244,11 +246,13 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function send($url, $method, array $headers = array(), $data = array(), array $files = array())
     {
-        if (is_string($data) && !empty($files)) {
-            throw HttpAdapterException::doesNotSupportDataAsStringAndFiles($this->getName());
-        }
+        $internalRequest = $this->messageFactory->createInternalRequest($url, $method);
+        $internalRequest->setProtocolVersion($this->protocolVersion);
+        $internalRequest->setHeaders($headers);
+        $internalRequest->setData($data);
+        $internalRequest->setFiles($files);
 
-        return $this->doSend($url, $method, $headers, $data, $files);
+        return $this->doSend($internalRequest);
     }
 
     /**
@@ -256,6 +260,10 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function sendRequest(RequestInterface $request)
     {
+        if ($request instanceof InternalRequestInterface) {
+            return $this->doSend($request);
+        }
+
         $protocolVersion = $this->protocolVersion;
         $this->protocolVersion = $request->getProtocolVersion();
 
@@ -274,112 +282,85 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /**
      * Does a request send.
      *
-     * @param string       $url     The url.
-     * @param string       $method  The method.
-     * @param array        $headers The headers.
-     * @param array|string $data    The data.
-     * @param array        $files   The files.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    abstract protected function doSend($url, $method, array $headers, $data, array $files);
-
-    /**
-     * Prepares the url.
-     *
-     * @param string $url The url.
-     *
-     * @return string The prepared url.
-     */
-    protected function prepareUrl($url)
-    {
-        return (strpos($url, 'http://') !== 0) && (strpos($url, 'https://') !== 0) ? 'http://'.$url : $url;
-    }
-
-    /**
-     * Prepares the method.
-     *
-     * @param string $method The method.
-     *
-     * @return string The prepared method.
-     */
-    protected function prepareMethod($method)
-    {
-        return strtoupper($method);
-    }
+    abstract protected function doSend(InternalRequestInterface $internalRequest);
 
     /**
      * Prepares the headers.
      *
-     * @param array        $headers     The headers.
-     * @param array|string $data        The data.
-     * @param array        $files       The files.
-     * @param boolean      $associative TRUE if the headers should be an associative array else FALSE.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param boolean                                             $associative     TRUE if the prepared headers should be associative else FALSE.
+     * @param boolean                                             $contentType     TRUE if the content type header should be prepared else FALSE.
      *
      * @return array The prepared headers.
      */
-    protected function prepareHeaders(array $headers, $data = array(), array $files = array(), $associative = true)
-    {
-        $headers = $this->normalizeHeaders($headers);
-
-        if (!isset($headers['connection'])) {
-            $headers['connection'] = $this->keepAlive ? 'keep-alive' : 'close';
+    protected function prepareHeaders(
+        InternalRequestInterface $internalRequest,
+        $associative = true,
+        $contentType = true
+    ) {
+        if (!$internalRequest->hasHeader('connection')) {
+            $internalRequest->setHeader('connection', $this->keepAlive ? 'keep-alive' : 'close');
         }
 
-        if (!isset($headers['content-type'])) {
+        if (!$internalRequest->hasHeader('content-type')) {
             if ($this->hasEncodingType()) {
-                $headers['content-type'] = $this->encodingType;
-            } elseif (!empty($files)) {
-                $headers['content-type'] = self::ENCODING_TYPE_FORMDATA.'; boundary='.$this->boundary;
-            } elseif (!empty($data)) {
-                $headers['content-type'] = self::ENCODING_TYPE_URLENCODED;
+                $internalRequest->setHeader('content-type', $this->encodingType);
+            } elseif ($contentType && $internalRequest->hasFiles()) {
+                $internalRequest->setHeader('content-type', self::ENCODING_TYPE_FORMDATA.'; boundary='.$this->boundary);
+            } elseif ($contentType && $internalRequest->hasData()) {
+                $internalRequest->setHeader('content-type', self::ENCODING_TYPE_URLENCODED);
             }
         }
 
-        return $this->normalizeHeaders($headers, $associative);
+        return HeadersNormalizer::normalize($internalRequest->getHeaders(), $associative);
     }
 
     /**
-     * Prepares the data.
+     * Prepares the body.
      *
-     * @param array|string $data  The data.
-     * @param array        $files The files.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
-     * @return string The prepared data.
+     * @return string The prepared body.
      */
-    protected function prepareData($data, array $files = array())
+    protected function prepareBody(InternalRequestInterface $internalRequest)
     {
-        if (empty($files)) {
-            return is_array($data) ? http_build_query($data) : $data;
+        if (!$internalRequest->hasFiles()) {
+            return $internalRequest->hasArrayData()
+                ? http_build_query($internalRequest->getData())
+                : $internalRequest->getData();
         }
 
-        $rawData = '';
+        $body = '';
 
-        foreach ($data as $name => $value) {
-            $rawData .= $this->prepareRawData($name, $value);
+        foreach ($internalRequest->getData() as $name => $value) {
+            $body .= $this->prepareRawBody($name, $value);
         }
 
-        foreach ($files as $name => $file) {
-            $rawData .= $this->prepareRawData($name, file_get_contents($file), basename($file));
+        foreach ($internalRequest->getFiles() as $name => $file) {
+            $body .= $this->prepareRawBody($name, file_get_contents($file), basename($file));
         }
 
-        $rawData .= '--'.$this->boundary.'--'."\r\n";
+        $body .= '--'.$this->boundary.'--'."\r\n";
 
-        return $rawData;
+        return $body;
     }
 
     /**
-     * Prepares the raw data.
+     * Prepares the raw body.
      *
      * @param string      $name     The name.
      * @param string      $value    The value.
      * @param string|null $filename The filename.
      *
-     * @return string The prepared raw data.
+     * @return string The formatted raw body.
      */
-    protected function prepareRawData($name, $value, $filename = null)
+    protected function prepareRawBody($name, $value, $filename = null)
     {
         $data = '--'.$this->boundary."\r\n".'Content-Disposition: form-data; name="'.$name.'"';
 
@@ -391,197 +372,14 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     }
 
     /**
-     * Parses the protocol version.
-     *
-     * @param array|string $headers The headers.
-     *
-     * @return string The parsed protocol version.
-     */
-    protected function parseProtocolVersion($headers)
-    {
-        return substr($this->parseStatusLine($headers), 5, 3);
-    }
-
-    /**
-     * Parses the status code.
-     *
-     * @param array|string $headers The headers.
-     *
-     * @return integer The parsed status code.
-     */
-    protected function parseStatusCode($headers)
-    {
-        return (integer) substr($this->parseStatusLine($headers), 9, 3);
-    }
-
-    /**
-     * Parses the reason phrase.
-     *
-     * @param array|string $headers The headers.
-     *
-     * @return string The parsed reason phrase.
-     */
-    protected function parseReasonPhrase($headers)
-    {
-        return substr($this->parseStatusLine($headers), 13);
-    }
-
-    /**
-     * Parses the status line.
-     *
-     * @param array|string $headers The headers.
-     *
-     * @return string The parsed status line.
-     */
-    protected function parseStatusLine($headers)
-    {
-        $headers = $this->parseHeaders($headers);
-
-        return $headers[0];
-    }
-
-    /**
-     * Parses the effective url.
-     *
-     * @param array|string $headers The headers.
-     * @param string       $url     The url.
-     *
-     * @return string The parsed effective url.
-     */
-    protected function parseEffectiveUrl($headers, $url)
-    {
-        if (is_array($headers)) {
-            $headers = implode(',', $this->normalizeHeaders($headers, false));
-        }
-
-        if ($this->hasMaxRedirects() && preg_match_all('/(L|l)ocation:([^,]+)/', $headers, $matches)) {
-            return trim($matches[2][count($matches[2]) - 1]);
-        }
-
-        return $url;
-    }
-
-    /**
-     * Parses the headers.
-     *
-     * @param array|string $headers The headers.
-     *
-     * @return array The parsed headers.
-     */
-    protected function parseHeaders($headers)
-    {
-        if (is_string($headers)) {
-            $headers = explode("\r\n\r\n", trim($headers));
-
-            return explode("\r\n", end($headers));
-        }
-
-        $parsedHeaders = array();
-
-        foreach ($headers as $header) {
-            if (($pos = strpos($header, ':')) === false) {
-                $parsedHeaders = array($header);
-            } else {
-                $parsedHeaders[] = $header;
-            }
-        }
-
-        return $parsedHeaders;
-    }
-
-    /**
-     * Normalizes the headers.
-     *
-     * @param string|array $headers     The headers.
-     * @param boolean      $associative TRUE if the headers should be an associative array else FALSE.
-     *
-     * @return array The normalized headers.
-     */
-    protected function normalizeHeaders($headers, $associative = true)
-    {
-        if (is_string($headers)) {
-            $headers = $this->parseHeaders($headers);
-        }
-
-        $normalizedHeaders = array();
-
-        foreach ($headers as $name => $value) {
-            $value = $this->normalizeHeaderValue($value);
-
-            if (!$associative) {
-                $normalizedHeaders[] = is_int($name) ? $value : $name.': '.$value;
-            } else {
-                if (is_int($name)) {
-                    if (($pos = strpos($value, ':')) === false) {
-                        continue;
-                    }
-
-                    $name = substr($value, 0, $pos);
-                    $value = substr($value, $pos + 1);
-                }
-
-                $normalizedHeaders[$this->normalizeHeaderName($name)] = $this->normalizeHeaderValue($value);
-            }
-        }
-
-        return $normalizedHeaders;
-    }
-
-    /**
-     * Normalizes the header name.
-     *
-     * @param string $name The header name.
-     *
-     * @return string The normalized header name.
-     */
-    protected function normalizeHeaderName($name)
-    {
-        return strtolower($name);
-    }
-
-    /**
-     * Normalizes the header value.
-     *
-     * @param array|string $value The header value.
-     *
-     * @return string The normalized header value.
-     */
-    protected function normalizeHeaderValue($value)
-    {
-        return implode(', ', array_map('trim', (array) $value));
-    }
-
-    /**
-     * Normalizes the body.
-     *
-     * @param mixed  $body   The body.
-     * @param string $method The method.
-     *
-     * @return mixed The normalized body.
-     */
-    protected function normalizeBody($body, $method)
-    {
-        if ($method === RequestInterface::METHOD_HEAD || empty($body)) {
-            return;
-        }
-
-        if (is_callable($body)) {
-            return call_user_func($body);
-        }
-
-        return $body;
-    }
-
-    /**
      * Creates a response.
      *
-     * @param string       $protocolVersion The protocol version.
-     * @param integer      $statusCode      The status code.
-     * @param string       $reasonPhrase    The reason phrase.
-     * @param string       $method          The method.
-     * @param string|array $headers         The headers.
-     * @param mixed        $body            The body.
-     * @param string       $effectiveUrl    The effective url.
+     * @param string                                            $protocolVersion The protocol version.
+     * @param integer                                           $statusCode      The status code.
+     * @param string                                            $reasonPhrase    The reason phrase.
+     * @param array                                             $headers         The headers.
+     * @param resource|string|\Psr\Http\Message\StreamInterface $body            The body.
+     * @param string                                            $effectiveUrl    The effective url.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The created response.
      */
@@ -589,8 +387,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $protocolVersion,
         $statusCode,
         $reasonPhrase,
-        $method,
-        $headers,
+        array $headers,
         $body,
         $effectiveUrl
     ) {
@@ -598,10 +395,8 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $response->setProtocolVersion($protocolVersion);
         $response->setStatusCode($statusCode);
         $response->setReasonPhrase($reasonPhrase);
-        $response->setHeaders($this->normalizeHeaders($headers));
+        $response->setHeaders($headers);
         $response->setEffectiveUrl($effectiveUrl);
-
-        $body = $this->normalizeBody($body, $method);
 
         if (is_resource($body)) {
             $response->setBody(new ResourceStream($body));

@@ -11,6 +11,9 @@
 
 namespace Ivory\HttpAdapter\Message;
 
+use Ivory\HttpAdapter\Message\InternalRequest;
+use Ivory\HttpAdapter\Message\Request;
+
 /**
  * Message factory.
  *
@@ -18,6 +21,22 @@ namespace Ivory\HttpAdapter\Message;
  */
 class MessageFactory implements MessageFactoryInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function createRequest($url, $method = Request::METHOD_GET)
+    {
+        return new Request($url, $method);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createInternalRequest($url, $method = Request::METHOD_GET)
+    {
+        return new InternalRequest($url, $method);
+    }
+
     /**
      * {@inheritdoc}
      */

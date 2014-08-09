@@ -13,8 +13,10 @@ namespace Ivory\HttpAdapter;
 
 use Buzz\Browser;
 use Buzz\Client\AbstractCurl;
-use Buzz\Client\AbstractStream;
 use Buzz\Client\MultiCurl;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
+use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
  * Buzz http adapter.
@@ -52,42 +54,39 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend($url, $method, array $headers = array(), $data = array(), array $files = array())
+    protected function doSend(InternalRequestInterface $internalRequest)
     {
         $this->browser->getClient()->setTimeout($this->timeout);
         $this->browser->getClient()->setMaxRedirects($this->maxRedirects);
         $this->browser->getClient()->setIgnoreErrors(!$this->hasMaxRedirects() && PHP_VERSION_ID === 50303);
 
         $request = $this->browser->getMessageFactory()->createRequest(
-            $this->prepareMethod($method),
-            $url = $this->prepareUrl($url)
+            $internalRequest->getMethod(),
+            $internalRequest->getUrl()
         );
 
-        $request->setProtocolVersion($this->protocolVersion);
-        $request->setHeaders($this->prepareHeaders($headers, $data, $files, false));
+        $request->setProtocolVersion($internalRequest->getProtocolVersion());
+        $request->setHeaders($this->prepareHeaders($internalRequest, false));
 
-        if ($this->browser->getClient() instanceof AbstractCurl) {
-            $data = $this->prepareFiles($data, $files);
-        } elseif ($this->browser->getClient() instanceof AbstractStream) {
-            $data = $this->prepareData($data, $files);
-        }
+        $data = $this->browser->getClient() instanceof AbstractCurl
+            ? $this->prepareData($internalRequest)
+            : $this->prepareBody($internalRequest);
 
         $request->setContent($data);
 
         try {
             $response = $this->browser->send($request);
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(
             (string) $response->getProtocolVersion(),
             $response->getStatusCode(),
             $response->getReasonPhrase(),
-            $method,
-            $response->getHeaders(),
-            $response->getContent(),
-            $url
+            HeadersNormalizer::normalize($response->getHeaders()),
+            BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod()),
+            $internalRequest->getUrl()
         );
     }
 
