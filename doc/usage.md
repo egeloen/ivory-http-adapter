@@ -75,6 +75,8 @@ If you want to learn more about the `Ivory\HttpAdapter\Message\Request`, your ca
 ``` php
 use Ivory\HttpAdapter\Message\InternalRequest;
 
+$response = $httpAdapter->sendInternalRequest(new InternalRequest($url, $method));
+// or
 $response = $httpAdapter->sendRequest(new InternalRequest($url, $method));
 ```
 

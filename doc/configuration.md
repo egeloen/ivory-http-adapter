@@ -17,6 +17,18 @@ $messageFactory = $httpAdapter->getMessageFactory();
 $httpAdapter->setMessageFactory(new MessageFactory());
 ```
 
+## Event dispatcher
+
+The event dispatcher allows you to attach listeners/subscribers in order to hook into the available events. To get/set
+it, you can use:
+
+``` php
+$eventDispatcher = $httpAdapter->getEventDispatcher();
+$httpAdapter->setEventDispatcher($eventDispatcher);
+```
+
+If you want to learn more about the events, you can read this [doc](/doc/events.md).
+
 ## Protocol version
 
 The protocol version defines the version for the http request sent (1.0 or 1.1, default: 1.1). If you want to get/set

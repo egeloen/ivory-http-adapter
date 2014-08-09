@@ -36,6 +36,7 @@ which defines how http message should be implemented.
  6. [Internal request](/doc/internal_request.md)
  7. [Response](/doc/response.md)
  8. [Stream](/doc/stream.md)
+ 9. [Events](/doc/events.md)
 
 ## Testing
 

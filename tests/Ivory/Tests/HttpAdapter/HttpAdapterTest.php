@@ -11,8 +11,12 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\HttpAdapterConfigInterface;
-use Ivory\HttpAdapter\Message\MessageInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Http adapter test.
@@ -43,7 +47,13 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function testDefaultState()
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\MessageFactory', $this->httpAdapter->getMessageFactory());
-        $this->assertSame(MessageInterface::PROTOCOL_VERSION_11, $this->httpAdapter->getProtocolVersion());
+
+        $this->assertInstanceOf(
+            'Symfony\Component\EventDispatcher\EventDispatcher',
+            $this->httpAdapter->getEventDispatcher()
+        );
+
+        $this->assertSame(InternalRequestInterface::PROTOCOL_VERSION_11, $this->httpAdapter->getProtocolVersion());
         $this->assertFalse($this->httpAdapter->getKeepAlive());
         $this->assertFalse($this->httpAdapter->hasEncodingType());
         $this->assertInternalType('string', $this->httpAdapter->getBoundary());
@@ -54,14 +64,21 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testSetMessageFactory()
     {
-        $this->httpAdapter->setMessageFactory($messageFactory = $this->createFactoryMock());
+        $this->httpAdapter->setMessageFactory($messageFactory = $this->createMessageFactoryMock());
 
         $this->assertSame($messageFactory, $this->httpAdapter->getMessageFactory());
     }
 
+    public function testSetEventDispatcher()
+    {
+        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+
+        $this->assertSame($eventDispatcher, $this->httpAdapter->getEventDispatcher());
+    }
+
     public function testSetProtocolVersion()
     {
-        $this->httpAdapter->setProtocolVersion($protocolVersion = MessageInterface::PROTOCOL_VERSION_10);
+        $this->httpAdapter->setProtocolVersion($protocolVersion = InternalRequestInterface::PROTOCOL_VERSION_10);
 
         $this->assertSame($protocolVersion, $this->httpAdapter->getProtocolVersion());
     }
@@ -102,6 +119,79 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($maxRedirects, $this->httpAdapter->getMaxRedirects());
     }
 
+    public function testSendDispatchPreSendEvent()
+    {
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSend')
+            ->will($this->returnValue($this->createResponseMock()));
+
+        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+
+        $eventDispatcher
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::PRE_SEND),
+                $this->callback(function ($event) {
+                    return $event instanceof PreSendEvent && $event->getRequest() instanceof InternalRequestInterface;
+                })
+            );
+
+        $this->httpAdapter->send('http://egeloen.fr', InternalRequestInterface::METHOD_GET);
+    }
+
+    public function testSendDispatchPostSendEvent()
+    {
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSend')
+            ->will($this->returnValue($response = $this->createResponseMock()));
+
+        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::POST_SEND),
+                $this->callback(function ($event) use ($response) {
+                    return $event instanceof PostSendEvent
+                        && $event->getRequest() instanceof InternalRequestInterface
+                        && $event->getResponse() === $response;
+                })
+            );
+
+        $this->httpAdapter->send('http://egeloen.fr', InternalRequestInterface::METHOD_GET);
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSendDispatchExceptionEvent()
+    {
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSend')
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::EXCEPTION),
+                $this->callback(function ($event) use ($exception) {
+                    return $event instanceof ExceptionEvent
+                        && $event->getRequest() instanceof InternalRequestInterface
+                        && $event->getException() === $exception;
+                })
+            );
+
+        $this->httpAdapter->send('http://egeloen.fr', InternalRequestInterface::METHOD_GET);
+    }
+
     /**
      * Creates an http adapter mock builder.
      *
@@ -113,12 +203,42 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Creates a factory mock.
+     * Creates a message factory mock.
      *
-     * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The factory mock.
+     * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
      */
-    protected function createFactoryMock()
+    protected function createMessageFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
+    }
+
+    /**
+     * Creates an event dispatcher mock.
+     *
+     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject The event dispatcher mock.
+     */
+    protected function createEventDispatcherMock()
+    {
+        return $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+    }
+
+    /**
+     * Creates a response mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     */
+    protected function createResponseMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
+
+    /**
+     * Creates an exception mock.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     */
+    protected function createExceptionMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 }
