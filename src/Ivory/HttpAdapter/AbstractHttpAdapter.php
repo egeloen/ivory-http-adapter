@@ -11,6 +11,10 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactory;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
@@ -19,6 +23,8 @@ use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\Message\Stream\ResourceStream;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Abstract http adapter.
@@ -29,6 +35,9 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
 {
     /** @var \Ivory\HttpAdapter\Message\MessageFactoryInterface */
     protected $messageFactory;
+
+    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface */
+    protected $eventDispatcher;
 
     /** @var string */
     protected $protocolVersion = MessageInterface::PROTOCOL_VERSION_11;
@@ -54,6 +63,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function __construct()
     {
         $this->setMessageFactory(new MessageFactory());
+        $this->setEventDispatcher(new EventDispatcher());
         $this->setBoundary(sha1(microtime()));
     }
 
@@ -71,6 +81,22 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function setMessageFactory(MessageFactoryInterface $factory)
     {
         $this->messageFactory = $factory;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -252,7 +278,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $internalRequest->setData($data);
         $internalRequest->setFiles($files);
 
-        return $this->doSend($internalRequest);
+        return $this->sendInternalRequest($internalRequest);
     }
 
     /**
@@ -261,7 +287,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function sendRequest(RequestInterface $request)
     {
         if ($request instanceof InternalRequestInterface) {
-            return $this->doSend($request);
+            return $this->sendInternalRequest($request);
         }
 
         $protocolVersion = $this->protocolVersion;
@@ -275,6 +301,26 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         );
 
         $this->protocolVersion = $protocolVersion;
+
+        return $response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sendInternalRequest(InternalRequestInterface $internalRequest)
+    {
+        $this->eventDispatcher->dispatch(Events::PRE_SEND, new PreSendEvent($internalRequest));
+
+        try {
+            $response = $this->doSend($internalRequest);
+        } catch (HttpAdapterException $e) {
+            $this->eventDispatcher->dispatch(Events::EXCEPTION, new ExceptionEvent($internalRequest, $e));
+
+            throw $e;
+        }
+
+        $this->eventDispatcher->dispatch(Events::POST_SEND, new PostSendEvent($internalRequest, $response));
 
         return $response;
     }

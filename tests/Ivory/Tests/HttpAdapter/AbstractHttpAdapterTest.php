@@ -155,7 +155,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $options['body'] = null;
         }
 
-        $this->assertResponse($this->httpAdapter->sendRequest($internalRequest), $options);
+        $this->assertResponse($this->httpAdapter->sendInternalRequest($internalRequest), $options);
         $this->assertRequest($method, $headers, $data, $files);
     }
 
@@ -297,26 +297,29 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function requestProvider()
     {
-        return array(
-            array($this->getUrl(), Request::METHOD_GET),
-            array($this->getUrl(), Request::METHOD_GET, $this->getHeaders()),
-            array($this->getUrl(), Request::METHOD_HEAD),
-            array($this->getUrl(), Request::METHOD_HEAD, $this->getHeaders()),
-            array($this->getUrl(), Request::METHOD_POST),
-            array($this->getUrl(), Request::METHOD_POST, $this->getHeaders()),
-            array($this->getUrl(), Request::METHOD_POST, $this->getHeaders(), $this->getData()),
-            array($this->getUrl(), Request::METHOD_PUT),
-            array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders()),
-            array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders(), $this->getData()),
-            array($this->getUrl(), Request::METHOD_PATCH),
-            array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders()),
-            array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders(), $this->getData()),
-            array($this->getUrl(), Request::METHOD_DELETE),
-            array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders()),
-            array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders(), $this->getData()),
-            array($this->getUrl(), Request::METHOD_OPTIONS),
-            array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders()),
-            array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
+        return array_merge(
+            $this->internalRequestProvider(),
+            array(
+                array($this->getUrl(), Request::METHOD_GET),
+                array($this->getUrl(), Request::METHOD_GET, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_HEAD),
+                array($this->getUrl(), Request::METHOD_HEAD, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_POST),
+                array($this->getUrl(), Request::METHOD_POST, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_POST, $this->getHeaders(), $this->getData()),
+                array($this->getUrl(), Request::METHOD_PUT),
+                array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders(), $this->getData()),
+                array($this->getUrl(), Request::METHOD_PATCH),
+                array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders(), $this->getData()),
+                array($this->getUrl(), Request::METHOD_DELETE),
+                array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders(), $this->getData()),
+                array($this->getUrl(), Request::METHOD_OPTIONS),
+                array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
+            )
         );
     }
 

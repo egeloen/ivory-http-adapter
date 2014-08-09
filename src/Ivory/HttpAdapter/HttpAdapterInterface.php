@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
 
 /**
@@ -139,4 +140,15 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
     public function sendRequest(RequestInterface $request);
+
+    /**
+     * Sends an internal request.
+     *
+     * @param \Ivory\HttpAdapter\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     */
+    public function sendInternalRequest(InternalRequestInterface $internalRequest);
 }

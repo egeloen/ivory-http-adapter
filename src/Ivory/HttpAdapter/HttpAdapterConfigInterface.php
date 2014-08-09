@@ -12,6 +12,7 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Http adapter configuration interface.
@@ -26,7 +27,7 @@ interface HttpAdapterConfigInterface
     /** @const string The form data encoding type. */
     const ENCODING_TYPE_FORMDATA = 'multipart/form-data';
 
-     /**
+    /**
      * Gets the message factory.
      *
      * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface The message factory.
@@ -39,6 +40,20 @@ interface HttpAdapterConfigInterface
      * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
      */
     public function setMessageFactory(MessageFactoryInterface $messageFactory);
+
+    /**
+     * Gets the event dispatcher.
+     *
+     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface The event dispatcher.
+     */
+    public function getEventDispatcher();
+
+    /**
+     * Sets the event dispatcher.
+     *
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher The event dispatcher.
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher);
 
     /**
      * Gets the protocol version.
