@@ -38,7 +38,9 @@ before_script:
 
 script: bin/phpunit --coverage-clover clover.xml
 
-after_script: bin/coveralls
+after_script:
+    - sed -i "/^disable_functions =.*$/d" ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+    - bin/coveralls
 
 matrix:
     allow_failures:
