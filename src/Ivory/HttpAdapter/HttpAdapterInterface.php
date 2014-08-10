@@ -144,7 +144,7 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends an internal request.
      *
-     * @param \Ivory\HttpAdapter\InternalRequestInterface $internalRequest The internal request.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
