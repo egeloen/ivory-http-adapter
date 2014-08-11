@@ -19,20 +19,15 @@
         "phpunit/phpunit": "~4.0",
         "satooshi/php-coveralls": "~0.6",
         "ext-curl": "*",
-        "guzzle/guzzle": "dev-master",
-        "guzzlehttp/guzzle": "dev-master",
-        "guzzlehttp/streams": "dev-master",
-        "kriswallsmith/buzz": "dev-stream-max-redirects",
+        "guzzle/guzzle": "*",
+        "guzzlehttp/guzzle": "*",
+        "kriswallsmith/buzz": "dev-master",
         "nategood/httpful": "dev-timeout",
         "zendframework/zendframework1": "dev-http-curl-adapter",
         "zendframework/zendframework": "dev-http-curl-adapter",
         "psr/log": "~1.0"
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/egeloen/Buzz.git"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/httpful.git"

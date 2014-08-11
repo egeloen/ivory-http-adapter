@@ -41,6 +41,26 @@ class LoggerSubscriber implements EventSubscriberInterface
      */
     public function __construct(LoggerInterface $logger)
     {
+        $this->setLogger($logger);
+    }
+
+    /**
+     * Gets the logger.
+     *
+     * @return \Psr\Log\LoggerInterface The logger.
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * Sets the logger.
+     *
+     * @param \Psr\Log\LoggerInterface $logger The logger.
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
         $this->logger = $logger;
     }
 
