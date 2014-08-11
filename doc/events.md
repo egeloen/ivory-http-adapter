@@ -58,5 +58,49 @@ use Monolog\Handler\StreamHandler;
 $monolog = new Logger('name');
 $monolog->pushHandler(new StreamHandler('path/to/your.log'));
 
-$httpAdapter->getEventSubscriber()->addSubscriber(new LoggerSubscriber($monolog));
+$loggerSubscriber = new LoggerSubscriber($monolog);
+
+$httpAdapter->getEventDispatcher()->addSubscriber($loggerSubscriber);
+```
+
+You can also change the logger at runtime:
+
+``` php
+$logger = $loggerSubscriber->getLogger();
+$loggerSubscriber->setLogger($logger);
+```
+
+### Basic authentication
+
+The basic authentication subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber` and
+allows you to do an HTTP basic authentication. To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber;
+
+$basicAuthSubscriber = new BasicAuthSubscriber('username', 'password');
+
+$httpAdapter->getEventDispatcher()->addSubscriber($basicAuthSubscriber);
+```
+
+Additionally, the basic authentication subscriber accepts a third argument known as matcher. A matcher is responsible
+to check if the request should be authenticated according to your rules. It can be either:
+
+ - `null`: all requests are authenticated (default).
+ - `string`: only requests with the url matching the string (regex pattern) are authenticated.
+ - `callable`: only requests matching your callable are authenticated (the callable receives the event request as
+   argument and should return true/false).
+
+Finally, all constructor arguments can be updated at runtime:
+
+``` php
+$username = $basicAuthSubscriber->getUsername();
+$basicAuthSubscriber->setUsername($username);
+
+$password = $basicAuthSubscriber->getPassword();
+$basicAuthSubscriber->setPassword($password);
+
+$hasMatcher = $basicAuthSubscriber->hasMatcher();
+$matcher = $basicAuthSubscriber->getMatcher();
+$basicAuthSubscriber->setMatcher($matcher);
 ```

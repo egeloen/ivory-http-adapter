@@ -16,17 +16,13 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
-use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\InternalRequest;
-use Ivory\HttpAdapter\Message\Response;
-use Ivory\HttpAdapter\Message\Stream\StringStream;
 
 /**
  * Logger subscriber test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class LoggerSubscriberTest extends \PHPUnit_Framework_TestCase
+class LoggerSubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber */
     protected $loggerSubscriber;
@@ -39,7 +35,7 @@ class LoggerSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->logger = $this->getMock('Psr\Log\LoggerInterface');
+        $this->logger = $this->createLoggerMock();
         $this->loggerSubscriber = new LoggerSubscriber($this->logger);
     }
 
@@ -50,6 +46,18 @@ class LoggerSubscriberTest extends \PHPUnit_Framework_TestCase
     {
         unset($this->logger);
         unset($this->loggerSubscriber);
+    }
+
+    public function testDefaultState()
+    {
+        $this->assertSame($this->logger, $this->loggerSubscriber->getLogger());
+    }
+
+    public function testSetLogger()
+    {
+        $this->loggerSubscriber->setLogger($logger = $this->createLoggerMock());
+
+        $this->assertSame($logger, $this->loggerSubscriber->getLogger());
     }
 
     public function testSubscribedEvents()
@@ -116,8 +124,8 @@ class LoggerSubscriberTest extends \PHPUnit_Framework_TestCase
                         && $context['request']['files'] === $request->getFiles()
                         && $context['exception']['code'] === $exception->getCode()
                         && $context['exception']['message'] === $exception->getMessage()
-                        && $context['exception']['line'] === 168
-                        && $context['exception']['file'] === __FILE__;
+                        && $context['exception']['line'] === 67
+                        && $context['exception']['file'] === realpath(__DIR__.'/AbstractSubscriberTest.php');
                 })
             );
 
@@ -125,46 +133,12 @@ class LoggerSubscriberTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Creates a request.
+     * Creates a logger mock.
      *
-     * @return \Ivory\HttpAdapter\Message\InternalRequest The request.
+     * @return \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject The logger mock.
      */
-    protected function createRequest()
+    protected function createLoggerMock()
     {
-        $request = new InternalRequest('http://egeloen.fr', InternalRequest::METHOD_GET);
-        $request->setProtocolVersion(InternalRequest::PROTOCOL_VERSION_10);
-        $request->setHeaders(array('connection' => 'close'));
-        $request->setData(array('foo' => 'bar'));
-        $request->setFiles(array('file' => __FILE__));
-
-        return $request;
-    }
-
-    /**
-     * Creates a response.
-     *
-     * @return \Ivory\HttpAdapter\Message\Response The response.
-     */
-    protected function createResponse()
-    {
-        $response = new Response();
-        $response->setProtocolVersion(Response::PROTOCOL_VERSION_11);
-        $response->setStatusCode(200);
-        $response->setReasonPhrase('OK');
-        $response->setHeaders(array('transfer-encoding' => 'chunked'));
-        $response->setBody(new StringStream('foo'));
-        $response->setEffectiveUrl('http://www.google.com');
-
-        return $response;
-    }
-
-    /**
-     * Creates an exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The exception.
-     */
-    protected function createException()
-    {
-        return new HttpAdapterException('message', 123);
+        return $this->getMock('Psr\Log\LoggerInterface');
     }
 }
