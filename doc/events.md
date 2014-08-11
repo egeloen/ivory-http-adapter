@@ -41,4 +41,22 @@ $exception = $exceptionEvent->getException();
 
 ## Available subscribers
 
-For now, there is no subscribers, but it will be available soon.
+The library provides some useful built-in subscribers you can directly use. Obviously, you can define your own and
+propose to add them in the core.
+
+### Logger
+
+The logger subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber` and allows you to log all
+requests sent/errorred through a PSR logger. As Monolog follows the [PSR-3 Standard](http://www.php-fig.org/psr/psr-3/),
+here an example using it and its stream handler but you can use any PSR compliant logger:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+$monolog = new Logger('name');
+$monolog->pushHandler(new StreamHandler('path/to/your.log'));
+
+$httpAdapter->getEventSubscriber()->addSubscriber(new LoggerSubscriber($monolog));
+```

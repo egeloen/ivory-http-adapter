@@ -25,7 +25,8 @@
         "kriswallsmith/buzz": "dev-stream-max-redirects",
         "nategood/httpful": "dev-timeout",
         "zendframework/zendframework1": "dev-http-curl-adapter",
-        "zendframework/zendframework": "dev-http-curl-adapter"
+        "zendframework/zendframework": "dev-http-curl-adapter",
+        "psr/log": "~1.0"
     },
     "repositories": [
         {
@@ -52,7 +53,8 @@
         "kriswallsmith/buzz": "Allows you to use the Buzz adapter",
         "nategood/httpful": "Allows you to use the httpful adapter",
         "zendframework/zendframework1": "Allows you to use the Zend 1 adapter",
-        "zendframework/zend-http": "Allows you to use the Zend 2 adapter"
+        "zendframework/zend-http": "Allows you to use the Zend 2 adapter",
+        "psr/log": "Allows you to use the logger event subscriber"
     },
     "autoload": {
         "psr-4": { "Ivory\\HttpAdapter\\": "src/Ivory/HttpAdapter/" }
