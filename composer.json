@@ -22,16 +22,12 @@
         "guzzle/guzzle": "*",
         "guzzlehttp/guzzle": "*",
         "kriswallsmith/buzz": "dev-master",
-        "nategood/httpful": "dev-timeout",
+        "nategood/httpful": "dev-master",
         "zendframework/zendframework1": "dev-http-curl-adapter",
         "zendframework/zendframework": "dev-http-curl-adapter",
         "psr/log": "~1.0"
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/egeloen/httpful.git"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/zf1.git"
