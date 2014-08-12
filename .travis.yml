@@ -13,9 +13,8 @@ env:
     global:
         - TEST_SERVER=http://localhost:10000/server.php
         - PHP_FCGI_CHILDREN=10
-    matrix:
         - ENABLE_CURL=true
-        - ENABLE_CURL=false
+        - SYMFONY_VERSION=2.3.*
 
 before_install:
     - echo "" | sudo add-apt-repository ppa:nginx/stable
@@ -32,6 +31,7 @@ before_install:
 
 before_script:
     - composer self-update
+    - composer require --no-update symfony/event-dispatcher:${SYMFONY_VERSION}
     - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove guzzlehttp/guzzle --dev --no-update; fi
     - if [[ "$TRAVIS_PHP_VERSION" = "5.3.3" ]]; then composer remove zendframework/zendframework --dev --no-update; fi
     - composer install --prefer-source
@@ -43,9 +43,23 @@ after_script:
     - bin/coveralls
 
 matrix:
+    include:
+        - php: 5.5
+          env: ENABLE_CURL=false
+        - php: 5.5
+          env: SYMFONY_VERSION=2.1.*
+        - php: 5.5
+          env: SYMFONY_VERSION=2.2.*
+        - php: 5.5
+          env: SYMFONY_VERSION=2.4.*
+        - php: 5.5
+          env: SYMFONY_VERSION=2.5.*
+        - php: 5.5
+          env: SYMFONY_VERSION=dev-master
     allow_failures:
         - php: hhvm
         - php: hhvm-nightly
+        - env: SYMFONY_VERSION=dev-master
 
 notifications:
     email: geloen.eric@gmail.com
