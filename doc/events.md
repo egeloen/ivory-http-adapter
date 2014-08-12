@@ -104,3 +104,92 @@ $hasMatcher = $basicAuthSubscriber->hasMatcher();
 $matcher = $basicAuthSubscriber->getMatcher();
 $basicAuthSubscriber->setMatcher($matcher);
 ```
+
+### History
+
+The history subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber` and allow you to
+maintain an history of all requests/responses sent through a journal. To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber;
+
+$historySubscriber = new HistorySubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($historySubscriber);
+```
+
+By default, a journal is created by the subscriber but you can specify it in its constructor:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\History\Journal;
+use Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber;
+
+$journal = new Journal();
+$historySubscriber = new HistorySubscriber($journal);
+```
+
+Finally, the journal can be access or change at runtime with:
+
+``` php
+$journal = $historySubscriber->getJournal();
+$historySubscriber->setJournal($journal);
+```
+
+#### Journal
+
+As you have probably already understood, a journal is described by the
+`Ivory\HttpAdapter\Event\Subscriber\History\Journal`.
+
+First, a journal wraps a limit which represents the maximum number of
+allowed entries in the journal (default: 10) but can be configured via the constructor or setter and can be accessed
+via a getter:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\History\Journal;
+
+$journal = new Journal(100);
+
+$limit = $journal->getLimit();
+$journal->setLimit($limit);
+```
+
+Second, the journal wraps all entries of the history according to the limit (the last entries are kept in the journal
+and the last ones are dropped when a new one is added). The following API allows you to access the entries:
+
+``` php
+$hasEntries = $journal->getEntries();
+$entries = $journal->getEntries();
+$lastEntry = $journal->getLastEntry();
+```
+
+Third, the journal implements the `Countable` interface, so if you wants to know how many entries are in the journal,
+you can use:
+
+``` php
+$count = count($journal);
+```
+
+Fourth, the journal implements the `IteratorAggregator` interface, so, you can directly access entries with the
+following code but the entries are ordered from the most recent to the most old:
+
+``` php
+foreach ($journal as $entry) {
+    // Do what you want with the entry
+}
+
+// or
+
+$entries = iterator_to_array($journal);
+```
+
+#### Journal entry
+
+A journal entry is described by the `Ivory\HttpAdapter\Event\Subscriber\History\JournalEntry` and represents an entry
+of the journal previously explained. It wraps the request, the response and the request execution time. To get them,
+you can use:
+
+``` php
+$request = $entry->getRequest();
+$response = $entry->getResponse();
+$time = $entry->getTime();
+```

@@ -14,25 +14,20 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Logger subscriber.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class LoggerSubscriber implements EventSubscriberInterface
+class LoggerSubscriber extends AbstractTimerSubscriber
 {
     /** @var \Psr\Log\LoggerInterface */
     protected $logger;
-
-    /** @var float */
-    protected $start;
 
     /**
      * Creates a logger subscriber.
@@ -65,33 +60,21 @@ class LoggerSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On pre send event.
-     *
-     * @param \Ivory\HttpAdapter\Event\PreSendEvent $event The pre send event.
-     */
-    public function onPreSend(PreSendEvent $event)
-    {
-        $this->start = microtime(true);
-    }
-
-    /**
-     * On post send event.
-     *
-     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The post send event.
+     * {@inheritdoc}
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $time = microtime(true) - $this->start;
+        parent::onPostSend($event);
 
         $this->logger->debug(
             sprintf(
                 'Send "%s %s" in %.2f ms.',
                 $event->getRequest()->getMethod(),
                 $event->getRequest()->getUrl(),
-                $time
+                $this->time
             ),
             array(
-                'time'     => $time,
+                'time'     => $this->time,
                 'request'  => $this->formatRequest($event->getRequest()),
                 'response' => $this->formatResponse($event->getResponse()),
             )
@@ -119,10 +102,9 @@ class LoggerSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::PRE_SEND  => 'onPreSend',
-            Events::POST_SEND => 'onPostSend',
-            Events::EXCEPTION => "onException",
+        return array_merge(
+            parent::getSubscribedEvents(),
+            array(Events::EXCEPTION => 'onException')
         );
     }
 

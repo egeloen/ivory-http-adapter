@@ -12,9 +12,6 @@
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
 
 /**
@@ -101,8 +98,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 })
             );
 
-        $this->loggerSubscriber->onPreSend(new PreSendEvent($request));
-        $this->loggerSubscriber->onPostSend(new PostSendEvent($request, $response));
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($request));
+        $this->loggerSubscriber->onPostSend($this->createPostSendEvent($request, $response));
     }
 
     public function testExceptionEvent()
@@ -124,12 +121,12 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                         && $context['request']['files'] === $request->getFiles()
                         && $context['exception']['code'] === $exception->getCode()
                         && $context['exception']['message'] === $exception->getMessage()
-                        && $context['exception']['line'] === 67
+                        && $context['exception']['line'] === 112
                         && $context['exception']['file'] === realpath(__DIR__.'/AbstractSubscriberTest.php');
                 })
             );
 
-        $this->loggerSubscriber->onException(new ExceptionEvent($request, $exception));
+        $this->loggerSubscriber->onException($this->createExceptionEvent($request, $exception));
     }
 
     /**

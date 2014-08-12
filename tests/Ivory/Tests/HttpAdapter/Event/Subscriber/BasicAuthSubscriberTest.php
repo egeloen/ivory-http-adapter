@@ -12,7 +12,6 @@
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
@@ -110,7 +109,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
     public function testPreSendEventWithValidMatcher($matcher)
     {
         $this->basicAuthSubscriber->setMatcher($matcher);
-        $this->basicAuthSubscriber->onPreSend(new PreSendEvent($request = $this->createRequest()));
+        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent($request = $this->createRequest()));
 
         $this->assertTrue($request->hasHeader('authorization'));
         $this->assertSame('Basic dXNlcm5hbWU6cGFzc3dvcmQ=', $request->getHeader('authorization'));
@@ -122,7 +121,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
     public function testPreSendEventWithInvalidMatcher($matcher)
     {
         $this->basicAuthSubscriber->setMatcher($matcher);
-        $this->basicAuthSubscriber->onPreSend(new PreSendEvent($request = $this->createRequest()));
+        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent($request = $this->createRequest()));
 
         $this->assertFalse($request->hasHeader('authorization'));
     }
