@@ -111,7 +111,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         $this->basicAuthSubscriber->setMatcher($matcher);
         $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent($request = $this->createRequest()));
 
-        $this->assertTrue($request->hasHeader('authorization'));
+        $this->assertTrue($request->hasHeader('Authorization'));
         $this->assertSame('Basic dXNlcm5hbWU6cGFzc3dvcmQ=', $request->getHeader('authorization'));
     }
 
@@ -123,7 +123,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         $this->basicAuthSubscriber->setMatcher($matcher);
         $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent($request = $this->createRequest()));
 
-        $this->assertFalse($request->hasHeader('authorization'));
+        $this->assertFalse($request->hasHeader('Authorization'));
     }
 
     /**

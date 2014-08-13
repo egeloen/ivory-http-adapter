@@ -69,45 +69,45 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     public function testSetHeadersAsString()
     {
-        $this->message->setHeaders(array('fOo' => 'bar, baz', 'baT' => 'ban'));
+        $this->message->setHeaders(array(' fOo ' => 'bar, baz', ' baT ' => 'ban'));
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz'), 'bat' => array('ban')));
+        $this->assertHeaders(array('fOo' => array('bar', 'baz'), 'baT' => array('ban')));
     }
 
     public function testSetHeadersAsArray()
     {
-        $this->message->setHeaders(array('fOo' => array('bar', 'baz'), 'baT' => array('ban')));
+        $this->message->setHeaders(array(' fOo ' => array('bar', 'baz'), ' baT ' => array('ban')));
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz'), 'bat' => array('ban')));
+        $this->assertHeaders(array('fOo' => array('bar', 'baz'), 'baT' => array('ban')));
     }
 
     public function testSetHeadersWithExistingHeaders()
     {
-        $this->message->setHeaders(array('fOo' => 'bar'));
-        $this->message->setHeaders(array('fOo' => 'baz'));
+        $this->message->setHeaders(array(' fOo ' => 'bar'));
+        $this->message->setHeaders(array(' foO ' => 'baz'));
 
-        $this->assertHeaders(array('foo' => array('baz')));
+        $this->assertHeaders(array('foO' => array('baz')));
     }
 
     public function testAddHeadersAsString()
     {
-        $this->message->setHeaders(array('fOo' => 'bar, baz'));
-        $this->message->addHeaders(array('foO' => 'bat, ban', 'bon' => 'bin'));
+        $this->message->setHeaders(array(' fOo ' => 'bar, baz'));
+        $this->message->addHeaders(array(' foO ' => 'bat, ban', ' Bon ' => 'bin'));
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz', 'bat', 'ban'), 'bon' => array('bin')));
+        $this->assertHeaders(array('foO' => array('bar', 'baz', 'bat', 'ban'), 'Bon' => array('bin')));
     }
 
     public function testAddHeadersAsArray()
     {
-        $this->message->setHeaders(array('fOo' => array('bar', 'baz')));
-        $this->message->addHeaders(array('foO' => array('bat', 'ban'), 'bon' => array('bin')));
+        $this->message->setHeaders(array(' fOo ' => array('bar', 'baz')));
+        $this->message->addHeaders(array(' foO ' => array('bat', 'ban'), ' Bon ' => array('bin')));
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz', 'bat', 'ban'), 'bon' => array('bin')));
+        $this->assertHeaders(array('foO' => array('bar', 'baz', 'bat', 'ban'), 'Bon' => array('bin')));
     }
 
     public function testRemoveHeaders()
     {
-        $this->message->setHeaders($headers = array('foo' => 'bar', 'baz' => 'bat'));
+        $this->message->setHeaders($headers = array(' fOo ' => 'bar', ' bAz ' => 'bat'));
         $this->message->removeHeaders(array_keys($headers));
 
         $this->assertNoHeaders();
@@ -115,44 +115,44 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     public function testSetHeaderAsString()
     {
-        $this->message->setHeader('fOo', 'bar, baz');
+        $this->message->setHeader(' fOo ', 'bar, baz');
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz')));
+        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
     }
 
     public function testSetHeaderAsArray()
     {
-        $this->message->setHeader('fOo', array('bar', 'baz'));
+        $this->message->setHeader(' fOo ', array('bar', 'baz'));
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz')));
+        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
     }
 
     public function testSetHeaderWithExistingHeader()
     {
-        $this->message->setHeader('fOo', 'bar');
-        $this->message->setHeader('fOo', 'baz');
+        $this->message->setHeader(' fOo ', 'bar');
+        $this->message->setHeader(' foO ', 'baz');
 
-        $this->assertHeaders(array('foo' => array('baz')));
+        $this->assertHeaders(array('foO' => array('baz')));
     }
 
     public function testAddHeaderAsString()
     {
-        $this->message->setHeader('fOo', 'bar, baz');
-        $this->message->addHeader('foO', 'bat, ban');
+        $this->message->setHeader(' fOo ', 'bar, baz');
+        $this->message->addHeader(' foO ', 'bat, ban');
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz', 'bat', 'ban')));
+        $this->assertHeaders(array('foO' => array('bar', 'baz', 'bat', 'ban')));
     }
 
     public function testAddHeaderAsArray()
     {
-        $this->message->setHeader('fOo', array('bar', 'baz'));
+        $this->message->setHeader(' fOo ', array('bar', 'baz'));
 
-        $this->assertHeaders(array('foo' => array('bar', 'baz')));
+        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
     }
 
     public function testRemoveHeader()
     {
-        $this->message->setHeader($header = 'fOo', 'bar, baz');
+        $this->message->setHeader($header = ' fOo ', 'bar, baz');
         $this->message->removeHeader($header);
 
         $this->assertNoHeader($header);

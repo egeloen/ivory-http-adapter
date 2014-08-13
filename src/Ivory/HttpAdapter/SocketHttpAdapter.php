@@ -158,6 +158,8 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      */
     protected function decodeBody(array $headers, $body)
     {
+        $headers = array_change_key_case($headers);
+
         if (isset($headers['transfer-encoding']) && $headers['transfer-encoding'] === 'chunked') {
             for ($decodedBody = ''; !empty($body); $body = trim($body)) {
                 $pos = strpos($body, "\r\n");
