@@ -26,6 +26,9 @@ abstract class AbstractMessage implements MessageInterface
     /** @var array */
     protected $headers = array();
 
+    /** @var array */
+    protected $headerNames = array();
+
     /** @var \Psr\Http\Message\StreamInterface|null */
     protected $body;
 
@@ -58,7 +61,13 @@ abstract class AbstractMessage implements MessageInterface
      */
     public function getHeaders()
     {
-        return $this->headers;
+        $headers = array();
+
+        foreach ($this->headers as $name => $value) {
+            $headers[$this->headerNames[$name]] = $value;
+        }
+
+        return $headers;
     }
 
     /**
@@ -66,6 +75,9 @@ abstract class AbstractMessage implements MessageInterface
      */
     public function setHeaders(array $headers)
     {
+        $this->headers = array();
+        $this->headerNames = array();
+
         foreach ($headers as $header => $value) {
             $this->setHeader($header, $value);
         }
@@ -129,6 +141,7 @@ abstract class AbstractMessage implements MessageInterface
      */
     public function addHeader($header, $value)
     {
+        $this->headerNames[$this->fixHeader($header)] = trim($header);
         $this->headers[$this->fixHeader($header)] = array_merge(
             $this->getHeaderAsArray($header),
             array_map('trim', is_array($value) ? $value : explode(',', $value))
@@ -140,6 +153,7 @@ abstract class AbstractMessage implements MessageInterface
      */
     public function removeHeader($header)
     {
+        unset($this->headerNames[$this->fixHeader($header)]);
         unset($this->headers[$this->fixHeader($header)]);
     }
 
@@ -176,6 +190,6 @@ abstract class AbstractMessage implements MessageInterface
      */
     protected function fixHeader($header)
     {
-        return strtolower($header);
+        return strtolower(trim($header));
     }
 }

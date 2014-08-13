@@ -23,7 +23,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsAssociativeWithStringHeaders()
     {
         $this->assertSame(
-            array('foo' => 'bar', 'baz' => 'bat, ban'),
+            array('fOo' => 'bar', 'Baz' => 'bat, ban'),
             HeadersNormalizer::normalize($this->getStringHeaders())
         );
     }
@@ -31,7 +31,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsNotAssociativeWithStringHeaders()
     {
         $this->assertSame(
-            array('foo: bar', 'baz: bat, ban'),
+            array('fOo: bar', 'Baz: bat, ban'),
             HeadersNormalizer::normalize($this->getStringHeaders(), false)
         );
     }
@@ -39,7 +39,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsAssociativeWithSubAssociativeArrayHeaders()
     {
         $this->assertSame(
-            array('foo' => 'bar', 'baz' => 'bat, ban'),
+            array('fOo' => 'bar', 'Baz' => 'bat, ban'),
             HeadersNormalizer::normalize($this->getSubAssociativeHeaders())
         );
     }
@@ -47,7 +47,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsAssociativeWithAssociativeArrayHeaders()
     {
         $this->assertSame(
-            array('foo' => 'bar', 'baz' => 'bat, ban'),
+            array('fOo' => 'bar', 'Baz' => 'bat, ban'),
             HeadersNormalizer::normalize($this->getAssociativeHeaders())
         );
     }
@@ -55,19 +55,19 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsNotAssociativeWithIndexedArrayHeaders()
     {
         $this->assertSame(
-            array('foo: bar', 'baz: bat, ban'),
+            array('fOo: bar', 'Baz: bat, ban'),
             HeadersNormalizer::normalize($this->getIndexedHeaders(), false)
         );
     }
 
     public function testNormalizeHeaderName()
     {
-        $this->assertSame('foo', HeadersNormalizer::normalizeHeaderName(' FoO '));
+        $this->assertSame('FoO', HeadersNormalizer::normalizeHeaderName(' FoO '));
     }
 
     public function testNormalizeHeaderValueWithString()
     {
-        $this->assertSame('foo, bar', HeadersNormalizer::normalizeHeaderValue(' foo, bar '));
+        $this->assertSame('foo, bar', HeadersNormalizer::normalizeHeaderValue(' foo , bar '));
     }
 
     public function testNormalizeHeaderValueWithArray()
@@ -130,8 +130,8 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             'HTTP/1.1 200 OK',
-            'foo' => array('bar'),
-            'baz' => array('bat', 'ban'),
+            ' fOo ' => array('bar'),
+            ' Baz ' => array('bat', 'ban'),
         );
     }
 }

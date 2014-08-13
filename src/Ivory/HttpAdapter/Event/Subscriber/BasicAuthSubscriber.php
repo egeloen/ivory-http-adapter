@@ -125,7 +125,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     {
         if ($this->match($event->getRequest())) {
             $event->getRequest()->addHeader(
-                'authorization',
+                'Authorization',
                 'Basic '.base64_encode($this->username.':'.$this->password)
             );
         }

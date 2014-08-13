@@ -350,17 +350,17 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $associative = true,
         $contentType = true
     ) {
-        if (!$internalRequest->hasHeader('connection')) {
-            $internalRequest->setHeader('connection', $this->keepAlive ? 'keep-alive' : 'close');
+        if (!$internalRequest->hasHeader('Connection')) {
+            $internalRequest->setHeader('Connection', $this->keepAlive ? 'keep-alive' : 'close');
         }
 
-        if (!$internalRequest->hasHeader('content-type')) {
+        if (!$internalRequest->hasHeader('Content-Type')) {
             if ($this->hasEncodingType()) {
-                $internalRequest->setHeader('content-type', $this->encodingType);
+                $internalRequest->setHeader('Content-Type', $this->encodingType);
             } elseif ($contentType && $internalRequest->hasFiles()) {
-                $internalRequest->setHeader('content-type', self::ENCODING_TYPE_FORMDATA.'; boundary='.$this->boundary);
+                $internalRequest->setHeader('Content-Type', self::ENCODING_TYPE_FORMDATA.'; boundary='.$this->boundary);
             } elseif ($contentType && $internalRequest->hasData()) {
-                $internalRequest->setHeader('content-type', self::ENCODING_TYPE_URLENCODED);
+                $internalRequest->setHeader('Content-Type', self::ENCODING_TYPE_URLENCODED);
             }
         }
 

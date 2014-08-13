@@ -38,15 +38,18 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
                 continue;
             }
 
-            if (!$associative) {
-                $normalizedHeaders[] = is_int($name) ? $value : $name.': '.$value;
-            } else {
-                if (is_int($name)) {
-                    $name = substr($value, 0, $pos = strpos($value, ':'));
-                    $value = substr($value, $pos + 1);
-                }
+            if (is_int($name)) {
+                $name = substr($value, 0, $pos = strpos($value, ':'));
+                $value = substr($value, $pos + 1);
+            }
 
-                $normalizedHeaders[self::normalizeHeaderName($name)] = self::normalizeHeaderValue($value);
+            $name = self::normalizeHeaderName($name);
+            $value = self::normalizeHeaderValue($value);
+
+            if (!$associative) {
+                $normalizedHeaders[] = $name.': '.$value;
+            } else {
+                $normalizedHeaders[$name] = $value;
             }
         }
 
@@ -62,7 +65,7 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
      */
     public static function normalizeHeaderName($name)
     {
-        return trim(strtolower($name));
+        return trim($name);
     }
 
     /**
@@ -74,6 +77,6 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
      */
     public static function normalizeHeaderValue($value)
     {
-        return implode(', ', array_map('trim', (array) $value));
+        return implode(', ', array_map('trim', is_array($value) ? $value : explode(',', $value)));
     }
 }
