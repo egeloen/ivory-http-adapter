@@ -52,6 +52,14 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'socket';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         list($protocol, $host, $port, $path) = $this->parseUrl($internalRequest->getUrl());
@@ -79,14 +87,6 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod()),
             $internalRequest->getUrl()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'socket';
     }
 
     /**

@@ -39,6 +39,14 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'zend1';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         $this->client
@@ -78,13 +86,5 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             ),
             $internalRequest->getUrl()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'zend1';
     }
 }

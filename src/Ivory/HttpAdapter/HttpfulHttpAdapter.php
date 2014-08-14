@@ -36,6 +36,14 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'httpful';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         $request = Request::init($internalRequest->getMethod())
@@ -65,13 +73,5 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod()),
             $internalRequest->getUrl()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'httpful';
     }
 }
