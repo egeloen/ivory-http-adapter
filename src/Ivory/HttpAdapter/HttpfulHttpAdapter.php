@@ -15,6 +15,7 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
 use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
+use Httpful\Mime;
 use Httpful\Request;
 
 /**
@@ -43,12 +44,11 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             ->timeout($this->timeout)
             ->followRedirects($this->maxRedirects)
             ->uri($internalRequest->getUrl())
-            ->addHeaders($this->prepareHeaders($internalRequest));
+            ->addHeaders($this->prepareHeaders($internalRequest))
+            ->body($this->prepareContent($internalRequest));
 
-        if (!$internalRequest->hasFiles()) {
-            $request->body($this->prepareBody($internalRequest));
-        } else {
-            $request->body($internalRequest->getData())->attach($internalRequest->getFiles());
+        if ($internalRequest->hasFiles()) {
+            $request->mime(Mime::UPLOAD);
         }
 
         try {

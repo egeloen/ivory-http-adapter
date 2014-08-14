@@ -155,7 +155,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $options['body'] = null;
         }
 
-        $this->assertResponse($this->httpAdapter->sendInternalRequest($internalRequest), $options);
+        $this->assertResponse($this->httpAdapter->sendRequest($internalRequest), $options);
         $this->assertRequest($method, $headers, $data, $files);
     }
 
@@ -429,7 +429,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function getData()
     {
-        return array('param1' => 'foo', 'param2[0]' => 'bar', 'param2[1]' => 'baz');
+        return array('param1' => 'foo', 'param2' => array('bar', array('baz')));
     }
 
     /**
@@ -440,9 +440,11 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function getFiles()
     {
         return array(
-            'file1'    => realpath(__DIR__.'/Fixtures/files/file1.txt'),
-            'file2[0]' => realpath(__DIR__.'/Fixtures/files/file2.txt'),
-            'file2[1]' => realpath(__DIR__.'/Fixtures/files/file3.txt'),
+            'file1' => realpath(__DIR__.'/Fixtures/files/file1.txt'),
+            'file2' => array(
+                realpath(__DIR__.'/Fixtures/files/file2.txt'),
+                array(realpath(__DIR__.'/Fixtures/files/file3.txt')),
+            ),
         );
     }
 
@@ -547,18 +549,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function assertRequestData(array $request, array $data)
     {
         foreach ($data as $name => $value) {
-            if (!preg_match('/^([^\[\]]+)(\[(\d+)\])?$/', $name, $matches)) {
-                $this->fail();
-            }
-
-            $this->assertArrayHasKey($matches[1], $request['POST']);
-
-            if (isset($matches[3])) {
-                $this->assertArrayHasKey($matches[3], $request['POST'][$matches[1]]);
-                $this->assertSame($value, $request['POST'][$matches[1]][$matches[3]]);
-            } else {
-                $this->assertSame($value, $request['POST'][$matches[1]]);
-            }
+            $this->assertArrayHasKey($name, $request['POST']);
+            $this->assertSame($value, $request['POST'][$name]);
         }
     }
 
@@ -573,12 +565,30 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     {
         if ($multipart) {
             foreach ($data as $name => $value) {
-                $pattern = '/Content-Disposition: form-data; name="'.preg_quote($name).'"\s+'.preg_quote($value).'/';
-                $this->assertRegExp($pattern, $request['INPUT']);
+                $this->assertRequestMultipartData($request, $name, $value);
             }
         } else {
             parse_str($request['INPUT'], $request['POST']);
             $this->assertRequestData($request, $data);
+        }
+    }
+
+    /**
+     * Asserts the request multipart data.
+     *
+     * @param array        $request The request.
+     * @param string       $name    The name.
+     * @param array|string $data    The data.
+     */
+    protected function assertRequestMultipartData(array $request, $name, $data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $subName => $subValue) {
+                $this->assertRequestMultipartData($request, $name.'['.$subName.']', $subValue);
+            }
+        } else {
+            $pattern = '/Content-Disposition: form-data; name="'.preg_quote($name).'"\s+'.preg_quote($data).'/';
+            $this->assertRegExp($pattern, $request['INPUT']);
         }
     }
 
@@ -591,28 +601,55 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function assertRequestFiles(array $request, array $files)
     {
         foreach ($files as $name => $file) {
-            if (!preg_match('/^([^\[\]]+)(\[(\d+)\])?$/', $name, $matches)) {
+            $this->assertRequestFile($request, $name, $file);
+        }
+    }
+
+    /**
+     * Asserts the request file.
+     *
+     * @param array  $request The request.
+     * @param string $name    The name.
+     * @param string $file    The file.
+     */
+    protected function assertRequestFile(array $request, $name, $file)
+    {
+        if (is_array($file)) {
+            foreach ($file as $subName => $subFile) {
+                $this->assertRequestFile($request, $name.'['.$subName.']', $subFile);
+            }
+        } else {
+            if (!preg_match('/^([^\[]+)/', $name, $nameMatches)) {
                 $this->fail();
             }
 
-            $this->assertArrayHasKey($matches[1], $request['FILES']);
+            $this->assertArrayHasKey($nameMatches[1], $request['FILES']);
 
+            $fileRequest = $request['FILES'][$nameMatches[1]];
             $fileName = basename($file);
             $fileSize = strlen(file_get_contents($file));
+            $levels = preg_match_all('/\[(\d+)\]/', $name, $indexMatches) ? $indexMatches[1] : array();
 
-            if (isset($matches[3])) {
-                $this->assertArrayHasKey($matches[3], $request['FILES'][$matches[1]]['tmp_name']);
+            $this->assertRequestPropertyFile($fileName, 'name', $fileRequest, $levels);
+            $this->assertRequestPropertyFile($fileSize, 'size', $fileRequest, $levels);
+            $this->assertRequestPropertyFile(0, 'error', $fileRequest, $levels);
+        }
+    }
 
-                $this->assertSame($fileName, $request['FILES'][$matches[1]]['name'][$matches[3]]);
-                $this->assertSame($fileSize, $request['FILES'][$matches[1]]['size'][$matches[3]]);
-                $this->assertNotEmpty($request['FILES'][$matches[1]]['tmp_name'][$matches[3]]);
-                $this->assertSame(0, $request['FILES'][$matches[1]]['error'][$matches[3]]);
-            } else {
-                $this->assertSame($fileName, $request['FILES'][$matches[1]]['name']);
-                $this->assertSame($fileSize, $request['FILES'][$matches[1]]['size']);
-                $this->assertNotEmpty($request['FILES'][$matches[1]]['tmp_name']);
-                $this->assertSame(0, $request['FILES'][$matches[1]]['error']);
-            }
+    /**
+     * Asserts the request property file.
+     *
+     * @param mixed  $expected The expected.
+     * @param string $property The property.
+     * @param array  $file     The file.
+     * @param array  $levels   The levels.
+     */
+    protected function assertRequestPropertyFile($expected, $property, array $file, array $levels = array())
+    {
+        if (!empty($levels)) {
+            $this->assertRequestPropertyFile($expected, $levels[0], $file[$property], array_slice($levels, 1));
+        } else {
+            $this->assertSame($expected, $file[$property]);
         }
     }
 
@@ -625,7 +662,25 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function assertRequestInputFiles(array $request, array $files)
     {
         foreach ($files as $name => $file) {
-            $namePattern =  '; name="'.preg_quote($name).'"';
+            $this->assertRequestInputFile($request, $name, $file);
+        }
+    }
+
+    /**
+     * Asserts the request input file.
+     *
+     * @param array        $request The request.
+     * @param string       $name    The name.
+     * @param array|string $file    The file.
+     */
+    protected function assertRequestInputFile(array $request, $name, $file)
+    {
+        if (is_array($file)) {
+            foreach ($file as $subName => $subFile) {
+                $this->assertRequestInputFile($request, $name.'['.$subName.']', $subFile);
+            }
+        } else {
+            $namePattern = '; name="'.preg_quote($name).'"';
             $filenamePattern = '; filename=".*'.preg_quote(basename($file)).'"';
 
             $subPattern = '('.$namePattern.$filenamePattern.'|'.$filenamePattern.$namePattern.')';

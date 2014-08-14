@@ -54,6 +54,14 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'buzz';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         $this->browser->getClient()->setTimeout($this->timeout);
@@ -69,7 +77,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
         $request->setHeaders($this->prepareHeaders($internalRequest, false));
 
         $data = $this->browser->getClient() instanceof AbstractCurl
-            ? $this->prepareData($internalRequest)
+            ? $this->prepareContent($internalRequest)
             : $this->prepareBody($internalRequest);
 
         $request->setContent($data);
@@ -88,13 +96,5 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
             BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod()),
             $internalRequest->getUrl()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'buzz';
     }
 }

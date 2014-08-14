@@ -21,18 +21,18 @@ class FileGetContentsHttpAdapter extends AbstractStreamHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function process($url, $context)
+    public function getName()
     {
-        $http_response_header = array();
-
-        return array(@file_get_contents($url, false, $context), $http_response_header);
+        return 'file_get_contents';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    protected function process($url, $context)
     {
-        return 'file_get_contents';
+        $http_response_header = array();
+
+        return array(@file_get_contents($url, false, $context), $http_response_header);
     }
 }

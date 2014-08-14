@@ -37,6 +37,14 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'curl';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         $curl = curl_init();
@@ -76,7 +84,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
 
             case RequestInterface::METHOD_POST:
                 curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareData($internalRequest));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareContent($internalRequest));
                 break;
 
             case RequestInterface::METHOD_PUT:
@@ -84,7 +92,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             case RequestInterface::METHOD_DELETE:
             case RequestInterface::METHOD_OPTIONS:
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $internalRequest->getMethod());
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareData($internalRequest));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareContent($internalRequest));
                 break;
         }
 
@@ -111,13 +119,5 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             BodyNormalizer::normalize($body, $internalRequest->getMethod()),
             $effectiveUrl
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'curl';
     }
 }

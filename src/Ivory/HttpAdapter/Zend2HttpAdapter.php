@@ -52,17 +52,8 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
             ))
             ->setUri($internalRequest->getUrl())
             ->setMethod($internalRequest->getMethod())
-            ->setHeaders($this->prepareHeaders($internalRequest, true, $internalRequest->hasStringData()));
-
-        if ($internalRequest->hasStringData()) {
-            $this->client->setRawBody($this->prepareBody($internalRequest));
-        } else {
-            $this->client->setParameterPost($internalRequest->getData());
-
-            foreach ($internalRequest->getFiles() as $key => $file) {
-                $this->client->setFileUpload($file, $key);
-            }
-        }
+            ->setHeaders($this->prepareHeaders($internalRequest))
+            ->setRawBody($this->prepareBody($internalRequest));
 
         try {
             $response = $this->client->send();
