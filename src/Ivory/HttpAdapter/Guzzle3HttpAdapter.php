@@ -42,19 +42,23 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'guzzle3';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
             $internalRequest->getUrl(),
             $this->prepareHeaders($internalRequest),
-            $internalRequest->getData(),
+            $this->prepareContent($internalRequest),
             array('timeout' => $this->timeout)
         );
-
-        foreach ($internalRequest->getFiles() as $key => $file) {
-            $request->addPostFile($key, $file);
-        }
 
         $request->setProtocolVersion($internalRequest->getProtocolVersion());
         $request->getParams()->set('redirect.disable', !$this->hasMaxRedirects());
@@ -84,8 +88,8 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    protected function createFile($file)
     {
-        return 'guzzle3';
+        return '@'.$file;
     }
 }

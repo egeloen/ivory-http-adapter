@@ -42,14 +42,16 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'guzzle4';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
-        $data = $internalRequest->getData();
-
-        foreach ($internalRequest->getFiles() as $name => $file) {
-            $data[$name] = fopen($file, 'r');
-        }
-
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
             $internalRequest->getUrl(),
@@ -58,7 +60,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
                 'timeout'         => $this->timeout,
                 'allow_redirects' => $this->hasMaxRedirects() ? array('max' => $this->getMaxRedirects()) : false,
                 'headers'         => $this->prepareHeaders($internalRequest),
-                'body'            => $data,
+                'body'            => $this->prepareContent($internalRequest),
             )
         );
 
@@ -86,8 +88,8 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    protected function createFile($file)
     {
-        return 'guzzle4';
+        return fopen($file, 'r');
     }
 }

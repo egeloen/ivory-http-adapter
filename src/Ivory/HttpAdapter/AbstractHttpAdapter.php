@@ -389,7 +389,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         }
 
         foreach ($internalRequest->getFiles() as $name => $file) {
-            $body .= $this->prepareRawBody($name, file_get_contents($file), basename($file));
+            $body .= $this->prepareRawBody($name, $file, true);
         }
 
         $body .= '--'.$this->boundary.'--'."\r\n";
@@ -400,21 +400,45 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /**
      * Prepares the raw body.
      *
-     * @param string      $name     The name.
-     * @param string      $value    The value.
-     * @param string|null $filename The filename.
+     * @param string       $name   The name.
+     * @param array|string $data   The data.
+     * @param boolean      $isFile TRUE if the data is a file path else FALSE.
      *
      * @return string The formatted raw body.
      */
-    protected function prepareRawBody($name, $value, $filename = null)
+    protected function prepareRawBody($name, $data, $isFile = false)
     {
-        $data = '--'.$this->boundary."\r\n".'Content-Disposition: form-data; name="'.$name.'"';
+        if (is_array($data)) {
+            $body = '';
 
-        if ($filename !== null) {
-            $data .= '; filename="'.$filename.'"';
+            foreach ($data as $subName => $subData) {
+                $body .= $this->prepareRawBody($this->prepareName($name, $subName), $subData, $isFile);
+            }
+
+            return $body;
         }
 
-        return $data."\r\n\r\n".$value."\r\n";
+        $body = '--'.$this->boundary."\r\n".'Content-Disposition: form-data; name="'.$name.'"';
+
+        if ($isFile) {
+            $body .= '; filename="'.basename($data).'"';
+            $data = file_get_contents($data);
+        }
+
+        return $body."\r\n\r\n".$data."\r\n";
+    }
+
+    /**
+     * Prepares the name.
+     *
+     * @param string $name    The name.
+     * @param string $subName The sub name.
+     *
+     * @return string The prepared name.
+     */
+    protected function prepareName($name, $subName)
+    {
+        return $name.'['.$subName.']';
     }
 
     /**

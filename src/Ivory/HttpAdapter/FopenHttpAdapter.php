@@ -21,18 +21,18 @@ class FopenHttpAdapter extends AbstractStreamHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function process($url, $context)
+    public function getName()
     {
-        $http_response_header = array();
-
-        return array(@fopen($url, 'rb', false, $context), $http_response_header);
+        return 'fopen';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    protected function process($url, $context)
     {
-        return 'fopen';
+        $http_response_header = array();
+
+        return array(@fopen($url, 'rb', false, $context), $http_response_header);
     }
 }
