@@ -57,7 +57,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testInitialState()
     {
-        $this->journal = new Journal($journalEntryFactory = $this->createJournalEntryFactory());
+        $this->journal = new Journal($journalEntryFactory = $this->createJournalEntryFactoryMock());
 
         $this->assertSame($journalEntryFactory, $this->journal->getJournalEntryFactory());
     }
@@ -71,8 +71,11 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testSetEntries()
     {
-        $this->journal->setEntries(array($this->createJournalEntry()));
-        $this->journal->setEntries(array($entry1 = $this->createJournalEntry(), $entry2 = $this->createJournalEntry()));
+        $this->journal->setEntries(array($this->createJournalEntryMock()));
+        $this->journal->setEntries(array(
+            $entry1 = $this->createJournalEntryMock(),
+            $entry2 = $this->createJournalEntryMock(),
+        ));
 
         $this->assertTrue($this->journal->hasEntries());
         $this->assertSame(array($entry1, $entry2), $this->journal->getEntries());
@@ -83,8 +86,11 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testAddEntries()
     {
-        $this->journal->setEntries(array($entry1 = $this->createJournalEntry()));
-        $this->journal->addEntries(array($entry2 = $this->createJournalEntry(), $entry3 = $this->createJournalEntry()));
+        $this->journal->setEntries(array($entry1 = $this->createJournalEntryMock()));
+        $this->journal->addEntries(array(
+            $entry2 = $this->createJournalEntryMock(),
+            $entry3 = $this->createJournalEntryMock(),
+        ));
 
         $this->assertTrue($this->journal->hasEntries());
         $this->assertSame(array($entry1, $entry2, $entry3), $this->journal->getEntries());
@@ -95,7 +101,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoveEntries()
     {
-        $this->journal->setEntries($entries = array($this->createJournalEntry()));
+        $this->journal->setEntries($entries = array($this->createJournalEntryMock()));
         $this->journal->removeEntries($entries);
 
         $this->assertFalse($this->journal->hasEntries());
@@ -107,7 +113,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testAddEntry()
     {
-        $this->journal->addEntry($entry = $this->createJournalEntry());
+        $this->journal->addEntry($entry = $this->createJournalEntryMock());
 
         $this->assertTrue($this->journal->hasEntries());
         $this->assertTrue($this->journal->hasEntry($entry));
@@ -119,12 +125,12 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testAddEntryExceedLimit()
     {
-        $this->journal->addEntry($this->createJournalEntry());
+        $this->journal->addEntry($this->createJournalEntryMock());
 
         $entries = array();
 
         for ($i = 0; $i < $this->journal->getLimit(); $i++) {
-            $this->journal->addEntry($entries[] = $this->createJournalEntry());
+            $this->journal->addEntry($entries[] = $this->createJournalEntryMock());
         }
 
         $this->assertSame($entries, $this->journal->getEntries());
@@ -132,7 +138,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoveEntry()
     {
-        $this->journal->addEntry($entry = $this->createJournalEntry());
+        $this->journal->addEntry($entry = $this->createJournalEntryMock());
         $this->journal->removeEntry($entry);
 
         $this->assertFalse($this->journal->hasEntries());
@@ -145,7 +151,11 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testRecord()
     {
-        $this->journal->record($request = $this->createRequest(), $response = $this->createResponse(), $time = 1.234);
+        $this->journal->record(
+            $request = $this->createRequestMock(),
+            $response = $this->createResponseMock(),
+            $time = 1.234
+        );
 
         $this->assertTrue($this->journal->hasEntries());
 
@@ -164,7 +174,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testClear()
     {
-        $this->journal->setEntries(array($this->createJournalEntry()));
+        $this->journal->setEntries(array($this->createJournalEntryMock()));
         $this->journal->clear();
 
         $this->assertFalse($this->journal->hasEntries());
@@ -175,41 +185,41 @@ class JournalTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Creates a request.
+     * Creates a request mock.
      *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request.
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequest()
+    protected function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
-     * Creates a response.
+     * Creates a response mock.
      *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response.
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponse()
+    protected function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
-     * Creates a journal entry factory.
+     * Creates a journal entry factory mock.
      *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry factory.
+     * @return \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry factory mock.
      */
-    protected function createJournalEntryFactory()
+    protected function createJournalEntryFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface');
     }
 
     /**
-     * Creates a journal entry.
+     * Creates a journal entry mock.
      *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry.
+     * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry mock.
      */
-    protected function createJournalEntry()
+    protected function createJournalEntryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryInterface');
     }

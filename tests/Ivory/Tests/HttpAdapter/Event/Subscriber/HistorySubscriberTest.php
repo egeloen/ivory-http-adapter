@@ -47,14 +47,14 @@ class HistorySubscriberTest extends AbstractSubscriberTest
 
     public function testInitialState()
     {
-        $this->historySubscriber = new HistorySubscriber($journal = $this->createJournal());
+        $this->historySubscriber = new HistorySubscriber($journal = $this->createJournalMock());
 
         $this->assertSame($journal, $this->historySubscriber->getJournal());
     }
 
     public function testSetJournal()
     {
-        $this->historySubscriber->setJournal($journal = $this->createJournal());
+        $this->historySubscriber->setJournal($journal = $this->createJournalMock());
 
         $this->assertSame($journal, $this->historySubscriber->getJournal());
     }
@@ -75,7 +75,7 @@ class HistorySubscriberTest extends AbstractSubscriberTest
         $request = $this->createRequest();
         $response = $this->createResponse();
 
-        $this->historySubscriber->setJournal($journal = $this->createJournal());
+        $this->historySubscriber->setJournal($journal = $this->createJournalMock());
 
         $journal
             ->expects($this->once())
@@ -91,11 +91,11 @@ class HistorySubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a journal.
+     * Creates a journal mock.
      *
-     * @return \Ivory\HttpAdapter\Event\History\JournalInterface|\PHPUnit_Framework_MockObject_MockObject The journal.
+     * @return \Ivory\HttpAdapter\Event\History\JournalInterface|\PHPUnit_Framework_MockObject_MockObject The journal mock.
      */
-    protected function createJournal()
+    protected function createJournalMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\History\JournalInterface');
     }

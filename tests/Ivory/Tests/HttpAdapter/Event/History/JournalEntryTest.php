@@ -64,14 +64,14 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRequest()
     {
-        $this->journalEntry->setRequest($request = $this->createRequest());
+        $this->journalEntry->setRequest($request = $this->createRequestMock());
 
         $this->assertSame($request, $this->journalEntry->getRequest());
     }
 
     public function setResponse()
     {
-        $this->journalEntry->setResponse($response = $this->createResponse());
+        $this->journalEntry->setResponse($response = $this->createResponseMock());
 
         $this->assertSame($response, $this->journalEntry->getResponse());
     }
@@ -84,21 +84,21 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Creates a request.
+     * Creates a request mock.
      *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request.
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequest()
+    protected function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
-     * Creates a response.
+     * Creates a response mock.
      *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response.
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponse()
+    protected function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
