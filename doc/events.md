@@ -70,6 +70,164 @@ $logger = $loggerSubscriber->getLogger();
 $loggerSubscriber->setLogger($logger);
 ```
 
+### Cookie
+
+The cookie subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber` and allow you to manage
+cookies through a jar. To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber;
+
+$cookieSubscriber = new CookieSubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($cookieSubscriber);
+```
+
+By default, a cookie jar is created by the subscriber but you can specify it in its constructor:
+
+``` php
+use Ivory\HttpAdapter\Event\Cookie\CookieJar;
+use Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber;
+
+$cookieJar = new CookieJar();
+$cookieSubscriber = new CookieSubscriber($cookieJar);
+```
+
+Finally, the cookie jar can be access or change at runtime with:
+
+``` php
+$cookieJar = $cookieSubscriber->getCookieJar();
+$cookieSubscriber->setCookieJar($cookieJar);
+```
+
+#### Cookie Jar
+
+A cookie jar is described by the `Ivory\HttpAdapter\Event\Cookie\CookieJarInterface` and its default implementation is
+`Ivory\HttpAdapter\Event\Cookie\CookieJar`. As there is an interface, you can define your own implementation.
+
+First, a cookie jar stores/manages the cookies. You can use the following API:
+
+``` php
+$hasCookies = $cookieJar->hasCookies();
+$cookies = $cookieJar->getCookies();
+$cookieJar->setCookies($cookies);
+$cookieJar->addCookies($cookies);
+$cookieJar->removeCookies($cookies);
+
+$hasCookie = $cookieJar->hasCookie($cookie);
+$cookieJar->addCookie($cookie);
+$cookieJar->removeCookie($cookie);
+
+// Clear all cookies
+$cookieJar->clear();
+
+// Clear expired cookies
+$cookieJar->clear(true);
+```
+
+Second, the cookie jar creates the cookies through the `Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface`
+and its default implementation is `Ivory\HttpAdapter\Event\Cookie\CookieFactory`. It can be configured via the
+constructor or getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Cookie\CookieFactory;
+use Ivory\HttpAdapter\Event\Cookie\CookieJar;
+
+$cookieJar = new CookieJar(new CookieFactory());
+
+$cookieFactory = $cookieJar->getCookieFactory();
+$cookieJar->setCookieFactory($cookieFactory);
+```
+
+Third, it is responsible to populate cookies in a request and extract them from a response with the following
+API:
+
+``` php
+$cookieJar->populate($request);
+$cookieJar->extract($request, $response);
+```
+
+Fourth, the cookie jar implements the `Countable` interface, so if you wants to know how many cookies are in it, you
+can use:
+
+``` php
+$count = count($cookieJar);
+```
+
+Fifth, the cookies implements the `IteratorAggregator` interface, so, you can directly access cookies with the
+following code:
+
+``` php
+foreach ($cookieJar as $cookie) {
+    // Do what you want with the cookie
+}
+
+// or
+
+$cookies = iterator_to_array($cookieJar);
+```
+
+Be aware that when you access cookies, the cookie jar clears expired cookies before serving them.
+
+#### Cookie factory
+
+As already explained, the cookie factory is defined by the `Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface`
+and its default implementation is `Ivory\HttpAdapter\Event\Cookie\CookieFactory`. It is responsible to instantiate a
+cookie. For that, you can directly instantiate it or parse an header:
+
+``` php
+$cookie = $cookieFactory->create($name, $value, $attributes, $createdAt);
+// or
+$cookie = $cookieFactory->parse($header);
+```
+
+#### Cookie
+
+A cookie is describes by the `Ivory\HttpAdapter\Event\Cookie\CookieInterface` and its default implemenation is
+`Ivory\HttpAdapter\Event\Cookie\Cookie`. As there is an interface, you can define your own implementation.
+
+A cookie stores all the informations related to it. You can get/set them with:
+
+``` php
+use Ivory\HttpAdapter\Event\Cookie\Cookie;
+
+$cookie = new Cookie($name, $value, $attributes, $createdAt);
+
+$name = $cookie->getName();
+$cookie->setName($name);
+
+$value = $cookie->getValue();
+$cookie->setValue($value);
+
+$hasAttributes = $cookie->hasAttributes();
+$attributes = $cookie->getAttributes();
+$cookie->setAttributes($attributes);
+$cookie->addAttributes($attributes);
+$cookie->removeAttributes($names);
+$cookie->clearAttributes();
+
+$hasAttribute = $cookie->hasAttributes($name);
+$value = $cookie->getAttribute($name);
+$cookie->setAttribute($name, $value);
+$cookie->removeAttribute($name);
+
+$age = $cookie->getAge();
+$expired = $cookie->isExpired();
+
+$createdAt = $cookie->getCreatedAt();
+$cookie->setCreatedAt($createdAt);
+```
+
+All attribute names are described by the `Ivory\HttpAdapter\Event\Cookie\Cookie::ATTR_*` constants. Additionally, you
+can check if the request matches a request or just matches a part of the request:
+
+``` php
+$match = $cookie->match($request);
+$match = $cookie->matchDomain($request);
+$match = $cookie->matchPath($request);
+$match = $cookie->matchSecure($request);
+```
+
 ### Basic authentication
 
 The basic authentication subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber` and
