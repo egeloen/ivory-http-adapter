@@ -21,20 +21,51 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
  */
 class Journal implements JournalInterface
 {
+    /** @var \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface */
+    protected $journalEntryFactory;
+
     /** @var array */
     protected $entries = array();
 
     /** @var integer */
-    protected $limit;
+    protected $limit = 10;
 
     /**
      * Creates a journal.
      *
-     * @param integer $limit The limit.
+     * @param \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface|null $journalEntryFactory The journal entry factory.
      */
-    public function __construct($limit = 10)
+    public function __construct(JournalEntryFactoryInterface $journalEntryFactory = null)
     {
-        $this->setLimit($limit);
+        $this->setJournalEntryFactory($journalEntryFactory ?: new JournalEntryFactory());
+    }
+
+    /**
+     * Gets the journal entry factory.
+     *
+     * @return \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface The journal entry factory.
+     */
+    public function getJournalEntryFactory()
+    {
+        return $this->journalEntryFactory;
+    }
+
+    /**
+     * Sets the journal entry factory.
+     *
+     * @param \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface $journalEntryFactory The journal entry factory.
+     */
+    public function setJournalEntryFactory(JournalEntryFactoryInterface $journalEntryFactory)
+    {
+        $this->journalEntryFactory = $journalEntryFactory;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function record(InternalRequestInterface $request, ResponseInterface $response, $time)
+    {
+        $this->addEntry($this->journalEntryFactory->create($request, $response, $time));
     }
 
     /**
@@ -43,14 +74,6 @@ class Journal implements JournalInterface
     public function clear()
     {
         $this->entries = array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function record(InternalRequestInterface $request, ResponseInterface $response, $time)
-    {
-        $this->addEntry(new JournalEntry($request, $response, $time));
     }
 
     /**

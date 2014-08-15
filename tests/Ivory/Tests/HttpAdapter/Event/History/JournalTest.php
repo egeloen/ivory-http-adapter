@@ -41,6 +41,11 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testDefaultState()
     {
+        $this->assertInstanceOf(
+            'Ivory\HttpAdapter\Event\History\JournalEntryFactory',
+            $this->journal->getJournalEntryFactory()
+        );
+
         $this->assertSame(10, $this->journal->getLimit());
 
         $this->assertFalse($this->journal->hasEntries());
@@ -48,6 +53,13 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEmpty($this->journal);
         $this->assertEmpty(iterator_to_array($this->journal));
+    }
+
+    public function testInitialState()
+    {
+        $this->journal = new Journal($journalEntryFactory = $this->createJournalEntryFactory());
+
+        $this->assertSame($journalEntryFactory, $this->journal->getJournalEntryFactory());
     }
 
     public function testSetLimit()
@@ -180,6 +192,16 @@ class JournalTest extends \PHPUnit_Framework_TestCase
     protected function createResponse()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
+
+    /**
+     * Creates a journal entry factory.
+     *
+     * @return \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry factory.
+     */
+    protected function createJournalEntryFactory()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface');
     }
 
     /**

@@ -15,17 +15,12 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Journal interface.
+ * Journal.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface JournalInterface extends \Countable, \IteratorAggregate
 {
-    /**
-     * Clears the journal.
-     */
-    public function clear();
-
     /**
      * Records an entry.
      *
@@ -34,6 +29,11 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * @param integer                                             $time     The time.
      */
     public function record(InternalRequestInterface $request, ResponseInterface $response, $time);
+
+    /**
+     * Clears the journal.
+     */
+    public function clear();
 
     /**
      * Checks if there are entries.

@@ -142,15 +142,9 @@ implementation is `Ivory\HttpAdapter\Event\Subscriber\History\Journal`. As there
 own implementation.
 
 So, a journal wraps a limit which represents the maximum number of allowed entries in the journal (default: 10) but
-can be configured via the constructor or setter and can be accessed via a getter:
+can be configured via getter/setter:
 
 ``` php
-use Ivory\HttpAdapter\Event\Subscriber\History\Journal;
-
-$journal = new Journal();
-// or
-$journal = new Journal(10);
-
 $limit = $journal->getLimit();
 $journal->setLimit($limit);
 ```
@@ -172,11 +166,18 @@ $journal->removeEntry($entry);
 $journal->clear();
 ```
 
-Third, a journal is responsible to create its entries. Basically, it acts as a factory and so, if you want to define
-your own journal entry, you will need to override the following method:
+Third, a journal creates the entries through the `Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface` and
+its default implementation is `Ivory\HttpAdapter\Event\History\JournalEntryFactory`. It can be configured via the
+constructor or getter/setter:
 
 ``` php
-$this->journal->record($request, $response, $time);
+use Ivory\HttpAdapter\Event\Subscriber\History\Journal;
+use Ivory\HttpAdapter\Event\Subscriber\History\JournalEntryFactory;
+
+$journal = new Journal(new JournalEntryFactory());
+
+$entryJournalFactory = $journal->getJournalEntryFactory();
+$journal->setJournalEntryFactory($entryJournalFactory);
 ```
 
 Fourth, the journal implements the `Countable` interface, so if you wants to know how many entries are in the journal,
@@ -203,8 +204,7 @@ $entries = iterator_to_array($journal);
 
 A journal entry is described by the `Ivory\HttpAdapter\Event\Subscriber\History\JournalEntryInterface` and its default
 implementation is `Ivory\HttpAdapter\Event\Subscriber\History\JournalEntry`. As there is an interface, you can define
-your own implementation and override the `Ivory\HttpAdapter\Event\Subscriber\History\JournalInterface::record` method
-in order to instantiate it as explain previously.
+your own implementation through the factory.
 
 It wraps the request, the response and the request execution time. To get/set them, you can use the following API:
 
