@@ -13,6 +13,7 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\History\Journal;
+use Ivory\HttpAdapter\Event\History\JournalInterface;
 
 /**
  * History subscriber.
@@ -21,15 +22,15 @@ use Ivory\HttpAdapter\Event\History\Journal;
  */
 class HistorySubscriber extends AbstractTimerSubscriber
 {
-    /** @var \Ivory\HttpAdapter\Event\History\Journal */
+    /** @var \Ivory\HttpAdapter\Event\History\JournalInterface */
     protected $journal;
 
     /**
      * Creates an history subscriber.
      *
-     * @param \Ivory\HttpAdapter\Event\History\Journal $journal
+     * @param \Ivory\HttpAdapter\Event\History\JournalInterface $journal
      */
-    public function __construct(Journal $journal = null)
+    public function __construct(JournalInterface $journal = null)
     {
         $this->setJournal($journal ?: new Journal());
     }
@@ -37,7 +38,7 @@ class HistorySubscriber extends AbstractTimerSubscriber
     /**
      * Gets the journal.
      *
-     * @return \Ivory\HttpAdapter\Event\History\Journal The journal.
+     * @return \Ivory\HttpAdapter\Event\History\JournalInterface The journal.
      */
     public function getJournal()
     {
@@ -47,9 +48,9 @@ class HistorySubscriber extends AbstractTimerSubscriber
     /**
      * Sets the journal.
      *
-     * @param \Ivory\HttpAdapter\Event\History\Journal $journal The journal.
+     * @param \Ivory\HttpAdapter\Event\History\JournalInterface $journal The journal.
      */
-    public function setJournal(Journal $journal)
+    public function setJournal(JournalInterface $journal)
     {
         $this->journal = $journal;
     }

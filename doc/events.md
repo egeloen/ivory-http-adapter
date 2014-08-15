@@ -137,39 +137,56 @@ $historySubscriber->setJournal($journal);
 
 #### Journal
 
-As you have probably already understood, a journal is described by the
-`Ivory\HttpAdapter\Event\Subscriber\History\Journal`.
+A journal is described by the `Ivory\HttpAdapter\Event\Subscriber\History\JournalInterface` and its default
+implementation is `Ivory\HttpAdapter\Event\Subscriber\History\Journal`. As there is an interface, you can define your
+own implementation.
 
-First, a journal wraps a limit which represents the maximum number of
-allowed entries in the journal (default: 10) but can be configured via the constructor or setter and can be accessed
-via a getter:
+So, a journal wraps a limit which represents the maximum number of allowed entries in the journal (default: 10) but
+can be configured via the constructor or setter and can be accessed via a getter:
 
 ``` php
 use Ivory\HttpAdapter\Event\Subscriber\History\Journal;
 
-$journal = new Journal(100);
+$journal = new Journal();
+// or
+$journal = new Journal(10);
 
 $limit = $journal->getLimit();
 $journal->setLimit($limit);
 ```
 
 Second, the journal wraps all entries of the history according to the limit (the last entries are kept in the journal
-and the last ones are dropped when a new one is added). The following API allows you to access the entries:
+and the last ones are dropped when a new one is added). The following API allows you to check/get/set/clear the entries:
 
 ``` php
-$hasEntries = $journal->getEntries();
+$hasEntries = $journal->hasEntries();
 $entries = $journal->getEntries();
-$lastEntry = $journal->getLastEntry();
+$journal->setEntries($entries);
+$journal->addEntries($entries);
+$journal->removeEntries($entries);
+
+$hasEntry = $journal->hasEntry($entry);
+$journal->addEntry($entry);
+$journal->removeEntry($entry);
+
+$journal->clear();
 ```
 
-Third, the journal implements the `Countable` interface, so if you wants to know how many entries are in the journal,
+Third, a journal is responsible to create its entries. Basically, it acts as a factory and so, if you want to define
+your own journal entry, you will need to override the following method:
+
+``` php
+$this->journal->record($request, $response, $time);
+```
+
+Fourth, the journal implements the `Countable` interface, so if you wants to know how many entries are in the journal,
 you can use:
 
 ``` php
 $count = count($journal);
 ```
 
-Fourth, the journal implements the `IteratorAggregator` interface, so, you can directly access entries with the
+Fifth, the journal implements the `IteratorAggregator` interface, so, you can directly access entries with the
 following code but the entries are ordered from the most recent to the most old:
 
 ``` php
@@ -184,12 +201,24 @@ $entries = iterator_to_array($journal);
 
 #### Journal entry
 
-A journal entry is described by the `Ivory\HttpAdapter\Event\Subscriber\History\JournalEntry` and represents an entry
-of the journal previously explained. It wraps the request, the response and the request execution time. To get them,
-you can use:
+A journal entry is described by the `Ivory\HttpAdapter\Event\Subscriber\History\JournalEntryInterface` and its default
+implementation is `Ivory\HttpAdapter\Event\Subscriber\History\JournalEntry`. As there is an interface, you can define
+your own implementation and override the `Ivory\HttpAdapter\Event\Subscriber\History\JournalInterface::record` method
+in order to instantiate it as explain previously.
+
+It wraps the request, the response and the request execution time. To get/set them, you can use the following API:
 
 ``` php
+use Ivory\HttpAdapter\Event\Subscriber\History\JournalEntry;
+
+$entry = new JournalEntry($request, $response, $time);
+
 $request = $entry->getRequest();
+$entry->setRequest($request);
+
 $response = $entry->getResponse();
+$entry->setResponse($response);
+
 $time = $entry->getTime();
+$entry->setTime($time);
 ```

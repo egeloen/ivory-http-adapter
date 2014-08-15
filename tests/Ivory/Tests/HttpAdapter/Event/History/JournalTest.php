@@ -45,7 +45,6 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($this->journal->hasEntries());
         $this->assertEmpty($this->journal->getEntries());
-        $this->assertFalse($this->journal->getLastEntry());
 
         $this->assertEmpty($this->journal);
         $this->assertEmpty(iterator_to_array($this->journal));
@@ -58,36 +57,57 @@ class JournalTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($limit, $this->journal->getLimit());
     }
 
-    public function testAddSingleEntry()
+    public function testSetEntries()
     {
-        $this->journal->addEntry($entry = $this->createJournalEntry());
-
-        $this->assertTrue($this->journal->hasEntries());
-        $this->assertSame(array($entry), $this->journal->getEntries());
-        $this->assertSame($entry, $this->journal->getLastEntry());
-
-        $this->assertCount(1, $this->journal);
-        $this->assertSame(array($entry), iterator_to_array($this->journal));
-    }
-
-    public function testAddMultipleEntries()
-    {
-        $this->journal->addEntry($entry1 = $this->createJournalEntry());
-        $this->journal->addEntry($entry2 = $this->createJournalEntry());
+        $this->journal->setEntries(array($this->createJournalEntry()));
+        $this->journal->setEntries(array($entry1 = $this->createJournalEntry(), $entry2 = $this->createJournalEntry()));
 
         $this->assertTrue($this->journal->hasEntries());
         $this->assertSame(array($entry1, $entry2), $this->journal->getEntries());
-        $this->assertSame($entry2, $this->journal->getLastEntry());
 
         $this->assertCount(2, $this->journal);
         $this->assertSame(array($entry2, $entry1), iterator_to_array($this->journal));
     }
 
-    public function testAddEntriesExceedLimit()
+    public function testAddEntries()
     {
-        for ($i = 0; $i < $this->journal->getLimit(); $i++) {
-            $this->journal->addEntry($entries[] = $this->createJournalEntry());
-        }
+        $this->journal->setEntries(array($entry1 = $this->createJournalEntry()));
+        $this->journal->addEntries(array($entry2 = $this->createJournalEntry(), $entry3 = $this->createJournalEntry()));
+
+        $this->assertTrue($this->journal->hasEntries());
+        $this->assertSame(array($entry1, $entry2, $entry3), $this->journal->getEntries());
+
+        $this->assertCount(3, $this->journal);
+        $this->assertSame(array($entry3, $entry2, $entry1), iterator_to_array($this->journal));
+    }
+
+    public function testRemoveEntries()
+    {
+        $this->journal->setEntries($entries = array($this->createJournalEntry()));
+        $this->journal->removeEntries($entries);
+
+        $this->assertFalse($this->journal->hasEntries());
+        $this->assertEmpty($this->journal->getEntries());
+
+        $this->assertCount(0, $this->journal);
+        $this->assertEmpty(iterator_to_array($this->journal));
+    }
+
+    public function testAddEntry()
+    {
+        $this->journal->addEntry($entry = $this->createJournalEntry());
+
+        $this->assertTrue($this->journal->hasEntries());
+        $this->assertTrue($this->journal->hasEntry($entry));
+        $this->assertSame(array($entry), $this->journal->getEntries());
+
+        $this->assertCount(1, $this->journal);
+        $this->assertSame(array($entry), iterator_to_array($this->journal));
+    }
+
+    public function testAddEntryExceedLimit()
+    {
+        $this->journal->addEntry($this->createJournalEntry());
 
         $entries = array();
 
@@ -98,43 +118,41 @@ class JournalTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($entries, $this->journal->getEntries());
     }
 
-    public function testSingleRecord()
+    public function testRemoveEntry()
+    {
+        $this->journal->addEntry($entry = $this->createJournalEntry());
+        $this->journal->removeEntry($entry);
+
+        $this->assertFalse($this->journal->hasEntries());
+        $this->assertFalse($this->journal->hasEntry($entry));
+        $this->assertEmpty($this->journal->getEntries());
+
+        $this->assertCount(0, $this->journal);
+        $this->assertEmpty(iterator_to_array($this->journal));
+    }
+
+    public function testRecord()
     {
         $this->journal->record($request = $this->createRequest(), $response = $this->createResponse(), $time = 1.234);
 
         $this->assertTrue($this->journal->hasEntries());
-        $this->assertNotEmpty($this->journal->getEntries());
-        $this->assertSame($request, $this->journal->getLastEntry()->getRequest());
-        $this->assertSame($response, $this->journal->getLastEntry()->getResponse());
-        $this->assertSame($time, $this->journal->getLastEntry()->getTime());
+
+        $entries = $this->journal->getEntries();
+
+        $this->assertCount(1, $entries);
+        $this->assertArrayHasKey(0, $entries);
+
+        $this->assertSame($entries[0]->getRequest(), $request);
+        $this->assertSame($entries[0]->getResponse(), $response);
+        $this->assertSame($entries[0]->getTime(), $time);
 
         $this->assertCount(1, $this->journal);
         $this->assertNotEmpty(iterator_to_array($this->journal));
     }
 
-    public function testMultipleRecords()
-    {
-        $this->journal->record($this->createRequest(), $this->createResponse(), 1.234);
-
-        $this->journal->record(
-            $request2 = $this->createRequest(),
-            $response2 = $this->createResponse(),
-            $time2 = 4.567
-        );
-
-        $this->assertTrue($this->journal->hasEntries());
-        $this->assertNotEmpty($this->journal->getEntries());
-        $this->assertSame($request2, $this->journal->getLastEntry()->getRequest());
-        $this->assertSame($response2, $this->journal->getLastEntry()->getResponse());
-        $this->assertSame($time2, $this->journal->getLastEntry()->getTime());
-
-        $this->assertCount(2, $this->journal);
-        $this->assertNotEmpty(iterator_to_array($this->journal));
-    }
-
     public function testClear()
     {
-        $this->journal->addEntry($this->createJournalEntry());
+        $this->journal->setEntries(array($this->createJournalEntry()));
         $this->journal->clear();
 
         $this->assertFalse($this->journal->hasEntries());
@@ -167,12 +185,10 @@ class JournalTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates a journal entry.
      *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntry|\PHPUnit_Framework_MockObject_MockObject The journal entry.
+     * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry.
      */
     protected function createJournalEntry()
     {
-        return $this->getMockBuilder('Ivory\HttpAdapter\Event\History\JournalEntry')
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryInterface');
     }
 }
