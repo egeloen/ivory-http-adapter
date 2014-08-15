@@ -26,7 +26,7 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
-     * @param integer                                             $time     The time.
+     * @param float                                               $time     The time.
      */
     public function record(InternalRequestInterface $request, ResponseInterface $response, $time);
 
