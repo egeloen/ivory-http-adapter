@@ -33,15 +33,16 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
     {
         $normalizedHeaders = array();
 
+        if (!$associative) {
+            $headers = self::normalize($headers);
+        }
+
         foreach (HeadersParser::parse($headers) as $name => $value) {
             if (strpos($value, 'HTTP/') === 0) {
                 continue;
             }
 
-            if (is_int($name)) {
-                $name = substr($value, 0, $pos = strpos($value, ':'));
-                $value = substr($value, $pos + 1);
-            }
+            list($name, $value) = explode(':', $value);
 
             $name = self::normalizeHeaderName($name);
             $value = self::normalizeHeaderValue($value);
@@ -49,7 +50,9 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
             if (!$associative) {
                 $normalizedHeaders[] = $name.': '.$value;
             } else {
-                $normalizedHeaders[$name] = $value;
+                $normalizedHeaders[$name] = isset($normalizedHeaders[$name])
+                    ? $normalizedHeaders[$name].', '.$value
+                    : $value;
             }
         }
 
