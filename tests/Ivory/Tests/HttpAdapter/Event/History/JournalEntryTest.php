@@ -61,4 +61,45 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->response, $this->journalEntry->getResponse());
         $this->assertSame($this->time, $this->journalEntry->getTime());
     }
+
+    public function testSetRequest()
+    {
+        $this->journalEntry->setRequest($request = $this->createRequest());
+
+        $this->assertSame($request, $this->journalEntry->getRequest());
+    }
+
+    public function setResponse()
+    {
+        $this->journalEntry->setResponse($response = $this->createResponse());
+
+        $this->assertSame($response, $this->journalEntry->getResponse());
+    }
+
+    public function testSetTime()
+    {
+        $this->journalEntry->setTime($time = 2.345);
+
+        $this->assertSame($time, $this->journalEntry->getTime());
+    }
+
+    /**
+     * Creates a request.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request.
+     */
+    protected function createRequest()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+    }
+
+    /**
+     * Creates a response.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response.
+     */
+    protected function createResponse()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
 }

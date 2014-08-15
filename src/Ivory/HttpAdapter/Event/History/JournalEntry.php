@@ -15,11 +15,11 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Journal entry.
+ * {@inheritdoc}
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class JournalEntry
+class JournalEntry implements JournalEntryInterface
 {
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
     protected $request;
@@ -39,15 +39,13 @@ class JournalEntry
      */
     public function __construct(InternalRequestInterface $request, ResponseInterface $response, $time)
     {
-        $this->request = $request;
-        $this->response = $response;
-        $this->time = $time;
+        $this->setRequest($request);
+        $this->setResponse($response);
+        $this->setTime($time);
     }
 
     /**
-     * Gets the request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The request.
+     * {@inheritdoc}
      */
     public function getRequest()
     {
@@ -55,9 +53,15 @@ class JournalEntry
     }
 
     /**
-     * Gets the response.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * {@inheritdoc}
+     */
+    public function setRequest(InternalRequestInterface $request)
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getResponse()
     {
@@ -65,12 +69,26 @@ class JournalEntry
     }
 
     /**
-     * Gets the time.
-     *
-     * @return float The time.
+     * {@inheritdoc}
+     */
+    public function setResponse(ResponseInterface $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getTime()
     {
         return $this->time;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTime($time)
+    {
+        $this->time = $time;
     }
 }

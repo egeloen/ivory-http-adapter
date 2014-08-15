@@ -12,7 +12,6 @@
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber;
 
 /**
@@ -94,10 +93,10 @@ class HistorySubscriberTest extends AbstractSubscriberTest
     /**
      * Creates a journal.
      *
-     * @return \Ivory\HttpAdapter\Event\History\Journal|\PHPUnit_Framework_MockObject_MockObject The journal.
+     * @return \Ivory\HttpAdapter\Event\History\JournalInterface|\PHPUnit_Framework_MockObject_MockObject The journal.
      */
     protected function createJournal()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\History\Journal');
+        return $this->getMock('Ivory\HttpAdapter\Event\History\JournalInterface');
     }
 }

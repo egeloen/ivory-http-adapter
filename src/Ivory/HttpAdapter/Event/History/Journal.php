@@ -15,11 +15,11 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Journal.
+ * {@inheritdoc}
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Journal implements \Countable, \IteratorAggregate
+class Journal implements JournalInterface
 {
     /** @var integer */
     protected $limit;
@@ -38,9 +38,7 @@ class Journal implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Gets the limit.
-     *
-     * @return integer The limit.
+     * {@inheritdoc}
      */
     public function getLimit()
     {
@@ -48,9 +46,7 @@ class Journal implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Sets the limit.
-     *
-     * @param integer $limit The limit.
+     * {@inheritdoc}
      */
     public function setLimit($limit)
     {
@@ -58,7 +54,7 @@ class Journal implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Clears the journal.
+     * {@inheritdoc}
      */
     public function clear()
     {
@@ -66,11 +62,7 @@ class Journal implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Records an entry.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
-     * @param float                                               $time     The time.
+     * {@inheritdoc}
      */
     public function record(InternalRequestInterface $request, ResponseInterface $response, $time)
     {
@@ -78,9 +70,7 @@ class Journal implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Checks if there are entries.
-     *
-     * @return boolean TRUE if there are entries else FALSE.
+     * {@inheritdoc}
      */
     public function hasEntries()
     {
@@ -88,9 +78,7 @@ class Journal implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Gets the entries.
-     *
-     * @return array The entries.
+     * {@inheritdoc}
      */
     public function getEntries()
     {
@@ -98,24 +86,62 @@ class Journal implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Gets the last entry.
-     *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntry|boolen The last entry or false if there is no entry.
+     * {@inheritdoc}
      */
-    public function getLastEntry()
+    public function setEntries(array $entries)
     {
-        return end($this->entries);
+        $this->clear();
+        $this->addEntries($entries);
     }
 
     /**
-     * Adds an entry.
-     *
-     * @param \Ivory\HttpAdapter\Event\History\JournalEntry $entry The entry.
+     * {@inheritdoc}
      */
-    public function addEntry(JournalEntry $entry)
+    public function addEntries(array $entries)
     {
-        $this->entries[] = $entry;
-        $this->entries = array_slice($this->entries, $this->limit * -1);
+        foreach ($entries as $entry) {
+            $this->addEntry($entry);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeEntries(array $entries)
+    {
+        foreach ($entries as $entry) {
+            $this->removeEntry($entry);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasEntry(JournalEntryInterface $entry)
+    {
+        return array_search($entry, $this->entries, true) !== false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addEntry(JournalEntryInterface $entry)
+    {
+        if (!$this->hasEntry($entry)) {
+            $this->entries[] = $entry;
+            $this->entries = array_slice($this->entries, $this->limit * -1);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeEntry(JournalEntryInterface $entry)
+    {
+        if ($this->hasEntry($entry)) {
+            unset($this->entries[array_search($entry, $this->entries, true)]);
+            $this->entries = array_values($this->entries);
+        }
     }
 
     /**
