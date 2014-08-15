@@ -21,11 +21,11 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
  */
 class Journal implements JournalInterface
 {
-    /** @var integer */
-    protected $limit;
-
     /** @var array */
     protected $entries = array();
+
+    /** @var integer */
+    protected $limit;
 
     /**
      * Creates a journal.
@@ -35,22 +35,6 @@ class Journal implements JournalInterface
     public function __construct($limit = 10)
     {
         $this->setLimit($limit);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLimit()
-    {
-        return $this->limit;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setLimit($limit)
-    {
-        $this->limit = $limit;
     }
 
     /**
@@ -142,6 +126,22 @@ class Journal implements JournalInterface
             unset($this->entries[array_search($entry, $this->entries, true)]);
             $this->entries = array_values($this->entries);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setLimit($limit)
+    {
+        $this->limit = $limit;
     }
 
     /**

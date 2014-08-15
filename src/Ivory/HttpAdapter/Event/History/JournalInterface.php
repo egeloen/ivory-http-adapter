@@ -22,20 +22,6 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 interface JournalInterface extends \Countable, \IteratorAggregate
 {
     /**
-     * Gets the limit.
-     *
-     * @return integer The limit.
-     */
-    public function getLimit();
-
-    /**
-     * Sets the limit.
-     *
-     * @param integer $limit The limit.
-     */
-    public function setLimit($limit);
-
-    /**
      * Clears the journal.
      */
     public function clear();
@@ -106,4 +92,18 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * @param \Ivory\HttpAdapter\Event\History\JournalEntryInterface $entry The entry.
      */
     public function removeEntry(JournalEntryInterface $entry);
+
+    /**
+     * Gets the limit.
+     *
+     * @return integer The limit.
+     */
+    public function getLimit();
+
+    /**
+     * Sets the limit.
+     *
+     * @param integer $limit The limit.
+     */
+    public function setLimit($limit);
 }
