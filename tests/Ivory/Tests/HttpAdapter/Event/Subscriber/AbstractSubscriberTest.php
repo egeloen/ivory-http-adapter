@@ -78,7 +78,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
         $request = new InternalRequest('http://egeloen.fr', InternalRequest::METHOD_GET);
         $request->setProtocolVersion(InternalRequest::PROTOCOL_VERSION_10);
         $request->setHeaders(array('connection' => 'close'));
-        $request->setData(array('foo' => 'bar'));
+        $request->setDatas(array('foo' => 'bar'));
         $request->setFiles(array('file' => __FILE__));
 
         return $request;

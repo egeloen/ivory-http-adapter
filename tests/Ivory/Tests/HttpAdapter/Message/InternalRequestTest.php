@@ -62,24 +62,24 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($method, $this->internalRequest->getMethod());
     }
 
-    public function testSetDataAsString()
+    public function testSetDatasAsString()
     {
-        $this->internalRequest->setData($data = $this->getDataAsString());
+        $this->internalRequest->setDatas($datas = $this->getDatasAsString());
 
-        $this->assertTrue($this->internalRequest->hasData());
-        $this->assertTrue($this->internalRequest->hasStringData());
-        $this->assertFalse($this->internalRequest->hasArrayData());
-        $this->assertSame($data, $this->internalRequest->getData());
+        $this->assertTrue($this->internalRequest->hasDatas());
+        $this->assertTrue($this->internalRequest->hasStringDatas());
+        $this->assertFalse($this->internalRequest->hasArrayDatas());
+        $this->assertSame($datas, $this->internalRequest->getDatas());
     }
 
-    public function testSetDataAsArray()
+    public function testSetDatasAsArray()
     {
-        $this->internalRequest->setData($data = $this->getDataAsArray());
+        $this->internalRequest->setDatas($datas = $this->getDatasAsArray());
 
-        $this->assertTrue($this->internalRequest->hasData());
-        $this->assertTrue($this->internalRequest->hasArrayData());
-        $this->assertFalse($this->internalRequest->hasStringData());
-        $this->assertSame($data, $this->internalRequest->getData());
+        $this->assertTrue($this->internalRequest->hasDatas());
+        $this->assertTrue($this->internalRequest->hasArrayDatas());
+        $this->assertFalse($this->internalRequest->hasStringDatas());
+        $this->assertSame($datas, $this->internalRequest->getDatas());
     }
 
     public function testSetFiles()
@@ -93,18 +93,18 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
      */
-    public function testSetDataAsStringWithFiles()
+    public function testSetDatasAsStringWithFiles()
     {
         $this->internalRequest->setFiles($this->getFiles());
-        $this->internalRequest->setData($this->getDataAsString());
+        $this->internalRequest->setDatas($this->getDatasAsString());
     }
 
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
      */
-    public function testSetFilesWithStringAsData()
+    public function testSetFilesWithDatasAsString()
     {
-        $this->internalRequest->setData($this->getDataAsString());
+        $this->internalRequest->setDatas($this->getDatasAsString());
         $this->internalRequest->setFiles($this->getFiles());
     }
 
@@ -133,23 +133,23 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Gets the data as array.
+     * Gets the datas as array.
      *
-     * @return array The data as array.
+     * @return array The datas as array.
      */
-    protected function getDataAsArray()
+    protected function getDatasAsArray()
     {
         return array('foo' => 'bar');
     }
 
     /**
-     * Gets the data as string.
+     * Gets the datas as string.
      *
-     * @return string The data as string.
+     * @return string The datas as string.
      */
-    protected function getDataAsString()
+    protected function getDatasAsString()
     {
-        return http_build_query($this->getDataAsArray());
+        return http_build_query($this->getDatasAsArray());
     }
 
     /**

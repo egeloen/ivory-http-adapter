@@ -48,11 +48,11 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "DOES NOT SUPPORT DATA AS STRING AND FILES" exception.
+     * Gets the "DOES NOT SUPPORT DATAS AS STRING AND FILES" exception.
      *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT DATA AS STRING AND FILES" exception.
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT DATAS AS STRING AND FILES" exception.
      */
-    public static function doesNotSupportDataAsStringAndFiles()
+    public static function doesNotSupportDatasAsStringAndFiles()
     {
         return new self('The internal request does not support data as string and files.');
     }

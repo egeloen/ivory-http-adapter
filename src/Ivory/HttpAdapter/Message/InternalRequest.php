@@ -22,7 +22,7 @@ use Psr\Http\Message\StreamInterface;
 class InternalRequest extends Request implements InternalRequestInterface
 {
     /** @var array|string */
-    protected $data = array();
+    protected $datas = array();
 
     /** @var array */
     protected $files = array();
@@ -60,45 +60,45 @@ class InternalRequest extends Request implements InternalRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function hasData()
+    public function hasDatas()
     {
-        return !empty($this->data);
+        return !empty($this->datas);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasStringData()
+    public function hasStringDatas()
     {
-        return is_string($this->data);
+        return is_string($this->datas);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasArrayData()
+    public function hasArrayDatas()
     {
-        return is_array($this->data);
+        return is_array($this->datas);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getData()
+    public function getDatas()
     {
-        return $this->data;
+        return $this->datas;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setData($data)
+    public function setDatas($datas)
     {
-        if (is_string($data) && $this->hasFiles()) {
-            throw HttpAdapterException::doesNotSupportDataAsStringAndFiles();
+        if (is_string($datas) && $this->hasFiles()) {
+            throw HttpAdapterException::doesNotSupportDatasAsStringAndFiles();
         }
 
-        $this->data = $data;
+        $this->datas = $datas;
     }
 
     /**
@@ -122,8 +122,8 @@ class InternalRequest extends Request implements InternalRequestInterface
      */
     public function setFiles(array $files)
     {
-        if ($this->hasStringData() && !empty($files)) {
-            throw HttpAdapterException::doesNotSupportDataAsStringAndFiles();
+        if ($this->hasStringDatas() && !empty($files)) {
+            throw HttpAdapterException::doesNotSupportDatasAsStringAndFiles();
         }
 
         $this->files = $files;

@@ -230,52 +230,52 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function post($url, array $headers = array(), $data = array(), array $files = array())
+    public function post($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_POST, $headers, $data, $files);
+        return $this->send($url, RequestInterface::METHOD_POST, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function put($url, array $headers = array(), $data = array(), array $files = array())
+    public function put($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_PUT, $headers, $data, $files);
+        return $this->send($url, RequestInterface::METHOD_PUT, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function patch($url, array $headers = array(), $data = array(), array $files = array())
+    public function patch($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_PATCH, $headers, $data, $files);
+        return $this->send($url, RequestInterface::METHOD_PATCH, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($url, array $headers = array(), $data = array(), array $files = array())
+    public function delete($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_DELETE, $headers, $data, $files);
+        return $this->send($url, RequestInterface::METHOD_DELETE, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function options($url, array $headers = array(), $data = array(), array $files = array())
+    public function options($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_OPTIONS, $headers, $data, $files);
+        return $this->send($url, RequestInterface::METHOD_OPTIONS, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function send($url, $method, array $headers = array(), $data = array(), array $files = array())
+    public function send($url, $method, array $headers = array(), $datas = array(), array $files = array())
     {
         $internalRequest = $this->messageFactory->createInternalRequest($url, $method);
         $internalRequest->setProtocolVersion($this->protocolVersion);
         $internalRequest->setHeaders($headers);
-        $internalRequest->setData($data);
+        $internalRequest->setDatas($datas);
         $internalRequest->setFiles($files);
 
         return $this->sendInternalRequest($internalRequest);
@@ -359,7 +359,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
                 $internalRequest->setHeader('Content-Type', $this->encodingType);
             } elseif ($contentType && $internalRequest->hasFiles()) {
                 $internalRequest->setHeader('Content-Type', self::ENCODING_TYPE_FORMDATA.'; boundary='.$this->boundary);
-            } elseif ($contentType && $internalRequest->hasData()) {
+            } elseif ($contentType && $internalRequest->hasDatas()) {
                 $internalRequest->setHeader('Content-Type', self::ENCODING_TYPE_URLENCODED);
             }
         }
@@ -377,14 +377,14 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     protected function prepareBody(InternalRequestInterface $internalRequest)
     {
         if (!$internalRequest->hasFiles()) {
-            return $internalRequest->hasArrayData()
-                ? http_build_query($internalRequest->getData())
-                : $internalRequest->getData();
+            return $internalRequest->hasArrayDatas()
+                ? http_build_query($internalRequest->getDatas())
+                : $internalRequest->getDatas();
         }
 
         $body = '';
 
-        foreach ($internalRequest->getData() as $name => $value) {
+        foreach ($internalRequest->getDatas() as $name => $value) {
             $body .= $this->prepareRawBody($name, $value);
         }
 

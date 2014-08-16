@@ -11,14 +11,12 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
-
 /**
  * Response.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Response extends AbstractMessage implements PsrResponseInterface, ResponseInterface
+class Response extends AbstractMessage implements ResponseInterface
 {
     /** @var integer */
     protected $statusCode;

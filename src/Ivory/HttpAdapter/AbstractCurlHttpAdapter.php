@@ -68,7 +68,7 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
 
         $content = array();
 
-        foreach ($internalRequest->getData() as $name => $data) {
+        foreach ($internalRequest->getDatas() as $name => $data) {
             $content = array_merge($content, $this->prepareRawContent($name, $data));
         }
 

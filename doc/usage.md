@@ -6,7 +6,7 @@ block everywhere) and return an `Ivory\HttpAdapter\Message\ResponseInterface`. I
 response, you can read this [doc](/doc/response.md).
 
 Additionally, the headers parameter can be an associative array describing an header key/value pair or an indexed array
-already formatted. The data can be an associative array or a string already formatted according to the content-type
+already formatted. The datas can be an associative array or a string already formatted according to the content-type
 you want to use. Finally, the files are an associative array describing key/path pair.
 
 ## Send a GET request
@@ -25,37 +25,37 @@ $response = $httpAdapter->head($url, $headers);
 ## Send a POST request
 
 ``` php
-$response = $httpAdapter->post($url, $headers, $data, $files);
+$response = $httpAdapter->post($url, $headers, $datas, $files);
 ```
 
 ## Send a PUT request
 
 ``` php
-$response = $httpAdapter->put($url, $headers, $data, $files);
+$response = $httpAdapter->put($url, $headers, $datas, $files);
 ```
 
 ## Send a PATCH request
 
 ``` php
-$response = $httpAdapter->patch($url, $headers, $data, $files);
+$response = $httpAdapter->patch($url, $headers, $datas, $files);
 ```
 
 ## Send a DELETE request
 
 ``` php
-$response = $httpAdapter->delete($url, $headers, $data, $files);
+$response = $httpAdapter->delete($url, $headers, $datas, $files);
 ```
 
 ## Send an OPTIONS request
 
 ``` php
-$response = $httpAdapter->options($url, $headers, $data, $files);
+$response = $httpAdapter->options($url, $headers, $datas, $files);
 ```
 
 ## Send a request
 
 ``` php
-$response = $httpAdapter->send($url, $method, $headers, $data, $files);
+$response = $httpAdapter->send($url, $method, $headers, $datas, $files);
 ```
 
 All methods are described by the `Ivory\HttpAdapter\Message\RequestInterface::METHOD_*` constants.

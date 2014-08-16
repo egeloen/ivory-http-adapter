@@ -59,7 +59,7 @@ $httpAdapter->setKeepAlive(true);
 ## Encoding type
 
 The encoding type defines the encoding of the request (url encoded, form data or none). The content type is
-automatically populated according to the data/files you provide but if you encode yourself the data as string, you
+automatically populated according to the datas/files you provide but if you encode yourself the datas as string, you
 need to set it explicitely or pass the `content-type` header yourself. Then, if you want to get/set it, you can use:
 
 ``` php
@@ -76,8 +76,8 @@ $httpAdapter->setEncodingType(null);
 ## Boundary
 
 The boundary is a complement to the encoding type. If you configure it with form data, the multipart payload is
-separated by a boundary which needs to be append to the `content-type` header. If you provide data/files, it will be
-automatically populated but, if you encode yourself the data as string, you need to set it explicitely or pass the
+separated by a boundary which needs to be append to the `content-type` header. If you provide datas/files, it will be
+automatically populated but, if you encode yourself the datas as string, you need to set it explicitely or pass the
 `content-type` header yourself. Then, if you want to get/set it, you can use:
 
 ``` php

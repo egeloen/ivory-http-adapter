@@ -57,7 +57,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         curl_setopt(
             $curl,
             CURLOPT_HTTPHEADER,
-            $this->prepareHeaders($internalRequest, false, $internalRequest->hasStringData())
+            $this->prepareHeaders($internalRequest, false, $internalRequest->hasStringDatas())
         );
 
         if (defined('CURLOPT_TIMEOUT_MS')) {

@@ -147,7 +147,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     ) {
         $internalRequest = new InternalRequest($url, $method);
         $internalRequest->setHeaders($headers);
-        $internalRequest->setData($data);
+        $internalRequest->setDatas($data);
         $internalRequest->setFiles($files);
 
         $options = array();

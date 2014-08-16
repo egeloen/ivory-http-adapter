@@ -50,70 +50,70 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
      *
      * @param string       $url     The url.
      * @param array        $headers The headers.
-     * @param array|string $data    The data.
+     * @param array|string $datas   The datas.
      * @param array        $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function post($url, array $headers = array(), $data = array(), array $files = array());
+    public function post($url, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a PUT request.
      *
      * @param string       $url     The url.
      * @param array        $headers The headers.
-     * @param array|string $data    The data.
+     * @param array|string $datas   The datas.
      * @param array        $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function put($url, array $headers = array(), $data = array(), array $files = array());
+    public function put($url, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a PATCH request.
      *
      * @param string       $url     The url.
      * @param array        $headers The headers.
-     * @param array|string $data    The data.
+     * @param array|string $datas   The datas.
      * @param array        $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function patch($url, array $headers = array(), $data = array(), array $files = array());
+    public function patch($url, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a DELETE request.
      *
      * @param string       $url     The url.
      * @param array        $headers The headers.
-     * @param array|string $data    The data.
+     * @param array|string $datas   The datas.
      * @param array        $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function delete($url, array $headers= array(), $data = array(), array $files = array());
+    public function delete($url, array $headers= array(), $datas = array(), array $files = array());
 
     /**
      * Sends an OPTIONS request.
      *
      * @param string       $url     The url.
      * @param array        $headers The headers.
-     * @param array|string $data    The data.
+     * @param array|string $datas   The datas.
      * @param array        $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function options($url, array $headers= array(), $data = array(), array $files = array());
+    public function options($url, array $headers= array(), $datas = array(), array $files = array());
 
     /**
      * Sends a request.
@@ -121,14 +121,14 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
      * @param string       $url     The url.
      * @param string       $method  The method.
      * @param array        $headers The headers.
-     * @param array|string $data    The data.
+     * @param array|string $datas   The datas.
      * @param array        $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function send($url, $method, array $headers = array(), $data = array(), array $files = array());
+    public function send($url, $method, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a PSR request.

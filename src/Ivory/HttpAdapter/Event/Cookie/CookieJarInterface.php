@@ -38,9 +38,9 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
     /**
      * Clears the cookies.
      *
-     * @param boolean $expired TRUE if it should only clear expired cookies else FALSE.
+     * @param boolean $expiredOnly TRUE if it should only clear expired cookies else FALSE.
      */
-    public function clear($expired = true);
+    public function clear($expiredOnly = false);
 
     /**
      * Checks if there are cookies.

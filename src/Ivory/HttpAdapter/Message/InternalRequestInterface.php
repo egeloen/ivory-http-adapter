@@ -19,41 +19,41 @@ namespace Ivory\HttpAdapter\Message;
 interface InternalRequestInterface extends RequestInterface
 {
     /**
-     * Checks if there is a data.
+     * Checks if there are datas.
      *
-     * @return boolean TRUE if there is a data else FALSE.
+     * @return boolean TRUE if there are datas else FALSE.
      */
-    public function hasData();
+    public function hasDatas();
 
     /**
-     * Checks if there is a string data.
+     * Checks if there are string datas.
      *
-     * @return boolean TRUE if there is a string data else FALSE.
+     * @return boolean TRUE if there are string datas else FALSE.
      */
-    public function hasStringData();
+    public function hasStringDatas();
 
     /**
-     * Checks if there is an array data.
+     * Checks if there are array datas.
      *
-     * @return boolean TRUE if there is an array data else FALSE.
+     * @return boolean TRUE if there are array datas else FALSE.
      */
-    public function hasArrayData();
+    public function hasArrayDatas();
 
     /**
-     * Gets the data.
+     * Gets the datas.
      *
-     * @return array|string The data.
+     * @return array|string The datas.
      */
-    public function getData();
+    public function getDatas();
 
     /**
-     * Sets the data.
+     * Sets the datas.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the data is a string and there are files.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If the datas are a string and there are files.
      *
-     * @param array|string $data The data.
+     * @param array|string $datas The datas.
      */
-    public function setData($data);
+    public function setDatas($datas);
 
     /**
      * Checks if there are files.
