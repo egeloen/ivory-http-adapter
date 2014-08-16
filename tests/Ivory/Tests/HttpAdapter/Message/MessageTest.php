@@ -69,40 +69,86 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     public function testSetHeadersAsString()
     {
-        $this->message->setHeaders(array(' fOo ' => 'bar, baz', ' baT ' => 'ban'));
+        $this->message->setHeaders(array(
+            ' fOo '  => ' bar ,  baz ',
+            ' baT '  => ' ban ',
+            ' Date ' => ' Fri, 15 aug 2014 12:34:56 UTC ',
+        ));
 
-        $this->assertHeaders(array('fOo' => array('bar', 'baz'), 'baT' => array('ban')));
+        $this->assertHeaders(array(
+            'fOo'  => array('bar', 'baz'),
+            'baT'  => array('ban'),
+            'Date' => array('Fri, 15 aug 2014 12:34:56 UTC'),
+        ));
     }
 
     public function testSetHeadersAsArray()
     {
-        $this->message->setHeaders(array(' fOo ' => array('bar', 'baz'), ' baT ' => array('ban')));
+        $this->message->setHeaders(array(
+            ' fOo '  => array(' bar ', ' baz '),
+            ' baT '  => array(' ban '),
+            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
+        ));
 
-        $this->assertHeaders(array('fOo' => array('bar', 'baz'), 'baT' => array('ban')));
+        $this->assertHeaders(array(
+            'fOo'  => array('bar', 'baz'),
+            'baT'  => array('ban'),
+            'Date' => array('Fri, 15 aug 2014 12:34:56 UTC'),
+        ));
     }
 
     public function testSetHeadersWithExistingHeaders()
     {
-        $this->message->setHeaders(array(' fOo ' => 'bar'));
-        $this->message->setHeaders(array(' foO ' => 'baz'));
+        $this->message->setHeaders(array(' fOo ' => ' bar '));
+        $this->message->setHeaders(array(' foO ' => ' baz '));
 
         $this->assertHeaders(array('foO' => array('baz')));
     }
 
     public function testAddHeadersAsString()
     {
-        $this->message->setHeaders(array(' fOo ' => 'bar, baz'));
-        $this->message->addHeaders(array(' foO ' => 'bat, ban', ' Bon ' => 'bin'));
+        $this->message->setHeaders(array(
+            ' fOo '  => ' bar ,  baz ',
+            ' Date ' => ' Fri, 14 aug 2014 12:34:56 UTC ',
+        ));
 
-        $this->assertHeaders(array('foO' => array('bar', 'baz', 'bat', 'ban'), 'Bon' => array('bin')));
+        $this->message->addHeaders(array(
+            ' foO '  => ' bat ,  ban',
+            ' Date ' => ' Fri, 15 aug 2014 12:34:56 UTC ',
+            ' Bon '  => ' bin ',
+        ));
+
+        $this->assertHeaders(array(
+            'foO'  => array('bar', 'baz', 'bat', 'ban'),
+            'Date' => array(
+                'Fri, 14 aug 2014 12:34:56 UTC',
+                'Fri, 15 aug 2014 12:34:56 UTC',
+            ),
+            'Bon'  => array('bin'),
+        ));
     }
 
     public function testAddHeadersAsArray()
     {
-        $this->message->setHeaders(array(' fOo ' => array('bar', 'baz')));
-        $this->message->addHeaders(array(' foO ' => array('bat', 'ban'), ' Bon ' => array('bin')));
+        $this->message->setHeaders(array(
+            ' fOo '  => array(' bar ', ' baz '),
+            ' Date ' => array(' Fri, 14 aug 2014 12:34:56 UTC '),
+        ));
 
-        $this->assertHeaders(array('foO' => array('bar', 'baz', 'bat', 'ban'), 'Bon' => array('bin')));
+        $this->message->addHeaders(array(
+            ' foO '  => array(' bat ', ' ban '),
+            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
+            ' Bon '  => array(' bin '),
+        ));
+
+        $this->assertHeaders(array(
+            'foO' => array('bar', 'baz', 'bat', 'ban'),
+            'Date' => array(
+                'Fri, 14 aug 2014 12:34:56 UTC',
+                'Fri, 15 aug 2014 12:34:56 UTC',
+            ),
+            'Bon' => array('bin'),
+        ));
     }
 
     public function testRemoveHeaders()
