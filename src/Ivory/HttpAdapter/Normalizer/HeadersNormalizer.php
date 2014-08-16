@@ -42,7 +42,7 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
                 continue;
             }
 
-            list($name, $value) = explode(':', $value);
+            list($name, $value) = explode(':', $value, 2);
 
             $name = self::normalizeHeaderName($name);
             $value = self::normalizeHeaderValue($value);

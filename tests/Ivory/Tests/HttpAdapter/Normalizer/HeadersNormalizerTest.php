@@ -23,7 +23,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsAssociativeWithStringHeaders()
     {
         $this->assertSame(
-            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban'),
+            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'),
             HeadersNormalizer::normalize($this->getStringHeaders())
         );
     }
@@ -31,7 +31,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsNotAssociativeWithStringHeaders()
     {
         $this->assertSame(
-            array('fOo: bar, bot', 'Baz: bat, ban'),
+            array('fOo: bar, bot', 'Baz: bat, ban', 'Date: Fri, 15 aug 2014 12:34:56 UTC'),
             HeadersNormalizer::normalize($this->getStringHeaders(), false)
         );
     }
@@ -39,7 +39,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsAssociativeWithSubAssociativeArrayHeaders()
     {
         $this->assertSame(
-            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban'),
+            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'),
             HeadersNormalizer::normalize($this->getSubAssociativeHeaders())
         );
     }
@@ -47,7 +47,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsAssociativeWithAssociativeArrayHeaders()
     {
         $this->assertSame(
-            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban'),
+            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'),
             HeadersNormalizer::normalize($this->getAssociativeHeaders())
         );
     }
@@ -55,7 +55,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAsNotAssociativeWithIndexedArrayHeaders()
     {
         $this->assertSame(
-            array('fOo: bar, bot', 'Baz: bat, ban'),
+            array('fOo: bar, bot', 'Baz: bat, ban', 'Date: Fri, 15 aug 2014 12:34:56 UTC'),
             HeadersNormalizer::normalize($this->getIndexedHeaders(), false)
         );
     }
@@ -130,9 +130,10 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             'HTTP/1.1 200 OK',
-            ' fOo ' => array('bar'),
-            'fOo'   => array('bot'),
-            ' Baz ' => array('bat', 'ban'),
+            ' fOo '  => array(' bar '),
+            'fOo'    => array(' bot '),
+            ' Baz '  => array(' bat ', ' ban '),
+            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC ')
         );
     }
 }
