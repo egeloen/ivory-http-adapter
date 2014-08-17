@@ -21,7 +21,10 @@ use Psr\Http\Message\StreamInterface;
  */
 class InternalRequest extends Request implements InternalRequestInterface
 {
-    /** @var array|string */
+    /** @var string */
+    protected $rawDatas = '';
+
+    /** @var array */
     protected $datas = array();
 
     /** @var array */
@@ -40,7 +43,7 @@ class InternalRequest extends Request implements InternalRequestInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to data/files instead.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to datas/files instead.
      */
     public function getBody()
     {
@@ -50,11 +53,61 @@ class InternalRequest extends Request implements InternalRequestInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to data/files instead.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to datas/files instead.
      */
     public function setBody(StreamInterface $body = null)
     {
         throw HttpAdapterException::doesNotSupportBody();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clearRawDatas()
+    {
+        $this->rawDatas = '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasRawDatas()
+    {
+        return !empty($this->rawDatas);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRawDatas()
+    {
+        return $this->rawDatas;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRawDatas($rawDatas)
+    {
+        if (!empty($rawDatas)) {
+            if ($this->hasDatas()) {
+                throw HttpAdapterException::doesNotSupportRawDatasAndDatas();
+            }
+
+            if ($this->hasFiles()) {
+                throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
+            }
+        }
+
+        $this->rawDatas = $rawDatas;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clearDatas()
+    {
+        $this->datas = array();
     }
 
     /**
@@ -68,22 +121,6 @@ class InternalRequest extends Request implements InternalRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function hasStringDatas()
-    {
-        return is_string($this->datas);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasArrayDatas()
-    {
-        return is_array($this->datas);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getDatas()
     {
         return $this->datas;
@@ -92,13 +129,93 @@ class InternalRequest extends Request implements InternalRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function setDatas($datas)
+    public function setDatas(array $datas)
     {
-        if (is_string($datas) && $this->hasFiles()) {
-            throw HttpAdapterException::doesNotSupportDatasAsStringAndFiles();
+        if ($this->hasRawDatas()) {
+            throw HttpAdapterException::doesNotSupportRawDatasAndDatas();
         }
 
-        $this->datas = $datas;
+        $this->clearDatas();
+        $this->addDatas($datas);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addDatas(array $datas)
+    {
+        foreach ($datas as $name => $value) {
+            $this->addData($name, $value);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeDatas(array $names)
+    {
+        foreach ($names as $name) {
+            $this->removeData($name);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasData($name)
+    {
+        return isset($this->datas[$name]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getData($name)
+    {
+        return $this->hasData($name) ? $this->datas[$name] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setData($name, $value)
+    {
+        if ($this->hasRawDatas()) {
+            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
+        }
+
+        $this->removeData($name);
+        $this->addData($name, $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addData($name, $value)
+    {
+        if ($this->hasRawDatas()) {
+            throw HttpAdapterException::doesNotSupportRawDatasAndDatas();
+        }
+
+        $this->datas[$name] = $this->hasData($name)
+            ? array_merge((array) $this->datas[$name], (array) $value)
+            : $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeData($name)
+    {
+        unset($this->datas[$name]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clearFiles()
+    {
+        $this->files = array();
     }
 
     /**
@@ -122,10 +239,82 @@ class InternalRequest extends Request implements InternalRequestInterface
      */
     public function setFiles(array $files)
     {
-        if ($this->hasStringDatas() && !empty($files)) {
-            throw HttpAdapterException::doesNotSupportDatasAsStringAndFiles();
+        if ($this->hasRawDatas() && !empty($files)) {
+            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
         }
 
-        $this->files = $files;
+        $this->clearFiles();
+        $this->addFiles($files);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addFiles(array $files)
+    {
+        foreach ($files as $name => $file) {
+            $this->addFile($name, $file);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeFiles(array $names)
+    {
+        foreach ($names as $name) {
+            $this->removeFile($name);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasFile($name)
+    {
+        return isset($this->files[$name]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFile($name)
+    {
+        return $this->hasFile($name) ? $this->files[$name] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFile($name, $file)
+    {
+        if ($this->hasRawDatas()) {
+            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
+        }
+
+        $this->removeFile($name);
+        $this->addFile($name, $file);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addFile($name, $file)
+    {
+        if ($this->hasRawDatas()) {
+            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
+        }
+
+        $this->files[$name] = $this->hasFile($name)
+            ? array_merge((array) $this->files[$name], (array) $file)
+            : $file;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeFile($name)
+    {
+        unset($this->files[$name]);
     }
 }

@@ -38,31 +38,57 @@ The method works the same way as the request one. If you want to learn more abou
 The headers work the same way as the request one. If you want to learn more about it, you can read this
 [doc](/doc/request.md#headers).
 
+## Raw Datas
+
+The raw datas represent the payload sent to the server without any formatting. That means if you want to send for
+example json datas or xml datas, you should rely on it but you will need to explicitely set the content-type of the
+request.
+
+``` php
+$hasRawDatas = $internalRequest->hasRawDatas();
+$rawDatas = $internalRequest->getRawDatas();
+$internalRequest->setRawDatas($rawDatas);
+$internalRequest->clearRawDatas();
+```
+
+Be aware that if you use raw datas, you can't use datas/files and vice versa.
+
 ## Datas
 
-The datas represent the body datas which will be sent. It can be either an associative array or a string. If you rely
-on string, your can't provide files as the library can't guess what type of encoding your using. Then, if you rely on
-string, you will need to set the content-type in the headers or on the http adapter by yourself. If you want to
-get/set it, you can use:
+The datas represent the form datas which will be sent to the server. It is an associative array describing name/value
+pairs.
 
 ``` php
 $hasDatas = $internalRequest->hasDatas();
-$hasStringDatas = $internalRequest->hasStringDatas();
-$hasArrayDatas = $internalRequest->hasArrayDatas();
-
 $datas = $internalRequest->getDatas();
 $internalRequest->setDatas(array('foo' => 'bar');
-// or
-$internalRequest->setDatas('string');
+$internalRequest->addDatas(array('foo' => 'bar');
+$internalRequest->removeDatas(array('foo');
+$internalRequest->clearDatas();
+
+$hasData = $internalRequest->hasData('foo');
+$data = $internalRequest->getData('foo');
+$internalRequest->setData('foo', 'bar');
+$internalRequest->addData('foo', 'bar');
+$internalRequest->removeData('foo');
 ```
 
 ## Files
 
-The files represents the body files which will be sent. It is an associative array describing a field/absolute file
-path pair. Be aware, it is not possible to use files and datas as string. If you want to use it, you can use:
+The files represents the form files which will be sent to the server. It is an associative array describing a name/file
+path pair.
 
 ``` php
 $hasFiles = $internalRequest->hasFiles();
 $files = $internalRequest->getFiles();
-$internalRequest->setFiles(array('file' => '/path/of/the/file');
+$internalRequest->setFiles(array('file' => '/path/of/the/file'));
+$internalRequest->addFiles(array('file' => '/path/of/the/file'));
+$internalRequest->removeFiles(array('file'));
+$internalRequest->clearFiles();
+
+$hasFile = $internalRequest->hasFile('file');
+$file = $internalRequest->getFile('file');
+$internalRequest->setFile('file', '/path/of/the/file');
+$internalRequest->addFile('file', '/path/of/the/file');
+$internalRequest->removeFile('file');
 ```

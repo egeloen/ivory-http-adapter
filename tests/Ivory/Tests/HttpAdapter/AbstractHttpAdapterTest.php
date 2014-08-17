@@ -122,6 +122,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendRequest($url, $method, array $headers = array(), array $data = array())
     {
+        $this->httpAdapter->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_URLENCODED);
+
         $request = new Request($url, $method);
         $request->setHeaders($headers);
         $request->setBody(new StringStream(http_build_query($data)));

@@ -52,6 +52,15 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame($this->url, $this->internalRequest->getUrl());
         $this->assertSame(InternalRequest::METHOD_GET, $this->internalRequest->getMethod());
+
+        $this->assertFalse($this->internalRequest->hasRawDatas());
+        $this->assertSame('', $this->internalRequest->getRawDatas());
+
+        $this->assertFalse($this->internalRequest->hasDatas());
+        $this->assertEmpty($this->internalRequest->getDatas());
+
+        $this->assertFalse($this->internalRequest->hasFiles());
+        $this->assertEmpty($this->internalRequest->getFiles());
     }
 
     public function testInitialState()
@@ -62,24 +71,82 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($method, $this->internalRequest->getMethod());
     }
 
-    public function testSetDatasAsString()
+    public function testSetRawDatas()
     {
-        $this->internalRequest->setDatas($datas = $this->getDatasAsString());
+        $this->internalRequest->setRawDatas($rawDatas = $this->getRawDatas());
+
+        $this->assertTrue($this->internalRequest->hasRawDatas());
+        $this->assertSame($rawDatas, $this->internalRequest->getRawDatas());
+    }
+
+    public function testClearRawDatas()
+    {
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+        $this->internalRequest->clearRawDatas();
+
+        $this->assertFalse($this->internalRequest->hasRawDatas());
+        $this->assertSame('', $this->internalRequest->getRawDatas());
+    }
+
+    public function testSetDatas()
+    {
+        $this->internalRequest->setDatas($datas = $this->getDatas());
 
         $this->assertTrue($this->internalRequest->hasDatas());
-        $this->assertTrue($this->internalRequest->hasStringDatas());
-        $this->assertFalse($this->internalRequest->hasArrayDatas());
         $this->assertSame($datas, $this->internalRequest->getDatas());
     }
 
-    public function testSetDatasAsArray()
+    public function testClearDatas()
     {
-        $this->internalRequest->setDatas($datas = $this->getDatasAsArray());
+        $this->internalRequest->setDatas($this->getDatas());
+        $this->internalRequest->clearDatas();
 
-        $this->assertTrue($this->internalRequest->hasDatas());
-        $this->assertTrue($this->internalRequest->hasArrayDatas());
-        $this->assertFalse($this->internalRequest->hasStringDatas());
-        $this->assertSame($datas, $this->internalRequest->getDatas());
+        $this->assertFalse($this->internalRequest->hasDatas());
+        $this->assertEmpty($this->internalRequest->getDatas());
+    }
+
+    public function testAddDatas()
+    {
+        $this->internalRequest->setDatas($datas = $this->getDatas());
+        $this->internalRequest->addDatas(array('foo' => 'bat', 'baz' => 'bot'));
+
+        $this->assertSame(array('foo' => array('bar', 'bat'), 'baz' => 'bot'), $this->internalRequest->getDatas());
+    }
+
+    public function testRemoveDatas()
+    {
+        $this->internalRequest->setDatas($datas = $this->getDatas());
+        $this->internalRequest->removeDatas(array_keys($datas));
+
+        $this->assertFalse($this->internalRequest->hasDatas());
+        $this->assertEmpty($this->internalRequest->getDatas());
+    }
+
+    public function testSetData()
+    {
+        $this->internalRequest->setDatas($this->getDatas());
+        $this->internalRequest->setData($name = 'foo', $value = 'baz');
+
+        $this->assertTrue($this->internalRequest->hasData($name));
+        $this->assertSame($value, $this->internalRequest->getData($name));
+    }
+
+    public function testAddData()
+    {
+        $this->internalRequest->setDatas($this->getDatas());
+        $this->internalRequest->addData($name = 'foo', $value = 'baz');
+
+        $this->assertTrue($this->internalRequest->hasData($name));
+        $this->assertSame(array('bar', $value), $this->internalRequest->getData($name));
+    }
+
+    public function testRemoveData()
+    {
+        $this->internalRequest->addData($name = 'foo', 'bar');
+        $this->internalRequest->removeData($name);
+
+        $this->assertFalse($this->internalRequest->hasData($name));
+        $this->assertNull($this->internalRequest->getData($name));
     }
 
     public function testSetFiles()
@@ -90,22 +157,152 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($files, $this->internalRequest->getFiles());
     }
 
-    /**
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     */
-    public function testSetDatasAsStringWithFiles()
+    public function testClearFiles()
     {
         $this->internalRequest->setFiles($this->getFiles());
-        $this->internalRequest->setDatas($this->getDatasAsString());
+        $this->internalRequest->clearFiles();
+
+        $this->assertFalse($this->internalRequest->hasFiles());
+        $this->assertEmpty($this->internalRequest->getFiles());
+    }
+
+    public function testAddFiles()
+    {
+        $this->internalRequest->setFiles($this->getFiles());
+        $this->internalRequest->addFiles(array(
+            'file2' => realpath(__DIR__.'/../Fixtures/files/file1.txt'),
+            'file3' => realpath(__DIR__.'/../Fixtures/files/file3.txt'),
+        ));
+
+
+        $this->assertSame(
+            array(
+                'file1' => realpath(__DIR__.'/../Fixtures/files/file1.txt'),
+                'file2' => array(
+                    realpath(__DIR__.'/../Fixtures/files/file2.txt'),
+                    realpath(__DIR__.'/../Fixtures/files/file1.txt'),
+                ),
+                'file3' => realpath(__DIR__.'/../Fixtures/files/file3.txt'),
+            ),
+            $this->internalRequest->getFiles()
+        );
+    }
+
+    public function testRemoveFiles()
+    {
+        $this->internalRequest->setFiles($files = $this->getFiles());
+        $this->internalRequest->removeFiles(array_keys($files));
+
+        $this->assertFalse($this->internalRequest->hasFiles());
+        $this->assertEmpty($this->internalRequest->getFiles());
+    }
+
+    public function testSetFile()
+    {
+        $this->internalRequest->setFiles($this->getFiles());
+        $this->internalRequest->setFile(
+            $name = 'file2',
+            realpath(__DIR__.'/../Fixtures/files/file1.txt')
+        );
+
+        $this->assertTrue($this->internalRequest->hasFile($name));
+        $this->assertSame(realpath(__DIR__.'/../Fixtures/files/file1.txt'), $this->internalRequest->getFile($name));
+    }
+
+    public function testAddFile()
+    {
+        $this->internalRequest->setFiles($this->getFiles());
+        $this->internalRequest->addFile($name = 'file2', realpath(__DIR__.'/../Fixtures/files/file1.txt'));
+
+        $this->assertTrue($this->internalRequest->hasFile($name));
+        $this->assertSame(
+            array(
+                realpath(__DIR__.'/../Fixtures/files/file2.txt'),
+                realpath(__DIR__.'/../Fixtures/files/file1.txt'),
+            ),
+            $this->internalRequest->getFile($name)
+        );
+    }
+
+    public function testRemoveFile()
+    {
+        $this->internalRequest->setFiles($this->getFiles());
+        $this->internalRequest->removeFile($name = 'file1');
+
+        $this->assertFalse($this->internalRequest->hasFile($name));
+        $this->assertNull($this->internalRequest->getFile($name));
     }
 
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
      */
-    public function testSetFilesWithDatasAsString()
+    public function testSetRawDatasWithDatas()
     {
-        $this->internalRequest->setDatas($this->getDatasAsString());
+        $this->internalRequest->setDatas($this->getDatas());
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSetRawDatasWithFiles()
+    {
         $this->internalRequest->setFiles($this->getFiles());
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSetDatasWithRawDatas()
+    {
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+        $this->internalRequest->setDatas($this->getDatas());
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSetDataWithRawDatas()
+    {
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+        $this->internalRequest->setData('foo', 'bar');
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testAddDataWithRawDatas()
+    {
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+        $this->internalRequest->addData('foo', 'bar');
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSetFilesWithRawDatas()
+    {
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+        $this->internalRequest->setFiles($this->getFiles());
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSetFileWithRawDatas()
+    {
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+        $this->internalRequest->setFile('file1', realpath(__DIR__.'/../Fixtures/files/file1.txt'));
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testAddFileWithRawDatas()
+    {
+        $this->internalRequest->setRawDatas($this->getRawDatas());
+        $this->internalRequest->addFile('file1', realpath(__DIR__.'/../Fixtures/files/file1.txt'));
     }
 
     /**
@@ -133,23 +330,23 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Gets the datas as array.
+     * Gets the raw datas.
      *
-     * @return array The datas as array.
+     * @return string The raw datas.
      */
-    protected function getDatasAsArray()
+    protected function getRawDatas()
     {
-        return array('foo' => 'bar');
+        return http_build_query($this->getDatas());
     }
 
     /**
-     * Gets the datas as string.
+     * Gets the datas.
      *
-     * @return string The datas as string.
+     * @return array The datas.
      */
-    protected function getDatasAsString()
+    protected function getDatas()
     {
-        return http_build_query($this->getDatasAsArray());
+        return array('foo' => 'bar');
     }
 
     /**

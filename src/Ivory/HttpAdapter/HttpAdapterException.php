@@ -44,17 +44,27 @@ class HttpAdapterException extends \Exception
      */
     public static function doesNotSupportBody()
     {
-        return new self('The internal request does not support body, you should rely on data/files instead.');
+        return new self('The internal request does not support body, you should rely on datas/files instead.');
     }
 
     /**
-     * Gets the "DOES NOT SUPPORT DATAS AS STRING AND FILES" exception.
+     * Gets the "DOES NOT SUPPORT RAW DATAS AND DATAS" exception.
      *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT DATAS AS STRING AND FILES" exception.
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT RAW DATAS AND DATAS" exception.
      */
-    public static function doesNotSupportDatasAsStringAndFiles()
+    public static function doesNotSupportRawDatasAndDatas()
     {
-        return new self('The internal request does not support data as string and files.');
+        return new self('The internal request does not support raw datas and datas.');
+    }
+
+    /**
+     * Gets the "DOES NOT SUPPORT RAW DATAS AND FILES" exception.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT RAW DATAS AND FILES" exception.
+     */
+    public static function doesNotSupportRawDatasAndFiles()
+    {
+        return new self('The internal request does not support raw datas and files.');
     }
 
     /**
