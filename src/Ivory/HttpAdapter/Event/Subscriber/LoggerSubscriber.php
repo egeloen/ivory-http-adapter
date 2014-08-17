@@ -122,6 +122,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
             'url'              => $request->getUrl(),
             'method'           => $request->getMethod(),
             'headers'          => $request->getHeaders(),
+            'raw_datas'        => $request->getRawDatas(),
             'datas'            => $request->getDatas(),
             'files'            => $request->getFiles(),
         );
