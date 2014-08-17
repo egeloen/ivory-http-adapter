@@ -91,3 +91,23 @@ $request->setBody(null);
 ```
 
 If you want to learn more about the stream body, you can read this [doc](/doc/stream.md).
+
+## Parameters
+
+The parameters represents extra datas which can be passed to the http adapter (it is only used internally).
+To check/get/set them, you can use:
+
+``` php
+$hasParameters = $request->hasParameters();
+$parameters = $request->getParameters();
+$request->setParameters($parameters);
+$request->addParameters($parameters);
+$request->removeParameters($names);
+$request->clearParameters();
+
+$hasParameter = $request->hasParameter($name);
+$parameter = $request->getParameter($name);
+$request->setParameter($name, $value);
+$request->addParameter($name, $value);
+$request->removeParameter($name);
+```

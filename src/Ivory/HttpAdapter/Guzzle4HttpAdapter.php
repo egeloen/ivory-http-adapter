@@ -81,7 +81,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
                 },
                 $internalRequest->getMethod()
             ),
-            $response->getEffectiveUrl()
+            array('effective_url' => $response->getEffectiveUrl())
         );
     }
 

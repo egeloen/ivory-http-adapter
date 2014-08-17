@@ -24,9 +24,6 @@ class Response extends AbstractMessage implements ResponseInterface
     /** @var string */
     protected $reasonPhrase;
 
-    /** @var string */
-    protected $effectiveUrl;
-
     /**
      * {@inheritdoc}
      */
@@ -57,21 +54,5 @@ class Response extends AbstractMessage implements ResponseInterface
     public function setReasonPhrase($reasonPhrase)
     {
         $this->reasonPhrase = $reasonPhrase;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEffectiveUrl()
-    {
-        return $this->effectiveUrl;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEffectiveUrl($effectiveUrl)
-    {
-        $this->effectiveUrl = $effectiveUrl;
     }
 }

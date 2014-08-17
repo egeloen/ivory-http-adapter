@@ -489,7 +489,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($options['body'], (string) $response->getBody());
         }
 
-        $this->assertSame($options['effective_url'], $response->getEffectiveUrl());
+        $this->assertSame(array('effective_url' => $options['effective_url']), $response->getParameters());
     }
 
     /**

@@ -92,3 +92,8 @@ $internalRequest->setFile('file', '/path/of/the/file');
 $internalRequest->addFile('file', '/path/of/the/file');
 $internalRequest->removeFile('file');
 ```
+
+## Parameters
+
+The parameters work the same way as the request one. If you want to learn more about it, you can read this
+[doc](/doc/request.md#parameters).

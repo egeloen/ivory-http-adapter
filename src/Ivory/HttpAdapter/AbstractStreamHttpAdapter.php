@@ -60,7 +60,13 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             ReasonPhraseParser::parse($headers),
             HeadersNormalizer::normalize($headers),
             BodyNormalizer::normalize($body, $internalRequest->getMethod()),
-            EffectiveUrlParser::parse($headers, $internalRequest->getUrl(), $this->hasMaxRedirects())
+            array(
+                'effective_url' => EffectiveUrlParser::parse(
+                    $headers,
+                    $internalRequest->getUrl(),
+                    $this->hasMaxRedirects()
+                ),
+            )
         );
     }
 

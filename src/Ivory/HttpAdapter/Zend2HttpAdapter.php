@@ -88,7 +88,7 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
                 },
                 $internalRequest->getMethod()
             ),
-            $internalRequest->getUrl()
+            array('effective_url' => $internalRequest->getUrl())
         );
     }
 }

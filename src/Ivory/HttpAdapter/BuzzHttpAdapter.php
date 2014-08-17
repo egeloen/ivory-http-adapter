@@ -94,7 +94,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
             $response->getReasonPhrase(),
             HeadersNormalizer::normalize($response->getHeaders()),
             BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod()),
-            $internalRequest->getUrl()
+            array('effective_url' => $internalRequest->getUrl())
         );
     }
 }
