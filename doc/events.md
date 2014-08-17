@@ -11,32 +11,61 @@ All available events are described by the constants wrapped in the `Ivory\HttpAd
 ### Pre send
 
 The `Ivory\HttpAdapter\Event\Events::PRE_SEND` describes the event trigger just before a request is sent. It is
-represented by the `Ivory\HttpAdapter\Event\PreSendEvent` and wraps the internal request. To get it, you can use:
+represented by the `Ivory\HttpAdapter\Event\PreSendEvent` and wraps the http adapter and the internal request.
+To get/set them, you can use:
 
 ``` php
+use Ivory\HttpAdapter\Event\PreSendEvent;
+
+$preSendEvent = new PreSendEvent($httpAdapter, $request);
+
+$httpAdapter = $preSendEvent->getHttpAdapter();
+$preSendEvent->setHttpAdapter($httpAdapter);
+
 $request = $preSendEvent->getRequest();
+$preSendEvent->setRequest($request);
 ```
 
 ### Post send
 
 The `Ivory\HttpAdapter\Event\Events::POST_SEND` describes the event trigger just after the request is sent. It is
-described by the `Ivory\HttpAdapter\Event\PostSendEvent` and wraps the internal request and the response. To get them,
-you can use:
+described by the `Ivory\HttpAdapter\Event\PostSendEvent` and wraps the http adapter, the internal request and the
+response. To get/set them, you can use:
 
 ``` php
+use Ivory\HttpAdapter\Event\PostSendEvent;
+
+$postSendEvent = new PostSendEvent($httpAdapter, $request, $response);
+
+$httpAdapter = $postSendEvent->getHttpAdapter();
+$postSendEvent->setHttpAdapter($httpAdapter);
+
 $request = $postSendEvent->getRequest();
+$postSendEvent->setRequest($request);
+
 $response = $postSendEvent->getResponse();
+$postSendEvent->setResponse($response);
 ```
 
 ### Exception
 
 The `Ivory\HttpAdapter\Event\Events::EXCEPTION` describes the event trigger if an error occurred. It is represented by
-the `Ivory\HttpAdapter\Event\ExceptionEvent` and wraps the internal request and the exception. To get them, you can
-use:
+the `Ivory\HttpAdapter\Event\ExceptionEvent` and wraps the http adapter, the internal request and the exception.
+To get/set them, you can use:
 
 ``` php
+use Ivory\HttpAdapter\Event\ExceptionEvent;
+
+$exceptionEvent = new ExceptionEvent($httpAdapter, $request, $exception);
+
+$httpAdapter = $exceptionEvent->getHttpAdapter();
+$exceptionEvent->setHttpAdapter($httpAdapter);
+
 $request = $exceptionEvent->getRequest();
+$exceptionEvent->setRequest($request);
+
 $exception = $exceptionEvent->getException();
+$exceptionEvent->setException($exception);
 ```
 
 ## Available subscribers

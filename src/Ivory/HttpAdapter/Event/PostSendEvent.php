@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter\Event;
 
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
@@ -27,14 +28,18 @@ class PostSendEvent extends AbstractEvent
     /**
      * Creates a post send event.
      *
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
      */
-    public function __construct(InternalRequestInterface $request, ResponseInterface $response)
-    {
-        parent::__construct($request);
+    public function __construct(
+        HttpAdapterInterface $httpAdapter,
+        InternalRequestInterface $request,
+        ResponseInterface $response
+    ) {
+        parent::__construct($httpAdapter, $request);
 
-        $this->response = $response;
+        $this->setResponse($response);
     }
 
     /**
@@ -45,5 +50,15 @@ class PostSendEvent extends AbstractEvent
     public function getResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * Sets the response.
+     *
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     */
+    public function setResponse(ResponseInterface $response)
+    {
+        $this->response = $response;
     }
 }

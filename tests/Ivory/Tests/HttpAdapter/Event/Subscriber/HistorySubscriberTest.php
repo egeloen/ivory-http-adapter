@@ -86,8 +86,8 @@ class HistorySubscriberTest extends AbstractSubscriberTest
                 $this->isType('float')
             );
 
-        $this->historySubscriber->onPreSend($this->createPreSendEvent());
-        $this->historySubscriber->onPostSend($this->createPostSendEvent($request, $response));
+        $this->historySubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->historySubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
     }
 
     /**

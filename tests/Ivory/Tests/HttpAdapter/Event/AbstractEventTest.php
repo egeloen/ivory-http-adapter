@@ -21,6 +21,9 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
     /** @var mixed */
     protected $event;
 
+    /** @var \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    protected $httpAdapter;
+
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
     protected $request;
 
@@ -29,6 +32,7 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        $this->httpAdapter = $this->createHttpAdapterMock();
         $this->request = $this->createRequestMock();
         $this->event = $this->createEvent();
     }
@@ -38,13 +42,29 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        unset($this->httpAdapter);
         unset($this->request);
         unset($this->event);
     }
 
-    public function testGetRequest()
+    public function testDefaultState()
     {
+        $this->assertSame($this->httpAdapter, $this->event->getHttpAdapter());
         $this->assertSame($this->request, $this->event->getRequest());
+    }
+
+    public function testSetHttpAdapter()
+    {
+        $this->event->setHttpAdapter($httpAdapter = $this->createHttpAdapterMock());
+
+        $this->assertSame($httpAdapter, $this->event->getHttpAdapter());
+    }
+
+    public function testSetRequest()
+    {
+        $this->event->setRequest($request = $this->createRequestMock());
+
+        $this->assertSame($request, $this->event->getRequest());
     }
 
     /**
@@ -53,6 +73,16 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
      * @return mixed The event.
      */
     abstract protected function createEvent();
+
+    /**
+     * Creates an http adapter mock.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
+     */
+    protected function createHttpAdapterMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+    }
 
     /**
      * Creates a request mock.

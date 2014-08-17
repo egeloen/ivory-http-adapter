@@ -25,6 +25,6 @@ class PreSendEventTest extends AbstractEventTest
      */
     protected function createEvent()
     {
-        return new PreSendEvent($this->request);
+        return new PreSendEvent($this->httpAdapter, $this->request);
     }
 }

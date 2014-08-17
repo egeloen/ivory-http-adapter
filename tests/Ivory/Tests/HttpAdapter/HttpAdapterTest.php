@@ -119,12 +119,16 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($maxRedirects, $this->httpAdapter->getMaxRedirects());
     }
 
-    public function testSendDispatchPreSendEvent()
+    public function testSendInternalRequestDispatchPreSendEvent()
     {
+        $httpAdapter = $this->httpAdapter;
+        $internalRequest = $this->createInternalRequestMock();
+        $response = $this->createResponseMock();
+
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSend')
-            ->will($this->returnValue($this->createResponseMock()));
+            ->will($this->returnValue($response));
 
         $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
 
@@ -133,20 +137,26 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->identicalTo(Events::PRE_SEND),
-                $this->callback(function ($event) {
-                    return $event instanceof PreSendEvent && $event->getRequest() instanceof InternalRequestInterface;
+                $this->callback(function ($event) use ($httpAdapter, $internalRequest) {
+                    return $event instanceof PreSendEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getRequest() === $internalRequest;
                 })
             );
 
-        $this->httpAdapter->send('http://egeloen.fr', InternalRequestInterface::METHOD_GET);
+        $this->httpAdapter->sendInternalRequest($internalRequest);
     }
 
-    public function testSendDispatchPostSendEvent()
+    public function testSendInternalRequestDispatchPostSendEvent()
     {
+        $httpAdapter = $this->httpAdapter;
+        $internalRequest = $this->createInternalRequestMock();
+        $response = $this->createResponseMock();
+
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSend')
-            ->will($this->returnValue($response = $this->createResponseMock()));
+            ->will($this->returnValue($response));
 
         $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
 
@@ -155,25 +165,30 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->identicalTo(Events::POST_SEND),
-                $this->callback(function ($event) use ($response) {
+                $this->callback(function ($event) use ($httpAdapter, $internalRequest, $response) {
                     return $event instanceof PostSendEvent
-                        && $event->getRequest() instanceof InternalRequestInterface
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getRequest() === $internalRequest
                         && $event->getResponse() === $response;
                 })
             );
 
-        $this->httpAdapter->send('http://egeloen.fr', InternalRequestInterface::METHOD_GET);
+        $this->httpAdapter->sendInternalRequest($internalRequest);
     }
 
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
      */
-    public function testSendDispatchExceptionEvent()
+    public function testSendInternalRequestDispatchExceptionEvent()
     {
+        $httpAdapter = $this->httpAdapter;
+        $internalRequest = $this->createInternalRequestMock();
+        $exception = $this->createExceptionMock();
+
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSend')
-            ->will($this->throwException($exception = $this->createExceptionMock()));
+            ->will($this->throwException($exception));
 
         $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
 
@@ -182,14 +197,15 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->identicalTo(Events::EXCEPTION),
-                $this->callback(function ($event) use ($exception) {
+                $this->callback(function ($event) use ($httpAdapter, $internalRequest, $exception) {
                     return $event instanceof ExceptionEvent
-                        && $event->getRequest() instanceof InternalRequestInterface
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getRequest() === $internalRequest
                         && $event->getException() === $exception;
                 })
             );
 
-        $this->httpAdapter->send('http://egeloen.fr', InternalRequestInterface::METHOD_GET);
+        $this->httpAdapter->sendInternalRequest($internalRequest);
     }
 
     /**
@@ -220,6 +236,16 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function createEventDispatcherMock()
     {
         return $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+    }
+
+    /**
+     * Creates an internal request mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The internal request mock.
+     */
+    protected function createInternalRequestMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**

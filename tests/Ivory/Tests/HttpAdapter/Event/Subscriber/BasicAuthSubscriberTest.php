@@ -109,7 +109,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
     public function testPreSendEventWithValidMatcher($matcher)
     {
         $this->basicAuthSubscriber->setMatcher($matcher);
-        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent($request = $this->createRequest()));
+        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request = $this->createRequest()));
 
         $this->assertTrue($request->hasHeader('Authorization'));
         $this->assertSame('Basic dXNlcm5hbWU6cGFzc3dvcmQ=', $request->getHeader('authorization'));
@@ -121,7 +121,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
     public function testPreSendEventWithInvalidMatcher($matcher)
     {
         $this->basicAuthSubscriber->setMatcher($matcher);
-        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent($request = $this->createRequest()));
+        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request = $this->createRequest()));
 
         $this->assertFalse($request->hasHeader('Authorization'));
     }

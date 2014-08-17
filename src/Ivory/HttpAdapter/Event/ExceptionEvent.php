@@ -12,6 +12,7 @@
 namespace Ivory\HttpAdapter\Event;
 
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -27,14 +28,18 @@ class ExceptionEvent extends AbstractEvent
     /**
      * Creates an exception event.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request   The request.
-     * @param \Ivory\HttpAdapter\HttpAdapterException             $exception The exception.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
+     * @param \Ivory\HttpAdapter\HttpAdapterException             $exception   The exception.
      */
-    public function __construct(InternalRequestInterface $request, HttpAdapterException $exception)
-    {
-        parent::__construct($request);
+    public function __construct(
+        HttpAdapterInterface $httpAdapter,
+        InternalRequestInterface $request,
+        HttpAdapterException $exception
+    ) {
+        parent::__construct($httpAdapter, $request);
 
-        $this->exception = $exception;
+        $this->setException($exception);
     }
 
     /**
@@ -45,5 +50,15 @@ class ExceptionEvent extends AbstractEvent
     public function getException()
     {
         return $this->exception;
+    }
+
+    /**
+     * Sets the exception.
+     *
+     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
+     */
+    public function setException(HttpAdapterException $exception)
+    {
+        $this->exception = $exception;
     }
 }

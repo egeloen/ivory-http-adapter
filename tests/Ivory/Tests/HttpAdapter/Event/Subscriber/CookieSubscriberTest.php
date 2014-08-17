@@ -81,7 +81,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
             ->method('populate')
             ->with($this->identicalTo($request));
 
-        $this->cookieSubscriber->onPreSend($this->createPreSendEvent($request));
+        $this->cookieSubscriber->onPreSend($this->createPreSendEvent(null, $request));
     }
 
     public function testPostSendEvent()
@@ -96,7 +96,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
             ->method('extract')
             ->with($this->identicalTo($request), $this->identicalTo($response));
 
-        $this->cookieSubscriber->onPostSend($this->createPostSendEvent($request, $response));
+        $this->cookieSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
     }
 
     /**

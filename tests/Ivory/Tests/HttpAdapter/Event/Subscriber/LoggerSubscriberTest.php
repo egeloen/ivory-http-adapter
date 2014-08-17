@@ -99,8 +99,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 })
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($request));
-        $this->loggerSubscriber->onPostSend($this->createPostSendEvent($request, $response));
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->loggerSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
     }
 
     public function testExceptionEvent()
@@ -123,12 +123,12 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                         && $context['request']['files'] === $request->getFiles()
                         && $context['exception']['code'] === $exception->getCode()
                         && $context['exception']['message'] === $exception->getMessage()
-                        && $context['exception']['line'] === 112
+                        && $context['exception']['line'] === 140
                         && $context['exception']['file'] === realpath(__DIR__.'/AbstractSubscriberTest.php');
                 })
             );
 
-        $this->loggerSubscriber->onException($this->createExceptionEvent($request, $exception));
+        $this->loggerSubscriber->onException($this->createExceptionEvent(null, $request, $exception));
     }
 
     /**

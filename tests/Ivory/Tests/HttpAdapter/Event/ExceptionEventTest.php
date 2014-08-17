@@ -43,9 +43,18 @@ class ExceptionEventTest extends AbstractEventTest
         parent::tearDown();
     }
 
-    public function testGetException()
+    public function testDefaultState()
     {
+        parent::testDefaultState();
+
         $this->assertSame($this->exception, $this->event->getException());
+    }
+
+    public function testSetException()
+    {
+        $this->event->setException($exception = $this->createExceptionMock());
+
+        $this->assertSame($exception, $this->event->getException());
     }
 
     /**
@@ -53,7 +62,7 @@ class ExceptionEventTest extends AbstractEventTest
      */
     protected function createEvent()
     {
-        return new ExceptionEvent($this->request, $this->exception);
+        return new ExceptionEvent($this->httpAdapter, $this->request, $this->exception);
     }
 
     /**

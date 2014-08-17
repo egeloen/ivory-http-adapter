@@ -14,6 +14,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
@@ -31,41 +32,68 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates a pre send event.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request The request.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface|null             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request     The request.
      *
      * @return \Ivory\HttpAdapter\Event\PreSendEvent The pre send event.
      */
-    protected function createPreSendEvent(InternalRequestInterface $request = null)
-    {
-        return new PreSendEvent($request ?: $this->createRequest());
+    protected function createPreSendEvent(
+        HttpAdapterInterface $httpAdapter = null,
+        InternalRequestInterface $request = null
+    ) {
+        return new PreSendEvent($httpAdapter ?: $this->createHttpAdapterMock(), $request ?: $this->createRequest());
     }
 
     /**
      * Creates a post send event.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request  The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null        $response The response.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface|null             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request     The request.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null        $response    The response.
      *
      * @return \Ivory\HttpAdapter\Event\PostSendEvent The post send event.
      */
-    protected function createPostSendEvent(InternalRequestInterface $request = null, ResponseInterface $response = null)
-    {
-        return new PostSendEvent($request ?: $this->createRequest(), $response ?: $this->createResponse());
+    protected function createPostSendEvent(
+        HttpAdapterInterface $httpAdapter = null,
+        InternalRequestInterface $request = null,
+        ResponseInterface $response = null
+    ) {
+        return new PostSendEvent(
+            $httpAdapter ?: $this->createHttpAdapterMock(),
+            $request ?: $this->createRequest(),
+            $response ?: $this->createResponse()
+        );
     }
 
     /**
      * Creates an exception event.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request   The request.
-     * @param \Ivory\HttpAdapter\HttpAdapterException|null             $exception The exception.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface|null             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request     The request.
+     * @param \Ivory\HttpAdapter\HttpAdapterException|null             $exception   The exception.
      *
      * @return \Ivory\HttpAdapter\Event\ExceptionEvent The exception event.
      */
     protected function createExceptionEvent(
+        HttpAdapterInterface $httpAdapter = null,
         InternalRequestInterface $request = null,
         HttpAdapterException $exception = null
     ) {
-        return new ExceptionEvent($request ?: $this->createRequest(), $exception ?: $this->createException());
+        return new ExceptionEvent(
+            $httpAdapter ?: $this->createHttpAdapterMock(),
+            $request ?: $this->createRequest(),
+            $exception ?: $this->createException()
+        );
+    }
+
+    /**
+     * Creates an http adapter mock.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
+     */
+    protected function createHttpAdapterMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
     }
 
     /**

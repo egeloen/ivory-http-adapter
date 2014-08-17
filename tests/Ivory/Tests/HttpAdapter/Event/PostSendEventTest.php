@@ -43,9 +43,18 @@ class PostSendEventTest extends AbstractEventTest
         parent::tearDown();
     }
 
-    public function testGetResponse()
+    public function testDefaultState()
     {
+        parent::testDefaultState();
+
         $this->assertSame($this->response, $this->event->getResponse());
+    }
+
+    public function testSetResponse()
+    {
+        $this->event->setResponse($response = $this->createResponseMock());
+
+        $this->assertSame($response, $this->event->getResponse());
     }
 
     /**
@@ -53,7 +62,7 @@ class PostSendEventTest extends AbstractEventTest
      */
     protected function createEvent()
     {
-        return new PostSendEvent($this->request, $this->response);
+        return new PostSendEvent($this->httpAdapter, $this->request, $this->response);
     }
 
     /**

@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter\Event;
 
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -21,17 +22,42 @@ use Symfony\Component\EventDispatcher\Event;
  */
 abstract class AbstractEvent extends Event
 {
+    /** @var \Ivory\HttpAdapter\HttpAdapterInterface */
+    protected $httpAdapter;
+
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
     protected $request;
 
     /**
      * Creates a pre send event.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
      */
-    public function __construct(InternalRequestInterface $request)
+    public function __construct(HttpAdapterInterface $httpAdapter, InternalRequestInterface $request)
     {
-        $this->request = $request;
+        $this->setHttpAdapter($httpAdapter);
+        $this->setRequest($request);
+    }
+
+    /**
+     * Gets the http adapter.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterInterface The http adapter.
+     */
+    public function getHttpAdapter()
+    {
+        return $this->httpAdapter;
+    }
+
+    /**
+     * Sets the http adapter.
+     *
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
+     */
+    public function setHttpAdapter(HttpAdapterInterface $httpAdapter)
+    {
+        $this->httpAdapter = $httpAdapter;
     }
 
     /**
@@ -42,5 +68,15 @@ abstract class AbstractEvent extends Event
     public function getRequest()
     {
         return $this->request;
+    }
+
+    /**
+     * Sets the request.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     */
+    public function setRequest(InternalRequestInterface $request)
+    {
+        $this->request = $request;
     }
 }
