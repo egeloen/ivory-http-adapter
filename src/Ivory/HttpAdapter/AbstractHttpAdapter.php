@@ -274,15 +274,15 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     {
         $internalRequest = $this->messageFactory->createInternalRequest($url, $method);
         $internalRequest->setProtocolVersion($this->protocolVersion);
-        $internalRequest->setHeaders($headers);
+        $internalRequest->addHeaders($headers);
 
         if (is_string($datas)) {
             $internalRequest->setRawDatas($datas);
         } else {
-            $internalRequest->setDatas($datas);
+            $internalRequest->addDatas($datas);
         }
 
-        $internalRequest->setFiles($files);
+        $internalRequest->addFiles($files);
 
         return $this->sendInternalRequest($internalRequest);
     }
