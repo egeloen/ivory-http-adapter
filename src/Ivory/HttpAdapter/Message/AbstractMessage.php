@@ -32,6 +32,9 @@ abstract class AbstractMessage implements MessageInterface
     /** @var \Psr\Http\Message\StreamInterface|null */
     protected $body;
 
+    /** @var array */
+    protected $parameters = array();
+
     /**
      * {@inheritdoc}
      */
@@ -182,6 +185,101 @@ abstract class AbstractMessage implements MessageInterface
     public function setBody(StreamInterface $body = null)
     {
         $this->body = $body;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clearParameters()
+    {
+        $this->parameters = array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasParameters()
+    {
+        return !empty($this->parameters);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParameters(array $parameters)
+    {
+        $this->clearParameters();
+        $this->addParameters($parameters);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addParameters(array $parameters)
+    {
+        foreach ($parameters as $name => $value) {
+            $this->addParameter($name, $value);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeParameters(array $names)
+    {
+        foreach ($names as $name) {
+            $this->removeParameter($name);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasParameter($name)
+    {
+        return isset($this->parameters[$name]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameter($name)
+    {
+        return $this->hasParameter($name) ? $this->parameters[$name] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParameter($name, $value)
+    {
+        $this->parameters[$name] = $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addParameter($name, $value)
+    {
+        $this->parameters[$name] = $this->hasParameter($name)
+            ? array_merge((array) $this->parameters[$name], (array) $value)
+            : $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeParameter($name)
+    {
+        unset($this->parameters[$name]);
     }
 
     /**

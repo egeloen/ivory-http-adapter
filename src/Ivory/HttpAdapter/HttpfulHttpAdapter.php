@@ -71,7 +71,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             ReasonPhraseParser::parse($response->raw_headers),
             $response->headers->toArray(),
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod()),
-            $internalRequest->getUrl()
+            array('effective_url' => $internalRequest->getUrl())
         );
     }
 }

@@ -51,6 +51,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->message->getProtocolVersion());
         $this->assertNoHeaders();
         $this->assertNoBody();
+        $this->assertNoParameters();
     }
 
     public function testSetProtocolVersion()
@@ -204,6 +205,60 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertNoHeader($header);
     }
 
+    public function testSetParameters()
+    {
+        $this->message->setParameters($parameters = array('foo' => 'bar'));
+
+        $this->assertParameters($parameters);
+    }
+
+    public function testAddParameters()
+    {
+        $this->message->setParameters(array('foo' => 'bar'));
+        $this->message->addParameters(array('foo' => 'baz', 'bat' => 'bot'));
+
+        $this->assertParameters(array('foo' => array('bar', 'baz'), 'bat' => 'bot'));
+    }
+
+    public function testRemoveParameters()
+    {
+        $this->message->setParameters($parameters = array('foo' => 'bar'));
+        $this->message->removeParameters(array_keys($parameters));
+
+        $this->assertNoParameters();
+    }
+
+    public function testClearParameters()
+    {
+        $this->message->setParameters(array('foo' => 'bar'));
+        $this->message->clearParameters();
+
+        $this->assertNoParameters();
+    }
+
+    public function testSetParameter()
+    {
+        $this->message->setParameter($name = 'foo', $value = 'bar');
+
+        $this->assertParameter($name, $value);
+    }
+
+    public function testAddParameter()
+    {
+        $this->message->setParameter($name = 'foo', $value1 = 'bar');
+        $this->message->addParameter($name, $value2 = 'baz');
+
+        $this->assertParameter($name, array($value1, $value2));
+    }
+
+    public function testRemoveParameter()
+    {
+        $this->message->setParameter($name = 'foo', 'bar');
+        $this->message->removeParameter($name);
+
+        $this->assertNoParameter($name);
+    }
+
     /**
      * Asserts there are the headers.
      *
@@ -271,5 +326,52 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertFalse($this->message->hasBody());
         $this->assertNull($this->message->getBody());
+    }
+
+    /**
+     * Asserts there are the parameters.
+     *
+     * @param array $parameters The parameters.
+     */
+    protected function assertParameters(array $parameters)
+    {
+        $this->assertTrue($this->message->hasParameters());
+        $this->assertSame($parameters, $this->message->getParameters());
+
+        foreach ($parameters as $name => $value) {
+            $this->assertParameter($name, $value);
+        }
+    }
+
+    /**
+     * Asserts there are no parameters.
+     */
+    protected function assertNoParameters()
+    {
+        $this->assertFalse($this->message->hasParameters());
+        $this->assertEmpty($this->message->getParameters());
+    }
+
+    /**
+     * Asserts there is the parameter.
+     *
+     * @param string $name  The parameter name.
+     * @param mixed  $value The parameter value.
+     */
+    protected function assertParameter($name, $value)
+    {
+        $this->assertTrue($this->message->hasParameter($name));
+        $this->assertSame($value, $this->message->getParameter($name));
+    }
+
+    /**
+     * Asserts there is no parameter.
+     *
+     * @param string $name The parameter name.
+     */
+    protected function assertNoParameter($name)
+    {
+        $this->assertFalse($this->message->hasParameter($name));
+        $this->assertNull($this->message->getParameter($name));
     }
 }

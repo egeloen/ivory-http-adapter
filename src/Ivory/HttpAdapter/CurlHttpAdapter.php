@@ -112,7 +112,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             ReasonPhraseParser::parse($headers),
             HeadersNormalizer::normalize($headers),
             BodyNormalizer::normalize($body, $internalRequest->getMethod()),
-            $effectiveUrl
+            array('effective_url' => $effectiveUrl)
         );
     }
 }

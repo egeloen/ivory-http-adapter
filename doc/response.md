@@ -78,15 +78,35 @@ $request->setBody(null);
 
 If you want to learn more about the stream body, you can read this [doc](/doc/stream.md).
 
-## Effective url
+## Parameters
 
-The effective url represents the final url reached according to the max redirects configuration. Then, it is only
-usefull when there is a redirect response and the max redirects features is enabled. If you want to get/set it, you can
-use:
+The parameters represents extra datas which are returned by the http adapter. To check/get/set them, you can use:
 
 ``` php
-$effectiveUrl = $response->getEffectiveUrl();
-$response->setEffectiveUrl('http://egeloen.fr');
+$hasParameters = $response->hasParameters();
+$parameters = $response->getParameters();
+$response->setParameters($parameters);
+$response->addParameters($parameters);
+$response->removeParameters($names);
+$response->clearParameters();
+
+$hasParameter = $response->hasParameter($name);
+$parameter = $response->getParameter($name);
+$response->setParameter($name, $value);
+$response->addParameter($name, $value);
+$response->removeParameter($name);
+```
+
+### Effective url
+
+The effective url represents the final url reached according to the max redirects configuration. Then, it is only
+usefull when there is a redirect response and the max redirects features is enabled. This value is stored as parameter
+in the response. If you want to get/set it, you can use:
+
+``` php
+$hasEffectiveUrl = $response->hasParameter('effective_url');
+$effectiveUrl = $response->getParameter('effective_url');
+$response->setParameter('effective_url', 'http://egeloen.fr');
 ```
 
 Additionally, the effective url is not supported by all adapters. Buzz, Httpful, Zend 1 and Zend 2 does not support it,

@@ -20,17 +20,5 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
  */
 interface ResponseInterface extends PsrResponseInterface, MessageInterface
 {
-    /**
-     * Gets the effective url.
-     *
-     * @return string The effective url.
-     */
-    public function getEffectiveUrl();
 
-    /**
-     * Sets the effective url.
-     *
-     * @param string $effectiveUrl The effective url.
-     */
-    public function setEffectiveUrl($effectiveUrl);
 }

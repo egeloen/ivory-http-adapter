@@ -85,7 +85,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             ReasonPhraseParser::parse($responseHeaders),
             $responseHeaders = HeadersNormalizer::normalize($responseHeaders),
             BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod()),
-            $internalRequest->getUrl()
+            array('effective_url' => $internalRequest->getUrl())
         );
     }
 

@@ -457,7 +457,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      * @param string                                            $reasonPhrase    The reason phrase.
      * @param array                                             $headers         The headers.
      * @param resource|string|\Psr\Http\Message\StreamInterface $body            The body.
-     * @param string                                            $effectiveUrl    The effective url.
+     * @param array                                             $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The created response.
      */
@@ -467,14 +467,13 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $reasonPhrase,
         array $headers,
         $body,
-        $effectiveUrl
+        array $parameters = array()
     ) {
         $response = $this->messageFactory->createResponse();
         $response->setProtocolVersion($protocolVersion);
         $response->setStatusCode($statusCode);
         $response->setReasonPhrase($reasonPhrase);
-        $response->setHeaders($headers);
-        $response->setEffectiveUrl($effectiveUrl);
+        $response->addHeaders($headers);
 
         if (is_resource($body)) {
             $response->setBody(new ResourceStream($body));
@@ -483,6 +482,8 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         } else {
             $response->setBody($body);
         }
+
+        $response->setParameters($parameters);
 
         return $response;
     }

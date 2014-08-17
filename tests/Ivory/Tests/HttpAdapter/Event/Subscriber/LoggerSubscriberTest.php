@@ -90,12 +90,13 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                         && $context['request']['raw_datas'] === $request->getRawDatas()
                         && $context['request']['datas'] === $request->getDatas()
                         && $context['request']['files'] === $request->getFiles()
+                        && $context['request']['parameters'] === $request->getParameters()
                         && $context['response']['protocol_version'] === $response->getProtocolVersion()
                         && $context['response']['status_code'] === $response->getStatusCode()
                         && $context['response']['reason_phrase'] === $response->getReasonPhrase()
                         && $context['response']['headers'] === $response->getHeaders()
                         && $context['response']['body'] === (string) $response->getBody()
-                        && $context['response']['effective_url'] === $response->getEffectiveUrl();
+                        && $context['response']['parameters'] === $response->getParameters();
                 })
             );
 
@@ -121,9 +122,10 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                         && $context['request']['raw_datas'] === $request->getRawDatas()
                         && $context['request']['datas'] === $request->getDatas()
                         && $context['request']['files'] === $request->getFiles()
+                        && $context['request']['parameters'] === $request->getParameters()
                         && $context['exception']['code'] === $exception->getCode()
                         && $context['exception']['message'] === $exception->getMessage()
-                        && $context['exception']['line'] === 140
+                        && $context['exception']['line'] === 141
                         && $context['exception']['file'] === realpath(__DIR__.'/AbstractSubscriberTest.php');
                 })
             );

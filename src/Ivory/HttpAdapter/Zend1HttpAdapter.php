@@ -84,7 +84,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
                 $response instanceof \Zend_Http_Client_Adapter_Stream ? $response->getStream() : $response->getBody(),
                 $internalRequest->getMethod()
             ),
-            $internalRequest->getUrl()
+            array('effective_url' => $internalRequest->getUrl())
         );
     }
 }

@@ -125,6 +125,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
             'raw_datas'        => $request->getRawDatas(),
             'datas'            => $request->getDatas(),
             'files'            => $request->getFiles(),
+            'parameters'       => $request->getParameters(),
         );
     }
 
@@ -143,7 +144,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
             'reason_phrase'    => $response->getReasonPhrase(),
             'headers'          => $response->getHeaders(),
             'body'             => (string) $response->getBody(),
-            'effective_url'    => $response->getEffectiveUrl(),
+            'parameters'       => $response->getParameters(),
         );
     }
 

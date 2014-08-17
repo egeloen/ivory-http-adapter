@@ -53,7 +53,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->response->getReasonPhrase());
         $this->assertFalse($this->response->hasHeaders());
         $this->assertFalse($this->response->hasBody());
-        $this->assertNull($this->response->getEffectiveUrl());
+        $this->assertFalse($this->response->hasParameters());
     }
 
     public function testSetProtocolVersion()
@@ -75,12 +75,5 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->setReasonPhrase($reasonPhrase = 'OK');
 
         $this->assertSame($reasonPhrase, $this->response->getReasonPhrase());
-    }
-
-    public function testSetEffectiveUrl()
-    {
-        $this->response->setEffectiveUrl($effectiveUrl = 'http://egeloen.fr/');
-
-        $this->assertSame($effectiveUrl, $this->response->getEffectiveUrl());
     }
 }

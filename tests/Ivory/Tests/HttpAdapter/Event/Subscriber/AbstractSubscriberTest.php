@@ -108,6 +108,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
         $request->setHeaders(array('connection' => 'close'));
         $request->setDatas(array('foo' => 'bar'));
         $request->setFiles(array('file' => __FILE__));
+        $request->setParameters(array('foo' => 'bar'));
 
         return $request;
     }
@@ -125,7 +126,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
         $response->setReasonPhrase('OK');
         $response->setHeaders(array('transfer-encoding' => 'chunked'));
         $response->setBody(new StringStream('foo'));
-        $response->setEffectiveUrl('http://www.google.com');
+        $response->setParameters(array('foo' => 'bar'));
 
         return $response;
     }
