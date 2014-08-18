@@ -72,17 +72,14 @@ class HistorySubscriberTest extends AbstractSubscriberTest
 
     public function testPostSendEvent()
     {
-        $request = $this->createRequest();
-        $response = $this->createResponse();
-
         $this->historySubscriber->setJournal($journal = $this->createJournalMock());
 
         $journal
             ->expects($this->once())
             ->method('record')
             ->with(
-                $this->identicalTo($request),
-                $this->identicalTo($response),
+                $this->identicalTo($request = $this->createRequestMock()),
+                $this->identicalTo($response = $this->createResponseMock()),
                 $this->isType('float')
             );
 

@@ -62,7 +62,7 @@ class TimerTest extends AbstractSubscriberTest
 
         $time = $reflectionProperty->getValue($this->timerSubscriber);
 
-        $this->assertGreaterThan(0, $time);
-        $this->assertLessThan(1, $time);
+        $this->assertGreaterThanOrEqual(0, $time);
+        $this->assertLessThanOrEqual(1, $time);
     }
 }

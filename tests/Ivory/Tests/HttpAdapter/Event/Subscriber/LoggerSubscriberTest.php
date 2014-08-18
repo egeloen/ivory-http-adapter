@@ -73,8 +73,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
     public function testPostSendEvent()
     {
-        $request = $this->createRequest();
-        $response = $this->createResponse();
+        $request = $this->createRequestMock();
+        $response = $this->createResponseMock();
 
         $this->logger
             ->expects($this->once())
@@ -106,8 +106,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
     public function testExceptionEvent()
     {
-        $request = $this->createRequest();
-        $exception = $this->createException();
+        $request = $this->createRequestMock();
+        $exception = $this->createExceptionMock();
 
         $this->logger
             ->expects($this->once())
@@ -125,8 +125,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                         && $context['request']['parameters'] === $request->getParameters()
                         && $context['exception']['code'] === $exception->getCode()
                         && $context['exception']['message'] === $exception->getMessage()
-                        && $context['exception']['line'] === 141
-                        && $context['exception']['file'] === realpath(__DIR__.'/AbstractSubscriberTest.php');
+                        && $context['exception']['line'] === $exception->getLine()
+                        && $context['exception']['file'] === $exception->getFile();
                 })
             );
 
@@ -141,5 +141,122 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
     protected function createLoggerMock()
     {
         return $this->getMock('Psr\Log\LoggerInterface');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createRequestMock()
+    {
+        $request = parent::createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('getProtocolVersion')
+            ->will($this->returnValue('1.1'));
+
+        $request
+            ->expects($this->any())
+            ->method('getUrl')
+            ->will($this->returnValue('http://egeloen.fr'));
+
+        $request
+            ->expects($this->any())
+            ->method('getMethod')
+            ->will($this->returnValue('GET'));
+
+        $request
+            ->expects($this->any())
+            ->method('getHeaders')
+            ->will($this->returnValue(array('foo' => 'bar')));
+
+        $request
+            ->expects($this->any())
+            ->method('getRawDatas')
+            ->will($this->returnValue('foo=bar'));
+
+        $request
+            ->expects($this->any())
+            ->method('getDatas')
+            ->will($this->returnValue(array('baz' => 'bat')));
+
+        $request
+            ->expects($this->any())
+            ->method('getFiles')
+            ->will($this->returnValue(array('bit' => __FILE__)));
+
+        $request
+            ->expects($this->any())
+            ->method('getParamters')
+            ->will($this->returnValue(array('ban' => 'bor')));
+
+        return $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResponseMock()
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getProtocolVersion')
+            ->will($this->returnValue('1.1'));
+
+        $response
+            ->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue(200));
+
+        $response
+            ->expects($this->any())
+            ->method('getReasonPhrase')
+            ->will($this->returnValue('OK'));
+
+        $response
+            ->expects($this->any())
+            ->method('getHeaders')
+            ->will($this->returnValue(array('bal' => 'bol')));
+
+        $response
+            ->expects($this->any())
+            ->method('getStream')
+            ->will($this->returnValue('stream'));
+
+        $response
+            ->expects($this->any())
+            ->method('getParameters')
+            ->will($this->returnValue(array('bil' => 'bob')));
+
+        return $response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createExceptionMock()
+    {
+        $exception = parent::createExceptionMock();
+        $exception
+            ->expects($this->any())
+            ->method('getCode')
+            ->will($this->returnValue(123));
+
+        $exception
+            ->expects($this->any())
+            ->method('getMessage')
+            ->will($this->returnValue('message'));
+
+        $exception
+            ->expects($this->any())
+            ->method('getLine')
+            ->will($this->returnValue(234));
+
+        $exception
+            ->expects($this->any())
+            ->method('getFile')
+            ->will($this->returnValue(__FILE__));
+
+        return $exception;
     }
 }

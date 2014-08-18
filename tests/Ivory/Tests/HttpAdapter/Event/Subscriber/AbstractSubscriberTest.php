@@ -16,11 +16,8 @@ use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\Response;
 use Ivory\HttpAdapter\Message\ResponseInterface;
-use Ivory\HttpAdapter\Message\Stream\StringStream;
 
 /**
  * Abstract subscriber test.
@@ -41,7 +38,10 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
         HttpAdapterInterface $httpAdapter = null,
         InternalRequestInterface $request = null
     ) {
-        return new PreSendEvent($httpAdapter ?: $this->createHttpAdapterMock(), $request ?: $this->createRequest());
+        return new PreSendEvent(
+            $httpAdapter ?: $this->createHttpAdapterMock(),
+            $request ?: $this->createRequestMock()
+        );
     }
 
     /**
@@ -60,8 +60,8 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     ) {
         return new PostSendEvent(
             $httpAdapter ?: $this->createHttpAdapterMock(),
-            $request ?: $this->createRequest(),
-            $response ?: $this->createResponse()
+            $request ?: $this->createRequestMock(),
+            $response ?: $this->createResponseMock()
         );
     }
 
@@ -81,8 +81,8 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     ) {
         return new ExceptionEvent(
             $httpAdapter ?: $this->createHttpAdapterMock(),
-            $request ?: $this->createRequest(),
-            $exception ?: $this->createException()
+            $request ?: $this->createRequestMock(),
+            $exception ?: $this->createExceptionMock()
         );
     }
 
@@ -97,47 +97,32 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Creates a request.
+     * Creates a request mock.
      *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The request.
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequest()
+    protected function createRequestMock()
     {
-        $request = new InternalRequest('http://egeloen.fr', InternalRequest::METHOD_GET);
-        $request->setProtocolVersion(InternalRequest::PROTOCOL_VERSION_10);
-        $request->setHeaders(array('connection' => 'close'));
-        $request->setDatas(array('foo' => 'bar'));
-        $request->setFiles(array('file' => __FILE__));
-        $request->setParameters(array('foo' => 'bar'));
-
-        return $request;
+        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
-     * Creates a response.
+     * Creates a response mock.
      *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponse()
+    protected function createResponseMock()
     {
-        $response = new Response();
-        $response->setProtocolVersion(Response::PROTOCOL_VERSION_11);
-        $response->setStatusCode(200);
-        $response->setReasonPhrase('OK');
-        $response->setHeaders(array('transfer-encoding' => 'chunked'));
-        $response->setBody(new StringStream('foo'));
-        $response->setParameters(array('foo' => 'bar'));
-
-        return $response;
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
-     * Creates an exception.
+     * Creates an exception mock.
      *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The exception.
+     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
      */
-    protected function createException()
+    protected function createExceptionMock()
     {
-        return new HttpAdapterException('message', 123);
+        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 }

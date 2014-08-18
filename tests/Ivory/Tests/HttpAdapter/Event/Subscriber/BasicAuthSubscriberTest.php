@@ -108,11 +108,17 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
      */
     public function testPreSendEventWithValidMatcher($matcher)
     {
-        $this->basicAuthSubscriber->setMatcher($matcher);
-        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request = $this->createRequest()));
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->once())
+            ->method('addHeader')
+            ->with(
+                $this->identicalTo('Authorization'),
+                $this->identicalTo('Basic dXNlcm5hbWU6cGFzc3dvcmQ=')
+            );
 
-        $this->assertTrue($request->hasHeader('Authorization'));
-        $this->assertSame('Basic dXNlcm5hbWU6cGFzc3dvcmQ=', $request->getHeader('authorization'));
+        $this->basicAuthSubscriber->setMatcher($matcher);
+        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request));
     }
 
     /**
@@ -120,10 +126,15 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
      */
     public function testPreSendEventWithInvalidMatcher($matcher)
     {
-        $this->basicAuthSubscriber->setMatcher($matcher);
-        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request = $this->createRequest()));
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->never())
+            ->method('addHeader');
 
-        $this->assertFalse($request->hasHeader('Authorization'));
+        $this->basicAuthSubscriber->setMatcher($matcher);
+        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+
+
     }
 
     /**
@@ -155,5 +166,19 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
                 return $request->getUrl() === 'foo';
             }),
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createRequestMock()
+    {
+        $request = parent::createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('getUrl')
+            ->will($this->returnValue('http://egeloen.fr'));
+
+        return $request;
     }
 }

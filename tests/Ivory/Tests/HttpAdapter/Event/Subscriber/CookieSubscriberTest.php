@@ -72,29 +72,27 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function testPreSendEvent()
     {
-        $request = $this->createRequest();
-
         $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
 
         $cookieJar
             ->expects($this->once())
             ->method('populate')
-            ->with($this->identicalTo($request));
+            ->with($this->identicalTo($request = $this->createRequestMock()));
 
         $this->cookieSubscriber->onPreSend($this->createPreSendEvent(null, $request));
     }
 
     public function testPostSendEvent()
     {
-        $request = $this->createRequest();
-        $response = $this->createResponse();
-
         $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
 
         $cookieJar
             ->expects($this->once())
             ->method('extract')
-            ->with($this->identicalTo($request), $this->identicalTo($response));
+            ->with(
+                $this->identicalTo($request = $this->createRequestMock()),
+                $this->identicalTo($response = $this->createResponseMock())
+            );
 
         $this->cookieSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
     }
