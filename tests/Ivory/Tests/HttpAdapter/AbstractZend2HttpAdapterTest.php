@@ -34,29 +34,6 @@ abstract class AbstractZend2HttpAdapterTest extends AbstractHttpAdapterTest
         parent::setUp();
     }
 
-    public function testSendWithSingleRedirect()
-    {
-        $this->assertResponse(
-            $this->httpAdapter->send($redirectUrl = $this->getRedirectUrl(), $method = RequestInterface::METHOD_GET),
-            array('effective_url' => $redirectUrl)
-        );
-
-        $this->assertRequest($method);
-    }
-
-    public function testSendWithMultipleRedirects()
-    {
-        $this->assertResponse(
-            $this->httpAdapter->send(
-                $redirectUrl = $this->getRedirectUrl($this->httpAdapter->getMaxRedirects()),
-                $method = RequestInterface::METHOD_GET
-            ),
-            array('effective_url' => $redirectUrl)
-        );
-
-        $this->assertRequest($method);
-    }
-
     public function testGetName()
     {
         $this->assertSame('zend2', $this->httpAdapter->getName());

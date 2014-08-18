@@ -32,6 +32,14 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
+    public function cloneRequest(RequestInterface $request)
+    {
+        return clone $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function createInternalRequest($url, $method = Request::METHOD_GET)
     {
         return new InternalRequest($url, $method);
@@ -40,8 +48,24 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
+    public function cloneInternalRequest(InternalRequestInterface $internalRequest)
+    {
+        return clone $internalRequest;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function createResponse()
     {
         return new Response();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cloneResponse(ResponseInterface $response)
+    {
+        return clone $response;
     }
 }

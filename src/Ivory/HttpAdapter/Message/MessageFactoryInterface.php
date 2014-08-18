@@ -31,6 +31,15 @@ interface MessageFactoryInterface
     public function createRequest($url, $method = RequestInterface::METHOD_GET);
 
     /**
+     * Clones a request.
+     *
+     * @param \Ivory\HttpAdapter\Message\RequestInterface $request The request.
+     *
+     * @return \Ivory\HttpAdapter\Message\RequestInterface The cloned request.
+     */
+    public function cloneRequest(RequestInterface $request);
+
+    /**
      * Creates an internal request.
      *
      * @param string $url    The url.
@@ -41,9 +50,27 @@ interface MessageFactoryInterface
     public function createInternalRequest($url, $method = RequestInterface::METHOD_GET);
 
     /**
+     * Clones an internal request.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The cloned internal request.
+     */
+    public function cloneInternalRequest(InternalRequestInterface $internalRequest);
+
+    /**
      * Creates a response.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
     public function createResponse();
+
+    /**
+     * Clones a response.
+     *
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The cloned response.
+     */
+    public function cloneResponse(ResponseInterface $response);
 }

@@ -50,7 +50,6 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             ->whenError(function () {})
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
             ->timeout($this->timeout)
-            ->followRedirects($this->maxRedirects)
             ->uri($internalRequest->getUrl())
             ->addHeaders($this->prepareHeaders($internalRequest))
             ->body($this->prepareContent($internalRequest));
@@ -70,8 +69,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             $response->code,
             ReasonPhraseParser::parse($response->raw_headers),
             $response->headers->toArray(),
-            BodyNormalizer::normalize($response->body, $internalRequest->getMethod()),
-            array('effective_url' => $internalRequest->getUrl())
+            BodyNormalizer::normalize($response->body, $internalRequest->getMethod())
         );
     }
 }

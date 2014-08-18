@@ -57,12 +57,13 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
             $internalRequest->getUrl(),
             $this->prepareHeaders($internalRequest),
             $this->prepareContent($internalRequest),
-            array('timeout' => $this->timeout)
+            array(
+                'allow_redirects' => false,
+                'timeout'         => $this->timeout,
+            )
         );
 
         $request->setProtocolVersion($internalRequest->getProtocolVersion());
-        $request->getParams()->set('redirect.disable', !$this->hasMaxRedirects());
-        $request->getParams()->set('redirect.max', $this->maxRedirects);
 
         try {
             $response = $request->send();
@@ -80,8 +81,7 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
                     return new Guzzle3Stream($response->getBody());
                 },
                 $internalRequest->getMethod()
-            ),
-            array('effective_url' => $response->getEffectiveUrl())
+            )
         );
     }
 

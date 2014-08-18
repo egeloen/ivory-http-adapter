@@ -56,7 +56,7 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
             ->setOptions(array(
                 'httpversion'  => $internalRequest->getProtocolVersion(),
                 'timeout'      => $this->timeout,
-                'maxredirects' => $this->maxRedirects,
+                'maxredirects' => 0,
             ))
             ->setUri($internalRequest->getUrl())
             ->setMethod($internalRequest->getMethod())
@@ -69,14 +69,6 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
-        if ($this->hasMaxRedirects() && $this->client->getRedirectionsCount() > $this->maxRedirects) {
-            throw HttpAdapterException::maxRedirectsExceeded(
-                $internalRequest->getUrl(),
-                $this->maxRedirects,
-                $this->getName()
-            );
-        }
-
         return $this->createResponse(
             $response->getVersion(),
             $response->getStatusCode(),
@@ -87,8 +79,7 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
                     return $response instanceof Stream ? $response->getStream() : $response->getBody();
                 },
                 $internalRequest->getMethod()
-            ),
-            array('effective_url' => $internalRequest->getUrl())
+            )
         );
     }
 }

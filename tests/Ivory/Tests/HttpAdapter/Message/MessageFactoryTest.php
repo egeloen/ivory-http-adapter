@@ -49,6 +49,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $request = $this->messageFactory->createRequest($url = 'http://egeloen.fr/');
 
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $request);
         $this->assertSame($url, $request->getUrl());
         $this->assertSame(RequestInterface::METHOD_GET, $request->getMethod());
     }
@@ -64,10 +65,20 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($method, $request->getMethod());
     }
 
+    public function testCloneRequest()
+    {
+        $request = $this->messageFactory->createRequest('http://egeloen.fr/');
+        $requestClone = $this->messageFactory->cloneRequest($request);
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $requestClone);
+        $this->assertNotSame($requestClone, $request);
+    }
+
     public function testCreateInternalRequestWithoutMethod()
     {
         $internalRequest = $this->messageFactory->createInternalRequest($url = 'http://egeloen.fr/');
 
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\InternalRequest', $internalRequest);
         $this->assertSame($url, $internalRequest->getUrl());
         $this->assertSame(RequestInterface::METHOD_GET, $internalRequest->getMethod());
     }
@@ -83,8 +94,26 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($method, $internalRequest->getMethod());
     }
 
+    public function testCloneInternalRequest()
+    {
+        $internalRequest = $this->messageFactory->createInternalRequest('http://egeloen.fr/');
+        $internalRequestClone = $this->messageFactory->cloneInternalRequest($internalRequest);
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\InternalRequest', $internalRequestClone);
+        $this->assertNotSame($internalRequestClone, $internalRequest);
+    }
+
     public function testCreateResponse()
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\Response', $this->messageFactory->createResponse());
+    }
+
+    public function testCloneResponse()
+    {
+        $response = $this->messageFactory->createResponse();
+        $responseClone = $this->messageFactory->cloneResponse($response);
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\Response', $responseClone);
+        $this->assertNotSame($responseClone, $response);
     }
 }

@@ -14,7 +14,6 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Ivory\HttpAdapter\Parser\EffectiveUrlParser;
 use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
 use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
 use Ivory\HttpAdapter\Parser\StatusCodeParser;
@@ -33,14 +32,14 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
     {
         $context = stream_context_create(array(
             'http' => array(
+                'follow_location'  => false,
+                'max_redirects'    => 1,
+                'ignore_errors'    => true,
+                'timeout'          => $this->timeout,
                 'protocol_version' => $internalRequest->getProtocolVersion(),
-                'follow_location'  => $this->hasMaxRedirects(),
-                'max_redirects'    => $this->maxRedirects + 1,
                 'method'           => $internalRequest->getMethod(),
                 'header'           => $this->prepareHeaders($internalRequest, false),
                 'content'          => $this->prepareBody($internalRequest),
-                'timeout'          => $this->timeout,
-                'ignore_errors'    => !$this->hasMaxRedirects() && PHP_VERSION_ID === 50303,
             )
         ));
 
@@ -59,14 +58,7 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             StatusCodeParser::parse($headers),
             ReasonPhraseParser::parse($headers),
             HeadersNormalizer::normalize($headers),
-            BodyNormalizer::normalize($body, $internalRequest->getMethod()),
-            array(
-                'effective_url' => EffectiveUrlParser::parse(
-                    $headers,
-                    $internalRequest->getUrl(),
-                    $this->hasMaxRedirects()
-                ),
-            )
+            BodyNormalizer::normalize($body, $internalRequest->getMethod())
         );
     }
 

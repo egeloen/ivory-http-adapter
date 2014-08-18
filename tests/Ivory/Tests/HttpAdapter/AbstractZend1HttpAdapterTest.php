@@ -21,29 +21,6 @@ use Ivory\HttpAdapter\Zend1HttpAdapter;
  */
 abstract class AbstractZend1HttpAdapterTest extends AbstractHttpAdapterTest
 {
-    public function testSendWithSingleRedirect()
-    {
-        $this->assertResponse(
-            $this->httpAdapter->send($redirectUrl = $this->getRedirectUrl(), $method = RequestInterface::METHOD_GET),
-            array('effective_url' => $redirectUrl)
-        );
-
-        $this->assertRequest($method);
-    }
-
-    public function testSendWithMultipleRedirects()
-    {
-        $this->assertResponse(
-            $this->httpAdapter->send(
-                $redirectUrl = $this->getRedirectUrl($this->httpAdapter->getMaxRedirects()),
-                $method = RequestInterface::METHOD_GET
-            ),
-            array('effective_url' => $redirectUrl)
-        );
-
-        $this->assertRequest($method);
-    }
-
     public function testGetName()
     {
         $this->assertSame('zend1', $this->httpAdapter->getName());

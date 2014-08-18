@@ -99,6 +99,38 @@ $logger = $loggerSubscriber->getLogger();
 $loggerSubscriber->setLogger($logger);
 ```
 
+### Redirect
+
+The redirect subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber` and allow you to
+follow redirects. Basically, by default, all http adapters don't follow the redirect and will give you the 302
+response. Then, if you want to follow redirect, just register the redirect subscriber:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+
+$redirectSubscriber = new RedirectSubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($redirectSubscriber);
+```
+
+By default, the redirect subscriber allows you to follow 5 redirects. If you want to increase or decrease it, you can
+specify it via the constructor or getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+
+$redirectSubscriber = new RedirectSubscriber(10);
+
+$maxRedirects = $redirectSubscriber->getMaxRedirects();
+$redirectSubscriber->setMaxRedirects($maxRedirects);
+```
+
+If you want to disable redirects and throw an exception if there is a redirect response, set the max redirects to zero.
+Additionally, when you use the redirect subscriber, some parameters are available on the response:
+
+ - `effective_url`: The final url of the redirection.
+ - `redirect_count`: The number of redirects which have been followed.
+
 ### Cookie
 
 The cookie subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber` and allow you to manage

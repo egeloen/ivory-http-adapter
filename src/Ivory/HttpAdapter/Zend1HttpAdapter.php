@@ -54,7 +54,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             ->setConfig(array(
                 'httpversion'  => $internalRequest->getProtocolVersion(),
                 'timeout'      => $this->timeout,
-                'maxredirects' => $this->maxRedirects + 1,
+                'maxredirects' => 0,
             ))
             ->setUri($internalRequest->getUrl())
             ->setMethod($internalRequest->getMethod())
@@ -67,14 +67,6 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
         }
 
-        if ($this->hasMaxRedirects() && $this->client->getRedirectionsCount() > $this->maxRedirects) {
-            throw HttpAdapterException::maxRedirectsExceeded(
-                $internalRequest->getUrl(),
-                $this->maxRedirects,
-                $this->getName()
-            );
-        }
-
         return $this->createResponse(
             $response->getVersion(),
             $response->getStatus(),
@@ -83,8 +75,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             BodyNormalizer::normalize(
                 $response instanceof \Zend_Http_Client_Adapter_Stream ? $response->getStream() : $response->getBody(),
                 $internalRequest->getMethod()
-            ),
-            array('effective_url' => $internalRequest->getUrl())
+            )
         );
     }
 }

@@ -58,7 +58,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
             array(
                 'version'         => $internalRequest->getProtocolVersion(),
                 'timeout'         => $this->timeout,
-                'allow_redirects' => $this->hasMaxRedirects() ? array('max' => $this->getMaxRedirects()) : false,
+                'allow_redirects' => false,
                 'headers'         => $this->prepareHeaders($internalRequest),
                 'body'            => $this->prepareContent($internalRequest),
             )
@@ -80,8 +80,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
                     return new Guzzle4Stream($response->getBody());
                 },
                 $internalRequest->getMethod()
-            ),
-            array('effective_url' => $response->getEffectiveUrl())
+            )
         );
     }
 

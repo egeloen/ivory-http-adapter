@@ -11,6 +11,7 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
 use Ivory\HttpAdapter\HttpAdapterConfigInterface;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
@@ -169,19 +170,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertRequest($method, array(), array(), array(), $protocolVersion);
     }
 
-    public function testSendWithExplicitEncodingType()
-    {
-        $this->httpAdapter->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_URLENCODED);
-
-        $url = $this->getUrl();
-        $method = Request::METHOD_POST;
-        $headers = $this->getHeaders();
-        $data = $this->getData();
-
-        $this->assertResponse($this->httpAdapter->send($url, $method, $headers, $data));
-        $this->assertRequest($method, $headers, $data);
-    }
-
     /**
      * @dataProvider timeoutProvider
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
@@ -192,54 +180,18 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->httpAdapter->send($this->getDelayUrl($timeout), Request::METHOD_GET);
     }
 
-    public function testSendWithSingleRedirect()
+    public function testSendWithRedirect()
     {
-        $this->assertResponse(
-            $this->httpAdapter->send($this->getRedirectUrl(), $method = Request::METHOD_GET),
-            array('effective_url' => $this->getUrl())
-        );
-
-        $this->assertRequest($method);
-    }
-
-    public function testSendWithMultipleRedirects()
-    {
-        $this->assertResponse(
-            $this->httpAdapter->send(
-                $this->getRedirectUrl($this->httpAdapter->getMaxRedirects()),
-                $method = Request::METHOD_GET
-            ),
-            array('effective_url' => $this->getUrl())
-        );
-
-        $this->assertRequest($method);
-    }
-
-    public function testSendWithRedirectDisabled()
-    {
-        $this->httpAdapter->setMaxRedirects(0);
-
         $this->assertResponse(
             $this->httpAdapter->send($url = $this->getRedirectUrl(), $method = Request::METHOD_GET),
             array(
                 'status_code'   => 302,
                 'reason_phrase' => 'Moved Temporarily',
-                'body'          => 'Redirect: 1',
-                'effective_url' => $this->getRedirectUrl(),
+                'body'          => 'Redirect',
             )
         );
 
         $this->assertRequest($method);
-    }
-
-    /**
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     */
-    public function testSendWithMaxRedirectsExceeded()
-    {
-        $this->httpAdapter->setMaxRedirects(1);
-
-        $this->httpAdapter->send($this->getRedirectUrl(2), Request::METHOD_GET);
     }
 
     /**
@@ -405,13 +357,11 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * Gets the redirect url.
      *
-     * @param integer $redirectCount The redirect count.
-     *
      * @return string The redirect url.
      */
-    protected function getRedirectUrl($redirectCount = 1)
+    protected function getRedirectUrl()
     {
-        return $this->getUrl().'?'.http_build_query(array('redirect' => $redirectCount));
+        return $this->getUrl().'?'.http_build_query(array('redirect' => true));
     }
 
     /**
@@ -467,7 +417,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
                 'reason_phrase'    => 'OK',
                 'headers'          => array('content-type' => 'text/html'),
                 'body'             => 'Ok',
-                'effective_url'    => $this->getUrl(),
             ),
             $options
         );
@@ -489,7 +438,17 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($options['body'], (string) $response->getBody());
         }
 
-        $this->assertSame(array('effective_url' => $options['effective_url']), $response->getParameters());
+        $parameters = array();
+
+        if (isset($options['redirect_count'])) {
+            $parameters['redirect_count'] = $options['redirect_count'];
+        }
+
+        if (isset($options['effective_url'])) {
+            $parameters['effective_url'] = $options['effective_url'];
+        }
+
+        $this->assertSame($parameters, $response->getParameters());
     }
 
     /**

@@ -22,29 +22,6 @@ use Ivory\HttpAdapter\Message\RequestInterface;
  */
 abstract class AbstractBuzzHttpAdapterTest extends AbstractHttpAdapterTest
 {
-    public function testSendWithSingleRedirect()
-    {
-        $this->assertResponse(
-            $this->httpAdapter->send($redirectUrl = $this->getRedirectUrl(), $method = RequestInterface::METHOD_GET),
-            array('effective_url' => $redirectUrl)
-        );
-
-        $this->assertRequest($method);
-    }
-
-    public function testSendWithMultipleRedirects()
-    {
-        $this->assertResponse(
-            $this->httpAdapter->send(
-                $redirectUrl = $this->getRedirectUrl($this->httpAdapter->getMaxRedirects()),
-                $method = RequestInterface::METHOD_GET
-            ),
-            array('effective_url' => $redirectUrl)
-        );
-
-        $this->assertRequest($method);
-    }
-
     public function testGetName()
     {
         $this->assertSame('buzz', $this->httpAdapter->getName());
