@@ -37,14 +37,19 @@ class RedirectSubscriber implements EventSubscriberInterface
     /** @var integer */
     protected $maxRedirects;
 
+    /** @var boolean */
+    protected $throwException;
+
     /**
      * Creates a redirect subscriber.
      *
-     * @param integer $maxRedirects The maximum redirects.
+     * @param integer $maxRedirects   The maximum redirects.
+     * @param boolean $throwException TRUE if it throws an exception when the max redirects is exceeded else FALSE.
      */
-    public function __construct($maxRedirects = 5)
+    public function __construct($maxRedirects = 5, $throwException = true)
     {
         $this->setMaxRedirects($maxRedirects);
+        $this->setThrowException($throwException);
     }
 
     /**
@@ -68,6 +73,26 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * Checks if it throws an exception when the max redirects is exceeded.
+     *
+     * @return boolean TRUE if it throws an exception when the max redirects is exceeded else FALSE.
+     */
+    public function getThrowException()
+    {
+        return $this->throwException;
+    }
+
+    /**
+     * Sets if it throws an exception when the max redirects is exceeded.
+     *
+     * @param boolean $throwException TRUE if it throws an exception when the max redirects is exceeded else FALSE.
+     */
+    public function setThrowException($throwException)
+    {
+        $this->throwException = $throwException;
+    }
+
+    /**
      * On post send event.
      *
      * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The event.
@@ -79,20 +104,21 @@ class RedirectSubscriber implements EventSubscriberInterface
         $response = $event->getResponse();
 
         if (!$this->isRedirect($response)) {
-            $response->setParameter(self::REDIRECT_COUNT, (int) $request->getParameter(self::REDIRECT_COUNT));
-            $response->setParameter(self::EFFECTIVE_URL, $request->getUrl());
-
-            return;
+            return $this->populateResponse($request, $response);
         }
 
         $redirectCount = $request->getParameter(self::REDIRECT_COUNT) + 1;
 
         if ($redirectCount > $this->maxRedirects) {
-            throw HttpAdapterException::maxRedirectsExceeded(
-                $this->getRootRequest($request)->getUrl(),
-                $this->maxRedirects,
-                $event->getHttpAdapter()->getName()
-            );
+            if ($this->throwException) {
+                throw HttpAdapterException::maxRedirectsExceeded(
+                    $this->getRootRequest($request)->getUrl(),
+                    $this->maxRedirects,
+                    $httpAdapter->getName()
+                );
+            }
+
+            return $this->populateResponse($request, $response);
         }
 
         $redirect = $httpAdapter->getMessageFactory()->cloneInternalRequest($request);
@@ -123,6 +149,18 @@ class RedirectSubscriber implements EventSubscriberInterface
         return $response->getStatusCode() >= 300
             && $response->getStatusCode() < 400
             && $response->hasHeader('Location');
+    }
+
+    /**
+     * Populates the response.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
+     */
+    protected function populateResponse(InternalRequestInterface $request, ResponseInterface $response)
+    {
+        $response->setParameter(self::REDIRECT_COUNT, (int) $request->getParameter(self::REDIRECT_COUNT));
+        $response->setParameter(self::EFFECTIVE_URL, $request->getUrl());
     }
 
     /**

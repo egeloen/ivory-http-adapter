@@ -44,13 +44,15 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
     public function testDefaultState()
     {
         $this->assertSame(5, $this->redirectSubscriber->getMaxRedirects());
+        $this->assertTrue($this->redirectSubscriber->getThrowException());
     }
 
     public function testInitialState()
     {
-        $this->redirectSubscriber = new RedirectSubscriber($maxRedirects = 10);
+        $this->redirectSubscriber = new RedirectSubscriber($maxRedirects = 10, false);
 
         $this->assertSame($maxRedirects, $this->redirectSubscriber->getMaxRedirects());
+        $this->assertFalse($this->redirectSubscriber->getThrowException());
     }
 
     public function testSetMaxRedirects()
@@ -58,6 +60,13 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirectSubscriber->setMaxRedirects($maxRedirects = 10);
 
         $this->assertSame($maxRedirects, $this->redirectSubscriber->getMaxRedirects());
+    }
+
+    public function testSetThrowException()
+    {
+        $this->redirectSubscriber->setThrowException(false);
+
+        $this->assertFalse($this->redirectSubscriber->getThrowException());
     }
 
     public function testSubscribedEvents()
@@ -157,7 +166,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($redirectResponse, $postSendEvent->getResponse());
     }
 
-    public function testPostSendEventWithMaxRedirectsExceeded()
+    public function testPostSendEventWithMaxRedirectsExceededAndThrowException()
     {
         $this->redirectSubscriber->setMaxRedirects($maxRedirects = 1);
 
@@ -209,6 +218,47 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
             $this->assertContains((string) $maxRedirects, $e->getMessage());
             $this->assertContains($httpAdapterName, $e->getMessage());
         }
+    }
+
+    public function testPostSendEventWithMaxRedirectsExceededButWithoutThrowException()
+    {
+        $this->redirectSubscriber->setMaxRedirects($maxRedirects = 1);
+        $this->redirectSubscriber->setThrowException(false);
+
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo(RedirectSubscriber::REDIRECT_COUNT))
+            ->will($this->returnValue($redirectCount = 1));
+
+        $request
+            ->expects($this->any())
+            ->method('getUrl')
+            ->will($this->returnValue($url = 'http://egeloen.fr'));
+
+        $response = $this->createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue(300));
+
+        $response
+            ->expects($this->any())
+            ->method('hasHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue(true));
+
+        $response
+            ->expects($this->exactly(2))
+            ->method('setParameter')
+            ->withConsecutive(
+                array($this->identicalTo(RedirectSubscriber::REDIRECT_COUNT), $this->identicalTo($redirectCount)),
+                array($this->identicalTo(RedirectSubscriber::EFFECTIVE_URL), $this->identicalTo($url))
+            );
+
+        $postSendEvent = $this->createPostSendEvent(null, $request, $response);
+        $this->redirectSubscriber->onPostSend($postSendEvent);
     }
 
     /**

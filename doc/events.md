@@ -113,19 +113,22 @@ $redirectSubscriber = new RedirectSubscriber();
 $httpAdapter->getEventDispatcher()->addSubscriber($redirectSubscriber);
 ```
 
-By default, the redirect subscriber allows you to follow 5 redirects. If you want to increase or decrease it, you can
-specify it via the constructor or getter/setter:
+By default, the redirect subscriber allows you to follow 5 redirects and will throw an exception when the maximum
+number of redirects is exceeded. If you want to increase or decrease it and change the behavior about exception, you
+can specify it via the constructor or getter/setter:
 
 ``` php
 use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
 
-$redirectSubscriber = new RedirectSubscriber(10);
+$redirectSubscriber = new RedirectSubscriber($maxRedirects = 10, $throwException = false);
 
 $maxRedirects = $redirectSubscriber->getMaxRedirects();
 $redirectSubscriber->setMaxRedirects($maxRedirects);
+
+$throwException = $redirectSubscriber->getThrowException();
+$redirectSubscriber->setThrowException($throwException);
 ```
 
-If you want to disable redirects and throw an exception if there is a redirect response, set the max redirects to zero.
 Additionally, when you use the redirect subscriber, some parameters are available on the response:
 
  - `effective_url`: The final url of the redirection.
