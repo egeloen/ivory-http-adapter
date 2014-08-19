@@ -113,23 +113,45 @@ $redirectSubscriber = new RedirectSubscriber();
 $httpAdapter->getEventDispatcher()->addSubscriber($redirectSubscriber);
 ```
 
-By default, the redirect subscriber allows you to follow 5 redirects and will throw an exception when the maximum
-number of redirects is exceeded. If you want to increase or decrease it and change the behavior about exception, you
-can specify it via the constructor or getter/setter:
+First, by default, the redirect subscriber allows you to follow 5 redirects. If you want to increase or decrease it,
+you can specify it as first constructor argument or via getter/setter:
 
 ``` php
 use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
 
-$redirectSubscriber = new RedirectSubscriber($maxRedirects = 10, $throwException = false);
+$redirectSubscriber = new RedirectSubscriber(10);
 
 $maxRedirects = $redirectSubscriber->getMaxRedirects();
 $redirectSubscriber->setMaxRedirects($maxRedirects);
+```
+
+Second, by default, the redirect subscriber does not follow strictly the RFC and will prefer to do what most browser
+does (convert to a GET request). If you want to follow strictly the RFC, you can specify it as second constructor
+argument or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+
+$redirectSubscriber = new RedirectSubscriber(5, true);
+
+$strict = $redirectSubscriber->isStrict();
+$redirectSubscriber->setStrict($strict);
+```
+
+Third, by default, the redirect subscriber will throw an exception when the maximum number of redirects is exceeded.
+If you want to just stop the redirection and return the redirect response reached, you can specify it as third
+constructor argument or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+
+$redirectSubscriber = new RedirectSubscriber(5, false, false);
 
 $throwException = $redirectSubscriber->getThrowException();
 $redirectSubscriber->setThrowException($throwException);
 ```
 
-Additionally, when you use the redirect subscriber, some parameters are available on the response:
+Finally, when you use the redirect subscriber, some parameters are available on the response:
 
  - `effective_url`: The final url of the redirection.
  - `redirect_count`: The number of redirects which have been followed.
