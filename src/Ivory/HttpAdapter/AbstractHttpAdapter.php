@@ -459,7 +459,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             $response->setBody($body);
         }
 
-        $response->setParameters($parameters);
+        $response->addParameters($parameters);
 
         return $response;
     }
