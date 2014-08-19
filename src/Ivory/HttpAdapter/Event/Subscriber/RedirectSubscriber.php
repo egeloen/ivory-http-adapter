@@ -14,6 +14,7 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -38,17 +39,22 @@ class RedirectSubscriber implements EventSubscriberInterface
     protected $maxRedirects;
 
     /** @var boolean */
+    protected $strict;
+
+    /** @var boolean */
     protected $throwException;
 
     /**
      * Creates a redirect subscriber.
      *
      * @param integer $maxRedirects   The maximum redirects.
+     * @param boolean $strict         TRUE if it follows strictly the RFC else FALSE.
      * @param boolean $throwException TRUE if it throws an exception when the max redirects is exceeded else FALSE.
      */
-    public function __construct($maxRedirects = 5, $throwException = true)
+    public function __construct($maxRedirects = 5, $strict = false, $throwException = true)
     {
         $this->setMaxRedirects($maxRedirects);
+        $this->setStrict($strict);
         $this->setThrowException($throwException);
     }
 
@@ -70,6 +76,26 @@ class RedirectSubscriber implements EventSubscriberInterface
     public function setMaxRedirects($maxRedirects)
     {
         $this->maxRedirects = $maxRedirects;
+    }
+
+    /**
+     * Checks if it follows strictly the RFC.
+     *
+     * @return boolean TRUE if it follows strictly the RFC else FALSE.
+     */
+    public function isStrict()
+    {
+        return $this->strict;
+    }
+
+    /**
+     * Sets if it follows strictly the RFC.
+     *
+     * @param boolean $strict TRUE if it follows strictly the RFC else FALSE.
+     */
+    public function setStrict($strict)
+    {
+        $this->strict = $strict;
     }
 
     /**
@@ -104,12 +130,10 @@ class RedirectSubscriber implements EventSubscriberInterface
         $response = $event->getResponse();
 
         if (!$this->isRedirect($response)) {
-            return $this->populateResponse($request, $response);
+            return $this->prepareResponse($request, $response);
         }
 
-        $redirectCount = $request->getParameter(self::REDIRECT_COUNT) + 1;
-
-        if ($redirectCount > $this->maxRedirects) {
+        if ($request->getParameter(self::REDIRECT_COUNT) + 1 > $this->maxRedirects) {
             if ($this->throwException) {
                 throw HttpAdapterException::maxRedirectsExceeded(
                     $this->getRootRequest($request)->getUrl(),
@@ -118,15 +142,13 @@ class RedirectSubscriber implements EventSubscriberInterface
                 );
             }
 
-            return $this->populateResponse($request, $response);
+            return $this->prepareResponse($request, $response);
         }
 
-        $redirect = $httpAdapter->getMessageFactory()->cloneInternalRequest($request);
-        $redirect->setUrl($response->getHeader('Location'));
-        $redirect->setParameter(self::PARENT_REQUEST, $request);
-        $redirect->setParameter(self::REDIRECT_COUNT, $redirectCount);
+        $redirectRequest = $this->prepareRedirectRequest($httpAdapter, $request, $response);
+        $redirectResponse = $httpAdapter->sendInternalRequest($redirectRequest);
 
-        $event->setResponse($httpAdapter->sendInternalRequest($redirect));
+        $event->setResponse($redirectResponse);
     }
 
     /**
@@ -152,12 +174,43 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Populates the response.
+     * Prepares the redirect request.
+     *
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response    The response.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The prepared redirect request.
+     */
+    protected function prepareRedirectRequest(
+        HttpAdapterInterface $httpAdapter,
+        InternalRequestInterface $request,
+        ResponseInterface $response
+    ) {
+        $redirect = $httpAdapter->getMessageFactory()->cloneInternalRequest($request);
+
+        if ($response->getStatusCode() === 303 || (!$this->strict && $response->getStatusCode() <= 302)) {
+            $redirect->setMethod(InternalRequestInterface::METHOD_GET);
+            $redirect->removeHeaders(array('Content-Type', 'Content-Length'));
+            $redirect->clearRawDatas();
+            $redirect->clearDatas();
+            $redirect->clearFiles();
+        }
+
+        $redirect->setUrl($response->getHeader('Location'));
+        $redirect->setParameter(self::PARENT_REQUEST, $request);
+        $redirect->setParameter(self::REDIRECT_COUNT, $request->getParameter(self::REDIRECT_COUNT) + 1);
+
+        return $redirect;
+    }
+
+    /**
+     * Prepares the response.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
      */
-    protected function populateResponse(InternalRequestInterface $request, ResponseInterface $response)
+    protected function prepareResponse(InternalRequestInterface $request, ResponseInterface $response)
     {
         $response->setParameter(self::REDIRECT_COUNT, (int) $request->getParameter(self::REDIRECT_COUNT));
         $response->setParameter(self::EFFECTIVE_URL, $request->getUrl());

@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
@@ -44,14 +45,16 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
     public function testDefaultState()
     {
         $this->assertSame(5, $this->redirectSubscriber->getMaxRedirects());
+        $this->assertFalse($this->redirectSubscriber->isStrict());
         $this->assertTrue($this->redirectSubscriber->getThrowException());
     }
 
     public function testInitialState()
     {
-        $this->redirectSubscriber = new RedirectSubscriber($maxRedirects = 10, false);
+        $this->redirectSubscriber = new RedirectSubscriber($maxRedirects = 10, true, false);
 
         $this->assertSame($maxRedirects, $this->redirectSubscriber->getMaxRedirects());
+        $this->assertTrue($this->redirectSubscriber->isStrict());
         $this->assertFalse($this->redirectSubscriber->getThrowException());
     }
 
@@ -60,6 +63,13 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirectSubscriber->setMaxRedirects($maxRedirects = 10);
 
         $this->assertSame($maxRedirects, $this->redirectSubscriber->getMaxRedirects());
+    }
+
+    public function testStrict()
+    {
+        $this->redirectSubscriber->setStrict(true);
+
+        $this->assertTrue($this->redirectSubscriber->isStrict());
     }
 
     public function testSetThrowException()
@@ -100,8 +110,13 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($response, $postSendEvent->getResponse());
     }
 
-    public function testPostSendEventWithRedirect()
+    /**
+     * @dataProvider strictStatusCodeProvider
+     */
+    public function testPostSendEventWithStrictRedirect($statusCode)
     {
+        $this->redirectSubscriber->setStrict(true);
+
         $request = $this->createRequestMock();
         $request
             ->expects($this->any())
@@ -113,7 +128,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $response
             ->expects($this->any())
             ->method('getStatusCode')
-            ->will($this->returnValue(300));
+            ->will($this->returnValue($statusCode));
 
         $response
             ->expects($this->any())
@@ -139,6 +154,205 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
             ->expects($this->once())
             ->method('getMessageFactory')
             ->will($this->returnValue($messageFactory));
+
+        $requestClone
+            ->expects($this->never())
+            ->method('setMethod');
+
+        $requestClone
+            ->expects($this->never())
+            ->method('removeHeaders');
+
+        $requestClone
+            ->expects($this->never())
+            ->method('clearRawDatas');
+
+        $requestClone
+            ->expects($this->never())
+            ->method('clearDatas');
+
+        $requestClone
+            ->expects($this->never())
+            ->method('clearFiles');
+
+        $requestClone
+            ->expects($this->once())
+            ->method('setUrl')
+            ->with($this->identicalTo($location));
+
+        $requestClone
+            ->expects($this->exactly(2))
+            ->method('setParameter')
+            ->withConsecutive(
+                array($this->identicalTo(RedirectSubscriber::PARENT_REQUEST), $this->identicalTo($request)),
+                array($this->identicalTo(RedirectSubscriber::REDIRECT_COUNT), $this->identicalTo(1))
+            );
+
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendInternalRequest')
+            ->with($this->identicalTo($requestClone))
+            ->will($this->returnValue($redirectResponse = $this->createResponseMock()));
+
+        $postSendEvent = $this->createPostSendEvent($httpAdapter, $request, $response);
+        $this->redirectSubscriber->onPostSend($postSendEvent);
+
+        $this->assertSame($request, $postSendEvent->getRequest());
+        $this->assertSame($redirectResponse, $postSendEvent->getResponse());
+    }
+
+    /**
+     * @dataProvider statusCodeProvider
+     */
+    public function testPostSendEventWithNoStrictRedirect($statusCode)
+    {
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo(RedirectSubscriber::REDIRECT_COUNT))
+            ->will($this->returnValue(null));
+
+        $response = $this->createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue($statusCode));
+
+        $response
+            ->expects($this->any())
+            ->method('hasHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue(true));
+
+        $response
+            ->expects($this->any())
+            ->method('getHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue($location = 'http://egeloen.fr'));
+
+        $messageFactory = $this->createMessageFactoryMock();
+        $messageFactory
+            ->expects($this->once())
+            ->method('cloneInternalRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->returnValue($requestClone = $this->createRequestMock()));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('getMessageFactory')
+            ->will($this->returnValue($messageFactory));
+
+        $requestClone
+            ->expects($this->once())
+            ->method('setMethod')
+            ->with($this->identicalTo(RequestInterface::METHOD_GET));
+
+        $requestClone
+            ->expects($this->once())
+            ->method('removeHeaders')
+            ->with($this->identicalTo(array('Content-Type', 'Content-Length')));
+
+        $requestClone
+            ->expects($this->once())
+            ->method('clearRawDatas');
+
+        $requestClone
+            ->expects($this->once())
+            ->method('clearDatas');
+
+        $requestClone
+            ->expects($this->once())
+            ->method('clearFiles');
+
+        $requestClone
+            ->expects($this->once())
+            ->method('setUrl')
+            ->with($this->identicalTo($location));
+
+        $requestClone
+            ->expects($this->exactly(2))
+            ->method('setParameter')
+            ->withConsecutive(
+                array($this->identicalTo(RedirectSubscriber::PARENT_REQUEST), $this->identicalTo($request)),
+                array($this->identicalTo(RedirectSubscriber::REDIRECT_COUNT), $this->identicalTo(1))
+            );
+
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendInternalRequest')
+            ->with($this->identicalTo($requestClone))
+            ->will($this->returnValue($redirectResponse = $this->createResponseMock()));
+
+        $postSendEvent = $this->createPostSendEvent($httpAdapter, $request, $response);
+        $this->redirectSubscriber->onPostSend($postSendEvent);
+
+        $this->assertSame($request, $postSendEvent->getRequest());
+        $this->assertSame($redirectResponse, $postSendEvent->getResponse());
+    }
+
+    public function testPostSendEventWithNoStrictRedirectAnd303ResponseButNotStrictly()
+    {
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo(RedirectSubscriber::REDIRECT_COUNT))
+            ->will($this->returnValue(null));
+
+        $response = $this->createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue(303));
+
+        $response
+            ->expects($this->any())
+            ->method('hasHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue(true));
+
+        $response
+            ->expects($this->any())
+            ->method('getHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue($location = 'http://egeloen.fr'));
+
+        $messageFactory = $this->createMessageFactoryMock();
+        $messageFactory
+            ->expects($this->once())
+            ->method('cloneInternalRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->returnValue($requestClone = $this->createRequestMock()));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('getMessageFactory')
+            ->will($this->returnValue($messageFactory));
+
+        $requestClone
+            ->expects($this->once())
+            ->method('setMethod')
+            ->with($this->identicalTo(RequestInterface::METHOD_GET));
+
+        $requestClone
+            ->expects($this->once())
+            ->method('removeHeaders')
+            ->with($this->identicalTo(array('Content-Type', 'Content-Length')));
+
+        $requestClone
+            ->expects($this->once())
+            ->method('clearRawDatas');
+
+        $requestClone
+            ->expects($this->once())
+            ->method('clearDatas');
+
+        $requestClone
+            ->expects($this->once())
+            ->method('clearFiles');
 
         $requestClone
             ->expects($this->once())
@@ -259,6 +473,33 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $postSendEvent = $this->createPostSendEvent(null, $request, $response);
         $this->redirectSubscriber->onPostSend($postSendEvent);
+    }
+
+    /**
+     * Gets the status code provider.
+     *
+     * @return array The status code provider.
+     */
+    public function statusCodeProvider()
+    {
+        return array_merge(
+            $this->strictStatusCodeProvider(),
+            array(array(303))
+        );
+    }
+
+    /**
+     * Gets the strict status code provider.
+     *
+     * @return array The strict status code provider.
+     */
+    public function strictStatusCodeProvider()
+    {
+        return array(
+            array(300),
+            array(301),
+            array(302),
+        );
     }
 
     /**
