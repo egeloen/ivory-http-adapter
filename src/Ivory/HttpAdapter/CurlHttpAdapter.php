@@ -50,6 +50,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         $curl = curl_init();
 
         curl_setopt($curl, CURLOPT_URL, $internalRequest->getUrl());
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest));
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -60,12 +61,6 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         } else { // @codeCoverageIgnoreStart
             curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
         } // @codeCoverageIgnoreEnd
-
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, $this->hasMaxRedirects());
-
-        if ($this->hasMaxRedirects()) {
-            curl_setopt($curl, CURLOPT_MAXREDIRS, $this->maxRedirects);
-        }
 
         if ($internalRequest->hasFiles() && $this->isSafeUpload()) {
             curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
@@ -99,7 +94,6 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         }
 
         $headersSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $effectiveUrl = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
 
         curl_close($curl);
 
@@ -111,8 +105,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             StatusCodeParser::parse($headers),
             ReasonPhraseParser::parse($headers),
             HeadersNormalizer::normalize($headers),
-            BodyNormalizer::normalize($body, $internalRequest->getMethod()),
-            array('effective_url' => $effectiveUrl)
+            BodyNormalizer::normalize($body, $internalRequest->getMethod())
         );
     }
 }

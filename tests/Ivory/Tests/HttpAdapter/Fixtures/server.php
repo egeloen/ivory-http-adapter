@@ -10,17 +10,15 @@
  */
 
 $delay = isset($_GET['delay']) ? $_GET['delay'] : 0;
-$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 0;
+$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : false;
 
 if ($delay > 0) {
     usleep($delay * 1000000);
 }
 
-if ($redirect > 0) {
-    $query = ($redirect - 1) > 0 ? '?'.http_build_query(array('redirect' => $redirect - 1)) : '';
-    header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'].$query);
-
-    echo 'Redirect: '.$redirect;
+if ($redirect) {
+    header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']);
+    echo 'Redirect';
 } else {
     echo 'Ok';
 }

@@ -14,7 +14,6 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Ivory\HttpAdapter\Parser\EffectiveUrlParser;
 use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
 use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
 use Ivory\HttpAdapter\Parser\StatusCodeParser;
@@ -26,29 +25,6 @@ use Ivory\HttpAdapter\Parser\StatusCodeParser;
  */
 class SocketHttpAdapter extends AbstractHttpAdapter
 {
-    /** @var integer */
-    protected $remainingRedirects;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->remainingRedirects = $this->maxRedirects;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMaxRedirects($maxRedirects)
-    {
-        parent::setMaxRedirects($maxRedirects);
-
-        $this->remainingRedirects = $maxRedirects;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -71,21 +47,13 @@ class SocketHttpAdapter extends AbstractHttpAdapter
         stream_set_timeout($socket, $this->timeout);
         fwrite($socket, $this->prepareRequest($internalRequest, $path, $host, $port));
         list($responseHeaders, $body) = $this->parseResponse($socket, $internalRequest->getUrl());
-        $effectiveUrl = $this->parseEffectiveUrl($responseHeaders, $internalRequest->getUrl());
-
-        if ($effectiveUrl !== $internalRequest->getUrl()) {
-            $internalRequest->setUrl($effectiveUrl);
-
-            return $this->doSend($internalRequest);
-        }
 
         return $this->createResponse(
             ProtocolVersionParser::parse($responseHeaders),
             StatusCodeParser::parse($responseHeaders),
             ReasonPhraseParser::parse($responseHeaders),
             $responseHeaders = HeadersNormalizer::normalize($responseHeaders),
-            BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod()),
-            array('effective_url' => $internalRequest->getUrl())
+            BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod())
         );
     }
 
@@ -195,31 +163,6 @@ class SocketHttpAdapter extends AbstractHttpAdapter
                 isset($info['query']) ? '?'.$info['query'] : ''
             )
         );
-    }
-
-    /**
-     * Parses the effective url.
-     *
-     * @param string $headers The headers.
-     * @param string $url     The url.
-     *
-     * @return string The parsed effective url.
-     */
-    protected function parseEffectiveUrl($headers, $url)
-    {
-        $effectiveUrl = EffectiveUrlParser::parse($headers, $url, $this->hasMaxRedirects());
-
-        if ($effectiveUrl === $url) {
-            $this->remainingRedirects = $this->maxRedirects;
-        } elseif (--$this->remainingRedirects >= 0) {
-            return $effectiveUrl;
-        }
-
-        if ($this->remainingRedirects < 0) {
-            throw HttpAdapterException::maxRedirectsExceeded($url, $this->getName(), $this->maxRedirects);
-        }
-
-        return $url;
     }
 
     /**

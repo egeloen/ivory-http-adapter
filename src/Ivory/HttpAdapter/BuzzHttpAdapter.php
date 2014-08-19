@@ -65,8 +65,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         $this->browser->getClient()->setTimeout($this->timeout);
-        $this->browser->getClient()->setMaxRedirects($this->maxRedirects);
-        $this->browser->getClient()->setIgnoreErrors(!$this->hasMaxRedirects() && PHP_VERSION_ID === 50303);
+        $this->browser->getClient()->setMaxRedirects(0);
 
         $request = $this->browser->getMessageFactory()->createRequest(
             $internalRequest->getMethod(),
@@ -93,8 +92,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
             $response->getStatusCode(),
             $response->getReasonPhrase(),
             HeadersNormalizer::normalize($response->getHeaders()),
-            BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod()),
-            array('effective_url' => $internalRequest->getUrl())
+            BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod())
         );
     }
 }

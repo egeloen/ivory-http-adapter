@@ -133,27 +133,6 @@ interface HttpAdapterConfigInterface
     public function setTimeout($timeout);
 
     /**
-     * Checks if there is a max redirects.
-     *
-     * @return boolean TRUE if there is a max redirects else FALSE.
-     */
-    public function hasMaxRedirects();
-
-    /**
-     * Gets the maximum redirects.
-     *
-     * @return integer The maximum redirects.
-     */
-    public function getMaxRedirects();
-
-    /**
-     * Sets the maximum redirects.
-     *
-     * @param integer $maxRedirects The maximum redirects.
-     */
-    public function setMaxRedirects($maxRedirects);
-
-    /**
      * Gets the name.
      *
      * @return string The name.

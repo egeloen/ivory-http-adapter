@@ -94,16 +94,3 @@ The timeout defines the maximum number of seconds the connection should be activ
 $timeout = $httpAdapter->getTimeout();
 $httpAdapter->setTimeout(30);
 ```
-
-## Maximum redirection
-
-The maximum redirects allows to configure the number of redirects the http adapter is allowed to follow (default: 5).
-If you want to get/set it, you can use:
-
-``` php
-$hasMaxRedirects = $httpAdapter->hasMaxRedirects();
-$maxRedirects = $httpAdapter->getMaxRedirects();
-$httpAdapter->setMaxRedirects(10);
-```
-
-If you want to disable it, just set it to zero.

@@ -59,8 +59,6 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->httpAdapter->hasEncodingType());
         $this->assertInternalType('string', $this->httpAdapter->getBoundary());
         $this->assertSame(10, $this->httpAdapter->getTimeout());
-        $this->assertTrue($this->httpAdapter->hasMaxRedirects());
-        $this->assertSame(5, $this->httpAdapter->getMaxRedirects());
     }
 
     public function testSetMessageFactory()
@@ -110,14 +108,6 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->httpAdapter->setTimeout($timeout = 2.5);
 
         $this->assertSame($timeout, $this->httpAdapter->getTimeout());
-    }
-
-    public function testSetMaxRedirects()
-    {
-        $this->httpAdapter->setMaxRedirects($maxRedirects = 0);
-
-        $this->assertFalse($this->httpAdapter->hasMaxRedirects());
-        $this->assertSame($maxRedirects, $this->httpAdapter->getMaxRedirects());
     }
 
     public function testSendInternalRequestDispatchPreSendEvent()

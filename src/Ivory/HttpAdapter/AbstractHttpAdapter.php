@@ -54,9 +54,6 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /** @var float */
     protected $timeout = 10;
 
-    /** @var integer */
-    protected $maxRedirects = 5;
-
     /**
      * Creates an http adapter.
      */
@@ -185,30 +182,6 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function setTimeout($timeout)
     {
         $this->timeout = $timeout;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasMaxRedirects()
-    {
-        return $this->maxRedirects > 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMaxRedirects()
-    {
-        return $this->maxRedirects;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMaxRedirects($maxRedirects)
-    {
-        $this->maxRedirects = $maxRedirects;
     }
 
     /**

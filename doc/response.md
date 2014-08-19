@@ -96,18 +96,3 @@ $response->setParameter($name, $value);
 $response->addParameter($name, $value);
 $response->removeParameter($name);
 ```
-
-### Effective url
-
-The effective url represents the final url reached according to the max redirects configuration. Then, it is only
-usefull when there is a redirect response and the max redirects features is enabled. This value is stored as parameter
-in the response. If you want to get/set it, you can use:
-
-``` php
-$hasEffectiveUrl = $response->hasParameter('effective_url');
-$effectiveUrl = $response->getParameter('effective_url');
-$response->setParameter('effective_url', 'http://egeloen.fr');
-```
-
-Additionally, the effective url is not supported by all adapters. Buzz, Httpful, Zend 1 and Zend 2 does not support it,
-they will always return the original url as effective url.
