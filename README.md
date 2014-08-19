@@ -38,6 +38,13 @@ which defines how http message should be implemented.
  8. [Stream](/doc/stream.md)
  9. [Events](/doc/events.md)
 
+## Cookbook
+
+ - [Log requests/responses/exceptions](/doc/events.md#logger)
+ - [Follow redirects](/doc/events.md#redirect)
+ - [Manage cookies](/doc/events.md#cookie)
+ - [Journalize requests/responses)(/doc/events.md#history)
+
 ## Testing
 
 The library is fully unit tested by [PHPUnit](http://www.phpunit.de/) with a code coverage close to **100%**. To
