@@ -33,31 +33,8 @@ class CookieFactory implements CookieFactoryInterface
      */
     public function parse($header)
     {
-        list($name, $header) = explode('=', $header, 2);
+        list($name, $value, $attributes) = Cookie::parse($header);
 
-        if (strpos($header, ';') === false) {
-            $value = $header;
-            $header = null;
-        } else {
-            list($value, $header) = explode(';', $header, 2);
-        }
-
-        $attributes = array();
-        foreach (explode(';', $header) as $pair) {
-            if (empty($pair)) {
-                continue;
-            }
-
-            if (strpos($pair, '=') === false) {
-                $attributeName = $pair;
-                $attributeValue = null;
-            } else {
-                list($attributeName, $attributeValue) = explode('=', $pair);
-            }
-
-            $attributes[trim($attributeName)] = $attributeValue ? trim($attributeValue) : true;
-        }
-
-        return $this->create(trim($name), trim($value), $attributes, time());
+        return $this->create($name, $value, $attributes, time());
     }
 }
