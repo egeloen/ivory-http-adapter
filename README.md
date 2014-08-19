@@ -40,8 +40,8 @@ which defines how http message should be implemented.
 
 ## Cookbook
 
- - [Log requests/responses/exceptions](/doc/events.md#logger)
- - [Journalize requests/responses](/doc/events.md#history)
+ - [Log requests, responses and exceptions](/doc/events.md#logger)
+ - [Journalize requests and responses](/doc/events.md#history)
  - [Follow redirects](/doc/events.md#redirect)
  - [Manage cookies](/doc/events.md#cookie)
 
