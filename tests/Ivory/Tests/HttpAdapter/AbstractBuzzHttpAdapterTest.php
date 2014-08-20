@@ -13,7 +13,6 @@ namespace Ivory\Tests\HttpAdapter;
 
 use Buzz\Browser;
 use Ivory\HttpAdapter\BuzzHttpAdapter;
-use Ivory\HttpAdapter\Message\RequestInterface;
 
 /**
  * Abstract buzz http adapter test.

@@ -17,7 +17,6 @@ use Buzz\Client\MultiCurl;
 use Ivory\HttpAdapter\BuzzHttpAdapter;
 use Ivory\HttpAdapter\CurlHttpAdapter;
 use Ivory\HttpAdapter\Guzzle3HttpAdapter;
-use Ivory\HttpAdapter\Guzzle4HttpAdapter;
 use Ivory\HttpAdapter\HttpfulHttpAdapter;
 
 /**
@@ -63,16 +62,6 @@ class DisabledHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('\Ivory\HttpAdapter\HttpAdapterException');
         new Guzzle3HttpAdapter();
-    }
-
-    public function testGuzzle4HttpAdapterWithoutCurl()
-    {
-        if (function_exists('curl_init') || !class_exists('GuzzleHttp/Client')) {
-            $this->markTestSkipped();
-        }
-
-        $this->setExpectedException('\Ivory\HttpAdapter\HttpAdapterException');
-        new Guzzle4HttpAdapter();
     }
 
     public function testHttpfulHttpAdapterWithoutCurl()

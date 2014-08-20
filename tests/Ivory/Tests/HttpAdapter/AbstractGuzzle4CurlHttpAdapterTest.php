@@ -11,37 +11,22 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\Guzzle4HttpAdapter;
-
 /**
- * Guzzle 4 http adapter test.
+ * Abstract guzzle4 curl http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle4HttpAdapterTest extends AbstractHttpAdapterTest
+abstract class AbstractGuzzle4CurlHttpAdapterTest extends AbstractGuzzle4HttpAdapterTest
 {
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        if (!function_exists('curl_init') || !class_exists('GuzzleHttp\Client')) {
+        if (!function_exists('curl_init')) {
             $this->markTestSkipped();
         }
 
         parent::setUp();
-    }
-
-    public function testGetName()
-    {
-        $this->assertSame('guzzle4', $this->httpAdapter->getName());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createHttpAdapter()
-    {
-        return new Guzzle4HttpAdapter();
     }
 }
