@@ -351,7 +351,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function getDelayUrl($delay = 1)
     {
-        return $this->getUrl().'?'.http_build_query(array('delay' => $delay + 0.1));
+        return $this->getUrl().'?'.http_build_query(array('delay' => $delay + 0.01));
     }
 
     /**
@@ -658,8 +658,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function getRequest()
     {
-        usleep(50000);
-
         return json_decode(file_get_contents(realpath(sys_get_temp_dir()).'/http-adapter.log'), true);
     }
 }
