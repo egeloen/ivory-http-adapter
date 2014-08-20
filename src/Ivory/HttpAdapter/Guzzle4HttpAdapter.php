@@ -34,7 +34,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
      */
     public function __construct(ClientInterface $client = null)
     {
-        parent::__construct();
+        parent::__construct(false);
 
         $this->client = $client ?: new Client();
     }

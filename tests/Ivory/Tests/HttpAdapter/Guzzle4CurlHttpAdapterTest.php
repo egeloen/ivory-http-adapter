@@ -11,37 +11,32 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\HttpfulHttpAdapter;
+use GuzzleHttp\Adapter\Curl\CurlAdapter;
 
 /**
- * Description of HttpfulHttpAdapterTest
+ * Guzzle 4 curl http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class HttpfulHttpAdapterTest extends AbstractHttpAdapterTest
+class Guzzle4CurlHttpAdapterTest extends AbstractGuzzle4CurlHttpAdapterTest
 {
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        if (!function_exists('curl_init')) {
+        if (PHP_VERSION_ID < 50500) {
             $this->markTestSkipped();
         }
 
         parent::setUp();
     }
 
-    public function testGetName()
-    {
-        $this->assertSame('httpful', $this->httpAdapter->getName());
-    }
-
     /**
      * {@inheritdoc}
      */
-    protected function createHttpAdapter()
+    protected function createAdapter()
     {
-        return new HttpfulHttpAdapter();
+        return new CurlAdapter($this->createMessageFactory());
     }
 }

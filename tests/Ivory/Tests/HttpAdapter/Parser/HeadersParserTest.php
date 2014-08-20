@@ -2,7 +2,7 @@
 
 /*
  * This file is part of the Ivory Http Adapter package.
- *'http://www.google''http://www.google'
+ *
  * (c) Eric GELOEN <geloen.eric@gmail.com>
  *
  * For the full copyright and license information, please read the LICENSE

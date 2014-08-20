@@ -11,7 +11,6 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
 use Ivory\HttpAdapter\HttpAdapterConfigInterface;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;

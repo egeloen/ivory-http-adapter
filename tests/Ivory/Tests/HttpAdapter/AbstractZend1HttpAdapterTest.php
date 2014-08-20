@@ -11,7 +11,6 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\Zend1HttpAdapter;
 
 /**
