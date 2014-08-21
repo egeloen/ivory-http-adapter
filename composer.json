@@ -22,9 +22,9 @@
         "ext-curl": "*",
         "guzzle/guzzle": "*",
         "guzzlehttp/guzzle": "*",
-        "kriswallsmith/buzz": "dev-master",
-        "nategood/httpful": "dev-master",
-        "zendframework/zendframework1": "dev-http-curl-adapter",
+        "kriswallsmith/buzz": "*@dev",
+        "nategood/httpful": "*@dev",
+        "zendframework/zendframework1": "*@dev",
         "zendframework/zendframework": "dev-http-curl-adapter",
         "psr/log": "~1.0"
     },
@@ -32,10 +32,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/phpunit-mock-objects.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/egeloen/zf1.git"
         },
         {
             "type": "vcs",
