@@ -13,13 +13,14 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieFactory;
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
+use Ivory\Tests\HttpAdapter\Parser\AbstractCookieParserTest;
 
 /**
  * Cookie factory test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class CookieFactoryTest extends AbstractCookieTest
+class CookieFactoryTest extends AbstractCookieParserTest
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\CookieFactory */
     protected $cookieFactory;
@@ -77,5 +78,21 @@ class CookieFactoryTest extends AbstractCookieTest
 
         $this->assertGreaterThanOrEqual($before, $cookie->getCreatedAt());
         $this->assertLessThanOrEqual($after, $cookie->getCreatedAt());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseProvider()
+    {
+        $provider = parent::parseProvider();
+
+        foreach ($provider as &$provide) {
+            if (!isset($provide[3][CookieInterface::ATTR_SECURE])) {
+                $provide[3][CookieInterface::ATTR_SECURE] = false;
+            }
+        }
+
+        return $provider;
     }
 }

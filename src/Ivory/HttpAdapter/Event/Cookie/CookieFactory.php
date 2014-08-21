@@ -12,6 +12,7 @@
 namespace Ivory\HttpAdapter\Event\Cookie;
 
 use Ivory\HttpAdapter\Event\Cookie\Cookie;
+use Ivory\HttpAdapter\Parser\CookieParser;
 
 /**
  * Cookie factory.
@@ -33,7 +34,7 @@ class CookieFactory implements CookieFactoryInterface
      */
     public function parse($header)
     {
-        list($name, $value, $attributes) = Cookie::parse($header);
+        list($name, $value, $attributes) = CookieParser::parse($header);
 
         return $this->create($name, $value, $attributes, time());
     }

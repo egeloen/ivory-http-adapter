@@ -20,7 +20,7 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class CookieTest extends AbstractCookieTest
+class CookieTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\Cookie */
     protected $cookie;
@@ -90,14 +90,6 @@ class CookieTest extends AbstractCookieTest
 
         $this->assertTrue($this->cookie->hasAttribute(Cookie::ATTR_SECURE));
         $this->assertFalse($this->cookie->getAttribute(Cookie::ATTR_SECURE));
-    }
-
-    /**
-     * @dataProvider parseProvider
-     */
-    public function testParse($header, $name, $value, array $attributes)
-    {
-        $this->assertSame(array($name, $value, $attributes), Cookie::parse($header));
     }
 
     public function testSetName()
@@ -235,22 +227,6 @@ class CookieTest extends AbstractCookieTest
     public function testToString()
     {
         $this->assertSame($this->name.'='.$this->value, (string) $this->cookie);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseProvider()
-    {
-        $provider = parent::parseProvider();
-
-        foreach ($provider as &$provide) {
-            if (isset($provide[3][Cookie::ATTR_SECURE]) && !$provide[3][Cookie::ATTR_SECURE]) {
-                unset($provide[3][Cookie::ATTR_SECURE]);
-            }
-        }
-
-        return $provider;
     }
 
     /**
