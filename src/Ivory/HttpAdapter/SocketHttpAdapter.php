@@ -11,12 +11,12 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
+use Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor;
+use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
-use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
-use Ivory\HttpAdapter\Parser\StatusCodeParser;
 
 /**
  * Socket http adapter.
@@ -49,9 +49,9 @@ class SocketHttpAdapter extends AbstractHttpAdapter
         list($responseHeaders, $body) = $this->parseResponse($socket, $internalRequest->getUrl());
 
         return $this->createResponse(
-            ProtocolVersionParser::parse($responseHeaders),
-            StatusCodeParser::parse($responseHeaders),
-            ReasonPhraseParser::parse($responseHeaders),
+            ProtocolVersionExtractor::extract($responseHeaders),
+            StatusCodeExtractor::extract($responseHeaders),
+            ReasonPhraseExtractor::extract($responseHeaders),
             $responseHeaders = HeadersNormalizer::normalize($responseHeaders),
             BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod())
         );

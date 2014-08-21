@@ -18,7 +18,7 @@ use Ivory\HttpAdapter\Parser\HeadersParser;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class HeadersParserTest extends AbstractParserTest
+class HeadersParserTest extends AbstractHeadersParserTest
 {
     /**
      * @dataProvider headersProvider

@@ -9,26 +9,26 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Parser;
+namespace Ivory\HttpAdapter\Extractor;
 
 use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 
 /**
- * Protocol version parser.
+ * Protocol version extractor.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ProtocolVersionParser extends AbstractUninstantiableAsset
+class ProtocolVersionExtractor extends AbstractUninstantiableAsset
 {
     /**
-     * Parses the protocol version.
+     * Extracts the protocol version.
      *
      * @param array|string $headers The headers.
      *
-     * @return string The parsed protocol version.
+     * @return string The extracted protocol version.
      */
-    public static function parse($headers)
+    public static function extract($headers)
     {
-        return substr(StatusLineParser::parse($headers), 5, 3);
+        return substr(StatusLineExtractor::extract($headers), 5, 3);
     }
 }

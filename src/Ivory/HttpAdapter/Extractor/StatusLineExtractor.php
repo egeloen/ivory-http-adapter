@@ -9,26 +9,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Parser;
+namespace Ivory\HttpAdapter\Extractor;
 
 use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
+use Ivory\HttpAdapter\Parser\HeadersParser;
 
 /**
- * Status code parser.
+ * Status line extractor.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class StatusCodeParser extends AbstractUninstantiableAsset
+class StatusLineExtractor extends AbstractUninstantiableAsset
 {
     /**
-     * Parses the status code.
+     * Extracts the status line.
      *
      * @param array|string $headers The headers.
      *
-     * @return integer The parsed status code.
+     * @return string The extracted status line.
      */
-    public static function parse($headers)
+    public static function extract($headers)
     {
-        return (integer) substr(StatusLineParser::parse($headers), 9, 3);
+        $headers = HeadersParser::parse($headers);
+
+        return $headers[0];
     }
 }

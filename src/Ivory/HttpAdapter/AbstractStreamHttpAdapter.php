@@ -11,12 +11,12 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
+use Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor;
+use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
-use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
-use Ivory\HttpAdapter\Parser\StatusCodeParser;
 
 /**
  * Abstract stream http adapter.
@@ -54,9 +54,9 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
         }
 
         return $this->createResponse(
-            ProtocolVersionParser::parse($headers),
-            StatusCodeParser::parse($headers),
-            ReasonPhraseParser::parse($headers),
+            ProtocolVersionExtractor::extract($headers),
+            StatusCodeExtractor::extract($headers),
+            ReasonPhraseExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
             BodyNormalizer::normalize($body, $internalRequest->getMethod())
         );

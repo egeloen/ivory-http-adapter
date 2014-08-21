@@ -11,12 +11,12 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
-use Ivory\HttpAdapter\Parser\ProtocolVersionParser;
-use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
 use Httpful\Mime;
 use Httpful\Request;
+use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
+use Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
  * Httpful http adapter.
@@ -65,9 +65,9 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
         }
 
         return $this->createResponse(
-            ProtocolVersionParser::parse($response->raw_headers),
+            ProtocolVersionExtractor::extract($response->raw_headers),
             $response->code,
-            ReasonPhraseParser::parse($response->raw_headers),
+            ReasonPhraseExtractor::extract($response->raw_headers),
             $response->headers->toArray(),
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod())
         );

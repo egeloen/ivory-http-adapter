@@ -9,22 +9,23 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Parser;
+namespace Ivory\Tests\HttpAdapter\Extractor;
 
-use Ivory\HttpAdapter\Parser\ReasonPhraseParser;
+use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
+use Ivory\Tests\HttpAdapter\Parser\AbstractHeadersParserTest;
 
 /**
- * Reason phrase parser test.
+ * Status code extractor test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ReasonPhraseParserTest extends AbstractParserTest
+class StatusCodeExtractorTest extends AbstractHeadersParserTest
 {
     /**
      * @dataProvider headersProvider
      */
-    public function testParse($headers)
+    public function testExtract($headers)
     {
-        $this->assertSame('OK', ReasonPhraseParser::parse($headers));
+        $this->assertSame(200, StatusCodeExtractor::extract($headers));
     }
 }
