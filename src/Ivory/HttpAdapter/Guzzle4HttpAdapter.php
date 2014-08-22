@@ -58,9 +58,10 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
             $internalRequest->getMethod(),
             $url,
             array(
-                'version'         => $internalRequest->getProtocolVersion(),
-                'timeout'         => $this->timeout,
+                'exceptions'      => false,
                 'allow_redirects' => false,
+                'timeout'         => $this->timeout,
+                'version'         => $internalRequest->getProtocolVersion(),
                 'headers'         => $this->prepareHeaders($internalRequest),
                 'body'            => $this->prepareContent($internalRequest),
             )

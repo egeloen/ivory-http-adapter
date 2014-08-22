@@ -9,8 +9,18 @@
  * file that was distributed with this source code.
  */
 
+$serverError = isset($_GET['server_error']) ? $_GET['server_error'] : false;
+$clientError = isset($_GET['client_error']) ? $_GET['client_error'] : false;
 $delay = isset($_GET['delay']) ? $_GET['delay'] : 0;
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : false;
+
+if ($serverError) {
+    header('HTTP/1.1 500 Internal Server Error', true, 500);
+}
+
+if ($clientError) {
+    header('HTTP/1.1 400 Bad Request', true, 400);
+}
 
 if ($delay > 0) {
     usleep($delay * 1000000);

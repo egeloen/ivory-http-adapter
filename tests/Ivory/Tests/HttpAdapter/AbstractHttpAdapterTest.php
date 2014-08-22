@@ -169,14 +169,30 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertRequest($method, array(), array(), array(), $protocolVersion);
     }
 
-    /**
-     * @dataProvider timeoutProvider
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     */
-    public function testSendWithTimeoutExceeded($timeout)
+    public function testSendWithClientError()
     {
-        $this->httpAdapter->setTimeout($timeout);
-        $this->httpAdapter->send($this->getDelayUrl($timeout), Request::METHOD_GET);
+        $this->assertResponse(
+            $this->httpAdapter->send($url = $this->getClientErrorUrl(), $method = Request::METHOD_GET),
+            array(
+                'status_code'   => 400,
+                'reason_phrase' => 'Bad Request',
+            )
+        );
+
+        $this->assertRequest($method);
+    }
+
+    public function testSendWithServerError()
+    {
+        $this->assertResponse(
+            $this->httpAdapter->send($url = $this->getServerErrorUrl(), $method = Request::METHOD_GET),
+            array(
+                'status_code'   => 500,
+                'reason_phrase' => 'Internal Server Error',
+            )
+        );
+
+        $this->assertRequest($method);
     }
 
     public function testSendWithRedirect()
@@ -199,6 +215,16 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function testSendWithInvalidUrl()
     {
         $this->httpAdapter->send('http://invalid.egeloen.fr', Request::METHOD_GET);
+    }
+
+    /**
+     * @dataProvider timeoutProvider
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSendWithTimeoutExceeded($timeout)
+    {
+        $this->httpAdapter->setTimeout($timeout);
+        $this->httpAdapter->send($this->getDelayUrl($timeout), Request::METHOD_GET);
     }
 
     /**
@@ -334,11 +360,33 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * Gets the url.
      *
+     * @param array $query The query.
+     *
      * @return string|null The url.
      */
-    protected function getUrl()
+    protected function getUrl(array $query = array())
     {
-        return PHPUnitUtility::getUrl();
+        return !empty($query) ? PHPUnitUtility::getUrl().'?'.http_build_query($query) : PHPUnitUtility::getUrl();
+    }
+
+    /**
+     * Gets the client error url.
+     *
+     * @return string The client error url.
+     */
+    protected function getClientErrorUrl()
+    {
+        return $this->getUrl(array('client_error' => true));
+    }
+
+    /**
+     * Gets the server error url.
+     *
+     * @return string The server error url.
+     */
+    protected function getServerErrorUrl()
+    {
+        return $this->getUrl(array('server_error' => true));
     }
 
     /**
@@ -350,7 +398,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function getDelayUrl($delay = 1)
     {
-        return $this->getUrl().'?'.http_build_query(array('delay' => $delay + 0.01));
+        return $this->getUrl(array('delay' => $delay + 0.01));
     }
 
     /**
@@ -360,7 +408,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function getRedirectUrl()
     {
-        return $this->getUrl().'?'.http_build_query(array('redirect' => true));
+        return $this->getUrl(array('redirect' => true));
     }
 
     /**

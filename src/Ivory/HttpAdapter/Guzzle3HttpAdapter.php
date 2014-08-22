@@ -60,6 +60,7 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
             $this->prepareHeaders($internalRequest),
             $this->prepareContent($internalRequest),
             array(
+                'exceptions'      => false,
                 'allow_redirects' => false,
                 'timeout'         => $this->timeout,
             )
