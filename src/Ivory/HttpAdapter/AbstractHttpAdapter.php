@@ -290,19 +290,20 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $preSendEvent = new PreSendEvent($this, $internalRequest);
-        $this->eventDispatcher->dispatch(Events::PRE_SEND, $preSendEvent);
 
         try {
+            $this->eventDispatcher->dispatch(Events::PRE_SEND, $preSendEvent);
+
             $response = $this->doSend($preSendEvent->getRequest());
+
+            $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response);
+            $this->eventDispatcher->dispatch(Events::POST_SEND, $postSendEvent);
         } catch (HttpAdapterException $e) {
             $exceptionEvent = new ExceptionEvent($this, $preSendEvent->getRequest(), $e);
             $this->eventDispatcher->dispatch(Events::EXCEPTION, $exceptionEvent);
 
             throw $exceptionEvent->getException();
         }
-
-        $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response);
-        $this->eventDispatcher->dispatch(Events::POST_SEND, $postSendEvent);
 
         return $postSendEvent->getResponse();
     }
