@@ -36,7 +36,7 @@ class RedirectSubscriber implements EventSubscriberInterface
     const EFFECTIVE_URL = 'effective_url';
 
     /** @var integer */
-    protected $maxRedirects;
+    protected $max;
 
     /** @var boolean */
     protected $strict;
@@ -47,35 +47,35 @@ class RedirectSubscriber implements EventSubscriberInterface
     /**
      * Creates a redirect subscriber.
      *
-     * @param integer $maxRedirects   The maximum redirects.
+     * @param integer $max            The maximum number of redirects.
      * @param boolean $strict         TRUE if it follows strictly the RFC else FALSE.
      * @param boolean $throwException TRUE if it throws an exception when the max redirects is exceeded else FALSE.
      */
-    public function __construct($maxRedirects = 5, $strict = false, $throwException = true)
+    public function __construct($max = 5, $strict = false, $throwException = true)
     {
-        $this->setMaxRedirects($maxRedirects);
+        $this->setMax($max);
         $this->setStrict($strict);
         $this->setThrowException($throwException);
     }
 
     /**
-     * Gets the maximum redirects.
+     * Gets the maximum number of redirects.
      *
-     * @return integer The maximum redirects.
+     * @return integer The maximum number of redirects.
      */
-    public function getMaxRedirects()
+    public function getMax()
     {
-        return $this->maxRedirects;
+        return $this->max;
     }
 
     /**
-     * Sets the maximum redirects.
+     * Sets the maximum number of redirects.
      *
-     * @param integer $maxRedirects The maximum redirects.
+     * @param integer $max The maximum number of redirects.
      */
-    public function setMaxRedirects($maxRedirects)
+    public function setMax($max)
     {
-        $this->maxRedirects = $maxRedirects;
+        $this->max = $max;
     }
 
     /**
@@ -133,11 +133,11 @@ class RedirectSubscriber implements EventSubscriberInterface
             return $this->prepareResponse($request, $response);
         }
 
-        if ($request->getParameter(self::REDIRECT_COUNT) + 1 > $this->maxRedirects) {
+        if ($request->getParameter(self::REDIRECT_COUNT) + 1 > $this->max) {
             if ($this->throwException) {
                 throw HttpAdapterException::maxRedirectsExceeded(
                     (string) $this->getRootRequest($request)->getUrl(),
-                    $this->maxRedirects,
+                    $this->max,
                     $httpAdapter->getName()
                 );
             }

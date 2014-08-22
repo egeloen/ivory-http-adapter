@@ -146,8 +146,8 @@ use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
 
 $redirectSubscriber = new RedirectSubscriber(10);
 
-$maxRedirects = $redirectSubscriber->getMaxRedirects();
-$redirectSubscriber->setMaxRedirects($maxRedirects);
+$max = $redirectSubscriber->getMax();
+$redirectSubscriber->setMax($max);
 ```
 
 Second, by default, the redirect subscriber does not follow strictly the RFC and will prefer to do what most browser

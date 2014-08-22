@@ -44,25 +44,25 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
     public function testDefaultState()
     {
-        $this->assertSame(5, $this->redirectSubscriber->getMaxRedirects());
+        $this->assertSame(5, $this->redirectSubscriber->getMax());
         $this->assertFalse($this->redirectSubscriber->isStrict());
         $this->assertTrue($this->redirectSubscriber->getThrowException());
     }
 
     public function testInitialState()
     {
-        $this->redirectSubscriber = new RedirectSubscriber($maxRedirects = 10, true, false);
+        $this->redirectSubscriber = new RedirectSubscriber($max = 10, true, false);
 
-        $this->assertSame($maxRedirects, $this->redirectSubscriber->getMaxRedirects());
+        $this->assertSame($max, $this->redirectSubscriber->getMax());
         $this->assertTrue($this->redirectSubscriber->isStrict());
         $this->assertFalse($this->redirectSubscriber->getThrowException());
     }
 
-    public function testSetMaxRedirects()
+    public function testSetMax()
     {
-        $this->redirectSubscriber->setMaxRedirects($maxRedirects = 10);
+        $this->redirectSubscriber->setMax($max = 10);
 
-        $this->assertSame($maxRedirects, $this->redirectSubscriber->getMaxRedirects());
+        $this->assertSame($max, $this->redirectSubscriber->getMax());
     }
 
     public function testStrict()
@@ -382,7 +382,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
     public function testPostSendEventWithMaxRedirectsExceededAndThrowException()
     {
-        $this->redirectSubscriber->setMaxRedirects($maxRedirects = 1);
+        $this->redirectSubscriber->setMax($max = 1);
 
         $request = $this->createRequestMock();
         $request
@@ -429,14 +429,14 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
             $this->fail();
         } catch (HttpAdapterException $e) {
             $this->assertContains($url, $e->getMessage());
-            $this->assertContains((string) $maxRedirects, $e->getMessage());
+            $this->assertContains((string) $max, $e->getMessage());
             $this->assertContains($httpAdapterName, $e->getMessage());
         }
     }
 
     public function testPostSendEventWithMaxRedirectsExceededButWithoutThrowException()
     {
-        $this->redirectSubscriber->setMaxRedirects($maxRedirects = 1);
+        $this->redirectSubscriber->setMax(1);
         $this->redirectSubscriber->setThrowException(false);
 
         $request = $this->createRequestMock();
