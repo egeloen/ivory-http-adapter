@@ -18,26 +18,22 @@ use Ivory\HttpAdapter\Normalizer\UrlNormalizer;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class UrlNormalizerTest extends \PHPUnit_Framework_TestCase
+class UrlNormalizerTest extends AbstractUrlNormalizerTest
 {
-    public function testNormalizeWithHttpScheme()
+    /**
+     * @dataProvider validUrlProvider
+     */
+    public function testNormalizeWithValidUrl($url)
     {
-        $url = 'http://egeloen.fr/';
-
         $this->assertSame($url, UrlNormalizer::normalize($url));
     }
 
-    public function testNormalizeWithHttpsScheme()
+    /**
+     * @dataProvider invalidUrlProvider
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testNormalizeWithInvalidUrl($url)
     {
-        $url = 'https://egeloen.fr/';
-
-        $this->assertSame($url, UrlNormalizer::normalize($url));
-    }
-
-    public function testNormalizeWithoutScheme()
-    {
-        $url = 'egeloen.fr';
-
-        $this->assertSame('http://'.$url, UrlNormalizer::normalize($url));
+        UrlNormalizer::normalize($url);
     }
 }

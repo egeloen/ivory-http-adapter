@@ -67,11 +67,9 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
         $this->browser->getClient()->setTimeout($this->timeout);
         $this->browser->getClient()->setMaxRedirects(0);
 
-        $request = $this->browser->getMessageFactory()->createRequest(
-            $internalRequest->getMethod(),
-            $internalRequest->getUrl()
-        );
+        $url = (string) $internalRequest->getUrl();
 
+        $request = $this->browser->getMessageFactory()->createRequest($internalRequest->getMethod(), $url);
         $request->setProtocolVersion($internalRequest->getProtocolVersion());
         $request->setHeaders($this->prepareHeaders($internalRequest, false));
 
@@ -84,7 +82,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
         try {
             $response = $this->browser->send($request);
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(

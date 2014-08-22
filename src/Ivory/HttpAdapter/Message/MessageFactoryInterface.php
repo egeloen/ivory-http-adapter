@@ -23,8 +23,8 @@ interface MessageFactoryInterface
     /**
      * Creates a request.
      *
-     * @param string $url    The url.
-     * @param string $method The method.
+     * @param string|object $url    The url.
+     * @param string        $method The method.
      *
      * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
      */
@@ -42,8 +42,8 @@ interface MessageFactoryInterface
     /**
      * Creates an internal request.
      *
-     * @param string $url    The url.
-     * @param string $method The method.
+     * @param string|object $url    The url.
+     * @param string        $method The method.
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The internal request.
      */

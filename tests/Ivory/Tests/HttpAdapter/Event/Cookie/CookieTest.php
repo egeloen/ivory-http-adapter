@@ -325,7 +325,6 @@ class CookieTest extends \PHPUnit_Framework_TestCase
             array(new InternalRequest('http://egeloen.fr/path'), array(Cookie::ATTR_PATH => '/path'), true),
             array(new InternalRequest('http://egeloen.fr/path/foo'), array(Cookie::ATTR_PATH => '/path'), true),
             array(new InternalRequest('https://egeloen.fr'), array(Cookie::ATTR_SECURE => true), true),
-            array(new InternalRequest('egeloen.fr'), array(Cookie::ATTR_SECURE => false), true),
             array(
                 new InternalRequest('http://egeloen.fr/path/foo'),
                 array(
@@ -348,7 +347,6 @@ class CookieTest extends \PHPUnit_Framework_TestCase
             array(new InternalRequest('http://egeloen.fr'), array(Cookie::ATTR_DOMAIN => '.google.com'), false),
             array(new InternalRequest('http://egeloen.fr'), array(Cookie::ATTR_PATH => '/path'), false),
             array(new InternalRequest('http://egeloen.fr'), array(Cookie::ATTR_SECURE => true), false),
-            array(new InternalRequest('egeloen.fr'), array(Cookie::ATTR_SECURE => true), false),
             array(new InternalRequest('https://egeloen.fr'), array(Cookie::ATTR_SECURE => false), false),
             array(
                 new InternalRequest('http://egeloen.fr/path/foo'),

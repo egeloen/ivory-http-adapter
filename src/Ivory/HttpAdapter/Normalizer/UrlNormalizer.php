@@ -12,6 +12,7 @@
 namespace Ivory\HttpAdapter\Normalizer;
 
 use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
+use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
  * Url normalizer.
@@ -29,6 +30,12 @@ class UrlNormalizer extends AbstractUninstantiableAsset
      */
     public static function normalize($url)
     {
-        return strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0 ? 'http://'.$url : (string) $url;
+        $url = (string) $url;
+
+        if ((($parts = parse_url($url)) === false) || !isset($parts['scheme']) || !isset($parts['host'])) {
+            throw HttpAdapterException::urlIsNotValid($url);
+        }
+
+        return $url;
     }
 }

@@ -136,7 +136,7 @@ class RedirectSubscriber implements EventSubscriberInterface
         if ($request->getParameter(self::REDIRECT_COUNT) + 1 > $this->maxRedirects) {
             if ($this->throwException) {
                 throw HttpAdapterException::maxRedirectsExceeded(
-                    $this->getRootRequest($request)->getUrl(),
+                    (string) $this->getRootRequest($request)->getUrl(),
                     $this->maxRedirects,
                     $httpAdapter->getName()
                 );
@@ -213,7 +213,7 @@ class RedirectSubscriber implements EventSubscriberInterface
     protected function prepareResponse(InternalRequestInterface $request, ResponseInterface $response)
     {
         $response->setParameter(self::REDIRECT_COUNT, (int) $request->getParameter(self::REDIRECT_COUNT));
-        $response->setParameter(self::EFFECTIVE_URL, $request->getUrl());
+        $response->setParameter(self::EFFECTIVE_URL, (string) $request->getUrl());
     }
 
     /**

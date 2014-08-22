@@ -30,6 +30,8 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
      */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
+        $url = (string) $internalRequest->getUrl();
+
         $context = stream_context_create(array(
             'http' => array(
                 'follow_location'  => false,
@@ -43,14 +45,10 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             )
         ));
 
-        list($body, $headers) = $this->process($internalRequest->getUrl(), $context);
+        list($body, $headers) = $this->process($url, $context);
 
         if ($body === false) {
-            throw HttpAdapterException::cannotFetchUrl(
-                $internalRequest->getUrl(),
-                $this->getName(),
-                print_r(error_get_last(), true)
-            );
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), print_r(error_get_last(), true));
         }
 
         return $this->createResponse(

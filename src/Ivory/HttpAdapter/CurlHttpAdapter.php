@@ -49,7 +49,9 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     {
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, $internalRequest->getUrl());
+        $url = (string) $internalRequest->getUrl();
+
+        curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest));
         curl_setopt($curl, CURLOPT_HEADER, true);
@@ -90,7 +92,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             $error = curl_error($curl);
             curl_close($curl);
 
-            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $error);
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error);
         }
 
         $headersSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);

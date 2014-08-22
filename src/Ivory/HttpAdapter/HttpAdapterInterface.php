@@ -24,8 +24,8 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends a GET request.
      *
-     * @param string $url     The url.
-     * @param array  $headers The headers.
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
@@ -36,8 +36,8 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends an HEAD request.
      *
-     * @param string $url     The url.
-     * @param array  $headers The headers.
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
@@ -48,10 +48,10 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends a POST request.
      *
-     * @param string       $url     The url.
-     * @param array        $headers The headers.
-     * @param array|string $datas   The datas.
-     * @param array        $files   The files.
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
+     * @param array|string  $datas   The datas.
+     * @param array         $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
@@ -62,10 +62,10 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends a PUT request.
      *
-     * @param string       $url     The url.
-     * @param array        $headers The headers.
-     * @param array|string $datas   The datas.
-     * @param array        $files   The files.
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
+     * @param array|string  $datas   The datas.
+     * @param array         $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
@@ -76,10 +76,10 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends a PATCH request.
      *
-     * @param string       $url     The url.
-     * @param array        $headers The headers.
-     * @param array|string $datas   The datas.
-     * @param array        $files   The files.
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
+     * @param array|string  $datas   The datas.
+     * @param array         $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
@@ -90,10 +90,10 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends a DELETE request.
      *
-     * @param string       $url     The url.
-     * @param array        $headers The headers.
-     * @param array|string $datas   The datas.
-     * @param array        $files   The files.
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
+     * @param array|string  $datas   The datas.
+     * @param array         $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
@@ -104,10 +104,10 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends an OPTIONS request.
      *
-     * @param string       $url     The url.
-     * @param array        $headers The headers.
-     * @param array|string $datas   The datas.
-     * @param array        $files   The files.
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
+     * @param array|string  $datas   The datas.
+     * @param array         $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
@@ -118,11 +118,11 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     /**
      * Sends a request.
      *
-     * @param string       $url     The url.
-     * @param string       $method  The method.
-     * @param array        $headers The headers.
-     * @param array|string $datas   The datas.
-     * @param array        $files   The files.
+     * @param string|object $url     The url.
+     * @param string        $method  The method.
+     * @param array         $headers The headers.
+     * @param array|string  $datas   The datas.
+     * @param array         $files   The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *

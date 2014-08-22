@@ -166,7 +166,10 @@ class CookieJar implements CookieJarInterface
             $cookie = $this->cookieFactory->parse($header);
 
             if (!$cookie->hasAttribute(CookieInterface::ATTR_DOMAIN)) {
-                $cookie->setAttribute(CookieInterface::ATTR_DOMAIN, parse_url($request->getUrl(), PHP_URL_HOST));
+                $cookie->setAttribute(
+                    CookieInterface::ATTR_DOMAIN,
+                    parse_url((string) $request->getUrl(), PHP_URL_HOST)
+                );
             }
 
             $this->addCookie($cookie);
