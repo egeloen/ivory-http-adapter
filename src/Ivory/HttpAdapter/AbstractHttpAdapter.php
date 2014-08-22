@@ -302,6 +302,10 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             $exceptionEvent = new ExceptionEvent($this, $preSendEvent->getRequest(), $e);
             $this->eventDispatcher->dispatch(Events::EXCEPTION, $exceptionEvent);
 
+            if ($exceptionEvent->hasResponse()) {
+                return $exceptionEvent->getResponse();
+            }
+
             throw $exceptionEvent->getException();
         }
 

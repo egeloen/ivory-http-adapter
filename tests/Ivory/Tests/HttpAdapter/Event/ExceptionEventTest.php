@@ -48,6 +48,7 @@ class ExceptionEventTest extends AbstractEventTest
         parent::testDefaultState();
 
         $this->assertSame($this->exception, $this->event->getException());
+        $this->assertFalse($this->event->hasResponse());
     }
 
     public function testSetException()
@@ -55,6 +56,14 @@ class ExceptionEventTest extends AbstractEventTest
         $this->event->setException($exception = $this->createExceptionMock());
 
         $this->assertSame($exception, $this->event->getException());
+    }
+
+    public function testSetResponse()
+    {
+        $this->event->setResponse($response = $this->createResponseMock());
+
+        $this->assertTrue($this->event->hasResponse());
+        $this->assertSame($response, $this->event->getResponse());
     }
 
     /**
@@ -73,5 +82,15 @@ class ExceptionEventTest extends AbstractEventTest
     protected function createExceptionMock()
     {
         return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+    }
+
+    /**
+     * Creates a response mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface[\PHPUnit_Framework_MockObject_MockObject The response mock.
+     */
+    protected function createResponseMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 }

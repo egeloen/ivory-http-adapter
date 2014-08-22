@@ -14,6 +14,7 @@ namespace Ivory\HttpAdapter\Event;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
  * Exception event.
@@ -24,6 +25,9 @@ class ExceptionEvent extends AbstractEvent
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException */
     protected $exception;
+
+    /** @var \Ivory\HttpAdapter\Message\ResponseInterface|null */
+    protected $response;
 
     /**
      * Creates an exception event.
@@ -60,5 +64,35 @@ class ExceptionEvent extends AbstractEvent
     public function setException(HttpAdapterException $exception)
     {
         $this->exception = $exception;
+    }
+
+    /**
+     * Checks if there is a response.
+     *
+     * @return boolean TRUE if there is a response else FALSE.
+     */
+    public function hasResponse()
+    {
+        return $this->response !== null;
+    }
+
+    /**
+     * Gets the response.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * Sets the response.
+     *
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     */
+    public function setResponse(ResponseInterface $response)
+    {
+        $this->response = $response;
     }
 }

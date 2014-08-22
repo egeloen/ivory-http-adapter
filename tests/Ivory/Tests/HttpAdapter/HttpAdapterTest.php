@@ -179,6 +179,41 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($responseOverride, $this->httpAdapter->sendInternalRequest($internalRequest));
     }
 
+    public function testSendInternalRequestDispatchExceptionEventAndReturnResponse()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $internalRequest = $this->createInternalRequestMock();
+        $exception = $this->createExceptionMock();
+        $response = $this->createResponseMock();
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSend')
+            ->with($this->identicalTo($internalRequest))
+            ->will($this->throwException($exception));
+
+        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $internalRequest, $exception, $response) {
+                    $result = $event instanceof ExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getRequest() === $internalRequest
+                        && $event->getException() === $exception;
+
+                    $event->setResponse($response);
+
+                    return $result;
+                })
+            );
+
+        $this->assertSame($response, $this->httpAdapter->sendInternalRequest($internalRequest));
+    }
+
     public function testSendInternalRequestDispatchExceptionEventWhenDoSendThrowException()
     {
         $httpAdapter = $this->httpAdapter;

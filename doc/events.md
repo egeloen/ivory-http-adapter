@@ -68,6 +68,16 @@ $exception = $exceptionEvent->getException();
 $exceptionEvent->setException($exception);
 ```
 
+Additionally, this event allows you to manage a response. That means if you want to by-pass the exception, just set the
+response on the event and it will be returned by the http adapter instead of throwing the exception. The following API
+is available:
+
+```php
+$hasResponse = $exceptionEvent->hasResponse();
+$response = $exceptionEvent->getResponse();
+$exceptionEvent->setResponse($response);
+```
+
 ## Available subscribers
 
 The library provides some useful built-in subscribers you can directly use. Obviously, you can define your own and
