@@ -273,7 +273,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $this->protocolVersion = $request->getProtocolVersion();
 
         $response = $this->send(
-            (string) $request->getUrl(),
+            $request->getUrl(),
             $request->getMethod(),
             $request->getHeaders(),
             (string) $request->getBody()

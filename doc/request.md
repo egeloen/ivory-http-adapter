@@ -34,11 +34,14 @@ Note that the request protocol version will be used instead of the one configure
 
 ## Url
 
-The url defines the remote server where the request will be sent. If you want to get/set it, you can use:
+The url defines the remote server where the request will be sent. It can be either a string or an object implementing
+the `__toString` method. If you want to get/set it, you can use:
 
 ``` php
 $url = $request->getUrl();
 $request->setUrl('http://egeloen.fr/');
+// or
+$request->setUrl($object);
 ```
 
 ## Method

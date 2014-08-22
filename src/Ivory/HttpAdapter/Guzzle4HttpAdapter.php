@@ -52,9 +52,11 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
+        $url = (string) $internalRequest->getUrl();
+
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
-            $internalRequest->getUrl(),
+            $url,
             array(
                 'version'         => $internalRequest->getProtocolVersion(),
                 'timeout'         => $this->timeout,
@@ -67,7 +69,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
         try {
             $response = $this->client->send($request);
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(

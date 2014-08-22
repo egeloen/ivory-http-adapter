@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\Request;
+use Ivory\Tests\HttpAdapter\Normalizer\AbstractUrlNormalizerTest;
 
 /**
  * Request test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends AbstractUrlNormalizerTest
 {
     /** @var \Ivory\HttpAdapter\Message\Request */
     protected $request;
@@ -69,18 +70,23 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(Request::PROTOCOL_VERSION_11, $this->request->getProtocolVersion());
     }
 
-    public function testSetUrl()
+    /**
+     * @dataProvider validUrlProvider
+     */
+    public function testSetUrlWithValidUrl($url)
     {
-        $this->request->setUrl($url = 'http://www.google.com/');
+        $this->request->setUrl($url);
 
         $this->assertSame($url, $this->request->getUrl());
     }
 
-    public function testSetUrlWithoutScheme()
+    /**
+     * @dataProvider invalidUrlProvider
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testSetUrlWithInvalidUrl($url)
     {
-        $this->request->setUrl($url = 'www.google.com');
-
-        $this->assertSame('http://'.$url, $this->request->getUrl());
+        $this->request->setUrl($url);
     }
 
     public function testSetMethod()

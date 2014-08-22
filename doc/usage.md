@@ -5,9 +5,10 @@ throw an `Ivory\HttpAdapter\HttpAdapterException` if an error occurred (I would 
 block everywhere) and return an `Ivory\HttpAdapter\Message\ResponseInterface`. If you want to learn more about the
 response, you can read this [doc](/doc/response.md).
 
-Additionally, the headers parameter can be an associative array describing an header key/value pair or an indexed array
-already formatted. The datas can be an associative array or a string already formatted according to the content-type
-you want to use. Finally, the files are an associative array describing key/path pair.
+Additionally, the url can be a string or an object implementing the `__toString` method. The headers parameter can be
+an associative array describing an header key/value pair or an indexed array already formatted. The datas can be an
+associative array or a string already formatted according to the content-type you want to use. Finally, the files are
+an associative array describing key/path pair.
 
 ## Send a GET request
 

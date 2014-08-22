@@ -227,7 +227,7 @@ class Cookie implements CookieInterface
         }
 
         $cookieDomain = $this->getAttribute(self::ATTR_DOMAIN);
-        $domain = parse_url($request->getUrl(), PHP_URL_HOST);
+        $domain = parse_url((string) $request->getUrl(), PHP_URL_HOST);
 
         if (strpos($cookieDomain, '.') === 0) {
             return (bool) preg_match('/\b'.preg_quote(substr($cookieDomain, 1), '/').'$/i', $domain);
@@ -245,7 +245,7 @@ class Cookie implements CookieInterface
             return true;
         }
 
-        return strpos(parse_url($request->getUrl(), PHP_URL_PATH), $this->getAttribute(self::ATTR_PATH)) === 0;
+        return strpos(parse_url((string) $request->getUrl(), PHP_URL_PATH), $this->getAttribute(self::ATTR_PATH)) === 0;
     }
 
     /**
@@ -258,7 +258,7 @@ class Cookie implements CookieInterface
         }
 
         $secure = $this->getAttribute(self::ATTR_SECURE);
-        $scheme = parse_url($request->getUrl(), PHP_URL_SCHEME);
+        $scheme = parse_url((string) $request->getUrl(), PHP_URL_SCHEME);
 
         return ($secure && $scheme === 'https') || (!$secure && (($scheme === 'http') || empty($scheme)));
     }

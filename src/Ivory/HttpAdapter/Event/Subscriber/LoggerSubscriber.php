@@ -70,7 +70,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
             sprintf(
                 'Send "%s %s" in %.2f ms.',
                 $event->getRequest()->getMethod(),
-                $event->getRequest()->getUrl(),
+                (string) $event->getRequest()->getUrl(),
                 $this->time
             ),
             array(
@@ -89,7 +89,11 @@ class LoggerSubscriber extends AbstractTimerSubscriber
     public function onException(ExceptionEvent $event)
     {
         $this->logger->error(
-            sprintf('Unable to send "%s %s".', $event->getRequest()->getMethod(), $event->getRequest()->getUrl()),
+            sprintf(
+                'Unable to send "%s %s".',
+                $event->getRequest()->getMethod(),
+                (string) $event->getRequest()->getUrl()
+            ),
             array(
                 'request'   => $this->formatRequest($event->getRequest()),
                 'exception' => $this->formatException($event->getException()),
@@ -119,7 +123,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
     {
         return array(
             'protocol_version' => $request->getProtocolVersion(),
-            'url'              => $request->getUrl(),
+            'url'              => (string) $request->getUrl(),
             'method'           => $request->getMethod(),
             'headers'          => $request->getHeaders(),
             'raw_datas'        => $request->getRawDatas(),

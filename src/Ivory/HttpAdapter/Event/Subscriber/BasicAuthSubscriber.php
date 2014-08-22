@@ -152,7 +152,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
             return true;
         }
 
-        if (is_string($this->matcher) && preg_match($this->matcher, $request->getUrl())) {
+        if (is_string($this->matcher) && preg_match($this->matcher, (string) $request->getUrl())) {
             return true;
         }
 

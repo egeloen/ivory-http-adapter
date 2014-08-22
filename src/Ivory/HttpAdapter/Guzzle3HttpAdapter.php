@@ -52,9 +52,11 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
+        $url = (string) $internalRequest->getUrl();
+
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
-            $internalRequest->getUrl(),
+            $url,
             $this->prepareHeaders($internalRequest),
             $this->prepareContent($internalRequest),
             array(
@@ -68,7 +70,7 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
         try {
             $response = $request->send();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(

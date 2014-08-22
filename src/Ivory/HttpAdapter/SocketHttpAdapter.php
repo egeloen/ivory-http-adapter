@@ -38,15 +38,23 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
-        list($protocol, $host, $port, $path) = $this->parseUrl($internalRequest->getUrl());
+        $url = (string) $internalRequest->getUrl();
+
+        list($protocol, $host, $port, $path) = $this->parseUrl($url);
 
         if (($socket = @stream_socket_client($protocol.'://'.$host.':'.$port, $errno, $errstr)) === false) {
-            throw HttpAdapterException::cannotFetchUrl($internalRequest->getUrl(), $this->getName(), $errstr);
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $errstr);
         }
 
         stream_set_timeout($socket, $this->timeout);
         fwrite($socket, $this->prepareRequest($internalRequest, $path, $host, $port));
-        list($responseHeaders, $body) = $this->parseResponse($socket, $internalRequest->getUrl());
+        list($responseHeaders, $body) = $this->parseResponse($socket);
+        $hasTimeout = $this->detectTimeout($socket);
+        fclose($socket);
+
+        if ($hasTimeout) {
+            throw HttpAdapterException::timeoutExceeded($url, $this->timeout, $this->getName());
+        }
 
         return $this->createResponse(
             ProtocolVersionExtractor::extract($responseHeaders),
@@ -87,11 +95,10 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      * Parses the response.
      *
      * @param resource $socket The socket.
-     * @param string   $url    The url.
      *
      * @return array The response (0 => headers, 1 => body).
      */
-    protected function parseResponse($socket, $url)
+    protected function parseResponse($socket)
     {
         $headers = '';
         $body = '';
@@ -107,10 +114,6 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             } else {
                 $body .= $line;
             }
-        }
-
-        if ($this->detectTimeout($socket)) {
-            throw HttpAdapterException::timeoutExceeded($url, $this->timeout, $this->getName());
         }
 
         return array($headers, $body);

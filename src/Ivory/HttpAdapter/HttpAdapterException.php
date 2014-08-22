@@ -135,4 +135,16 @@ class HttpAdapterException extends \Exception
     {
         return self::cannotFetchUrl($url, $adapter, sprintf('Timeout exceeded (%.2f)', $timeout));
     }
+
+    /**
+     * Gets the "URL IS NOT VALID" exception.
+     *
+     * @param string $url The url.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "URL IS NOT VALID" exception.
+     */
+    public static function urlIsNotValid($url)
+    {
+        return new self(sprintf('The url "%s" is not valid.', $url));
+    }
 }
