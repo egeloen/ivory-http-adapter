@@ -20,6 +20,8 @@ interface InternalRequestInterface extends RequestInterface
 {
     /**
      * Clears the raw datas.
+     *
+     * @return void No return value.
      */
     public function clearRawDatas();
 
@@ -44,11 +46,15 @@ interface InternalRequestInterface extends RequestInterface
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are datas.
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are files.
+     *
+     * @return void No return value.
      */
     public function setRawDatas($rawDatas);
 
     /**
      * Clears the datas.
+     *
+     * @return void No return value.
      */
     public function clearDatas();
 
@@ -72,6 +78,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param array $datas The datas.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function setDatas(array $datas);
 
@@ -81,6 +89,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param array $datas The datas.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function addDatas(array $datas);
 
@@ -88,6 +98,8 @@ interface InternalRequestInterface extends RequestInterface
      * Removes the datas.
      *
      * @param array $names The data names.
+     *
+     * @return void No return value.
      */
     public function removeDatas(array $names);
 
@@ -116,6 +128,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param mixed  $value The data value.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function setData($name, $value);
 
@@ -126,6 +140,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param mixed  $value The data value.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function addData($name, $value);
 
@@ -133,11 +149,15 @@ interface InternalRequestInterface extends RequestInterface
      * Removes a data.
      *
      * @param string $name The data name.
+     *
+     * @return void No return value.
      */
     public function removeData($name);
 
     /**
      * Clears the files.
+     *
+     * @return void No return value.
      */
     public function clearFiles();
 
@@ -161,6 +181,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param array $files The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function setFiles(array $files);
 
@@ -170,6 +192,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param array $files The files.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function addFiles(array $files);
 
@@ -177,6 +201,8 @@ interface InternalRequestInterface extends RequestInterface
      * Removes the files.
      *
      * @param array $names The file names.
+     *
+     * @return void No return value.
      */
     public function removeFiles(array $names);
 
@@ -205,6 +231,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param string $file The file.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function setFile($name, $file);
 
@@ -215,6 +243,8 @@ interface InternalRequestInterface extends RequestInterface
      * @param string $file The file.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the are raw datas.
+     *
+     * @return void No return value.
      */
     public function addFile($name, $file);
 
@@ -222,6 +252,8 @@ interface InternalRequestInterface extends RequestInterface
      * Removes a file.
      *
      * @param string $name The file name.
+     *
+     * @return void No return value.
      */
     public function removeFile($name);
 }

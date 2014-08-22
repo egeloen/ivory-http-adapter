@@ -27,11 +27,15 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
      * @param float                                               $time     The time.
+     *
+     * @return void No return value.
      */
     public function record(InternalRequestInterface $request, ResponseInterface $response, $time);
 
     /**
      * Clears the journal.
+     *
+     * @return void No return value.
      */
     public function clear();
 
@@ -53,6 +57,8 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * Sets the entries.
      *
      * @param array $entries The entries.
+     *
+     * @return void No return value.
      */
     public function setEntries(array $entries);
 
@@ -60,6 +66,8 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * Adds the entries.
      *
      * @param array $entries The entries.
+     *
+     * @return void No return value.
      */
     public function addEntries(array $entries);
 
@@ -67,6 +75,8 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * Removes the entries.
      *
      * @param array $entries The entries.
+     *
+     * @return void No return value.
      */
     public function removeEntries(array $entries);
 
@@ -83,6 +93,8 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * Adds an entry.
      *
      * @param \Ivory\HttpAdapter\Event\History\JournalEntryInterface $entry The entry.
+     *
+     * @return void No return value.
      */
     public function addEntry(JournalEntryInterface $entry);
 
@@ -90,6 +102,8 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * Removes an entry.
      *
      * @param \Ivory\HttpAdapter\Event\History\JournalEntryInterface $entry The entry.
+     *
+     * @return void No return value.
      */
     public function removeEntry(JournalEntryInterface $entry);
 
@@ -104,6 +118,8 @@ interface JournalInterface extends \Countable, \IteratorAggregate
      * Sets the limit.
      *
      * @param integer $limit The limit.
+     *
+     * @return void No return value.
      */
     public function setLimit($limit);
 }

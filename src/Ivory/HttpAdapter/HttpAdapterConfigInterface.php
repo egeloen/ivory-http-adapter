@@ -38,6 +38,8 @@ interface HttpAdapterConfigInterface
      * Sets the message factory.
      *
      * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
+     *
+     * @return void No return value.
      */
     public function setMessageFactory(MessageFactoryInterface $messageFactory);
 
@@ -52,6 +54,8 @@ interface HttpAdapterConfigInterface
      * Sets the event dispatcher.
      *
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher The event dispatcher.
+     *
+     * @return void No return value.
      */
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher);
 
@@ -66,6 +70,8 @@ interface HttpAdapterConfigInterface
      * Sets the protocol version.
      *
      * @param string $protocolVersion The protocol version.
+     *
+     * @return void No return value.
      */
     public function setProtocolVersion($protocolVersion);
 
@@ -80,6 +86,8 @@ interface HttpAdapterConfigInterface
      * Sets if it is kept alive.
      *
      * @param boolean $keepAlive TRUE if it is kept alive else FALSE.
+     *
+     * @return void No return value.
      */
     public function setKeepAlive($keepAlive);
 
@@ -101,6 +109,8 @@ interface HttpAdapterConfigInterface
      * Sets the encoding type.
      *
      * @param string|null $encodingType The encoding type.
+     *
+     * @return void No return value.
      */
     public function setEncodingType($encodingType);
 
@@ -115,6 +125,8 @@ interface HttpAdapterConfigInterface
      * Sets the boundary.
      *
      * @param string $boundary The boundary.
+     *
+     * @return void No return value.
      */
     public function setBoundary($boundary);
 
@@ -129,6 +141,8 @@ interface HttpAdapterConfigInterface
      * Sets the timeout (in seconds).
      *
      * @param float $timeout The timeout.
+     *
+     * @return void No return value.
      */
     public function setTimeout($timeout);
 

@@ -32,6 +32,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Sets the cookie factory.
      *
      * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface $cookieFactory The cookie factory.
+     *
+     * @return void No return value.
      */
     public function setCookieFactory(CookieFactoryInterface $cookieFactory);
 
@@ -39,6 +41,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Clears the cookies.
      *
      * @param boolean $expiredOnly TRUE if it should only clear expired cookies else FALSE.
+     *
+     * @return void No return value.
      */
     public function clear($expiredOnly = false);
 
@@ -60,6 +64,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Sets the cookies.
      *
      * @param array $cookies The cookies.
+     *
+     * @return void No return value.
      */
     public function setCookies(array $cookies);
 
@@ -67,6 +73,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Adds the cookies.
      *
      * @param array $cookies The cookies.
+     *
+     * @return void No return value.
      */
     public function addCookies(array $cookies);
 
@@ -74,6 +82,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Removes the cookies.
      *
      * @param array $cookies The cookies.
+     *
+     * @return void No return value.
      */
     public function removeCookies(array $cookies);
 
@@ -90,6 +100,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Adds a cookie.
      *
      * @param \Ivory\HttpAdapter\Event\Cookie\CookieInterface $cookie The cookie.
+     *
+     * @return void No return value.
      */
     public function addCookie(CookieInterface $cookie);
 
@@ -97,6 +109,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Removes a cookie.
      *
      * @param \Ivory\HttpAdapter\Event\Cookie\CookieInterface $cookie The cookie.
+     *
+     * @return void No return value.
      */
     public function removeCookie(CookieInterface $cookie);
 
@@ -104,6 +118,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * Populates the cookies in the request.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     *
+     * @return void No return value.
      */
     public function populate(InternalRequestInterface $request);
 
@@ -112,6 +128,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
+     *
+     * @return void No return value.
      */
     public function extract(InternalRequestInterface $request, ResponseInterface $response);
 }

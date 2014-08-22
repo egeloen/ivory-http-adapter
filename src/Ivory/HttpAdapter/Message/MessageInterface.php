@@ -30,6 +30,8 @@ interface MessageInterface extends PsrMessageInterface
      * Sets the protocol version.
      *
      * @param string $protocolVersion The protocol version.
+     *
+     * @return void No return value.
      */
     public function setProtocolVersion($protocolVersion);
 
@@ -44,6 +46,8 @@ interface MessageInterface extends PsrMessageInterface
      * Removes the headers.
      *
      * @param array $headers The header names.
+     *
+     * @return void No return value.
      */
     public function removeHeaders($headers);
 
@@ -56,6 +60,8 @@ interface MessageInterface extends PsrMessageInterface
 
     /**
      * Clears the parameters.
+     *
+     * @return void No return value.
      */
     public function clearParameters();
 
@@ -77,6 +83,8 @@ interface MessageInterface extends PsrMessageInterface
      * Sets the parameters.
      *
      * @param array $parameters The parameters.
+     *
+     * @return void No return value.
      */
     public function setParameters(array $parameters);
 
@@ -84,6 +92,8 @@ interface MessageInterface extends PsrMessageInterface
      * Adds the parameters.
      *
      * @param array $parameters The parameters.
+     *
+     * @return void No return value.
      */
     public function addParameters(array $parameters);
 
@@ -91,6 +101,8 @@ interface MessageInterface extends PsrMessageInterface
      * Removes the parameters.
      *
      * @param array $names The parameter names.
+     *
+     * @return void No return value.
      */
     public function removeParameters(array $names);
 
@@ -115,6 +127,8 @@ interface MessageInterface extends PsrMessageInterface
      *
      * @param string $name  The parameter name.
      * @param mixed  $value The parameter value.
+     *
+     * @return void No return value.
      */
     public function setParameter($name, $value);
 
@@ -123,6 +137,8 @@ interface MessageInterface extends PsrMessageInterface
      *
      * @param string $name  The parameter name.
      * @param mixed  $value The parameter value.
+     *
+     * @return void No return value.
      */
     public function addParameter($name, $value);
 
@@ -130,6 +146,8 @@ interface MessageInterface extends PsrMessageInterface
      * Removes a parameter.
      *
      * @param string $name The parameter value.
+     *
+     * @return void No return value.
      */
     public function removeParameter($name);
 }
