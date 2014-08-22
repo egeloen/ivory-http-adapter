@@ -99,10 +99,25 @@ $logger = $loggerSubscriber->getLogger();
 $loggerSubscriber->setLogger($logger);
 ```
 
+### Status Code
+
+The status code subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber` and allow you
+to detect errored response. Basically, by default, all http adapters don't throw an exception if a 4xx or 5xx response
+is returned. Then, if you want to throw an exception for this kind of response, just register the status code
+subscriber:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber;
+
+$statusCodeSubscriber = new StatusCodeSubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($statusCodeSubscriber);
+```
+
 ### Redirect
 
 The redirect subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber` and allow you to
-follow redirects. Basically, by default, all http adapters don't follow the redirect and will give you the 302
+follow redirects. Basically, by default, all http adapters don't follow the redirect and will give you the 3xx
 response. Then, if you want to follow redirect, just register the redirect subscriber:
 
 ``` php
