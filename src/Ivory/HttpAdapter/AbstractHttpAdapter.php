@@ -54,6 +54,9 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /** @var float */
     protected $timeout = 10;
 
+    /** @var string */
+    protected $userAgent = 'Ivory Http Adapter';
+
     /**
      * Creates an http adapter.
      */
@@ -182,6 +185,22 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function setTimeout($timeout)
     {
         $this->timeout = $timeout;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUserAgent()
+    {
+        return $this->userAgent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUserAgent($userAgent)
+    {
+        $this->userAgent = $userAgent;
     }
 
     /**
@@ -349,6 +368,10 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             } elseif ($contentType && $internalRequest->hasDatas()) {
                 $internalRequest->setHeader('Content-Type', self::ENCODING_TYPE_URLENCODED);
             }
+        }
+
+        if (!$internalRequest->hasHeader('User-Agent')) {
+            $internalRequest->setHeader('User-Agent', $this->userAgent);
         }
 
         return HeadersNormalizer::normalize($internalRequest->getHeaders(), $associative);

@@ -59,6 +59,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->httpAdapter->hasEncodingType());
         $this->assertInternalType('string', $this->httpAdapter->getBoundary());
         $this->assertSame(10, $this->httpAdapter->getTimeout());
+        $this->assertSame('Ivory Http Adapter', $this->httpAdapter->getUserAgent());
     }
 
     public function testSetMessageFactory()
@@ -108,6 +109,13 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->httpAdapter->setTimeout($timeout = 2.5);
 
         $this->assertSame($timeout, $this->httpAdapter->getTimeout());
+    }
+
+    public function testSetUserAgent()
+    {
+        $this->httpAdapter->setUserAgent($userAgent = 'foo');
+
+        $this->assertSame($userAgent, $this->httpAdapter->getUserAgent());
     }
 
     public function testSendInternalRequestDispatchPreSendEvent()

@@ -169,6 +169,14 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertRequest($method, array(), array(), array(), $protocolVersion);
     }
 
+    public function testSendWithUserAgent()
+    {
+        $this->httpAdapter->setUserAgent($userAgent = 'foo');
+
+        $this->assertResponse($this->httpAdapter->send($this->getUrl(), $method = Request::METHOD_GET));
+        $this->assertRequest($method, array('User-Agent' => $userAgent));
+    }
+
     public function testSendWithClientError()
     {
         $this->assertResponse(
@@ -518,6 +526,13 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($protocolVersion, substr($request['SERVER']['SERVER_PROTOCOL'], 5));
         $this->assertSame($method, $request['SERVER']['REQUEST_METHOD']);
+
+        $defaultHeaders = array(
+            'Connection' => 'close',
+            'User-Agent' => 'Ivory Http Adapter',
+        );
+
+        $headers = array_merge($defaultHeaders, $headers);
 
         foreach ($headers as $name => $value) {
             if (is_int($name)) {

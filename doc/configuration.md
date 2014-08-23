@@ -94,3 +94,14 @@ The timeout defines the maximum number of seconds the connection should be activ
 $timeout = $httpAdapter->getTimeout();
 $httpAdapter->setTimeout(30);
 ```
+
+## User Agent
+
+The user agent defines which client have sent the request. For example, each browsers send a specific user agent in
+order to identify it. By default, all http adapters send the `Ivory Http Adapter` user agent but if you want to
+change it, you can use:
+
+``` php
+$userAgent = $httpAdapter->getUserAgent();
+$httpAdapter->setUserAgent('My user agent');
+```
