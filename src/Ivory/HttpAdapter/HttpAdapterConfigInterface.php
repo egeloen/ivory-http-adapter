@@ -147,6 +147,20 @@ interface HttpAdapterConfigInterface
     public function setTimeout($timeout);
 
     /**
+     * Gets the user agent.
+     *
+     * @return string The user agent.
+     */
+    public function getUserAgent();
+
+    /**
+     * Sets the user agent.
+     *
+     * @param string $userAgent The user agent.
+     */
+    public function setUserAgent($userAgent);
+
+    /**
      * Gets the name.
      *
      * @return string The name.
