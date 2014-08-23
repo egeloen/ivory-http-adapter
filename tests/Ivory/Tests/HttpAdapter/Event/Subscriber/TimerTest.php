@@ -11,9 +11,6 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
-use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber;
-
 /**
  * Timer test.
  *
@@ -39,17 +36,6 @@ class TimerTest extends AbstractSubscriberTest
     protected function tearDown()
     {
         unset($this->timerSubscriber);
-    }
-
-    public function testSubscribedEvents()
-    {
-        $events = AbstractTimerSubscriber::getSubscribedEvents();
-
-        $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame('onPreSend', $events[Events::PRE_SEND]);
-
-        $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame('onPostSend', $events[Events::POST_SEND]);
     }
 
     public function testPostSendEvent()

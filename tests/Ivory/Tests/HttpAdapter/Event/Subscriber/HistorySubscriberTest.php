@@ -64,10 +64,10 @@ class HistorySubscriberTest extends AbstractSubscriberTest
         $events = HistorySubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame('onPreSend', $events[Events::PRE_SEND]);
+        $this->assertSame(array('onPreSend', 100), $events[Events::PRE_SEND]);
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame('onPostSend', $events[Events::POST_SEND]);
+        $this->assertSame(array('onPostSend', 100), $events[Events::POST_SEND]);
     }
 
     public function testPostSendEvent()

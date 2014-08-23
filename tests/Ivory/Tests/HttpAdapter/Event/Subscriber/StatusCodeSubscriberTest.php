@@ -45,7 +45,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
         $events = StatusCodeSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame('onPostSend', $events[Events::POST_SEND]);
+        $this->assertSame(array('onPostSend', 200), $events[Events::POST_SEND]);
     }
 
     /**

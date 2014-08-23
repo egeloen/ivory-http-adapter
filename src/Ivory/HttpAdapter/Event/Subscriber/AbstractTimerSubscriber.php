@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
-use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -47,16 +46,5 @@ abstract class AbstractTimerSubscriber implements EventSubscriberInterface
     public function onPostSend(PostSendEvent $event)
     {
         $this->time = microtime(true) - $this->start;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getSubscribedEvents()
-    {
-        return array(
-            Events::PRE_SEND  => 'onPreSend',
-            Events::POST_SEND => 'onPostSend',
-        );
     }
 }

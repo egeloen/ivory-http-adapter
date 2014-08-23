@@ -106,9 +106,10 @@ class LoggerSubscriber extends AbstractTimerSubscriber
      */
     public static function getSubscribedEvents()
     {
-        return array_merge(
-            parent::getSubscribedEvents(),
-            array(Events::EXCEPTION => 'onException')
+        return array(
+            Events::PRE_SEND  => array('onPreSend', 100),
+            Events::POST_SEND => array('onPostSend', 100),
+            Events::EXCEPTION => array('onException', 100),
         );
     }
 

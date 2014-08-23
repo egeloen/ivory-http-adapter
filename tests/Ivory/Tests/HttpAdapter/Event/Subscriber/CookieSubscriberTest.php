@@ -64,10 +64,10 @@ class CookieSubscriberTest extends AbstractSubscriberTest
         $events = CookieSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame('onPreSend', $events[Events::PRE_SEND]);
+        $this->assertSame(array('onPreSend', 0), $events[Events::PRE_SEND]);
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame('onPostSend', $events[Events::POST_SEND]);
+        $this->assertSame(array('onPostSend', 0), $events[Events::POST_SEND]);
     }
 
     public function testPreSendEvent()
