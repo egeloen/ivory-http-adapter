@@ -701,10 +701,10 @@ All event subscribers can work together (thanks to the event priorities). Here, 
 
 | Event Subscriber | Pre Send Event | Post Send Event | Exception Event |
 | ---------------- | :------------: | :-------------: | :-------------: |
-| Basic Auth       | 200            | -               | -               |
-| Cookie           | 200            | 200             | -               |
+| Basic Auth       | 300            | -               | -               |
+| Cookie           | 300            | 300             | -               |
+| Status Code      | -              | 200             | -               |
 | History          | 100            | 100             | -               |
 | Logger           | 100            | 100             | 100             |
 | Redirect         | -              | 0               | -               |
-| Retry            | -              | 0               | -               |
-| Status Code      | -              | 0               | -               |
+| Retry            | -              | -               | 0               |

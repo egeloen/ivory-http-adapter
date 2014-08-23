@@ -136,7 +136,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(Events::PRE_SEND => array('onPreSend', 200));
+        return array(Events::PRE_SEND => array('onPreSend', 300));
     }
 
     /**
