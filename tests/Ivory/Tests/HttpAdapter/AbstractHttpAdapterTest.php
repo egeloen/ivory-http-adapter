@@ -521,9 +521,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         foreach ($headers as $name => $value) {
             if (is_int($name)) {
-                $explode = explode(':', $value);
-                $name = $explode[0];
-                $value = $explode[1];
+                list($name, $value) = explode(':', $value);
             }
 
             $name = strtoupper(str_replace(array('-'), array('_'), 'http-'.$name));
