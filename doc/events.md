@@ -356,8 +356,8 @@ All retry strategies implement a chain of responsibility. That means you can com
 archive more complex behavior. For example, by default, the retry subscriber combines the limited retry strategy with
 the exponential delayed one.
 
-To do that, all retry strategies implement the `Ivory\HttpAdapter\Event\Retry\ChainedRetryStrategyInterface` and extend
-the `Ivory\HttpAdapter\Event\Retry\AbstractChainedRetryStrategy` where the default chain of responsibility
+To do that, all retry strategies implement the `Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface` and extend
+the `Ivory\HttpAdapter\Event\Retry\AbstractRetryStrategyChain` where the default chain of responsibility
 implementation is done. Then, a chained retry strategy wraps a next strategy which is involved when it decides if it
 should retry the request and for calculating the delay to wait if it should retry.
 
@@ -701,10 +701,10 @@ All event subscribers can work together (thanks to the event priorities). Here, 
 
 | Event Subscriber | Pre Send Event | Post Send Event | Exception Event |
 | ---------------- | :------------: | :-------------: | :-------------: |
-| Basic Auth       | 0              | -               | -               |
-| Cookie           | 0              | 0               | -               |
+| Basic Auth       | 200            | -               | -               |
+| Cookie           | 200            | 200             | -               |
 | History          | 100            | 100             | -               |
 | Logger           | 100            | 100             | 100             |
-| Redirect         | -              | 200             | -               |
-| Retry            | -              | 200             | -               |
-| Status Code      | -              | 200             | -               |
+| Redirect         | -              | 0               | -               |
+| Retry            | -              | 0               | -               |
+| Status Code      | -              | 0               | -               |

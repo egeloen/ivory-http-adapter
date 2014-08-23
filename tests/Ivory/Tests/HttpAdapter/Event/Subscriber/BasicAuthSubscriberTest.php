@@ -100,7 +100,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         $events = BasicAuthSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame(array('onPreSend', 0), $events[Events::PRE_SEND]);
+        $this->assertSame(array('onPreSend', 200), $events[Events::PRE_SEND]);
     }
 
     /**

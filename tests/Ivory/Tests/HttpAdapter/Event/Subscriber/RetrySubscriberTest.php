@@ -76,7 +76,7 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         $events = RetrySubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::EXCEPTION, $events);
-        $this->assertSame(array('onException', 200), $events[Events::EXCEPTION]);
+        $this->assertSame(array('onException', 0), $events[Events::EXCEPTION]);
     }
 
     public function testExceptionEventWithStrategyNotVerified()

@@ -84,8 +84,8 @@ class CookieSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND  => array('onPreSend', 0),
-            Events::POST_SEND => array('onPostSend', 0),
+            Events::PRE_SEND  => array('onPreSend', 200),
+            Events::POST_SEND => array('onPostSend', 200),
         );
     }
 }

@@ -90,6 +90,6 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(Events::EXCEPTION => array('onException', 200));
+        return array(Events::EXCEPTION => array('onException', 0));
     }
 }

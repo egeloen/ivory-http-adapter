@@ -84,7 +84,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $events = RedirectSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame(array('onPostSend', 200), $events[Events::POST_SEND]);
+        $this->assertSame(array('onPostSend', 0), $events[Events::POST_SEND]);
     }
 
     public function testPostSendEventWithoutRedirect()

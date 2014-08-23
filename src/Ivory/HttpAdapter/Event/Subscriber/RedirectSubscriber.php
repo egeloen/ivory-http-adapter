@@ -156,7 +156,7 @@ class RedirectSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(Events::POST_SEND => array('onPostSend', 200));
+        return array(Events::POST_SEND => array('onPostSend', 0));
     }
 
     /**
