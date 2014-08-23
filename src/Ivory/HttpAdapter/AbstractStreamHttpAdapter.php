@@ -48,7 +48,8 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
         list($body, $headers) = $this->process($url, $context);
 
         if ($body === false) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), print_r(error_get_last(), true));
+            $error = error_get_last();
+            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error['message']);
         }
 
         return $this->createResponse(
