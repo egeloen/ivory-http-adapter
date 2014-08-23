@@ -181,6 +181,209 @@ Finally, when you use the redirect subscriber, some parameters are available on 
  - `effective_url`: The final url of the redirection.
  - `redirect_count`: The number of redirects which have been followed.
 
+### Retry
+
+The retry subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber` and allow you to retry an
+errored request (more precisely when an exception is thrown). To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
+
+$retrySubscriber = new RetrySubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($retrySubscriber);
+```
+
+When you use the retry subscriber, some parameters are available on the request:
+
+ - `retry_count`: The number of retries which have been done.
+
+Additionally, by default, the subscriber uses a limited retry strategy of 3 retries combined to an exponential delayed
+one. Basically, that means it will retry 3 times maximum and wait more and more between each retry. This strategy can
+be configured through the constructor or via getter/setter:
+
+``` php
+$retrySubscriber = new RetrySubscriber($retryStrategy);
+
+$retryStrategy = $retrySubscriber->getStrategy();
+$retrySubscriber->setStrategy($retryStrategy);
+```
+
+If you want to know more about the retry strategies, the next sections are for you.
+
+#### Constant Delayed Strategy
+
+The constant delayed retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy` and
+allow you to retry a request following the exact same delay between each retry (by default: 5 seconds).
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy;
+
+$retryStrategy = new ConstantDelayedRetryStrategy();
+```
+
+The delay can be configured through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy;
+
+$retryStrategy = new ConstantDelayedRetryStrategy(2);
+
+$delay = $retryStrategy->getDelay();
+$retryStrategy->setDelay(2);
+```
+
+#### Linear Delayed Strategy
+
+The linear delayed retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy` and
+allow you to retry a request following a linear delay between each retry (delay = configured delay * retry count).
+By default, the configured delay is 5 seconds.
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy;
+
+$retryStrategy = new LinearDelayedRetryStrategy();
+```
+
+The delay can be configured through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy;
+
+$retryStrategy = new LinearDelayedRetryStrategy(2);
+
+$delay = $retryStrategy->getDelay();
+$retryStrategy->setDelay(2);
+```
+
+#### Exponential Delayed Strategy
+
+The exponential retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\ExponentialRetryStrategy` and allow
+you to retry a request following an exponential delay between each retry (delay = 2 ^ redirect count).
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\ExponentialDelayedRetryStrategy;
+
+$retryStrategy = new ExponentialDelayedRetryStrategy();
+```
+
+#### Limited Strategy
+
+The limited retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy` and allow you to
+limit the number of retry (by default: 3).
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy;
+
+$retryStrategy = new LimitedRetryStrategy();
+```
+
+The limit can be configured through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy;
+
+$retryStrategy = new LimitedRetryStrategy(5);
+
+$limit = $retryStrategy->getLimit();
+$retryStrategy->setLimit(5);
+```
+
+#### Callback Strategy
+
+The callback retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy` and allow you to
+limit the number of retry or specify the delay between each retry through two callbacks. They can be configured through
+the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+
+$retryStrategy = new CallbackRetryStrategy(
+    // Verify callback
+    function (InternalRequestInterface $request, HttpAdapterException $exception) {
+        // Return TRUE if you want to retry the request otherwise FALSE.
+    },
+    // Delay callback
+    function (InternalRequestInterface $request, HttpAdapterException $exception) {
+        // Return the delay to wait before retrying the request.
+    }
+);
+
+$hasVerifyCallback = $retryStrategy->hasVerifyCallback();
+$verifyCallback = $retryStrategy->getVerifyCallback();
+$retryStrategy->setVerifyCallback($verifyCallback);
+
+$hasDelayCallback = $retryStrategy->hasDelayCallback();
+$delayCallback = $retryStrategy->getDelayCallback();
+$retryStrategy->setDelayCallback($delayCallback);
+```
+
+The two callbacks are not mandatory. If you don't provide the verify callback, it will consider it should retry the
+request and if you don't provide the delay callback, it will consider it should not wait before retrying the request.
+
+#### Custom Strategy
+
+All retry strategies implement the `Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface`. Then, if you want to define
+your own strategy, you will need to implement this interface. Here, an example which rely on information wraps in the
+header:
+
+``` php
+namespace My\Own\Namespace;
+
+use Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+
+class MyOwnRetryStrategy implements RetryStrategyInterface
+{
+    public function verify(InternalRequestInterface $request, HttpAdapterException $exception)
+    {
+        return $request->getHeader('X-Can-Retry') === 'true';
+    }
+
+    public function delay(InternalRequestInterface $request, HttpAdapterException $exception)
+    {
+        return (float) $request->getHeader('X-Retry-Delay');
+    }
+}
+```
+
+#### Chain of Responsibility
+
+All retry strategies implement a chain of responsibility. That means you can combine strategies together in order to
+archive more complex behavior. For example, by default, the retry subscriber combines the limited retry strategy with
+the exponential delayed one.
+
+To do that, all retry strategies implement the `Ivory\HttpAdapter\Event\Retry\ChainedRetryStrategyInterface` and extend
+the `Ivory\HttpAdapter\Event\Retry\AbstractChainedRetryStrategy` where the default chain of responsibility
+implementation is done. Then, a chained retry strategy wraps a next strategy which is involved when it decides if it
+should retry the request and for calculating the delay to wait if it should retry.
+
+The behavior of the chain of responsibility is the following:
+
+ - It retries a request if all retry strategies in the chain of responsibility agree about retrying it.
+ - It waits the biggest delay stored in the chain of responsibility.
+
+So, technically, all retry strategies accept the next strategy as second constructor argument. Here, an example on
+how you should instantiate them:
+
+``` php
+Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy;
+Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy;
+
+$retryStrategy = new LimitedRetryStrategy(5, new LinearDelayedRetryStrategy(2));
+```
+
+Additionally, you can update the chain of responsibility at runtime with the following API:
+
+``` php
+$hasNext = $retryStrategy->hasNext();
+$next = $retryStrategy->getNext();
+$retryStrategy->setNext($next);
+```
+
 ### Cookie
 
 The cookie subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber` and allow you to manage
