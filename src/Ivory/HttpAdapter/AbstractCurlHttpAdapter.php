@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\MessageInterface;
 
 /**
  * Abstract curl http adapter.
@@ -46,7 +45,7 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
      */
     protected function prepareProtocolVersion(InternalRequestInterface $internalRequest)
     {
-        if ($internalRequest->getProtocolVersion() === MessageInterface::PROTOCOL_VERSION_10) {
+        if ($internalRequest->getProtocolVersion() === InternalRequestInterface::PROTOCOL_VERSION_10) {
             return CURL_HTTP_VERSION_1_0;
         }
 
