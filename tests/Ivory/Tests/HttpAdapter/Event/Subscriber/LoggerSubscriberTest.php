@@ -62,13 +62,13 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $events = LoggerSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame('onPreSend', $events[Events::PRE_SEND]);
+        $this->assertSame(array('onPreSend', 100), $events[Events::PRE_SEND]);
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame('onPostSend', $events[Events::POST_SEND]);
+        $this->assertSame(array('onPostSend', 100), $events[Events::POST_SEND]);
 
         $this->assertArrayHasKey(Events::EXCEPTION, $events);
-        $this->assertSame('onException', $events[Events::EXCEPTION]);
+        $this->assertSame(array('onException', 100), $events[Events::EXCEPTION]);
     }
 
     public function testPostSendEvent()

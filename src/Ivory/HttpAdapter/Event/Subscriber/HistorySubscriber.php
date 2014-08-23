@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
+use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\History\Journal;
 use Ivory\HttpAdapter\Event\History\JournalInterface;
@@ -63,5 +64,16 @@ class HistorySubscriber extends AbstractTimerSubscriber
         parent::onPostSend($event);
 
         $this->journal->record($event->getRequest(), $event->getResponse(), $this->time);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::PRE_SEND  => array('onPreSend', 100),
+            Events::POST_SEND => array('onPostSend', 100),
+        );
     }
 }

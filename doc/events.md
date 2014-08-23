@@ -694,3 +694,17 @@ $entry->setResponse($response);
 $time = $entry->getTime();
 $entry->setTime($time);
 ```
+
+## Event Subscriber Priorities
+
+All event subscribers can work together (thanks to the event priorities). Here, the summary:
+
+| Event Subscriber | Pre Send Event | Post Send Event | Exception Event |
+| ---------------- | :------------: | :-------------: | :-------------: |
+| Basic Auth       | 0              | -               | -               |
+| Cookie           | 0              | 0               | -               |
+| History          | 100            | 100             | -               |
+| Logger           | 100            | 100             | 100             |
+| Redirect         | -              | 200             | -               |
+| Retry            | -              | 200             | -               |
+| Status Code      | -              | 200             | -               |
