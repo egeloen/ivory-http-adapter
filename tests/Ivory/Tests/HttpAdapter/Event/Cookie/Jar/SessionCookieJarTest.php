@@ -9,10 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Cookie;
+namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
-use Ivory\HttpAdapter\Event\Cookie\SessionCookieJar;
-use Ivory\Tests\HttpAdapter\Event\Cookie\AbstractPersistentCookieJarTest;
+use Ivory\HttpAdapter\Event\Cookie\Jar\SessionCookieJar;
 
 /**
  * Session cookie jar test.
@@ -21,7 +20,7 @@ use Ivory\Tests\HttpAdapter\Event\Cookie\AbstractPersistentCookieJarTest;
  */
 class SessionCookieJarTest extends AbstractPersistentCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\SessionCookieJar */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\SessionCookieJar */
     protected $sessionCookieJar;
 
     /** @var string */
@@ -50,7 +49,10 @@ class SessionCookieJarTest extends AbstractPersistentCookieJarTest
 
     public function testDefaultState()
     {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Cookie\AbstractPersistentCookieJar', $this->sessionCookieJar);
+        $this->assertInstanceOf(
+            'Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar',
+            $this->sessionCookieJar
+        );
 
         $this->assertInstanceOf(
             'Ivory\HttpAdapter\Event\Cookie\CookieFactory',

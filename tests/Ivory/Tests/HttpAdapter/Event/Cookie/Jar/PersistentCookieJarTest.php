@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Cookie;
+namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 /**
  * Persistent cookie jar test.
@@ -18,7 +18,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie;
  */
 class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject */
     protected $persistentCookieJar;
 
     /**
@@ -43,10 +43,10 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
 
     public function testDefaultState()
     {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Cookie\CookieJar', $this->persistentCookieJar);
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar', $this->persistentCookieJar);
 
         $this->assertInstanceOf(
-            'Ivory\HttpAdapter\Event\Cookie\PersistentCookieJarInterface',
+            'Ivory\HttpAdapter\Event\Cookie\Jar\PersistentCookieJarInterface',
             $this->persistentCookieJar
         );
 
@@ -96,13 +96,13 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
      */
     protected function createPersistentCookieJarMockBuilder()
     {
-        return $this->getMockBuilder('Ivory\HttpAdapter\Event\Cookie\AbstractPersistentCookieJar');
+        return $this->getMockBuilder('Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar');
     }
 
     /**
      * Creates a persistent cookie jar mock.
      *
-     * @return \Ivory\HttpAdapter\Event\Cookie\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject The persistent cookie jar mock.
+     * @return \Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject The persistent cookie jar mock.
      */
     protected function createPersistentCookieJarMock()
     {

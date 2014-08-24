@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Cookie;
+namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 
@@ -20,10 +20,10 @@ use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
  */
 abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject */
     protected $cookie;
 
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject */
     protected $expiredCookie;
 
     /**

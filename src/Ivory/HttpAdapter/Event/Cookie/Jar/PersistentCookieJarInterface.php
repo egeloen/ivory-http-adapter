@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Cookie;
+namespace Ivory\HttpAdapter\Event\Cookie\Jar;
 
 /**
  * Persistent cookie jar.
