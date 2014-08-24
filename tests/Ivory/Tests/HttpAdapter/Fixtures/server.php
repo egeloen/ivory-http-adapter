@@ -9,6 +9,10 @@
  * file that was distributed with this source code.
  */
 
+require_once __DIR__.'/../Utility/PHPUnitUtility.php';
+
+use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
+
 $serverError = isset($_GET['server_error']) ? $_GET['server_error'] : false;
 $clientError = isset($_GET['client_error']) ? $_GET['client_error'] : false;
 $delay = isset($_GET['delay']) ? $_GET['delay'] : 0;
@@ -34,7 +38,7 @@ if ($redirect) {
 }
 
 file_put_contents(
-    realpath(sys_get_temp_dir()).'/http-adapter.log',
+    PHPUnitUtility::getFile(true, 'http-adapter.log'),
     json_encode(array(
         'SERVER' => $_SERVER,
         'GET'    => $_GET,

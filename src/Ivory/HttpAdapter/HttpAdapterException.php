@@ -38,6 +38,30 @@ class HttpAdapterException extends \Exception
     }
 
     /**
+     * Gets the "CANNOT LOAD COOKIE JAR" exception.
+     *
+     * @param string $error The error.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT LOAD COOKIE JAR" exception.
+     */
+    public static function cannotLoadCookieJar($error)
+    {
+        return new self(sprintf('An error occurred when loading the cookie jar ("%s").', $error));
+    }
+
+    /**
+     * Gets the "CANNOT SAVE COOKIE JAR" exception.
+     *
+     * @param string $error The error.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT SAVE COOKIE JAR" exception.
+     */
+    public static function cannotSaveCookieJar($error)
+    {
+        return new self(sprintf('An error occurred when saving the cookie jar ("%s").', $error));
+    }
+
+    /**
      * Gets the "DOES NOT SUPPORT BODY" exception.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT BODY" exception.

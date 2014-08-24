@@ -219,6 +219,13 @@ interface CookieInterface
     public function matchSecure(InternalRequestInterface $request);
 
     /**
+     * Converts the cookie to array.
+     *
+     * @return array The converted cookie.
+     */
+    public function toArray();
+
+    /**
      * Converts the cookie to string.
      *
      * @return string The converted cookie.
