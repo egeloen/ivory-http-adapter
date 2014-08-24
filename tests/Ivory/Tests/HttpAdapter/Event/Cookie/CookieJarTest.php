@@ -19,7 +19,7 @@ use Ivory\HttpAdapter\Event\Cookie\CookieJar;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class CookieJarTest extends \PHPUnit_Framework_TestCase
+class CookieJarTest extends AbstractCookieJarTest
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\CookieJar */
     protected $cookieJar;
@@ -271,42 +271,6 @@ class CookieJarTest extends \PHPUnit_Framework_TestCase
         $this->cookieJar->extract($request, $response);
 
         $this->assertSame(array($cookie1, $cookie2), $this->cookieJar->getCookies());
-    }
-
-    /**
-     * Creates a cookie factory mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The cookie factory mock.
-     */
-    protected function createCookieFactoryMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface');
-    }
-
-    /**
-     * Creates a cookie mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The cookie mock.
-     */
-    protected function createCookieMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cookie\CookieInterface');
-    }
-
-    /**
-     * Creates an expired cookie mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The expired cookie mock.
-     */
-    protected function createExpiredCookieMock()
-    {
-        $cookie = $this->createCookieMock();
-        $cookie
-            ->expects($this->any())
-            ->method('isExpired')
-            ->will($this->returnValue(true));
-
-        return $cookie;
     }
 
     /**

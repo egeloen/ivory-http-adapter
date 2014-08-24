@@ -27,4 +27,23 @@ class PHPUnitUtility
     {
         return isset($_SERVER['TEST_SERVER']) ? $_SERVER['TEST_SERVER'] : false;
     }
+
+    /**
+     * Gets the file.
+     *
+     * @param boolean     $tmp  TRUE if the file should be in the "/tmp" directory else FALSE.
+     * @param string|null $name The name.
+     *
+     * @return string The file.
+     */
+    public static function getFile($tmp = true, $name = null)
+    {
+        $file = null;
+
+        if ($tmp) {
+            $file .= realpath(sys_get_temp_dir());
+        }
+
+        return $file.'/'.($name === null ? uniqid() : $name);
+    }
 }

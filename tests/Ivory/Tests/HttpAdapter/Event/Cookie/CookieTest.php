@@ -224,6 +224,19 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $this->cookie->match($request));
     }
 
+    public function testToArray()
+    {
+        $this->assertSame(
+            array(
+                'name'       => $this->name,
+                'value'      => $this->value,
+                'attributes' => $this->attributes,
+                'created_at' => $this->createdAt,
+            ),
+            $this->cookie->toArray()
+        );
+    }
+
     public function testToString()
     {
         $this->assertSame($this->name.'='.$this->value, (string) $this->cookie);

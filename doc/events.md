@@ -483,6 +483,43 @@ $cookies = iterator_to_array($cookieJar);
 
 Be aware that when you access cookies, the cookie jar clears expired cookies before serving them.
 
+#### Persistent cookie jar
+
+The persistent cookie jar is described by the `Ivory\HttpAdapter\Event\Cookie\PersistentCookieJarInterface` and its
+default implementation is the `Ivory\HttpAdapter\Event\Cookie\AbstractPersistentCookieJar`. Basically, it allows you
+to load/save cookies from/to somewhere. All persistent cookie jars share the following API:
+
+``` php
+// Loads the cookie jar from the underlying resource
+$cookieJar->load();
+
+// Saves the cookie jar on the underlying resource
+$cookieJar->save();
+```
+
+Additionally, the persistent cookie jar will automatically try to load it when it is instantiated and will save it when
+it is destroyed.
+
+##### File cookie jar
+
+The file cookie jar is a persistent cookie jar which stores/retrieves cookies from a file. To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Cookie\FileCookieJar;
+
+$cookieJar = new FileCookieJar('path/to/the/file');
+```
+
+##### Session cookie jar
+
+The session cookie jar is a persistent cookie jar which stores/retrieves cookies from the session. To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Cookie\SessionCookieJar;
+
+$cookieJar = new SessionCookieJar('session_key');
+```
+
 #### Cookie factory
 
 As already explained, the cookie factory is defined by the `Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface`
@@ -530,6 +567,9 @@ $expired = $cookie->isExpired();
 
 $createdAt = $cookie->getCreatedAt();
 $cookie->setCreatedAt($createdAt);
+
+$array = $cookie->toArray();
+$string = (string) $cookie;
 ```
 
 All attribute names are described by the `Ivory\HttpAdapter\Event\Cookie\Cookie::ATTR_*` constants. Additionally, you

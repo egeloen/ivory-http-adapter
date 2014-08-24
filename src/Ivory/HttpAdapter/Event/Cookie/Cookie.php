@@ -266,6 +266,19 @@ class Cookie implements CookieInterface
     /**
      * {@inheritdoc}
      */
+    public function toArray()
+    {
+        return array(
+            'name'       => $this->name,
+            'value'      => $this->value,
+            'attributes' => $this->attributes,
+            'created_at' => $this->createdAt,
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function __toString()
     {
         return $this->name.'='.$this->value;
