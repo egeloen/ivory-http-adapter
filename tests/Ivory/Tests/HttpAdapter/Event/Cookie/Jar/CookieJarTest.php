@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Cookie;
+namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
-use Ivory\HttpAdapter\Event\Cookie\CookieJar;
+use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
 
 /**
  * Cookie jar test.
@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\Cookie\CookieJar;
  */
 class CookieJarTest extends AbstractCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieJar */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar */
     protected $cookieJar;
 
     /**

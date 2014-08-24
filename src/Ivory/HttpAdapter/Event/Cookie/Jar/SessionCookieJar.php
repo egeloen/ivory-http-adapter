@@ -9,7 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Cookie;
+namespace Ivory\HttpAdapter\Event\Cookie\Jar;
+
+use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
 
 /**
  * Session cookie jar.

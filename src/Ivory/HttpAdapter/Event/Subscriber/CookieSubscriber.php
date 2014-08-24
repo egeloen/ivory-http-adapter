@@ -11,8 +11,8 @@
 
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
-use Ivory\HttpAdapter\Event\Cookie\CookieJar;
-use Ivory\HttpAdapter\Event\Cookie\CookieJarInterface;
+use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
+use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
@@ -25,13 +25,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class CookieSubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieJarInterface */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface */
     protected $cookieJar;
 
     /**
      * Creates a cookie subscriber.
      *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieJarInterface|null $cookieJar The cookie jar.
+     * @param \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface|null $cookieJar The cookie jar.
      */
     public function __construct(CookieJarInterface $cookieJar = null)
     {
@@ -41,7 +41,7 @@ class CookieSubscriber implements EventSubscriberInterface
     /**
      * Gets the cookie jar.
      *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieJarInterface The cookie jar.
+     * @return \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface The cookie jar.
      */
     public function getCookieJar()
     {
@@ -51,7 +51,7 @@ class CookieSubscriber implements EventSubscriberInterface
     /**
      * Sets the cookie jar.
      *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieJarInterface $cookieJar The cookie jar.
+     * @param \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface $cookieJar The cookie jar.
      */
     public function setCookieJar(CookieJarInterface $cookieJar)
     {

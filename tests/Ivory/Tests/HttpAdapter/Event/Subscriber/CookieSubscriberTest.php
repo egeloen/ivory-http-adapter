@@ -42,7 +42,10 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function setDefaultState()
     {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Cookie\CookieJar', $this->cookieSubscriber->getCookieJar());
+        $this->assertInstanceOf(
+            'Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar',
+            $this->cookieSubscriber->getCookieJar()
+        );
     }
 
     public function testInitialState()
@@ -100,10 +103,10 @@ class CookieSubscriberTest extends AbstractSubscriberTest
     /**
      * Creates a cookie jar mock.
      *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieJarInterface|\PHPUnit_Framework_MockObject_MockObject The cookie jar mock.
+     * @return \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface|\PHPUnit_Framework_MockObject_MockObject The cookie jar mock.
      */
     protected function createCookieJarMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cookie\CookieJarInterface');
+        return $this->getMock('Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface');
     }
 }

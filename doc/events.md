@@ -400,7 +400,7 @@ $httpAdapter->getEventDispatcher()->addSubscriber($cookieSubscriber);
 By default, a cookie jar is created by the subscriber but you can specify it in its constructor:
 
 ``` php
-use Ivory\HttpAdapter\Event\Cookie\CookieJar;
+use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
 use Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber;
 
 $cookieJar = new CookieJar();
@@ -416,8 +416,8 @@ $cookieSubscriber->setCookieJar($cookieJar);
 
 #### Cookie Jar
 
-A cookie jar is described by the `Ivory\HttpAdapter\Event\Cookie\CookieJarInterface` and its default implementation is
-`Ivory\HttpAdapter\Event\Cookie\CookieJar`. As there is an interface, you can define your own implementation.
+A cookie jar is described by the `Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface` and its default implementation
+is `Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar`. As there is an interface, you can define your own implementation.
 
 First, a cookie jar stores/manages the cookies. You can use the following API:
 
@@ -445,7 +445,7 @@ constructor or getter/setter:
 
 ``` php
 use Ivory\HttpAdapter\Event\Cookie\CookieFactory;
-use Ivory\HttpAdapter\Event\Cookie\CookieJar;
+use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
 
 $cookieJar = new CookieJar(new CookieFactory());
 
@@ -485,9 +485,9 @@ Be aware that when you access cookies, the cookie jar clears expired cookies bef
 
 #### Persistent cookie jar
 
-The persistent cookie jar is described by the `Ivory\HttpAdapter\Event\Cookie\PersistentCookieJarInterface` and its
-default implementation is the `Ivory\HttpAdapter\Event\Cookie\AbstractPersistentCookieJar`. Basically, it allows you
-to load/save cookies from/to somewhere. All persistent cookie jars share the following API:
+The persistent cookie jar is described by the `Ivory\HttpAdapter\Event\Cookie\Jar\PersistentCookieJarInterface` and its
+default implementation is the `Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar` (not directly usable).
+Basically, it allows you to load/save cookies from/to somewhere. All persistent cookie jars share the following API:
 
 ``` php
 // Loads the cookie jar from the underlying resource
@@ -505,7 +505,7 @@ it is destroyed.
 The file cookie jar is a persistent cookie jar which stores/retrieves cookies from a file. To use it:
 
 ``` php
-use Ivory\HttpAdapter\Event\Cookie\FileCookieJar;
+use Ivory\HttpAdapter\Event\Cookie\Jar\FileCookieJar;
 
 $cookieJar = new FileCookieJar('path/to/the/file');
 ```
@@ -515,7 +515,7 @@ $cookieJar = new FileCookieJar('path/to/the/file');
 The session cookie jar is a persistent cookie jar which stores/retrieves cookies from the session. To use it:
 
 ``` php
-use Ivory\HttpAdapter\Event\Cookie\SessionCookieJar;
+use Ivory\HttpAdapter\Event\Cookie\Jar\SessionCookieJar;
 
 $cookieJar = new SessionCookieJar('session_key');
 ```

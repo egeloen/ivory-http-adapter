@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Cookie;
+namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 /**
  * Abstract cookie jar test.

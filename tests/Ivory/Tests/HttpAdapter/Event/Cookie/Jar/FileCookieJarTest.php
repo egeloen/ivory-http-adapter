@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Cookie;
+namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
-use Ivory\HttpAdapter\Event\Cookie\FileCookieJar;
+use Ivory\HttpAdapter\Event\Cookie\Jar\FileCookieJar;
 use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
 /**
@@ -21,7 +21,7 @@ use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
  */
 class FileCookieJarTest extends AbstractPersistentCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\FileCookieJar */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\FileCookieJar */
     protected $fileCookieJar;
 
     /** @var string */
@@ -42,8 +42,6 @@ class FileCookieJarTest extends AbstractPersistentCookieJarTest
      */
     protected function tearDown()
     {
-        parent::tearDown();
-
         unset($this->fileCookieJar);
 
         if (file_exists($this->file)) {
@@ -51,11 +49,13 @@ class FileCookieJarTest extends AbstractPersistentCookieJarTest
         }
 
         unset($this->file);
+
+        parent::tearDown();
     }
 
     public function testDefaultState()
     {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Cookie\AbstractPersistentCookieJar', $this->fileCookieJar);
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar', $this->fileCookieJar);
 
         $this->assertInstanceOf(
             'Ivory\HttpAdapter\Event\Cookie\CookieFactory',
