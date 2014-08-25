@@ -20,10 +20,10 @@
         "phpunit/phpunit-mock-objects": "dev-matcher-verify as 2.3.x-dev",
         "satooshi/php-coveralls": "~0.6",
         "ext-curl": "*",
-        "guzzle/guzzle": "*",
-        "guzzlehttp/guzzle": "*",
+        "guzzle/guzzle": ">=3.9.2",
+        "guzzlehttp/guzzle": ">=4.1.4",
         "kriswallsmith/buzz": "*@dev",
-        "nategood/httpful": "*@dev",
+        "nategood/httpful": ">=0.2.17",
         "zendframework/zendframework1": "*@dev",
         "zendframework/zendframework": "dev-http-curl-adapter",
         "psr/log": "~1.0"
