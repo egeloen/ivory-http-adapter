@@ -46,6 +46,18 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
     public function head($url, array $headers = array());
 
     /**
+     * Sends a TRACE request.
+     *
+     * @param string|object $url     The url.
+     * @param array         $headers The headers.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     */
+    public function trace($url, array $headers = array());
+
+    /**
      * Sends a POST request.
      *
      * @param string|object $url     The url.

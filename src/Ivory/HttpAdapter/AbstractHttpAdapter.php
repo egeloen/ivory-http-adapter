@@ -222,6 +222,14 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /**
      * {@inheritdoc}
      */
+    public function trace($url, array $headers = array())
+    {
+        return $this->send($url, RequestInterface::METHOD_TRACE, $headers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function post($url, array $headers = array(), $datas = array(), array $files = array())
     {
         return $this->send($url, RequestInterface::METHOD_POST, $headers, $datas, $files);

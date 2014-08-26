@@ -74,6 +74,10 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
                 curl_setopt($curl, CURLOPT_NOBODY, true);
                 break;
 
+            case RequestInterface::METHOD_TRACE:
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $internalRequest->getMethod());
+                break;
+
             case RequestInterface::METHOD_POST:
                 curl_setopt($curl, CURLOPT_POST, true);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $this->prepareContent($internalRequest));

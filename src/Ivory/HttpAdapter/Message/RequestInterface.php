@@ -26,6 +26,9 @@ interface RequestInterface extends PsrRequestInterface, MessageInterface
     /** @const string The HEAD method. */
     const METHOD_HEAD = 'HEAD';
 
+    /** @const string The TRACE method. */
+    const METHOD_TRACE = 'TRACE';
+
     /** @const string The POST method. */
     const METHOD_POST = 'POST';
 
