@@ -73,6 +73,25 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider simpleProvider
+     */
+    public function testTrace($url, array $headers = array())
+    {
+        $response = $this->httpAdapter->trace($url, $headers);
+
+        if ($response->getStatusCode() === 405) {
+            $this->markTestIncomplete();
+        }
+
+        $options = array(
+            'headers' => array('Content-Type' => 'message/http'),
+            'body'    => 'TRACE /server.php HTTP/1.1',
+        );
+
+        $this->assertResponse($response, $options);
+    }
+
+    /**
      * @dataProvider fullProvider
      */
     public function testPost($url, array $headers = array(), array $data = array(), array $files = array())
@@ -131,10 +150,22 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $options = array();
         if ($method === Request::METHOD_HEAD) {
             $options['body'] = null;
+        } else if ($method === Request::METHOD_TRACE) {
+            $options['headers'] = array('Content-Type' => 'message/http');
+            $options['body'] = 'TRACE /server.php HTTP/1.1';
         }
 
-        $this->assertResponse($this->httpAdapter->sendRequest($request), $options);
-        $this->assertRequest($method, $headers, $data);
+        $response = $this->httpAdapter->sendRequest($request);
+
+        if ($method === Request::METHOD_TRACE && $response->getStatusCode() === 405) {
+            $this->markTestIncomplete();
+        }
+
+        $this->assertResponse($response, $options);
+
+        if ($method !== Request::METHOD_TRACE) {
+            $this->assertRequest($method, $headers, $data);
+        }
     }
 
     /**
@@ -155,10 +186,22 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $options = array();
         if ($method === Request::METHOD_HEAD) {
             $options['body'] = null;
+        } else if ($method === Request::METHOD_TRACE) {
+            $options['headers'] = array('Content-Type' => 'message/http');
+            $options['body'] = 'TRACE /server.php HTTP/1.1';
         }
 
-        $this->assertResponse($this->httpAdapter->sendRequest($internalRequest), $options);
-        $this->assertRequest($method, $headers, $data, $files);
+        $response = $this->httpAdapter->sendRequest($internalRequest);
+
+        if ($method === Request::METHOD_TRACE && $response->getStatusCode() === 405) {
+            $this->markTestIncomplete();
+        }
+
+        $this->assertResponse($response, $options);
+
+        if ($method !== Request::METHOD_TRACE) {
+            $this->assertRequest($method, $headers, $data, $files);
+        }
     }
 
     public function testSendWithProtocolVersion10()
@@ -291,6 +334,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
                 array($this->getUrl(), Request::METHOD_GET, $this->getHeaders()),
                 array($this->getUrl(), Request::METHOD_HEAD),
                 array($this->getUrl(), Request::METHOD_HEAD, $this->getHeaders()),
+                array($this->getUrl(), Request::METHOD_TRACE),
+                array($this->getUrl(), Request::METHOD_TRACE, $this->getHeaders()),
                 array($this->getUrl(), Request::METHOD_POST),
                 array($this->getUrl(), Request::METHOD_POST, $this->getHeaders()),
                 array($this->getUrl(), Request::METHOD_POST, $this->getHeaders(), $this->getData()),
@@ -322,6 +367,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             array($this->getUrl(), Request::METHOD_GET, $this->getHeaders()),
             array($this->getUrl(), Request::METHOD_HEAD),
             array($this->getUrl(), Request::METHOD_HEAD, $this->getHeaders()),
+            array($this->getUrl(), Request::METHOD_TRACE),
+            array($this->getUrl(), Request::METHOD_TRACE, $this->getHeaders()),
             array($this->getUrl(), Request::METHOD_POST),
             array($this->getUrl(), Request::METHOD_POST, $this->getHeaders()),
             array($this->getUrl(), Request::METHOD_POST, $this->getHeaders(), $this->getData()),
@@ -426,7 +473,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function getHeaders()
     {
-        return array('Accept-Charset' => 'utf-8', 'Accept-Encoding:gzip');
+        return array('Accept-Charset' => 'utf-8', 'Accept-Language:fr');
     }
 
     /**
@@ -470,7 +517,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
                 'protocol_version' => Request::PROTOCOL_VERSION_11,
                 'status_code'      => 200,
                 'reason_phrase'    => 'OK',
-                'headers'          => array('content-type' => 'text/html'),
+                'headers'          => array('Content-Type' => 'text/html'),
                 'body'             => 'Ok',
             ),
             $options
@@ -490,7 +537,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         if ($options['body'] === null) {
             $this->assertFalse($response->hasBody());
         } else {
-            $this->assertSame($options['body'], (string) $response->getBody());
+            $this->assertContains($options['body'], (string) $response->getBody());
         }
 
         $parameters = array();

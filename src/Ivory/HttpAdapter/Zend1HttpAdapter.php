@@ -75,7 +75,11 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             $response->getMessage(),
             $response->getHeaders(),
             BodyNormalizer::normalize(
-                $response instanceof \Zend_Http_Client_Adapter_Stream ? $response->getStream() : $response->getBody(),
+                function () use ($response) {
+                    return $response instanceof \Zend_Http_Response_Stream
+                        ? $response->getStream()
+                        : $response->getBody();
+                },
                 $internalRequest->getMethod()
             )
         );

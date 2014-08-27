@@ -23,6 +23,12 @@ $response = $httpAdapter->get($url, $headers);
 $response = $httpAdapter->head($url, $headers);
 ```
 
+## Send a TRACE request
+
+``` php
+$response = $httpAdapter->trace($url, $headers);
+```
+
 ## Send a POST request
 
 ``` php
