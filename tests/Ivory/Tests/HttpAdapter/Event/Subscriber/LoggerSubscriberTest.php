@@ -80,7 +80,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->expects($this->once())
             ->method('debug')
             ->with(
-                $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0.9]{2} ms\.$/'),
+                $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
                 $this->callback(function ($context) use ($request, $response) {
                     return $context['time'] > 0 && $context['time'] < 1
                         && $context['request']['protocol_version'] === $request->getProtocolVersion()
