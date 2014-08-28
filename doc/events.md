@@ -432,11 +432,11 @@ $hasCookie = $cookieJar->hasCookie($cookie);
 $cookieJar->addCookie($cookie);
 $cookieJar->removeCookie($cookie);
 
-// Clear all cookies
-$cookieJar->clear();
+// Clean expired cookies
+$cookieJar->clean();
 
-// Clear expired cookies
-$cookieJar->clear(true);
+// Clear cookies
+$cookieJar->clear($domain, $path, $name);
 ```
 
 Second, the cookie jar creates the cookies through the `Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface`
@@ -480,8 +480,6 @@ foreach ($cookieJar as $cookie) {
 
 $cookies = iterator_to_array($cookieJar);
 ```
-
-Be aware that when you access cookies, the cookie jar clears expired cookies before serving them.
 
 #### Persistent cookie jar
 
@@ -544,9 +542,11 @@ use Ivory\HttpAdapter\Event\Cookie\Cookie;
 
 $cookie = new Cookie($name, $value, $attributes, $createdAt);
 
+$hasName = $cookie->hasName();
 $name = $cookie->getName();
 $cookie->setName($name);
 
+$hasValue = $cookie->hasValue();
 $value = $cookie->getValue();
 $cookie->setValue($value);
 
@@ -562,24 +562,39 @@ $value = $cookie->getAttribute($name);
 $cookie->setAttribute($name, $value);
 $cookie->removeAttribute($name);
 
-$age = $cookie->getAge();
-$expired = $cookie->isExpired();
-
 $createdAt = $cookie->getCreatedAt();
 $cookie->setCreatedAt($createdAt);
-
-$array = $cookie->toArray();
-$string = (string) $cookie;
 ```
 
-All attribute names are described by the `Ivory\HttpAdapter\Event\Cookie\Cookie::ATTR_*` constants. Additionally, you
-can check if the request matches a request or just matches a part of the request:
+All attribute names are described by the `Ivory\HttpAdapter\Event\Cookie\Cookie::ATTR_*` constants.
+
+To check/get the expiration date according to the `Expires` pr `Max-Age` attribute, you can use the following method:
+
+``` php
+$expired = $cookie->isExpired();
+$expires = $cookie->getExpires();
+```
+
+Additionally, you can check if the request matches a request or just matches a part of the request:
 
 ``` php
 $match = $cookie->match($request);
-$match = $cookie->matchDomain($request);
-$match = $cookie->matchPath($request);
-$match = $cookie->matchSecure($request);
+$match = $cookie->matchDomain($domain);
+$match = $cookie->matchPath($path);
+$match = $cookie->matchScheme($scheme);
+```
+
+Furthermore, you can compare two cookies:
+
+``` php
+$compare = $cookie->compare($otherCookie);
+```
+
+You can also convert the cookie into an array or a string:
+
+``` php
+$array = $cookie->toArray();
+$string = (string) $cookie;
 ```
 
 ### Basic authentication

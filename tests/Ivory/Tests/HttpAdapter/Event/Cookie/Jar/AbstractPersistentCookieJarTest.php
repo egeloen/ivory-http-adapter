@@ -20,19 +20,15 @@ use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
  */
 abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject */
-    protected $cookie;
-
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject */
-    protected $expiredCookie;
+    /** @var array */
+    protected $cookies;
 
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->cookie = $this->createCookieMock();
-        $this->expiredCookie = $this->createExpiredCookieMock();
+        $this->cookies = array($this->createNamedCookieMock('foo'), $this->createNamedCookieMock('bar'));
     }
 
     /**
@@ -40,21 +36,7 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
      */
     protected function tearDown()
     {
-        unset($this->cookie);
-        unset($this->expiredCookie);
-    }
-
-    /**
-     * Gets the cookies.
-     *
-     * @return array The cookies.
-     */
-    protected function getCookies()
-    {
-        return array(
-            $this->cookie,
-            $this->expiredCookie,
-        );
+        unset($this->cookies);
     }
 
     /**
@@ -64,19 +46,53 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
      */
     protected function getSerialized()
     {
-        return json_encode(array($this->cookie->toArray()));
+        return json_encode(array_map(function (CookieInterface $cookie) {
+            return $cookie->toArray();
+        }, $this->cookies));
     }
 
     /**
-     * {@inheritdoc}
+     * Asserts serialize.
+     *
+     * @param string $serialized The serialized.
      */
-    protected function createCookieMock()
+    protected function assertSerialize($serialized)
+    {
+        $this->assertSame($this->getSerialized(), $serialized);
+    }
+
+    /**
+     * Asserts the cookies.
+     *
+     * @param array $cookies The cookies.
+     */
+    protected function assertCookies(array $cookies)
+    {
+        $this->assertCount(2, $cookies);
+
+        foreach (array(0, 1) as $index) {
+            $this->assertArrayHasKey($index, $cookies);
+            $this->assertSame($this->cookies[$index]->getName(), $cookies[$index]->getName());
+            $this->assertSame($this->cookies[$index]->getValue(), $cookies[$index]->getValue());
+            $this->assertSame($this->cookies[$index]->getAttributes(), $cookies[$index]->getAttributes());
+            $this->assertSame($this->cookies[$index]->getCreatedAt(), $cookies[$index]->getCreatedAt());
+        }
+    }
+
+    /**
+     * Creates a named cookie mock.
+     *
+     * @param string $name The name.
+     *
+     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The named cookie mock.
+     */
+    protected function createNamedCookieMock($name)
     {
         $cookie = parent::createCookieMock();
         $cookie
             ->expects($this->any())
             ->method('getName')
-            ->will($this->returnValue('name'));
+            ->will($this->returnValue($name));
 
         $cookie
             ->expects($this->any())
@@ -110,31 +126,5 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
             )));
 
         return $cookie;
-    }
-
-    /**
-     * Asserts serialize.
-     *
-     * @param string $serialized The serialized.
-     */
-    protected function assertSerialize($serialized)
-    {
-        $this->assertSame($this->getSerialized(), $serialized);
-    }
-
-    /**
-     * Asserts the cookies.
-     *
-     * @param array $cookies The cookies.
-     */
-    protected function assertCookies(array $cookies)
-    {
-        $this->assertCount(1, $cookies);
-        $this->assertArrayHasKey(0, $cookies);
-
-        $this->assertSame($this->cookie->getName(), $cookies[0]->getName());
-        $this->assertSame($this->cookie->getValue(), $cookies[0]->getValue());
-        $this->assertSame($this->cookie->getAttributes(), $cookies[0]->getAttributes());
-        $this->assertSame($this->cookie->getCreatedAt(), $cookies[0]->getCreatedAt());
     }
 }

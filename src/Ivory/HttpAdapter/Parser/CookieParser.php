@@ -29,6 +29,10 @@ class CookieParser extends AbstractUninstantiableAsset
      */
     public static function parse($header)
     {
+        if (strpos($header, '=') === false) {
+            $header = '='.$header;
+        }
+
         list($name, $header) = explode('=', $header, 2);
 
         if (strpos($header, ';') === false) {
@@ -39,7 +43,7 @@ class CookieParser extends AbstractUninstantiableAsset
         }
 
         $attributes = array();
-        foreach (explode(';', $header) as $pair) {
+        foreach (array_map('trim', explode(';', $header)) as $pair) {
             if (empty($pair)) {
                 continue;
             }
@@ -54,6 +58,9 @@ class CookieParser extends AbstractUninstantiableAsset
             $attributes[trim($attributeName)] = $attributeValue ? trim($attributeValue) : true;
         }
 
-        return array(trim($name), trim($value), $attributes);
+        $name = trim($name);
+        $value = trim($value);
+
+        return array(!empty($name) ? $name : null, !empty($value) ? $value : null, $attributes);
     }
 }

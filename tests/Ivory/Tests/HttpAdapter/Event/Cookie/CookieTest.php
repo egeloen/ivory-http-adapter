@@ -68,9 +68,12 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         unset($this->cookie);
     }
 
-    public function testDefaultState()
+    public function testInitialState()
     {
+        $this->assertTrue($this->cookie->hasName());
         $this->assertSame($this->name, $this->cookie->getName());
+
+        $this->assertTrue($this->cookie->hasValue());
         $this->assertSame($this->value, $this->cookie->getValue());
 
         $this->assertTrue($this->cookie->hasAttributes());
@@ -84,26 +87,36 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->createdAt, $this->cookie->getCreatedAt());
     }
 
-    public function testInitialState()
-    {
-        $this->cookie = new Cookie($this->name, $this->value, array(), $this->createdAt);
-
-        $this->assertTrue($this->cookie->hasAttribute(Cookie::ATTR_SECURE));
-        $this->assertFalse($this->cookie->getAttribute(Cookie::ATTR_SECURE));
-    }
-
     public function testSetName()
     {
         $this->cookie->setName($name = 'foo');
 
+        $this->assertTrue($this->cookie->hasName());
         $this->assertSame($name, $this->cookie->getName());
+    }
+
+    public function testSetNameEmpty()
+    {
+        $this->cookie->setName(null);
+
+        $this->assertFalse($this->cookie->hasName());
+        $this->assertNull($this->cookie->getName());
     }
 
     public function testSetValue()
     {
         $this->cookie->setValue($value = 'foo');
 
+        $this->assertTrue($this->cookie->hasValue());
         $this->assertSame($value, $this->cookie->getValue());
+    }
+
+    public function testSetValueEmpty()
+    {
+        $this->cookie->setValue(null);
+
+        $this->assertFalse($this->cookie->hasValue());
+        $this->assertNull($this->cookie->getValue());
     }
 
     public function testSetAttributes()
@@ -151,14 +164,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($createdAt, $this->cookie->getCreatedAt());
     }
 
-    public function testGetAge()
+    /**
+     * @dataProvider expiresProvider
+     */
+    public function testGetExpires($createdAt, array $attributes, $expected)
     {
-        $before = time() - $this->cookie->getCreatedAt();
-        $age = $this->cookie->getAge();
-        $after = time() - $this->cookie->getCreatedAt();
+        $this->cookie->setCreatedAt($createdAt);
+        $this->cookie->setAttributes($attributes);
 
-        $this->assertGreaterThanOrEqual($before, $age);
-        $this->assertLessThanOrEqual($after, $age);
+        $this->assertSame($expected, $this->cookie->getExpires());
     }
 
     /**
@@ -173,45 +187,57 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider compareProvider
+     */
+    public function testCompare($name, $domain, $path, $cookieName, $cookieDomain, $cookiePath, $expected)
+    {
+        $this->cookie->setName($name);
+        $this->cookie->setAttributes(array(
+            Cookie::ATTR_DOMAIN => $domain,
+            Cookie::ATTR_PATH   => $path,
+        ));
+
+        $cookie = new Cookie(
+            $cookieName,
+            'value',
+            array(
+                Cookie::ATTR_DOMAIN => $cookieDomain,
+                Cookie::ATTR_PATH   => $cookiePath,
+            ),
+            time()
+        );
+
+        $this->assertSame($expected, $this->cookie->compare($cookie));
+    }
+
+    /**
      * @dataProvider matchDomainProvider
      */
-    public function testMatchDomain(InternalRequestInterface $request, $domain, $expected)
+    public function testMatchDomain($domain, $cookieDomain, $expected)
     {
-        if ($domain !== null) {
-            $this->cookie->setAttributes(array(Cookie::ATTR_DOMAIN => $domain));
-        } else {
-            $this->cookie->clearAttributes();
-        }
+        $this->cookie->setAttributes(array(Cookie::ATTR_DOMAIN => $cookieDomain));
 
-        $this->assertSame($expected, $this->cookie->matchDomain($request));
+        $this->assertSame($expected, $this->cookie->matchDomain($domain));
     }
 
     /**
      * @dataProvider matchPathProvider
      */
-    public function testMatchPath(InternalRequestInterface $request, $path, $expected)
+    public function testMatchPath($path, $cookiePath, $expected)
     {
-        if ($path !== null) {
-            $this->cookie->setAttributes(array(Cookie::ATTR_PATH => $path));
-        } else {
-            $this->cookie->clearAttributes();
-        }
+        $this->cookie->setAttributes(array(Cookie::ATTR_PATH => $cookiePath));
 
-        $this->assertSame($expected, $this->cookie->matchPath($request));
+        $this->assertSame($expected, $this->cookie->matchPath($path));
     }
 
     /**
-     * @dataProvider matchSecureProvider
+     * @dataProvider matchSchemeProvider
      */
-    public function testMatchSecure(InternalRequestInterface $request, $secure, $expected)
+    public function testMatchScheme($scheme, $secure, $expected)
     {
-        if ($secure !== null) {
-            $this->cookie->setAttributes(array(Cookie::ATTR_SECURE => $secure));
-        } else {
-            $this->cookie->clearAttributes();
-        }
+        $this->cookie->setAttributes(array(Cookie::ATTR_SECURE => $secure));
 
-        $this->assertSame($expected, $this->cookie->matchSecure($request));
+        $this->assertSame($expected, $this->cookie->matchScheme($scheme));
     }
 
     /**
@@ -243,36 +269,80 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Gets the expires provider.
+     *
+     * @return array The expires provider.
+     */
+    public function expiresProvider()
+    {
+        $createdAt = time();
+        $age = 10;
+        $expires = $createdAt + $age;
+
+        return array(
+            array($createdAt, array(Cookie::ATTR_MAX_AGE => $age), $expires),
+            array($createdAt, array(Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $expires)), $expires),
+            array($createdAt, array(), false),
+        );
+    }
+
+    /**
      * Get the expired provider.
      *
      * @return array The expired provider.
      */
     public function expiredProvider()
     {
-        $time = time();
+        $createdAt = time();
+        $ageExpired = 1000;
+        $ageNotExpired = -1;
+        $expiresExpired = $createdAt + $ageExpired;
+        $expiresNotExpired = $createdAt + $ageNotExpired;
 
         return array(
-            array($time, array(), false),
-            array($time, array(Cookie::ATTR_MAX_AGE => 1000), false),
-            array($time, array(Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $time + 1000)), false),
+            array($createdAt, array(), false),
+            array($createdAt, array(Cookie::ATTR_MAX_AGE => $ageExpired), false),
+            array($createdAt, array(Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $expiresExpired)), false),
             array(
-                $time,
+                $createdAt,
                 array(
-                    Cookie::ATTR_MAX_AGE => 1000,
-                    Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $time + 1000),
+                    Cookie::ATTR_MAX_AGE => $ageExpired,
+                    Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $expiresExpired),
                 ),
                 false,
             ),
-            array($time, array(Cookie::ATTR_MAX_AGE => -1), true),
-            array($time, array(Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $time - 1)), true),
+            array($createdAt, array(Cookie::ATTR_MAX_AGE => $ageNotExpired), true),
+            array($createdAt, array(Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $expiresNotExpired)), true),
             array(
-                $time,
+                $createdAt,
                 array(
-                    Cookie::ATTR_MAX_AGE => 1000,
-                    Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $time - 1),
+                    Cookie::ATTR_MAX_AGE => $ageExpired,
+                    Cookie::ATTR_EXPIRES => date('D, d M Y H:i:s e', $expiresNotExpired),
                 ),
                 true,
             ),
+        );
+    }
+
+    /**
+     * Gets the compare provider.
+     *
+     * @return array The compare provider.
+     */
+    public function compareProvider()
+    {
+        return array(
+            array(null, null, null, null, null, null, true),
+            array('foo', null, null, 'foo', null, null, true),
+            array(null, 'foo', null, null, 'foo', null, true),
+            array(null, null, 'foo', null, null, 'foo', true),
+            array('foo', 'bar', null, 'foo', 'bar', null, true),
+            array('foo', 'bar', 'baz', 'foo', 'bar', 'baz', true),
+            array('foo', null, null, 'bar', null, null, false),
+            array(null, 'foo', null, null, 'bar', null, false),
+            array(null, null, 'foo', null, null, 'bar', false),
+            array('foo', 'bar', null, 'foo', 'baz', null, false),
+            array('foo', 'bar', 'baz', 'foo', 'bar', 'bat', false),
         );
     }
 
@@ -284,11 +354,12 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function matchDomainProvider()
     {
         return array(
-            array(new InternalRequest('http://egeloen.fr'), null, true),
-            array(new InternalRequest('http://egeloen.fr'), 'egeloen.fr', true),
-            array(new InternalRequest('http://egeloen.fr'), '.egeloen.fr', true),
-            array(new InternalRequest('http://egeloen.fr'), 'google.com', false),
-            array(new InternalRequest('http://egeloen.fr'), '.google.com', false),
+            array(null, null, true),
+            array('egeloen.fr', null, true),
+            array('egeloen.fr', 'egeloen.fr', true),
+            array('egeloen.fr', '.egeloen.fr', true),
+            array('egeloen.fr', 'google.com', false),
+            array('egeloen.fr', '.google.com', false),
         );
     }
 
@@ -300,27 +371,33 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function matchPathProvider()
     {
         return array(
-            array(new InternalRequest('http://egeloen.fr/path'), null, true),
-            array(new InternalRequest('http://egeloen.fr/path'), '/path', true),
-            array(new InternalRequest('http://egeloen.fr/path/foo'), '/path', true),
-            array(new InternalRequest('http://egeloen.fr'), '/path', false),
+            array(null, null, true),
+            array('/path', null, true),
+            array('/path', '/path', true),
+            array('/path/foo', '/path', true),
+            array(null, '/path', false),
+            array('/foo', '/path', false),
+            array('/foo', '/path/foo', false),
         );
     }
 
     /**
-     * Gets the match secure provider.
+     * Gets the match scheme provider.
      *
-     * @return array The match secure provider.
+     * @return array The match scheme provider.
      */
-    public function matchSecureProvider()
+    public function matchSchemeProvider()
     {
         return array(
-            array(new InternalRequest('http://egeloen.fr'), null, true),
-            array(new InternalRequest('https://egeloen.fr'), null, true),
-            array(new InternalRequest('http://egeloen.fr'), false, true),
-            array(new InternalRequest('https://egeloen.fr'), true, true),
-            array(new InternalRequest('http://egeloen.fr'), true, false),
-            array(new InternalRequest('https://egeloen.fr'), false, false),
+            array(null, null, true),
+            array(null, false, true),
+            array(null, true, false),
+            array('http', null, true),
+            array('https', null, true),
+            array('http', false, true),
+            array('https', true, true),
+            array('http', true, false),
+            array('https', false, false),
         );
     }
 

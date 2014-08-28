@@ -20,10 +20,10 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
  */
 class Cookie implements CookieInterface
 {
-    /** @var string */
+    /** @var string|null */
     protected $name;
 
-    /** @var string */
+    /** @var string|null */
     protected $value;
 
     /** @var array */
@@ -35,10 +35,10 @@ class Cookie implements CookieInterface
     /**
      * Creates a cookie.
      *
-     * @param string  $name       The name.
-     * @param string  $value      The value.
-     * @param array   $attributes The attributes.
-     * @param integer $createdAt  The creation date (unix timestamp).
+     * @param string|null $name       The name.
+     * @param string|null $value      The value.
+     * @param array       $attributes The attributes.
+     * @param integer     $createdAt  The creation date (unix timestamp).
      */
     public function __construct($name, $value, array $attributes, $createdAt)
     {
@@ -46,10 +46,14 @@ class Cookie implements CookieInterface
         $this->setValue($value);
         $this->setAttributes($attributes);
         $this->setCreatedAt($createdAt);
+    }
 
-        if (!$this->hasAttribute(self::ATTR_SECURE)) {
-            $this->setAttribute(self::ATTR_SECURE, false);
-        }
+    /**
+     * {@inheritdoc}
+     */
+    public function hasName()
+    {
+        return $this->name !== null;
     }
 
     /**
@@ -66,6 +70,14 @@ class Cookie implements CookieInterface
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasValue()
+    {
+        return $this->value !== null;
     }
 
     /**
@@ -188,22 +200,14 @@ class Cookie implements CookieInterface
     /**
      * {@inheritdoc}
      */
-    public function getAge()
+    public function getExpires()
     {
-        return time() - $this->createdAt;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isExpired()
-    {
-        if ($this->hasAttribute(self::ATTR_MAX_AGE) && ($this->getAge() > $this->getAttribute(self::ATTR_MAX_AGE))) {
-            return true;
+        if ($this->hasAttribute(self::ATTR_EXPIRES)) {
+            return strtotime($this->getAttribute(self::ATTR_EXPIRES));
         }
 
-        if ($this->hasAttribute(self::ATTR_EXPIRES) && (strtotime($this->getAttribute(self::ATTR_EXPIRES)) < time())) {
-            return true;
+        if ($this->hasAttribute(self::ATTR_MAX_AGE)) {
+            return $this->createdAt + $this->getAttribute(self::ATTR_MAX_AGE);
         }
 
         return false;
@@ -212,22 +216,43 @@ class Cookie implements CookieInterface
     /**
      * {@inheritdoc}
      */
-    public function match(InternalRequestInterface $request)
+    public function isExpired()
     {
-        return $this->matchDomain($request) && $this->matchPath($request) && $this->matchSecure($request);
+        return ($expires = $this->getExpires()) !== false ? $expires < time() : false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function matchDomain(InternalRequestInterface $request)
+    public function compare(CookieInterface $cookie)
+    {
+        return $this->name === $cookie->getName()
+            && $this->getAttribute(self::ATTR_DOMAIN) === $cookie->getAttribute(self::ATTR_DOMAIN)
+            && $this->getAttribute(self::ATTR_PATH) === $cookie->getAttribute(self::ATTR_PATH);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function match(InternalRequestInterface $request)
+    {
+        $parts = parse_url((string) $request->getUrl());
+
+        return $this->matchDomain(isset($parts['host']) ? $parts['host'] : null)
+            && $this->matchPath(isset($parts['path']) ? $parts['path'] : null)
+            && $this->matchScheme(isset($parts['scheme']) ? $parts['scheme'] : null);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function matchDomain($domain)
     {
         if (!$this->hasAttribute(self::ATTR_DOMAIN)) {
             return true;
         }
 
         $cookieDomain = $this->getAttribute(self::ATTR_DOMAIN);
-        $domain = parse_url((string) $request->getUrl(), PHP_URL_HOST);
 
         if (strpos($cookieDomain, '.') === 0) {
             return (bool) preg_match('/\b'.preg_quote(substr($cookieDomain, 1), '/').'$/i', $domain);
@@ -239,28 +264,27 @@ class Cookie implements CookieInterface
     /**
      * {@inheritdoc}
      */
-    public function matchPath(InternalRequestInterface $request)
+    public function matchPath($path)
     {
         if (!$this->hasAttribute(self::ATTR_PATH)) {
             return true;
         }
 
-        return strpos(parse_url((string) $request->getUrl(), PHP_URL_PATH), $this->getAttribute(self::ATTR_PATH)) === 0;
+        return strpos($path, $this->getAttribute(self::ATTR_PATH)) === 0;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function matchSecure(InternalRequestInterface $request)
+    public function matchScheme($scheme)
     {
         if (!$this->hasAttribute(self::ATTR_SECURE)) {
             return true;
         }
 
         $secure = $this->getAttribute(self::ATTR_SECURE);
-        $scheme = parse_url((string) $request->getUrl(), PHP_URL_SCHEME);
 
-        return ($secure && $scheme === 'https') || (!$secure && (($scheme === 'http') || empty($scheme)));
+        return ($secure && $scheme === 'https') || (!$secure && ($scheme === 'http' || $scheme === null));
     }
 
     /**

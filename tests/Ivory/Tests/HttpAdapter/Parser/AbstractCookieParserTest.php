@@ -28,6 +28,16 @@ abstract class AbstractCookieParserTest extends \PHPUnit_Framework_TestCase
     public function parseProvider()
     {
         return array(
+            array('', null, null),
+            array(' ', null, null),
+            array('=', null, null),
+            array(' = ', null, null),
+            array(';', null, null),
+            array(' ; ', null, null),
+            array('=;', null, null),
+            array(' = ; ', null, null),
+            array('foo=', 'foo', null),
+            array(' foo = ', 'foo', null),
             array('foo=bar', 'foo', 'bar'),
             array(' foo = bar ', 'foo', 'bar'),
             array('foo=bar;domain=egeloen.fr', 'foo', 'bar', array(CookieInterface::ATTR_DOMAIN => 'egeloen.fr')),
