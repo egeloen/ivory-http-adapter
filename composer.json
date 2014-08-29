@@ -49,7 +49,7 @@
         "psr/log": "Allows you to use the logger event subscriber"
     },
     "autoload": {
-        "psr-4": { "Ivory\\HttpAdapter\\": "src/Ivory/HttpAdapter/" }
+        "psr-4": { "Ivory\\HttpAdapter\\": "src/" }
     },
     "config": {
         "bin-dir": "bin"
