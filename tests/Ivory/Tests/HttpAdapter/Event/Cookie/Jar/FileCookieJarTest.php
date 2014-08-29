@@ -98,7 +98,7 @@ class FileCookieJarTest extends AbstractPersistentCookieJarTest
 
     public function testSave()
     {
-        $this->fileCookieJar->setCookies($this->getCookies());
+        $this->fileCookieJar->setCookies($this->cookies);
         $this->fileCookieJar->save();
 
         $this->assertSerialize(file_get_contents($this->file));
@@ -106,7 +106,7 @@ class FileCookieJarTest extends AbstractPersistentCookieJarTest
 
     public function testAutoSave()
     {
-        $this->fileCookieJar->setCookies($this->getCookies());
+        $this->fileCookieJar->setCookies($this->cookies);
         unset($this->fileCookieJar);
 
         $this->assertSerialize(file_get_contents($this->file));

@@ -36,32 +36,46 @@ interface CookieInterface
     const ATTR_EXPIRES = 'expires';
 
     /**
+     * Check if there is a name.
+     *
+     * @return boolean TRUE if there is a name else FALSE.
+     */
+    public function hasName();
+
+    /**
      * Gets the name.
      *
-     * @return string The name.
+     * @return string|null The name.
      */
     public function getName();
 
     /**
      * Sets the name.
      *
-     * @param string $name The name.
+     * @param string|null $name The name.
      *
      * @return void No return value.
      */
     public function setName($name);
 
     /**
+     * Checks if there is a value.
+     *
+     * @return boolean TRUE if there is a value else FALSE.
+     */
+    public function hasValue();
+
+    /**
      * Gets the value.
      *
-     * @return string The value.
+     * @return string|null The value.
      */
     public function getValue();
 
     /**
      * Sets the value.
      *
-     * @param string $value The value.
+     * @param string|null $value The value.
      *
      * @return void No return value.
      */
@@ -169,11 +183,11 @@ interface CookieInterface
     public function setCreatedAt($createdAt);
 
     /**
-     * Gets the age.
+     * Gets the expiration date (unix timestamp).
      *
-     * @return integer The age.
+     * @return integer|boolean The expiration date (unix timestamp) or FALSE if it never expires.
      */
-    public function getAge();
+    public function getExpires();
 
     /**
      * Checks if it is expired.
@@ -181,6 +195,15 @@ interface CookieInterface
      * @return boolean TRUE if it is expired else FALSE.
      */
     public function isExpired();
+
+    /**
+     * Compares to an other cookie.
+     *
+     * @param \Ivory\HttpAdapter\Event\Cookie\CookieInterface $cookie The cookie.
+     *
+     * @return boolean TRUE if the cookie is comparable else FALSE.
+     */
+    public function compare(CookieInterface $cookie);
 
     /**
      * Checks if it matches the request.
@@ -194,29 +217,29 @@ interface CookieInterface
     /**
      * Checks if it matches the domain.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param string|null $domain The domain.
      *
      * @return boolean TRUE if it matches the domain else FALSE.
      */
-    public function matchDomain(InternalRequestInterface $request);
+    public function matchDomain($domain);
 
     /**
      * Checks if it matches the path.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param string|null $path The path.
      *
      * @return boolean TRUE if it matches the path else FALSE.
      */
-    public function matchPath(InternalRequestInterface $request);
+    public function matchPath($path);
 
     /**
-     * Checks if it matches the secure.
+     * Checks if it matches the scheme.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param string|null $scheme The scheme.
      *
-     * @return boolean TRUE if it matches the secure else FALSE.
+     * @return boolean TRUE if it matches the scheme else FALSE.
      */
-    public function matchSecure(InternalRequestInterface $request);
+    public function matchScheme($scheme);
 
     /**
      * Converts the cookie to array.

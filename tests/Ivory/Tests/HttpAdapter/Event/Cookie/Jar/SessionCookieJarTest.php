@@ -95,7 +95,7 @@ class SessionCookieJarTest extends AbstractPersistentCookieJarTest
 
     public function testSave()
     {
-        $this->sessionCookieJar->setCookies($this->getCookies());
+        $this->sessionCookieJar->setCookies($this->cookies);
         $this->sessionCookieJar->save();
 
         $this->assertSerialize($_SESSION[$this->key]);
@@ -103,7 +103,7 @@ class SessionCookieJarTest extends AbstractPersistentCookieJarTest
 
     public function testAutoSave()
     {
-        $this->sessionCookieJar->setCookies($this->getCookies());
+        $this->sessionCookieJar->setCookies($this->cookies);
         unset($this->sessionCookieJar);
 
         $this->assertSerialize($_SESSION[$this->key]);

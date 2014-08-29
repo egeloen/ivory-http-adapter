@@ -40,13 +40,22 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
     public function setCookieFactory(CookieFactoryInterface $cookieFactory);
 
     /**
-     * Clears the cookies.
-     *
-     * @param boolean $expiredOnly TRUE if it should only clear expired cookies else FALSE.
+     * Cleans the cookies.
      *
      * @return void No return value.
      */
-    public function clear($expiredOnly = false);
+    public function clean();
+
+    /**
+     * Clears the cookies.
+     *
+     * @param string|null $domain The domain.
+     * @param string|null $path   The path.
+     * @param string|null $name   The name.
+     *
+     * @return void No return value.
+     */
+    public function clear($domain = null, $path = null, $name = null);
 
     /**
      * Checks if there are cookies.

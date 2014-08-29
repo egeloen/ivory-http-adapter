@@ -59,16 +59,34 @@ class CookieJar implements CookieJarInterface
     /**
      * {@inheritdoc}
      */
-    public function clear($expiredOnly = false)
+    public function clean()
     {
-        if ($expiredOnly) {
-            foreach ($this->cookies as $cookie) {
-                if ($cookie->isExpired()) {
-                    $this->removeCookie($cookie);
-                }
+        foreach ($this->cookies as $cookie) {
+            if ($cookie->isExpired()) {
+                $this->removeCookie($cookie);
             }
-        } else {
-            $this->cookies = array();
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear($domain = null, $path = null, $name = null)
+    {
+        foreach ($this->cookies as $cookie) {
+            if ($domain !== null && !$cookie->matchDomain($domain)) {
+                continue;
+            }
+
+            if ($path !== null && !$cookie->matchPath($path)) {
+                continue;
+            }
+
+            if ($name !== null && $cookie->getName() !== $name) {
+                continue;
+            }
+
+            $this->removeCookie($cookie);
         }
     }
 
@@ -77,8 +95,6 @@ class CookieJar implements CookieJarInterface
      */
     public function hasCookies()
     {
-        $this->clear(true);
-
         return !empty($this->cookies);
     }
 
@@ -87,8 +103,6 @@ class CookieJar implements CookieJarInterface
      */
     public function getCookies()
     {
-        $this->clear(true);
-
         return $this->cookies;
     }
 
@@ -126,7 +140,7 @@ class CookieJar implements CookieJarInterface
      */
     public function hasCookie(CookieInterface $cookie)
     {
-        return array_search($cookie, $this->getCookies(), true) !== false;
+        return array_search($cookie, $this->cookies, true) !== false;
     }
 
     /**
@@ -134,9 +148,37 @@ class CookieJar implements CookieJarInterface
      */
     public function addCookie(CookieInterface $cookie)
     {
-        if (!$this->hasCookie($cookie)) {
-            $this->cookies[] = $cookie;
+        if (!$cookie->hasName() || $this->hasCookie($cookie)) {
+            return;
         }
+
+        if (!$cookie->hasValue()) {
+            return $this->clear(
+                $cookie->getAttribute(CookieInterface::ATTR_DOMAIN),
+                $cookie->getAttribute(CookieInterface::ATTR_PATH),
+                $cookie->getName()
+            );
+        }
+
+        foreach ($this->cookies as $jarCookie) {
+            if (!$cookie->compare($jarCookie)) {
+                continue;
+            }
+
+            if ($cookie->getExpires() > $jarCookie->getExpires()) {
+                $this->removeCookie($jarCookie);
+                continue;
+            }
+
+            if ($cookie->getValue() !== $jarCookie->getValue()) {
+                $this->removeCookie($jarCookie);
+                continue;
+            }
+
+            return;
+        }
+
+        $this->cookies[] = $cookie;
     }
 
     /**
@@ -153,8 +195,8 @@ class CookieJar implements CookieJarInterface
      */
     public function populate(InternalRequestInterface $request)
     {
-        foreach ($this->getCookies() as $cookie) {
-            if ($cookie->match($request)) {
+        foreach ($this->cookies as $cookie) {
+            if (!$cookie->isExpired() && $cookie->match($request)) {
                 $request->addHeader('Cookie', (string) $cookie);
             }
         }
@@ -184,7 +226,7 @@ class CookieJar implements CookieJarInterface
      */
     public function count()
     {
-        return count($this->getCookies());
+        return count($this->cookies);
     }
 
     /**
@@ -192,6 +234,6 @@ class CookieJar implements CookieJarInterface
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->getCookies());
+        return new \ArrayIterator($this->cookies);
     }
 }

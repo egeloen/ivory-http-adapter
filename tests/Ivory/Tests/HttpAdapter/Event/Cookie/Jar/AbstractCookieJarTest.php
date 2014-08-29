@@ -31,11 +31,30 @@ abstract class AbstractCookieJarTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates a cookie mock.
      *
+     * @param boolean $name  TRUE if the cookie has a name else FALSE.
+     * @param boolean $value TRUE if the cookie has a value else FALSE.
+     *
      * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The cookie mock.
      */
-    protected function createCookieMock()
+    protected function createCookieMock($name = true, $value = true)
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cookie\CookieInterface');
+        $cookie = $this->getMock('Ivory\HttpAdapter\Event\Cookie\CookieInterface');
+
+        if ($name) {
+            $cookie
+                ->expects($this->any())
+                ->method('hasName')
+                ->will($this->returnValue(true));
+        }
+
+        if ($value) {
+            $cookie
+                ->expects($this->any())
+                ->method('hasValue')
+                ->will($this->returnValue(true));
+        }
+
+        return $cookie;
     }
 
     /**

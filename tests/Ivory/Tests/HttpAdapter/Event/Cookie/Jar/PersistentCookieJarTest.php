@@ -67,14 +67,14 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
 
     public function testSerialize()
     {
-        $this->persistentCookieJar->setCookies($this->getCookies());
+        $this->persistentCookieJar->setCookies($this->cookies);
 
         $this->assertSerialize($this->persistentCookieJar->serialize());
     }
 
     public function testUnserializeWithValidData()
     {
-        $this->persistentCookieJar->setCookies($this->getCookies());
+        $this->persistentCookieJar->setCookies($this->cookies);
 
         $copy = $this->createPersistentCookieJarMock();
         $copy->unserialize($this->persistentCookieJar->serialize());

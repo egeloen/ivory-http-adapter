@@ -66,33 +66,17 @@ class CookieFactoryTest extends AbstractCookieParserTest
     /**
      * @dataProvider parseProvider
      */
-    public function testParse($header, $name, $value, array $attributes)
+    public function testParse($header, $name, $value, array $attributes = array())
     {
         $before = time();
         $cookie = $this->cookieFactory->parse($header);
         $after = time();
 
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Cookie\Cookie', $cookie);
         $this->assertSame($name, $cookie->getName());
         $this->assertSame($value, $cookie->getValue());
         $this->assertSame($attributes, $cookie->getAttributes());
-
         $this->assertGreaterThanOrEqual($before, $cookie->getCreatedAt());
         $this->assertLessThanOrEqual($after, $cookie->getCreatedAt());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseProvider()
-    {
-        $provider = parent::parseProvider();
-
-        foreach ($provider as &$provide) {
-            if (!isset($provide[3][CookieInterface::ATTR_SECURE])) {
-                $provide[3][CookieInterface::ATTR_SECURE] = false;
-            }
-        }
-
-        return $provider;
     }
 }
