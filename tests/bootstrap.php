@@ -13,4 +13,4 @@
 $loader = require __DIR__.'/../vendor/autoload.php';
 
 // Autoloads tests.
-$loader->add('Ivory\\Tests\\HttpAdapter', __DIR__);
+$loader->addPsr4('Ivory\\Tests\\HttpAdapter\\', __DIR__);
