@@ -110,6 +110,8 @@ interface MessageInterface extends PsrMessageInterface
      * Checks if there is a parameter.
      *
      * @param string $name The parameter name.
+     *
+     * @return boolean TRUE if there is the parameter else FALSE.
      */
     public function hasParameter($name);
 

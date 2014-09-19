@@ -151,6 +151,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
+            ->getConfiguration()
             ->expects($this->once())
             ->method('getMessageFactory')
             ->will($this->returnValue($messageFactory));
@@ -240,6 +241,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
+            ->getConfiguration()
             ->expects($this->once())
             ->method('getMessageFactory')
             ->will($this->returnValue($messageFactory));
@@ -328,6 +330,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
+            ->getConfiguration()
             ->expects($this->once())
             ->method('getMessageFactory')
             ->will($this->returnValue($messageFactory));

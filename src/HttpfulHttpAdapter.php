@@ -27,10 +27,12 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
 {
     /**
      * Creates an httpful http adapter.
+     *
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct()
+    public function __construct(ConfigurationInterface $configuration = null)
     {
-        parent::__construct();
+        parent::__construct($configuration);
     }
 
     /**
@@ -51,7 +53,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
         $request = Request::init($internalRequest->getMethod())
             ->whenError(function () {})
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
-            ->timeout($this->timeout)
+            ->timeout($this->configuration->getTimeout())
             ->uri($url)
             ->addHeaders($this->prepareHeaders($internalRequest))
             ->body($this->prepareContent($internalRequest));

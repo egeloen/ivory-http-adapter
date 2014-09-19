@@ -15,11 +15,11 @@ use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Http adapter configuration interface.
+ * Configuration interface.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-interface HttpAdapterConfigInterface
+interface ConfigurationInterface
 {
     /** @const string The url encoded encoding type. */
     const ENCODING_TYPE_URLENCODED = 'application/x-www-form-urlencoded';
@@ -157,13 +157,8 @@ interface HttpAdapterConfigInterface
      * Sets the user agent.
      *
      * @param string $userAgent The user agent.
+     *
+     * @return void No return value.
      */
     public function setUserAgent($userAgent);
-
-    /**
-     * Gets the name.
-     *
-     * @return string The name.
-     */
-    public function getName();
 }

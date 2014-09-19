@@ -93,7 +93,23 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function createHttpAdapterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        $httpAdapter
+            ->expects($this->any())
+            ->method('getConfiguration')
+            ->will($this->returnValue($this->createConfigurationMock()));
+
+        return $httpAdapter;
+    }
+
+    /**
+     * Creates a configuration mock.
+     *
+     * @return \Ivory\HttpAdapter\ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject The configuration mock.
+     */
+    protected function createConfigurationMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
     }
 
     /**

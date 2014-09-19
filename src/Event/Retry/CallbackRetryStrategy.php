@@ -30,8 +30,8 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     /**
      * Creates a callback retry strategy.
      *
-     * @param callbale|null                                                   $verifyCallback The verify callback.
-     * @param callbale|null                                                   $delayCallback  The delay callback.
+     * @param callable|null                                                   $verifyCallback The verify callback.
+     * @param callable|null                                                   $delayCallback  The delay callback.
      * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null $next           The next retry strategy chain.
      */
     public function __construct($verifyCallback = null, $delayCallback = null, RetryStrategyChainInterface $next = null)
@@ -65,7 +65,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     /**
      * Sets the verify callback.
      *
-     * @param callbale|null $verifyCallback The verify callback.
+     * @param callable|null $verifyCallback The verify callback.
      */
     public function setVerifyCallback($verifyCallback)
     {
@@ -85,7 +85,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     /**
      * Gets the delay callback.
      *
-     * @return callbale|null The delay callback.
+     * @return callable|null The delay callback.
      */
     public function getDelayCallback()
     {

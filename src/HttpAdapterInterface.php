@@ -19,8 +19,24 @@ use Ivory\HttpAdapter\Message\RequestInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-interface HttpAdapterInterface extends HttpAdapterConfigInterface
+interface HttpAdapterInterface
 {
+    /**
+     * Gets the configuration.
+     *
+     * @return \Ivory\HttpAdapter\ConfigurationInterface The configuration.
+     */
+    public function getConfiguration();
+
+    /**
+     * Sets the configuration.
+     *
+     * @param \Ivory\HttpAdapter\ConfigurationInterface $configuration The configuration.
+     *
+     * @return void No return value.
+     */
+    public function setConfiguration(ConfigurationInterface $configuration);
+
     /**
      * Sends a GET request.
      *
@@ -163,4 +179,11 @@ interface HttpAdapterInterface extends HttpAdapterConfigInterface
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
     public function sendInternalRequest(InternalRequestInterface $internalRequest);
+
+    /**
+     * Gets the name.
+     *
+     * @return string The name.
+     */
+    public function getName();
 }

@@ -28,10 +28,12 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
 {
     /**
      * Creates a curl http adapter.
+     *
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct()
+    public function __construct(ConfigurationInterface $configuration = null)
     {
-        parent::__construct();
+        parent::__construct($configuration);
     }
 
     /**
@@ -59,9 +61,9 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->prepareHeaders($internalRequest, false, false));
 
         if (defined('CURLOPT_TIMEOUT_MS')) {
-            curl_setopt($curl, CURLOPT_TIMEOUT_MS, $this->timeout * 1000);
+            curl_setopt($curl, CURLOPT_TIMEOUT_MS, $this->configuration->getTimeout() * 1000);
         } else { // @codeCoverageIgnoreStart
-            curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+            curl_setopt($curl, CURLOPT_TIMEOUT, $this->configuration->getTimeout());
         } // @codeCoverageIgnoreEnd
 
         if ($internalRequest->hasFiles() && $this->isSafeUpload()) {

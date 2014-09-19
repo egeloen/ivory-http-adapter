@@ -27,11 +27,12 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
     /**
      * Creates a zend 1 http adapter.
      *
-     * @param \Zend_Http_Client $client The zend 1 client.
+     * @param \Zend_Http_Client|null                         $client        The zend 1 client.
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct(\Zend_Http_Client $client = null)
+    public function __construct(\Zend_Http_Client $client = null, ConfigurationInterface $configuration = null)
     {
-        parent::__construct();
+        parent::__construct($configuration);
 
         $this->client = $client ?: new \Zend_Http_Client();
     }
@@ -55,7 +56,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             ->resetParameters(true)
             ->setConfig(array(
                 'httpversion'  => $internalRequest->getProtocolVersion(),
-                'timeout'      => $this->timeout,
+                'timeout'      => $this->configuration->getTimeout(),
                 'maxredirects' => 0,
             ))
             ->setUri($url)

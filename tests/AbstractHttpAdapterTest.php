@@ -11,7 +11,7 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\HttpAdapterConfigInterface;
+use Ivory\HttpAdapter\ConfigurationInterface;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
@@ -141,7 +141,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendRequest($url, $method, array $headers = array(), array $data = array())
     {
-        $this->httpAdapter->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_URLENCODED);
+        $this->httpAdapter->getConfiguration()->setEncodingType(ConfigurationInterface::ENCODING_TYPE_URLENCODED);
 
         $request = new Request($url, $method);
         $request->setHeaders($headers);
@@ -206,7 +206,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testSendWithProtocolVersion10()
     {
-        $this->httpAdapter->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_10);
+        $this->httpAdapter->getConfiguration()->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_10);
 
         $this->assertResponse($this->httpAdapter->send($this->getUrl(), $method = Request::METHOD_GET));
         $this->assertRequest($method, array(), array(), array(), $protocolVersion);
@@ -214,7 +214,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testSendWithUserAgent()
     {
-        $this->httpAdapter->setUserAgent($userAgent = 'foo');
+        $this->httpAdapter->getConfiguration()->setUserAgent($userAgent = 'foo');
 
         $this->assertResponse($this->httpAdapter->send($this->getUrl(), $method = Request::METHOD_GET));
         $this->assertRequest($method, array('User-Agent' => $userAgent));
@@ -274,7 +274,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendWithTimeoutExceeded($timeout)
     {
-        $this->httpAdapter->setTimeout($timeout);
+        $this->httpAdapter->getConfiguration()->setTimeout($timeout);
         $this->httpAdapter->send($this->getDelayUrl($timeout), Request::METHOD_GET);
     }
 

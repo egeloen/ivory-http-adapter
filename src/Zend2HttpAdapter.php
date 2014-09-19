@@ -29,11 +29,12 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
     /**
      * Creates a zend 2 http adapter.
      *
-     * @param \Zend\Http\Client $client The zend 2 client.
+     * @param \Zend\Http\Client|null                         $client        The zend 2 client.
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct(Client $client = null)
+    public function __construct(Client $client = null, ConfigurationInterface $configuration = null)
     {
-        parent::__construct();
+        parent::__construct($configuration);
 
         $this->client = $client ?: new Client();
     }
@@ -57,7 +58,7 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
             ->resetParameters(true)
             ->setOptions(array(
                 'httpversion'  => $internalRequest->getProtocolVersion(),
-                'timeout'      => $this->timeout,
+                'timeout'      => $this->configuration->getTimeout(),
                 'maxredirects' => 0,
             ))
             ->setUri($url)

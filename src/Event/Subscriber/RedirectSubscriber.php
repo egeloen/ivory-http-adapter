@@ -187,7 +187,7 @@ class RedirectSubscriber implements EventSubscriberInterface
         InternalRequestInterface $request,
         ResponseInterface $response
     ) {
-        $redirect = $httpAdapter->getMessageFactory()->cloneInternalRequest($request);
+        $redirect = $httpAdapter->getConfiguration()->getMessageFactory()->cloneInternalRequest($request);
 
         if ($response->getStatusCode() === 303 || (!$this->strict && $response->getStatusCode() <= 302)) {
             $redirect->setMethod(InternalRequestInterface::METHOD_GET);

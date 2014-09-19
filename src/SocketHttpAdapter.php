@@ -46,14 +46,14 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $errstr);
         }
 
-        stream_set_timeout($socket, $this->timeout);
+        stream_set_timeout($socket, $this->configuration->getTimeout());
         fwrite($socket, $this->prepareRequest($internalRequest, $path, $host, $port));
         list($responseHeaders, $body) = $this->parseResponse($socket);
         $hasTimeout = $this->detectTimeout($socket);
         fclose($socket);
 
         if ($hasTimeout) {
-            throw HttpAdapterException::timeoutExceeded($url, $this->timeout, $this->getName());
+            throw HttpAdapterException::timeoutExceeded($url, $this->configuration->getTimeout(), $this->getName());
         }
 
         return $this->createResponse(

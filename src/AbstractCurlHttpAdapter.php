@@ -23,17 +23,18 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     /**
      * Creates a curl http adapter.
      *
-     * @param boolean checkExtension TRUE if the extension should be checked else FALSE.
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration  The configuration.
+     * @param boolean                                        $checkExtension TRUE if the extension should be checked else FALSE.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the check extension is enabled and the curl extension is not loaded.
      */
-    public function __construct($checkExtension = true)
+    public function __construct(ConfigurationInterface $configuration = null, $checkExtension = true)
     {
         if ($checkExtension && !function_exists('curl_init')) {
             throw HttpAdapterException::extensionIsNotLoaded('curl', $this->getName());
         }
 
-        parent::__construct();
+        parent::__construct($configuration);
     }
 
     /**

@@ -31,11 +31,12 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * Creates a buzz http adapter.
      *
-     * @param \Buzz\Browser $browser The buzz browser.
+     * @param \Buzz\Browser|null                             $browser       The buzz browser.
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the browser client is multi curl.
      */
-    public function __construct(Browser $browser = null)
+    public function __construct(Browser $browser = null, ConfigurationInterface $configuration = null)
     {
         $browser = $browser ?: new Browser();
 
@@ -46,7 +47,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
             );
         }
 
-        parent::__construct($browser->getClient() instanceof AbstractCurl);
+        parent::__construct($configuration, $browser->getClient() instanceof AbstractCurl);
 
         $this->browser = $browser;
     }
@@ -64,7 +65,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
-        $this->browser->getClient()->setTimeout($this->timeout);
+        $this->browser->getClient()->setTimeout($this->configuration->getTimeout());
         $this->browser->getClient()->setMaxRedirects(0);
 
         $url = (string) $internalRequest->getUrl();
