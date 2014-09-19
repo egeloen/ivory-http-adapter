@@ -27,7 +27,7 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
     /**
      * Creates a chained retry strategy.
      *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface|null $next The next chained retry strategy.
+     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null $next The next chained retry strategy.
      */
     public function __construct(RetryStrategyChainInterface $next = null)
     {

@@ -16,15 +16,10 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\MessageFactory;
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
-use Ivory\HttpAdapter\Message\MessageInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\Message\Stream\ResourceStream;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Abstract http adapter.
@@ -33,174 +28,33 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 abstract class AbstractHttpAdapter implements HttpAdapterInterface
 {
-    /** @var \Ivory\HttpAdapter\Message\MessageFactoryInterface */
-    protected $messageFactory;
-
-    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface */
-    protected $eventDispatcher;
-
-    /** @var string */
-    protected $protocolVersion = MessageInterface::PROTOCOL_VERSION_11;
-
-    /** @var boolean */
-    protected $keepAlive = false;
-
-    /** @var string|null */
-    protected $encodingType;
-
-    /** @var string */
-    protected $boundary;
-
-    /** @var float */
-    protected $timeout = 10;
-
-    /** @var string */
-    protected $userAgent = 'Ivory Http Adapter';
+    /** @var \Ivory\HttpAdapter\ConfigurationInterface */
+    protected $configuration;
 
     /**
      * Creates an http adapter.
+     *
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct()
+    public function __construct(ConfigurationInterface $configuration = null)
     {
-        $this->setMessageFactory(new MessageFactory());
-        $this->setEventDispatcher(new EventDispatcher());
-        $this->setBoundary(sha1(microtime()));
+        $this->setConfiguration($configuration ?: new Configuration());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMessageFactory()
+    public function getConfiguration()
     {
-        return $this->messageFactory;
+        return $this->configuration;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setMessageFactory(MessageFactoryInterface $factory)
+    public function setConfiguration(ConfigurationInterface $configuration)
     {
-        $this->messageFactory = $factory;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEventDispatcher()
-    {
-        return $this->eventDispatcher;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getProtocolVersion()
-    {
-        return $this->protocolVersion;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setProtocolVersion($protocolVersion)
-    {
-        $this->protocolVersion = $protocolVersion;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getKeepAlive()
-    {
-        return $this->keepAlive;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setKeepAlive($keepAlive)
-    {
-        $this->keepAlive = $keepAlive;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasEncodingType()
-    {
-        return $this->encodingType !== null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEncodingType()
-    {
-        return $this->encodingType;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEncodingType($encodingType)
-    {
-        $this->encodingType = $encodingType;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBoundary()
-    {
-        return $this->boundary;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setBoundary($boundary)
-    {
-        $this->boundary = $boundary;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTimeout()
-    {
-        return $this->timeout;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setTimeout($timeout)
-    {
-        $this->timeout = $timeout;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUserAgent()
-    {
-        return $this->userAgent;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUserAgent($userAgent)
-    {
-        $this->userAgent = $userAgent;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -272,8 +126,8 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function send($url, $method, array $headers = array(), $datas = array(), array $files = array())
     {
-        $internalRequest = $this->messageFactory->createInternalRequest($url, $method);
-        $internalRequest->setProtocolVersion($this->protocolVersion);
+        $internalRequest = $this->configuration->getMessageFactory()->createInternalRequest($url, $method);
+        $internalRequest->setProtocolVersion($this->configuration->getProtocolVersion());
         $internalRequest->addHeaders($headers);
 
         if (is_string($datas)) {
@@ -296,8 +150,8 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             return $this->sendInternalRequest($request);
         }
 
-        $protocolVersion = $this->protocolVersion;
-        $this->protocolVersion = $request->getProtocolVersion();
+        $protocolVersion = $this->configuration->getProtocolVersion();
+        $this->configuration->setProtocolVersion($request->getProtocolVersion());
 
         $response = $this->send(
             $request->getUrl(),
@@ -306,7 +160,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             (string) $request->getBody()
         );
 
-        $this->protocolVersion = $protocolVersion;
+        $this->configuration->setProtocolVersion($protocolVersion);
 
         return $response;
     }
@@ -319,15 +173,15 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $preSendEvent = new PreSendEvent($this, $internalRequest);
 
         try {
-            $this->eventDispatcher->dispatch(Events::PRE_SEND, $preSendEvent);
+            $this->configuration->getEventDispatcher()->dispatch(Events::PRE_SEND, $preSendEvent);
 
             $response = $this->doSend($preSendEvent->getRequest());
 
             $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response);
-            $this->eventDispatcher->dispatch(Events::POST_SEND, $postSendEvent);
+            $this->configuration->getEventDispatcher()->dispatch(Events::POST_SEND, $postSendEvent);
         } catch (HttpAdapterException $e) {
             $exceptionEvent = new ExceptionEvent($this, $preSendEvent->getRequest(), $e);
-            $this->eventDispatcher->dispatch(Events::EXCEPTION, $exceptionEvent);
+            $this->configuration->getEventDispatcher()->dispatch(Events::EXCEPTION, $exceptionEvent);
 
             if ($exceptionEvent->hasResponse()) {
                 return $exceptionEvent->getResponse();
@@ -365,21 +219,24 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $contentType = true
     ) {
         if (!$internalRequest->hasHeader('Connection')) {
-            $internalRequest->setHeader('Connection', $this->keepAlive ? 'keep-alive' : 'close');
+            $internalRequest->setHeader('Connection', $this->configuration->getKeepAlive() ? 'keep-alive' : 'close');
         }
 
         if (!$internalRequest->hasHeader('Content-Type')) {
-            if ($this->hasEncodingType()) {
-                $internalRequest->setHeader('Content-Type', $this->encodingType);
+            if ($this->configuration->hasEncodingType()) {
+                $internalRequest->setHeader('Content-Type', $this->configuration->getEncodingType());
             } elseif ($contentType && $internalRequest->hasFiles()) {
-                $internalRequest->setHeader('Content-Type', self::ENCODING_TYPE_FORMDATA.'; boundary='.$this->boundary);
+                $internalRequest->setHeader(
+                    'Content-Type',
+                    ConfigurationInterface::ENCODING_TYPE_FORMDATA.'; boundary='.$this->configuration->getBoundary()
+                );
             } elseif ($contentType && $internalRequest->hasDatas()) {
-                $internalRequest->setHeader('Content-Type', self::ENCODING_TYPE_URLENCODED);
+                $internalRequest->setHeader('Content-Type', ConfigurationInterface::ENCODING_TYPE_URLENCODED);
             }
         }
 
         if (!$internalRequest->hasHeader('User-Agent')) {
-            $internalRequest->setHeader('User-Agent', $this->userAgent);
+            $internalRequest->setHeader('User-Agent', $this->configuration->getUserAgent());
         }
 
         return HeadersNormalizer::normalize($internalRequest->getHeaders(), $associative);
@@ -412,7 +269,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             $body .= $this->prepareRawBody($name, $file, true);
         }
 
-        $body .= '--'.$this->boundary.'--'."\r\n";
+        $body .= '--'.$this->configuration->getBoundary().'--'."\r\n";
 
         return $body;
     }
@@ -438,7 +295,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             return $body;
         }
 
-        $body = '--'.$this->boundary."\r\n".'Content-Disposition: form-data; name="'.$name.'"';
+        $body = '--'.$this->configuration->getBoundary()."\r\n".'Content-Disposition: form-data; name="'.$name.'"';
 
         if ($isFile) {
             $body .= '; filename="'.basename($data).'"';
@@ -481,7 +338,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $body,
         array $parameters = array()
     ) {
-        $response = $this->messageFactory->createResponse();
+        $response = $this->configuration->getMessageFactory()->createResponse();
         $response->setProtocolVersion($protocolVersion);
         $response->setStatusCode($statusCode);
         $response->setReasonPhrase($reasonPhrase);

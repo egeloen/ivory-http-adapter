@@ -30,11 +30,12 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * Creates a guzzle 3 http adapter.
      *
-     * @param \Guzzle\Http\ClientInterface $client The guzzle 3 client.
+     * @param \Guzzle\Http\ClientInterface|null              $client        The guzzle 3 client.
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct(ClientInterface $client = null)
+    public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
     {
-        parent::__construct();
+        parent::__construct($configuration);
 
         $this->client = $client ?: new Client();
     }
@@ -62,7 +63,7 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
             array(
                 'exceptions'      => false,
                 'allow_redirects' => false,
-                'timeout'         => $this->timeout,
+                'timeout'         => $this->configuration->getTimeout(),
             )
         );
 

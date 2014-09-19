@@ -30,11 +30,12 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
     /**
      * Creates a guzzle 4 http adapter.
      *
-     * @param \GuzzleHttp\ClientInterface|null $client The guzzle 4 client.
+     * @param \GuzzleHttp\ClientInterface|null               $client        The guzzle 4 client.
+     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct(ClientInterface $client = null)
+    public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
     {
-        parent::__construct(false);
+        parent::__construct($configuration, false);
 
         $this->client = $client ?: new Client();
     }
@@ -60,7 +61,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
             array(
                 'exceptions'      => false,
                 'allow_redirects' => false,
-                'timeout'         => $this->timeout,
+                'timeout'         => $this->configuration->getTimeout(),
                 'version'         => $internalRequest->getProtocolVersion(),
                 'headers'         => $this->prepareHeaders($internalRequest),
                 'body'            => $this->prepareContent($internalRequest),

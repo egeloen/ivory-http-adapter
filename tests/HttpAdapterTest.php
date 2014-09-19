@@ -47,75 +47,23 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testDefaultState()
     {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Message\MessageFactory', $this->httpAdapter->getMessageFactory());
-
-        $this->assertInstanceOf(
-            'Symfony\Component\EventDispatcher\EventDispatcher',
-            $this->httpAdapter->getEventDispatcher()
-        );
-
-        $this->assertSame(InternalRequestInterface::PROTOCOL_VERSION_11, $this->httpAdapter->getProtocolVersion());
-        $this->assertFalse($this->httpAdapter->getKeepAlive());
-        $this->assertFalse($this->httpAdapter->hasEncodingType());
-        $this->assertInternalType('string', $this->httpAdapter->getBoundary());
-        $this->assertSame(10, $this->httpAdapter->getTimeout());
-        $this->assertSame('Ivory Http Adapter', $this->httpAdapter->getUserAgent());
+        $this->assertInstanceOf('Ivory\HttpAdapter\Configuration', $this->httpAdapter->getConfiguration());
     }
 
-    public function testSetMessageFactory()
+    public function testInitialState()
     {
-        $this->httpAdapter->setMessageFactory($messageFactory = $this->createMessageFactoryMock());
+        $this->httpAdapter = $this->createHttpAdapterMockBuilder()
+            ->setConstructorArgs(array($configuration = $this->createConfigurationMock()))
+            ->getMockForAbstractClass();
 
-        $this->assertSame($messageFactory, $this->httpAdapter->getMessageFactory());
+        $this->assertSame($configuration, $this->httpAdapter->getConfiguration());
     }
 
-    public function testSetEventDispatcher()
+    public function testSetConfiguration()
     {
-        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+        $this->httpAdapter->setConfiguration($configuration = $this->createConfigurationMock());
 
-        $this->assertSame($eventDispatcher, $this->httpAdapter->getEventDispatcher());
-    }
-
-    public function testSetProtocolVersion()
-    {
-        $this->httpAdapter->setProtocolVersion($protocolVersion = InternalRequestInterface::PROTOCOL_VERSION_10);
-
-        $this->assertSame($protocolVersion, $this->httpAdapter->getProtocolVersion());
-    }
-
-    public function testSetKeepAlive()
-    {
-        $this->httpAdapter->setKeepAlive(true);
-
-        $this->assertTrue($this->httpAdapter->getKeepAlive());
-    }
-
-    public function testSetEncodingType()
-    {
-        $this->httpAdapter->setEncodingType($encodingType = HttpAdapterConfigInterface::ENCODING_TYPE_FORMDATA);
-
-        $this->assertSame($encodingType, $this->httpAdapter->getEncodingType());
-    }
-
-    public function testSetBoundary()
-    {
-        $this->httpAdapter->setBoundary($boundary = 'foo');
-
-        $this->assertSame($boundary, $this->httpAdapter->getBoundary());
-    }
-
-    public function testSetTimeout()
-    {
-        $this->httpAdapter->setTimeout($timeout = 2.5);
-
-        $this->assertSame($timeout, $this->httpAdapter->getTimeout());
-    }
-
-    public function testSetUserAgent()
-    {
-        $this->httpAdapter->setUserAgent($userAgent = 'foo');
-
-        $this->assertSame($userAgent, $this->httpAdapter->getUserAgent());
+        $this->assertSame($configuration, $this->httpAdapter->getConfiguration());
     }
 
     public function testSendInternalRequestDispatchPreSendEvent()
@@ -131,7 +79,9 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequestOverride))
             ->will($this->returnValue($response));
 
-        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
 
         $eventDispatcher
             ->expects($this->at(0))
@@ -165,7 +115,9 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequest))
             ->will($this->returnValue($response));
 
-        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
 
         $eventDispatcher
             ->expects($this->at(1))
@@ -200,7 +152,9 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequest))
             ->will($this->throwException($exception));
 
-        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
 
         $eventDispatcher
             ->expects($this->at(1))
@@ -235,7 +189,9 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequest))
             ->will($this->throwException($exception));
 
-        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
 
         $eventDispatcher
             ->expects($this->at(1))
@@ -268,7 +224,9 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $internalRequest = $this->createInternalRequestMock();
         $exception = $this->createExceptionMock();
 
-        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
 
         $eventDispatcher
             ->expects($this->at(0))
@@ -310,7 +268,9 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequest))
             ->will($this->returnValue($response));
 
-        $this->httpAdapter->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
 
         $eventDispatcher
             ->expects($this->at(1))
@@ -357,6 +317,16 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function createMessageFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
+    }
+
+    /**
+     * Creates a configuration mock.
+     *
+     * @return \Ivory\HttpAdapter\ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject The configuration mock.
+     */
+    protected function createConfigurationMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
     }
 
     /**
