@@ -35,7 +35,7 @@ class Request extends AbstractMessage implements RequestInterface
      */
     public function __construct($url, $method = self::METHOD_GET)
     {
-        $this->setProtocolVersion(self::PROTOCOL_VERSION_11);
+        $this->setProtocolVersion(self::PROTOCOL_VERSION_1_1);
         $this->setUrl($url);
         $this->setMethod($method);
     }

@@ -31,7 +31,7 @@ class Configuration implements ConfigurationInterface
     protected $eventDispatcher;
 
     /** @var string */
-    protected $protocolVersion = MessageInterface::PROTOCOL_VERSION_11;
+    protected $protocolVersion = MessageInterface::PROTOCOL_VERSION_1_1;
 
     /** @var boolean */
     protected $keepAlive = false;

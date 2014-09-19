@@ -46,11 +46,9 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
      */
     protected function prepareProtocolVersion(InternalRequestInterface $internalRequest)
     {
-        if ($internalRequest->getProtocolVersion() === InternalRequestInterface::PROTOCOL_VERSION_10) {
-            return CURL_HTTP_VERSION_1_0;
-        }
-
-        return CURL_HTTP_VERSION_1_1;
+        return $internalRequest->getProtocolVersion() === InternalRequestInterface::PROTOCOL_VERSION_1_0
+            ? CURL_HTTP_VERSION_1_0
+            : CURL_HTTP_VERSION_1_1;
     }
 
     /**

@@ -52,9 +52,9 @@ use Ivory\HttpAdapter\Message\RequestInterface;
 
 $protocolVersion = $configuration->getProtocolVersion();
 
-$configuration->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_10);
+$configuration->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_1_0);
 // or
-$configuration->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_11);
+$configuration->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_1_1);
 ```
 
 ## Keep alive

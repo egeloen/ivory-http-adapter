@@ -21,10 +21,10 @@ use Psr\Http\Message\MessageInterface as PsrMessageInterface;
 interface MessageInterface extends PsrMessageInterface
 {
     /** @const string The protocol version 1.0. */
-    const PROTOCOL_VERSION_10 = '1.0';
+    const PROTOCOL_VERSION_1_0 = '1.0';
 
     /** @const string The protocol version 1.1. */
-    const PROTOCOL_VERSION_11 = '1.1';
+    const PROTOCOL_VERSION_1_1 = '1.1';
 
     /**
      * Sets the protocol version.

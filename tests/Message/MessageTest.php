@@ -56,7 +56,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     public function testSetProtocolVersion()
     {
-        $this->message->setProtocolVersion($protocolVersion = MessageInterface::PROTOCOL_VERSION_11);
+        $this->message->setProtocolVersion($protocolVersion = MessageInterface::PROTOCOL_VERSION_1_1);
 
         $this->assertSame($protocolVersion, $this->message->getProtocolVersion());
     }

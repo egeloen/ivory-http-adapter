@@ -49,7 +49,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             $this->configuration->getEventDispatcher()
         );
 
-        $this->assertSame(InternalRequestInterface::PROTOCOL_VERSION_11, $this->configuration->getProtocolVersion());
+        $this->assertSame(InternalRequestInterface::PROTOCOL_VERSION_1_1, $this->configuration->getProtocolVersion());
         $this->assertFalse($this->configuration->getKeepAlive());
         $this->assertFalse($this->configuration->hasEncodingType());
         $this->assertInternalType('string', $this->configuration->getBoundary());
@@ -84,7 +84,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function testSetProtocolVersion()
     {
-        $this->configuration->setProtocolVersion($protocolVersion = InternalRequestInterface::PROTOCOL_VERSION_10);
+        $this->configuration->setProtocolVersion($protocolVersion = InternalRequestInterface::PROTOCOL_VERSION_1_0);
 
         $this->assertSame($protocolVersion, $this->configuration->getProtocolVersion());
     }

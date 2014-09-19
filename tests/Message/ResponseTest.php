@@ -58,7 +58,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
     public function testSetProtocolVersion()
     {
-        $this->response->setProtocolVersion($protocolVersion = Response::PROTOCOL_VERSION_11);
+        $this->response->setProtocolVersion($protocolVersion = Response::PROTOCOL_VERSION_1_1);
 
         $this->assertSame($protocolVersion, $this->response->getProtocolVersion());
     }

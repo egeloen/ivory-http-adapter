@@ -25,9 +25,9 @@ use Ivory\HttpAdapter\Message\RequestInterface;
 
 $protocolVersion = $request->getProtocolVersion();
 
-$request->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_10);
+$request->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_1_0);
 // or
-$request->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_11);
+$request->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_1_1);
 ```
 
 Note that the request protocol version will be used instead of the one configured on the http adapter.

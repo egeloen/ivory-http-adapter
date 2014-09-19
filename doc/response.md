@@ -16,9 +16,9 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 
 $protocolVersion = $response->getProtocolVersion();
 
-$response->setProtocolVersion(ResponseInterface::PROTOCOL_VERSION_10);
+$response->setProtocolVersion(ResponseInterface::PROTOCOL_VERSION_1_0);
 // or
-$response->setProtocolVersion(ResponseInterface::PROTOCOL_VERSION_11);
+$response->setProtocolVersion(ResponseInterface::PROTOCOL_VERSION_1_1);
 ```
 
 ## Status code

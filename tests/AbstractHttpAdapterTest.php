@@ -206,7 +206,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testSendWithProtocolVersion10()
     {
-        $this->httpAdapter->getConfiguration()->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_10);
+        $this->httpAdapter->getConfiguration()->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_1_0);
 
         $this->assertResponse($this->httpAdapter->send($this->getUrl(), $method = Request::METHOD_GET));
         $this->assertRequest($method, array(), array(), array(), $protocolVersion);
@@ -514,7 +514,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $options = array_merge(
             array(
-                'protocol_version' => Request::PROTOCOL_VERSION_11,
+                'protocol_version' => Request::PROTOCOL_VERSION_1_1,
                 'status_code'      => 200,
                 'reason_phrase'    => 'OK',
                 'headers'          => array('Content-Type' => 'text/html'),
@@ -567,7 +567,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         array $headers = array(),
         array $data = array(),
         array $files = array(),
-        $protocolVersion = Request::PROTOCOL_VERSION_11
+        $protocolVersion = Request::PROTOCOL_VERSION_1_1
     ) {
         $request = json_decode(file_get_contents(PHPUnitUtility::getFile(true, 'http-adapter.log')), true);
 

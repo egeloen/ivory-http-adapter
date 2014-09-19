@@ -57,7 +57,7 @@ class RequestTest extends AbstractUrlNormalizerTest
         $this->assertSame(Request::METHOD_GET, $this->request->getMethod());
         $this->assertFalse($this->request->hasHeaders());
         $this->assertFalse($this->request->hasBody());
-        $this->assertSame(Request::PROTOCOL_VERSION_11, $this->request->getProtocolVersion());
+        $this->assertSame(Request::PROTOCOL_VERSION_1_1, $this->request->getProtocolVersion());
     }
 
     public function testInitialState()
@@ -67,7 +67,7 @@ class RequestTest extends AbstractUrlNormalizerTest
         $this->assertSame($method, $this->request->getMethod());
         $this->assertFalse($this->request->hasHeaders());
         $this->assertFalse($this->request->hasBody());
-        $this->assertSame(Request::PROTOCOL_VERSION_11, $this->request->getProtocolVersion());
+        $this->assertSame(Request::PROTOCOL_VERSION_1_1, $this->request->getProtocolVersion());
     }
 
     /**
