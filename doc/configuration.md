@@ -1,7 +1,16 @@
 # Configuration
 
-The available configuration is defined through the `Ivory\HttpAdapter\HttpAdapterConfigInterface`. All adapters are
-able to be configured as explain above.
+The available configuration is defined through the `Ivory\HttpAdapter\ConfigurationInterface` and its default
+implementation is the `Ivory\HttpAdapter\Configuration`. The configuration can be passed to all adapters as last
+constructor parameters or via getter/setter and allow you to configure the them as explain above:
+
+``` php
+$curlHttpAdapter = new CurlHttpAdapter(new Configuration());
+// or
+$zend1HttpAdapter = new Zend1HttpAdapter(null, new Configuration());
+// or
+$configuration = $httpAdaptr->getConfiguration();
+$httpAdapter->setConfiguration($configuration);
 
 ## Message factory
 
@@ -13,8 +22,10 @@ factory which implements the `Ivory\HttpAdapter\Message\MessageFactoryInterface`
 ``` php
 use My\MessageFactory;
 
-$messageFactory = $httpAdapter->getMessageFactory();
-$httpAdapter->setMessageFactory(new MessageFactory());
+$messageFactory = $configuration->getMessageFactory();
+$configuration->setMessageFactory(new MessageFactory());
+// or
+$configuration = new Configuration($messageFactory);
 ```
 
 ## Event dispatcher
@@ -23,8 +34,10 @@ The event dispatcher allows you to attach listeners/subscribers in order to hook
 it, you can use:
 
 ``` php
-$eventDispatcher = $httpAdapter->getEventDispatcher();
-$httpAdapter->setEventDispatcher($eventDispatcher);
+$eventDispatcher = $configuration->getEventDispatcher();
+$configuration->setEventDispatcher($eventDispatcher);
+// or
+$configuration = new Configuration(null, $eventDispatcher);
 ```
 
 If you want to learn more about the events, you can read this [doc](/doc/events.md).
@@ -37,11 +50,11 @@ it, you can use:
 ``` php
 use Ivory\HttpAdapter\Message\RequestInterface;
 
-$protocolVersion = $httpAdapter->getProtocolVersion();
+$protocolVersion = $configuration->getProtocolVersion();
 
-$httpAdapter->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_10);
+$configuration->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_10);
 // or
-$httpAdapter->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_11);
+$configuration->setProtocolVersion(RequestInterface::PROTOCOL_VERSION_11);
 ```
 
 ## Keep alive
@@ -52,8 +65,8 @@ flag. So, if you provide the `connection` headers, the keep alive flag is ignore
 use:
 
 ``` php
-$keepAlive = $httpAdapter->getKeepAlive();
-$httpAdapter->setKeepAlive(true);
+$keepAlive = $configuration->getKeepAlive();
+$configuration->setKeepAlive(true);
 ```
 
 ## Encoding type
@@ -63,14 +76,14 @@ automatically populated according to the datas/files you provide but if you enco
 need to set it explicitely or pass the `content-type` header yourself. Then, if you want to get/set it, you can use:
 
 ``` php
-$hasEncodingType = $httpAdapter->hasEncodingType();
-$encodingType = $httpAdapter->getEncodingType();
+$hasEncodingType = $configuration->hasEncodingType();
+$encodingType = $configuration->getEncodingType();
 
-$httpAdapter->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_URLENCODED);
+$configuration->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_URLENCODED);
 // or
-$httpAdapter->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_FORMDATA);
+$configuration->setEncodingType(HttpAdapterConfigInterface::ENCODING_TYPE_FORMDATA);
 // or
-$httpAdapter->setEncodingType(null);
+$configuration->setEncodingType(null);
 ```
 
 ## Boundary
@@ -81,8 +94,8 @@ automatically populated but, if you encode yourself the datas as string, you nee
 `content-type` header yourself. Then, if you want to get/set it, you can use:
 
 ``` php
-$boundary = $httpAdapter->getBoundary();
-$httpAdapter->setBoundary('abcdefg');
+$boundary = $configuration->getBoundary();
+$configuration->setBoundary('abcdefg');
 ```
 
 ## Timeout
@@ -91,8 +104,8 @@ The timeout defines the maximum number of seconds the connection should be activ
 (default: 10). If you want to get/set it, you can use:
 
 ``` php
-$timeout = $httpAdapter->getTimeout();
-$httpAdapter->setTimeout(30);
+$timeout = $configuration->getTimeout();
+$configuration->setTimeout(30);
 ```
 
 ## User Agent
@@ -102,6 +115,6 @@ order to identify it. By default, all http adapters send the `Ivory Http Adapter
 change it, you can use:
 
 ``` php
-$userAgent = $httpAdapter->getUserAgent();
-$httpAdapter->setUserAgent('My user agent');
+$userAgent = $configuration->getUserAgent();
+$configuration->setUserAgent('My user agent');
 ```
