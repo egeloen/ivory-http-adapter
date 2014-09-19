@@ -11,6 +11,7 @@ $zend1HttpAdapter = new Zend1HttpAdapter(null, new Configuration());
 // or
 $configuration = $httpAdaptr->getConfiguration();
 $httpAdapter->setConfiguration($configuration);
+```
 
 ## Message factory
 
