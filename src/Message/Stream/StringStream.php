@@ -47,9 +47,18 @@ class StringStream extends AbstractStream
      */
     public function __construct($string = null, $modeMask = null)
     {
-        $this->string = (string) $string;
-        $this->modeMask = $modeMask ?: self::MODE_SEEK | self::MODE_READ | self::MODE_WRITE;
-        $this->size = strlen($this->string);
+        $this->attach($string, $modeMask);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param integer|null $modeMask The mode mask.
+     */
+    public function attach($stream, $modeMask = null)
+    {
+        $this->detach();
+        $this->doAttach($stream, $modeMask);
     }
 
     /**
@@ -65,7 +74,21 @@ class StringStream extends AbstractStream
      */
     protected function doClose()
     {
-        return $this->detach();
+        $this->detach();
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param integer|null $modeMask The mode mask.
+     */
+    protected function doAttach($stream, $modeMask = null)
+    {
+        $this->string = (string) $stream;
+        $this->modeMask = $modeMask ?: self::MODE_SEEK | self::MODE_READ | self::MODE_WRITE;
+        $this->size = strlen($this->string);
     }
 
     /**
@@ -73,10 +96,48 @@ class StringStream extends AbstractStream
      */
     protected function doDetach()
     {
+        $string = $this->string;
+
         $this->string = null;
         $this->modeMask = 0;
+        $this->size = 0;
+        $this->cursor = 0;
 
-        return true;
+        return $string;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doGetMetadata($key = null)
+    {
+        $mode = 'r+';
+
+        if ($this->modeMask & self::MODE_READ && $this->modeMask & self::MODE_WRITE) {
+            $mode = 'r+';
+        } elseif ($this->modeMask & self::MODE_READ) {
+            $mode = 'r';
+        } elseif ($this->modeMask & self::MODE_WRITE) {
+            $mode = 'a';
+        }
+
+        $metadata = array(
+            'wrapper_type' => 'data',
+            'stream_type'  => 'STDIO',
+            'mode'         => $mode,
+            'unread_bytes' => 0,
+            'seekable'     => $this->isSeekable(),
+            'uri'          => 'data://'.$this->string,
+            'timed_out'    => false,
+            'blocked'      => true,
+            'eof'          => $this->eof(),
+        );
+
+        if ($key === null) {
+            return $metadata;
+        }
+
+        return isset($metadata[$key]) ? $metadata[$key] : null;
     }
 
     /**
@@ -193,16 +254,12 @@ class StringStream extends AbstractStream
     /**
      * {@inheritdoc}
      */
-    protected function doGetContents($maxLength = -1)
+    protected function doGetContents()
     {
-        if ($maxLength === -1) {
-            $cursor = $this->cursor;
-            $this->forceSeek($this->size);
+        $cursor = $this->cursor;
+        $this->forceSeek($this->size);
 
-            return substr($this->string, $cursor);
-        }
-
-        return $this->read($maxLength);
+        return substr($this->string, $cursor);
     }
 
     /**

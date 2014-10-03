@@ -20,10 +20,49 @@ use Ivory\HttpAdapter\Message\Stream\StringStream;
  */
 class StringStreamTest extends AbstractStreamTest
 {
+    public function testAttachInvalid()
+    {
+
+    }
+
     /**
      * {@inheritdoc}
      */
-    protected function createStream($mode = null)
+    public function metadataProvider()
+    {
+        $metadata = parent::metadataProvider();
+        $metadata[0][0]['wrapper_type'] = 'data';
+        $metadata[0][0]['uri'] = 'data://'.self::STRING;
+
+        return $metadata;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function metadataKeyProvider()
+    {
+        $metadata = parent::metadataKeyProvider();
+
+        foreach ($metadata as &$value) {
+            switch ($value[0]) {
+                case 'wrapper_type':
+                    $value[1] = 'data';
+                    break;
+
+                case 'uri':
+                    $value[1] = 'data://'.self::STRING;
+                    break;
+            }
+        }
+
+        return $metadata;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createStream($string, $mode = null)
     {
         switch ($mode) {
             case self::MODE_SEEK_DISABLED:
@@ -39,6 +78,14 @@ class StringStreamTest extends AbstractStreamTest
                 break;
         }
 
-        return new StringStream($this->string, $mode);
+        return new StringStream($string, $mode);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createSubStream($string, $mode = null)
+    {
+        return $string;
     }
 }

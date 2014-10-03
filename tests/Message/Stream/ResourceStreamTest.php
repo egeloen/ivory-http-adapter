@@ -45,8 +45,8 @@ class ResourceStreamTest extends AbstractResourceStreamTest
     /**
      * {@inheritdoc}
      */
-    protected function createStream($mode = null)
+    protected function createStream($string, $mode = null)
     {
-        return new ResourceStream($this->createResource($mode));
+        return new ResourceStream($this->createSubStream($string, $mode));
     }
 }

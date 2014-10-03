@@ -12,7 +12,7 @@
 namespace Ivory\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\HttpAdapterException;
-use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\StreamableInterface;
 
 /**
  * Internal request.
@@ -55,7 +55,7 @@ class InternalRequest extends Request implements InternalRequestInterface
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to datas/files instead.
      */
-    public function setBody(StreamInterface $body = null)
+    public function setBody(StreamableInterface $body = null)
     {
         throw HttpAdapterException::doesNotSupportBody();
     }

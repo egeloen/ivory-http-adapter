@@ -12,6 +12,7 @@
 namespace Ivory\HttpAdapter\Message\Stream;
 
 use Guzzle\Stream\StreamInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
  * Guzzle 3 stream.
@@ -26,11 +27,11 @@ class Guzzle3Stream extends AbstractStream
     /**
      * Creates a guzzle stream.
      *
-     * @param \Guzzle\Stream\StreamInterface $stream
+     * @param \Guzzle\Stream\StreamInterface $stream The guzzle 3 stream.
      */
     public function __construct(StreamInterface $stream)
     {
-        $this->stream = $stream;
+        $this->attach($stream);
     }
 
     /**
@@ -38,7 +39,7 @@ class Guzzle3Stream extends AbstractStream
      */
     protected function hasValue()
     {
-        return is_resource($this->stream->getStream());
+        return $this->stream !== null && is_resource($this->stream->getStream());
     }
 
     /**
@@ -54,11 +55,32 @@ class Guzzle3Stream extends AbstractStream
     /**
      * {@inheritdoc}
      */
+    protected function doAttach($stream)
+    {
+        if (!$stream instanceof StreamInterface) {
+            throw HttpAdapterException::streamIsNotValid($stream, get_class($this), 'Guzzle\Stream\StreamInterface');
+        }
+
+        $this->stream = $stream;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doDetach()
     {
+        $stream = $this->stream->getStream();
         $this->stream->detachStream();
 
-        return true;
+        return $stream;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doGetMetadata($key = null)
+    {
+        return $this->stream->getMetaData($key);
     }
 
     /**
@@ -136,9 +158,9 @@ class Guzzle3Stream extends AbstractStream
     /**
      * {@inheritdoc}
      */
-    protected function doGetContents($maxLength = -1)
+    protected function doGetContents()
     {
-        return stream_get_contents($this->stream->getStream(), $maxLength);
+        return stream_get_contents($this->stream->getStream());
     }
 
     /**

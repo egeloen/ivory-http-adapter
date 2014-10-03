@@ -12,7 +12,7 @@
 namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\MessageInterface;
-use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\StreamableInterface;
 
 /**
  * Message test.
@@ -63,7 +63,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     public function testSetBody()
     {
-        $this->message->setBody($body = $this->getMock('Psr\Http\Message\StreamInterface'));
+        $this->message->setBody($body = $this->getMock('Psr\Http\Message\StreamableInterface'));
 
         $this->assertBody($body);
     }
@@ -311,9 +311,9 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     /**
      * Asserts there is a body.
      *
-     * @param \Ivory\Tests\HttpAdapter\Message\StreamInterface $body The body.
+     * @param \Ivory\Tests\HttpAdapter\Message\StreamableInterface $body The body.
      */
-    protected function assertBody(StreamInterface $body)
+    protected function assertBody(StreamableInterface $body)
     {
         $this->assertTrue($this->message->hasBody());
         $this->assertSame($body, $this->message->getBody());
