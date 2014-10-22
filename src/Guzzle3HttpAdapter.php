@@ -64,6 +64,7 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
                 'exceptions'      => false,
                 'allow_redirects' => false,
                 'timeout'         => $this->configuration->getTimeout(),
+                'connect_timeout' => $this->configuration->getTimeout(),
             )
         );
 

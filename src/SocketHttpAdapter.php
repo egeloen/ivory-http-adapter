@@ -39,10 +39,10 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     protected function doSend(InternalRequestInterface $internalRequest)
     {
         $url = (string) $internalRequest->getUrl();
-
         list($protocol, $host, $port, $path) = $this->parseUrl($url);
+        $remote = $protocol.'://'.$host.':'.$port;
 
-        if (($socket = @stream_socket_client($protocol.'://'.$host.':'.$port, $errno, $errstr)) === false) {
+        if (($socket = @stream_socket_client($remote, $errno, $errstr, $this->configuration->getTimeout())) === false) {
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $errstr);
         }
 
