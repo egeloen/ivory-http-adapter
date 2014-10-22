@@ -16,10 +16,10 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\Message\Stream\ResourceStream;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Abstract http adapter.
@@ -62,7 +62,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function get($url, array $headers = array())
     {
-        return $this->send($url, RequestInterface::METHOD_GET, $headers);
+        return $this->send($url, InternalRequestInterface::METHOD_GET, $headers);
     }
 
     /**
@@ -70,7 +70,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function head($url, array $headers = array())
     {
-        return $this->send($url, RequestInterface::METHOD_HEAD, $headers);
+        return $this->send($url, InternalRequestInterface::METHOD_HEAD, $headers);
     }
 
     /**
@@ -78,7 +78,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function trace($url, array $headers = array())
     {
-        return $this->send($url, RequestInterface::METHOD_TRACE, $headers);
+        return $this->send($url, InternalRequestInterface::METHOD_TRACE, $headers);
     }
 
     /**
@@ -86,7 +86,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function post($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_POST, $headers, $datas, $files);
+        return $this->send($url, InternalRequestInterface::METHOD_POST, $headers, $datas, $files);
     }
 
     /**
@@ -94,7 +94,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function put($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_PUT, $headers, $datas, $files);
+        return $this->send($url, InternalRequestInterface::METHOD_PUT, $headers, $datas, $files);
     }
 
     /**
@@ -102,7 +102,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function patch($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_PATCH, $headers, $datas, $files);
+        return $this->send($url, InternalRequestInterface::METHOD_PATCH, $headers, $datas, $files);
     }
 
     /**
@@ -110,7 +110,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function delete($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_DELETE, $headers, $datas, $files);
+        return $this->send($url, InternalRequestInterface::METHOD_DELETE, $headers, $datas, $files);
     }
 
     /**
@@ -118,7 +118,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function options($url, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_OPTIONS, $headers, $datas, $files);
+        return $this->send($url, InternalRequestInterface::METHOD_OPTIONS, $headers, $datas, $files);
     }
 
     /**
