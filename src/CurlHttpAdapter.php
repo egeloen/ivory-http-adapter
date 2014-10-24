@@ -66,6 +66,12 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             curl_setopt($curl, CURLOPT_TIMEOUT, $this->configuration->getTimeout());
         } // @codeCoverageIgnoreEnd
 
+        if (defined('CURLOPT_CONNECTTIMEOUT_MS')) {
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, $this->configuration->getTimeout() * 1000);
+        } else { // @codeCoverageIgnoreStart
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $this->configuration->getTimeout());
+        } // @codeCoverageIgnoreEnd
+
         if ($internalRequest->hasFiles() && $this->isSafeUpload()) {
             curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
         }

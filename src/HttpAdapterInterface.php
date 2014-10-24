@@ -12,7 +12,7 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\RequestInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Http adapter interface.
@@ -127,7 +127,7 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function delete($url, array $headers= array(), $datas = array(), array $files = array());
+    public function delete($url, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends an OPTIONS request.
@@ -141,7 +141,7 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function options($url, array $headers= array(), $datas = array(), array $files = array());
+    public function options($url, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a request.
@@ -161,7 +161,7 @@ interface HttpAdapterInterface
     /**
      * Sends a PSR request.
      *
-     * @param \Ivory\HttpAdapter\Message\RequestInterface $request The request.
+     * @param \Psr\Http\Message\RequestInterface $request The request.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *

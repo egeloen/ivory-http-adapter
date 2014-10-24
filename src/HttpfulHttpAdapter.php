@@ -58,6 +58,12 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             ->addHeaders($this->prepareHeaders($internalRequest))
             ->body($this->prepareContent($internalRequest));
 
+        if (defined('CURLOPT_CONNECTTIMEOUT_MS')) {
+            $request->addOnCurlOption(CURLOPT_CONNECTTIMEOUT_MS, $this->configuration->getTimeout() * 1000);
+        } else { // @codeCoverageIgnoreStart
+            $request->addOnCurlOption(CURLOPT_CONNECTTIMEOUT, $this->configuration->getTimeout());
+        } // @codeCoverageIgnoreEnd
+
         if ($internalRequest->hasFiles()) {
             $request->mime(Mime::UPLOAD);
         }
