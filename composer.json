@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "psr/http-message": "0.1.0",
+        "psr/http-message": "~0.1.0",
         "symfony/event-dispatcher": "~2.1"
     },
     "require-dev": {
@@ -20,13 +20,13 @@
         "phpunit/phpunit-mock-objects": "dev-matcher-verify as 2.3.x-dev",
         "satooshi/php-coveralls": "~0.6",
         "ext-curl": "*",
-        "guzzle/guzzle": ">=3.9.2",
+        "guzzle/guzzle": "~3.0,>=3.9.2",
         "guzzlehttp/guzzle": "~4.0,>=4.1.4",
-        "kriswallsmith/buzz": ">=0.13.0",
-        "nategood/httpful": ">=0.2.17",
-        "zendframework/zendframework1": "*@dev",
-        "zendframework/zendframework": "dev-http-curl-adapter",
-        "psr/log": "~1.0"
+        "kriswallsmith/buzz": "~0.1,>=0.13.0",
+        "nategood/httpful": "~0.1,>=0.2.17",
+        "psr/log": "~1.0",
+        "zendframework/zendframework1": "~1.0,>=1.12.9",
+        "zendframework/zendframework": "dev-http-curl-adapter"
     },
     "repositories": [
         {
