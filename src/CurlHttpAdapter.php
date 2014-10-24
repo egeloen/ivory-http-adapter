@@ -60,17 +60,8 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->prepareHeaders($internalRequest, false, false));
 
-        if (defined('CURLOPT_TIMEOUT_MS')) {
-            curl_setopt($curl, CURLOPT_TIMEOUT_MS, $this->configuration->getTimeout() * 1000);
-        } else { // @codeCoverageIgnoreStart
-            curl_setopt($curl, CURLOPT_TIMEOUT, $this->configuration->getTimeout());
-        } // @codeCoverageIgnoreEnd
-
-        if (defined('CURLOPT_CONNECTTIMEOUT_MS')) {
-            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, $this->configuration->getTimeout() * 1000);
-        } else { // @codeCoverageIgnoreStart
-            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $this->configuration->getTimeout());
-        } // @codeCoverageIgnoreEnd
+        $this->configureTimeout($curl, 'CURLOPT_TIMEOUT');
+        $this->configureTimeout($curl, 'CURLOPT_CONNECTTIMEOUT');
 
         if ($internalRequest->hasFiles() && $this->isSafeUpload()) {
             curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
@@ -121,5 +112,20 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             HeadersNormalizer::normalize($headers),
             BodyNormalizer::normalize($body, $internalRequest->getMethod())
         );
+    }
+
+    /**
+     * Configures a timeout.
+     *
+     * @param resource $curl The curl resource.
+     * @param string   $type The timeout type.
+     */
+    private function configureTimeout($curl, $type)
+    {
+        if (defined($type.'_MS')) {
+            curl_setopt($curl, constant($type.'_MS'), $this->configuration->getTimeout() * 1000);
+        } else { // @codeCoverageIgnoreStart
+            curl_setopt($curl, constant($type), $this->configuration->getTimeout());
+        } // @codeCoverageIgnoreEnd
     }
 }
