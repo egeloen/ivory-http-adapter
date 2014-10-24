@@ -13,6 +13,10 @@ require_once __DIR__.'/../Utility/PHPUnitUtility.php';
 
 use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
+$file = fopen(PHPUnitUtility::getFile(true, 'http-adapter.log'), 'c');
+flock($file, LOCK_EX);
+ftruncate($file, 0);
+
 $serverError = isset($_GET['server_error']) ? $_GET['server_error'] : false;
 $clientError = isset($_GET['client_error']) ? $_GET['client_error'] : false;
 $delay = isset($_GET['delay']) ? $_GET['delay'] : 0;
@@ -37,8 +41,8 @@ if ($redirect) {
     echo 'Ok';
 }
 
-file_put_contents(
-    PHPUnitUtility::getFile(true, 'http-adapter.log'),
+fwrite(
+    $file,
     json_encode(array(
         'SERVER' => $_SERVER,
         'GET'    => $_GET,
@@ -47,3 +51,7 @@ file_put_contents(
         'INPUT'  => file_get_contents('php://input'),
     ))
 );
+
+fflush($file);
+flock($file, LOCK_UN);
+fclose($file);

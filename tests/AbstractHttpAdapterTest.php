@@ -569,7 +569,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         array $files = array(),
         $protocolVersion = Request::PROTOCOL_VERSION_1_1
     ) {
-        $request = json_decode(file_get_contents(PHPUnitUtility::getFile(true, 'http-adapter.log')), true);
+        $request = $this->getRequest();
 
         $this->assertSame($protocolVersion, substr($request['SERVER']['SERVER_PROTOCOL'], 5));
         $this->assertSame($method, $request['SERVER']['REQUEST_METHOD']);
@@ -756,5 +756,21 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
             $this->assertRegExp($pattern, $request['INPUT']);
         }
+    }
+
+    /**
+     * Gets the request.
+     *
+     * @return array The request.
+     */
+    protected function getRequest()
+    {
+        $file = fopen(PHPUnitUtility::getFile(true, 'http-adapter.log'), 'r');
+        flock($file, LOCK_EX);
+        $request = json_decode(stream_get_contents($file), true);
+        flock($file, LOCK_UN);
+        fclose($file);
+
+        return $request;
     }
 }
