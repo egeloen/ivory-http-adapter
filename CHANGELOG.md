@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.1.2 (????-??-??)
+
+ * 6527485 - [Stream] Fix some returns + PHPDoc
+
 ### 0.1.1 (2014-10-25)
 
  * 51ac68c - [Test] Remove http adapter file after execution
