@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.1.1 (????-??-??)
+### 0.1.1 (2014-10-25)
 
  * 51ac68c - [Test] Remove http adapter file after execution
  * 9c1382a - [Stream] Fix string stream
