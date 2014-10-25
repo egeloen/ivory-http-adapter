@@ -109,7 +109,7 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
      *
      * @param string $file The file.
      *
-     * @return string|\CurlFile The created file.
+     * @return mixed The created file.
      */
     protected function createFile($file)
     {

@@ -84,7 +84,7 @@ class Guzzle4Stream extends AbstractStream
      */
     protected function doGetSize()
     {
-        return $this->stream->getSize() ?: false;
+        return $this->stream->getSize();
     }
 
     /**
@@ -140,7 +140,7 @@ class Guzzle4Stream extends AbstractStream
      */
     protected function doGetContents($maxLength = -1)
     {
-        return $this->stream->getContents($maxLength) ?: false;
+        return $this->stream->getContents($maxLength);
     }
 
     /**

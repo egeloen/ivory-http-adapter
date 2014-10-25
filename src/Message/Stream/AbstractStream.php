@@ -69,7 +69,7 @@ abstract class AbstractStream implements StreamInterface
      */
     public function getSize()
     {
-        return $this->hasValue() ? $this->doGetSize() : false;
+        return $this->hasValue() ? $this->doGetSize() : null;
     }
 
     /**
@@ -101,7 +101,7 @@ abstract class AbstractStream implements StreamInterface
      */
     public function read($length)
     {
-        return $this->isReadable() ? $this->doRead($length) : false;
+        return $this->isReadable() ? $this->doRead($length) : '';
     }
 
     /**
@@ -125,7 +125,7 @@ abstract class AbstractStream implements StreamInterface
      */
     public function getContents($maxLength = -1)
     {
-        return $this->isReadable() ? $this->doGetContents($maxLength) : false;
+        return $this->isReadable() ? $this->doGetContents($maxLength) : '';
     }
 
     /**
@@ -174,7 +174,7 @@ abstract class AbstractStream implements StreamInterface
     /**
      * Does the get size.
      *
-     * @return integer|boolean The size of FALSE if an error occurred.
+     * @return integer|null The size of FALSE if an error occurred.
      */
     abstract protected function doGetSize();
 
@@ -207,7 +207,7 @@ abstract class AbstractStream implements StreamInterface
      *
      * @param integer $length The length.
      *
-     * @return string|boolean The readed string or FALSE if an error occurred.
+     * @return string The readed string or FALSE if an error occurred.
      */
     abstract protected function doRead($length);
 
@@ -232,7 +232,7 @@ abstract class AbstractStream implements StreamInterface
      *
      * @param integer $maxLength The max length.
      *
-     * @return string|boolean The contents or FALSE if an error occurred.
+     * @return string The contents or FALSE if an error occurred.
      */
     abstract protected function doGetContents($maxLength);
 
