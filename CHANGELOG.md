@@ -2,6 +2,8 @@
 
 ### 0.1.1 (????-??-??)
 
+ * 51ac68c - [Test] Remove http adapter file after execution
+ * 9c1382a - [Stream] Fix string stream
  * 8478738 - [StringStream] Fix boolean return
  * 50871fe - [Test] Lock share file
  * 9a77280 - [Curl] Reduce timeout code duplication
