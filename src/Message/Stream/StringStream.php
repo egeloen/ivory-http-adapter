@@ -108,7 +108,7 @@ class StringStream extends AbstractStream
      */
     protected function doIsSeekable()
     {
-        return (bool) $this->modeMask & self::MODE_SEEK;
+        return (bool) ($this->modeMask & self::MODE_SEEK);
     }
 
     /**
@@ -146,7 +146,7 @@ class StringStream extends AbstractStream
      */
     protected function doIsReadable()
     {
-        return (bool) $this->modeMask & self::MODE_READ;
+        return (bool) ($this->modeMask & self::MODE_READ);
     }
 
     /**
@@ -165,7 +165,7 @@ class StringStream extends AbstractStream
      */
     protected function doIsWritable()
     {
-        return (bool) $this->modeMask & self::MODE_WRITE;
+        return (bool) ($this->modeMask & self::MODE_WRITE);
     }
 
     /**
