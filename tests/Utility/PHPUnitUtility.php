@@ -38,12 +38,6 @@ class PHPUnitUtility
      */
     public static function getFile($tmp = true, $name = null)
     {
-        $file = null;
-
-        if ($tmp) {
-            $file .= realpath(sys_get_temp_dir());
-        }
-
-        return $file.'/'.($name === null ? uniqid() : $name);
+        return ($tmp ? realpath(sys_get_temp_dir()) : '').'/'.($name === null ? uniqid() : $name);
     }
 }

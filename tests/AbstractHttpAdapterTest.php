@@ -24,8 +24,29 @@ use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
  */
 abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var string */
+    protected static $file;
+
     /** @var \Ivory\HttpAdapter\HttpAdapterInterface */
     protected $httpAdapter;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function setUpBeforeClass()
+    {
+        self::$file = PHPUnitUtility::getFile(true, 'http-adapter.log');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function tearDownAfterClass()
+    {
+        if (file_exists(self::$file)) {
+            unlink(self::$file);
+        }
+    }
 
     /**
      * {@inheritdoc}
@@ -765,7 +786,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function getRequest()
     {
-        $file = fopen(PHPUnitUtility::getFile(true, 'http-adapter.log'), 'r');
+        $file = fopen(self::$file, 'r');
         flock($file, LOCK_EX);
         $request = json_decode(stream_get_contents($file), true);
         flock($file, LOCK_UN);
