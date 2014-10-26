@@ -27,15 +27,6 @@ interface MessageInterface extends PsrMessageInterface
     const PROTOCOL_VERSION_1_1 = '1.1';
 
     /**
-     * Sets the protocol version.
-     *
-     * @param string $protocolVersion The protocol version.
-     *
-     * @return void No return value.
-     */
-    public function setProtocolVersion($protocolVersion);
-
-    /**
      * Checks if there are headers.
      *
      * @return boolean TRUE if there are headers else FALSE.
