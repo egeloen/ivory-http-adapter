@@ -83,7 +83,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('', $this->stream->getContents(1));
         $this->assertNull($this->stream->getSize());
         $this->assertFalse($this->stream->isReadable());
-        $this->assertSame('', $this->stream->read(1));
+        $this->assertFalse($this->stream->read(1));
         $this->assertFalse($this->stream->isSeekable());
         $this->assertFalse($this->stream->seek(1, SEEK_SET));
         $this->assertFalse($this->stream->seek(1, SEEK_CUR));
@@ -127,7 +127,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('', $this->stream->getContents(1));
         $this->assertNull($this->stream->getSize());
         $this->assertFalse($this->stream->isReadable());
-        $this->assertSame('', $this->stream->read(1));
+        $this->assertFalse($this->stream->read(1));
         $this->assertFalse($this->stream->isSeekable());
         $this->assertFalse($this->stream->seek(1, SEEK_SET));
         $this->assertFalse($this->stream->seek(1, SEEK_CUR));
@@ -299,7 +299,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
         $this->stream = $this->createStream($this->string, self::MODE_READ_DISABLED);
 
         $this->assertFalse($this->stream->isReadable());
-        $this->assertSame('', $this->stream->read(10));
+        $this->assertFalse($this->stream->read(10));
         $this->assertSame('', $this->stream->getContents());
         $this->assertSame('', (string) $this->stream);
     }

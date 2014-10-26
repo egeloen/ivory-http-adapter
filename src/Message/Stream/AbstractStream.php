@@ -114,7 +114,7 @@ abstract class AbstractStream implements StreamableInterface
      */
     public function read($length)
     {
-        return $this->isReadable() ? $this->doRead($length) : '';
+        return $this->isReadable() ? $this->doRead($length) : false;
     }
 
     /**
@@ -236,7 +236,7 @@ abstract class AbstractStream implements StreamableInterface
      *
      * @param integer $length The length.
      *
-     * @return string The readed string.
+     * @return string|boolean The readed string or FALSE if an error occurred.
      */
     abstract protected function doRead($length);
 
