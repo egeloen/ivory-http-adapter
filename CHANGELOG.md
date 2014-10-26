@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.2.0 (????-??-??)
+### 0.2.0 (2014-10-26)
 
  * 4cbd0b5 - [Message] Update according to PSR HTTP message 0.2.0 BC breaks
 
