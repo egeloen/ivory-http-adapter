@@ -132,17 +132,21 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "RESOURCE IS NOT VALID" exception.
+     * Gets the "STREAM IS NOT VALID" exception.
      *
-     * @param mixed $resource The "RESOURCE IS NOT VALID" exception.
+     * @param mixed  $stream   The stream.
+     * @param string $wrapper  The wrapper.
+     * @param string $expected The expected.
      *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "RESOURCE IS NOT VALID" exception.
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "STREAM IS NOT VALID" exception.
      */
-    public static function resourceIsNotValid($resource)
+    public static function streamIsNotValid($stream, $wrapper, $expected)
     {
         return new self(sprintf(
-            'The "Ivory\HttpAdapter\Message\ResourceStream" only accepts a valid resource (current: "%s")',
-            is_object($resource) ? get_class($resource) : gettype($resource)
+            'The stream "%s" only accepts a "%s" (current: "%s")',
+            $wrapper,
+            $expected,
+            is_object($stream) ? get_class($stream) : gettype($stream)
         ));
     }
 

@@ -11,7 +11,9 @@
 
 namespace Ivory\HttpAdapter\Message\Stream;
 
+use GuzzleHttp\Stream\MetadataStreamInterface;
 use GuzzleHttp\Stream\StreamInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
  * Guzzle 4 stream.
@@ -30,7 +32,7 @@ class Guzzle4Stream extends AbstractStream
      */
     public function __construct(StreamInterface $stream)
     {
-        $this->stream = $stream;
+        $this->attach($stream);
     }
 
     /**
@@ -38,9 +40,10 @@ class Guzzle4Stream extends AbstractStream
      */
     protected function hasValue()
     {
-        return $this->stream->isReadable() !== false
+        return $this->stream !== null
+            && ($this->stream->isReadable() !== false
             || $this->stream->isSeekable() !== false
-            || $this->stream->isWritable() !== false;
+            || $this->stream->isWritable() !== false);
     }
 
     /**
@@ -56,11 +59,35 @@ class Guzzle4Stream extends AbstractStream
     /**
      * {@inheritdoc}
      */
+    protected function doAttach($stream)
+    {
+        if (!$stream instanceof StreamInterface) {
+            throw HttpAdapterException::streamIsNotValid(
+                $stream,
+                get_class($this),
+                'GuzzleHttp\Stream\StreamInterface'
+            );
+        }
+
+        $this->stream = $stream;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doDetach()
     {
-        $this->stream->detach();
+        return $this->stream->detach();
+    }
 
-        return true;
+    /**
+     * {@inheritdoc}
+     */
+    protected function doGetMetadata($key = null)
+    {
+        return $this->stream instanceof MetadataStreamInterface
+            ? $this->stream->getMetadata($key)
+            : ($key !== null ? null : array());
     }
 
     /**
@@ -138,9 +165,9 @@ class Guzzle4Stream extends AbstractStream
     /**
      * {@inheritdoc}
      */
-    protected function doGetContents($maxLength = -1)
+    protected function doGetContents()
     {
-        return $this->stream->getContents($maxLength);
+        return $this->stream->getContents();
     }
 
     /**

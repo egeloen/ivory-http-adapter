@@ -36,8 +36,16 @@ class Guzzle4StreamTest extends AbstractResourceStreamTest
     /**
      * {@inheritdoc}
      */
-    protected function createStream($mode = null)
+    protected function createStream($string, $mode = null)
     {
-        return new Guzzle4Stream(new Stream($this->createResource($mode)));
+        return new Guzzle4Stream($this->createSubStream($string, $mode));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createSubStream($string, $mode = null)
+    {
+        return new Stream(parent::createSubStream($string, $mode));
     }
 }

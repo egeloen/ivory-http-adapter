@@ -33,18 +33,22 @@ abstract class AbstractResourceStreamTest extends AbstractStreamTest
     }
 
     /**
-     * Creates the resource.
-     *
-     * @param string|null $mode The stream mode.
-     *
-     * @return resource The created resource.
+     * {@inheritdoc}
      */
-    protected function createResource($mode = null)
+    protected function assertSubStream($subStream)
+    {
+        $this->assertSame($this->resource, $subStream);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createSubStream($string, $mode = null)
     {
         $this->closeResource();
 
         $path = realpath(__DIR__.'/../../Fixtures/files/resource.txt');
-        file_put_contents($path, $this->string);
+        file_put_contents($path, $string);
 
         switch ($mode) {
             case self::MODE_SEEK_DISABLED:

@@ -18,6 +18,9 @@ namespace Ivory\Tests\HttpAdapter\Message\Stream;
  */
 abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
 {
+    /** @const string The string. */
+    const STRING = 'abcdefghijklmnopqrstuvwxyz';
+
     /** @const string The mode seek disabled. */
     const MODE_SEEK_DISABLED = 'seek';
 
@@ -27,7 +30,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
     /** @const string The mode write disabled. */
     const MODE_WRITE_DISABLED = 'write';
 
-    /** @var \Psr\Http\Message\StreamInterface */
+    /** @var \Psr\Http\Message\StreamableInterface */
     protected $stream;
 
     /** @var string */
@@ -41,9 +44,9 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->string = 'abcdefghijklmnopqrstuvwxyz';
+        $this->string = self::STRING;
         $this->size = strlen($this->string);
-        $this->stream = $this->createStream();
+        $this->stream = $this->createStream($this->string);
     }
 
     /**
@@ -58,7 +61,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testInheritance()
     {
-        $this->assertInstanceOf('Psr\Http\Message\StreamInterface', $this->stream);
+        $this->assertInstanceOf('Psr\Http\Message\StreamableInterface', $this->stream);
     }
 
     public function testDefaultState()
@@ -95,9 +98,29 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->stream->close());
     }
 
+    public function testAttach()
+    {
+        $this->stream->attach($stream = $this->createSubStream($string = 'foo'));
+
+        $this->assertFalse($this->stream->eof());
+        $this->assertSame(0, $this->stream->tell());
+        $this->assertSame(strlen($string), $this->stream->getSize());
+        $this->assertTrue($this->stream->isReadable());
+        $this->assertTrue($this->stream->isSeekable());
+        $this->assertTrue($this->stream->isWritable());
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     */
+    public function testAttachInvalid()
+    {
+        $this->stream->attach('foo');
+    }
+
     public function testDetach()
     {
-        $this->assertTrue($this->stream->detach());
+        $this->assertSubStream($this->stream->detach());
         $this->assertFalse($this->stream->eof());
         $this->assertFalse($this->stream->tell());
         $this->assertSame('', $this->stream->getContents());
@@ -115,8 +138,26 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testMultipleDetach()
     {
-        $this->assertTrue($this->stream->detach());
-        $this->assertFalse($this->stream->detach());
+        $this->assertSubStream($this->stream->detach());
+        $this->assertNull($this->stream->detach());
+    }
+
+    /**
+     * @dataProvider metadataProvider
+     */
+    public function testGetMetadata($expected)
+    {
+        $this->assertSame($expected, $this->stream->getMetadata());
+    }
+
+    /**
+     * @dataProvider metadataKeyProvider
+     */
+    public function testGetMetadataWithKey($key, $value, $mode = null)
+    {
+        $this->stream = $this->createStream($this->string, $mode);
+
+        $this->assertSame($value, $this->stream->getMetadata($key));
     }
 
     public function testEof()
@@ -221,7 +262,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testModeSeekDisabled()
     {
-        $this->stream = $this->createStream(self::MODE_SEEK_DISABLED);
+        $this->stream = $this->createStream($this->string, self::MODE_SEEK_DISABLED);
 
         $this->assertFalse($this->stream->isSeekable());
         $this->assertFalse($this->stream->seek(10));
@@ -255,7 +296,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testModeReadDisabled()
     {
-        $this->stream = $this->createStream(self::MODE_READ_DISABLED);
+        $this->stream = $this->createStream($this->string, self::MODE_READ_DISABLED);
 
         $this->assertFalse($this->stream->isReadable());
         $this->assertSame('', $this->stream->read(10));
@@ -317,49 +358,24 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testModeWriteDisabled()
     {
-        $this->stream = $this->createStream(self::MODE_WRITE_DISABLED);
+        $this->stream = $this->createStream($this->string, self::MODE_WRITE_DISABLED);
 
         $this->assertFalse($this->stream->isWritable());
         $this->assertFalse($this->stream->write('foo'));
     }
 
-    public function testGetContentsWithoutMaxLength()
+    public function testGetContentsWithoutSeek()
     {
         $this->assertSame($this->string, $this->stream->getContents());
         $this->assertSame($this->size, $this->stream->tell());
     }
 
-    public function testGetContentsWithMaxLength()
-    {
-        $maxLength = 10;
-
-        $this->assertSame(substr($this->string, 0, $maxLength), $this->stream->getContents($maxLength));
-        $this->assertSame($maxLength, $this->stream->tell());
-    }
-
-    public function testGetContentsWithMaxLengthBiggerThanSize()
-    {
-        $maxLength = 100;
-
-        $this->assertSame(substr($this->string, 0, $maxLength), $this->stream->getContents($maxLength));
-        $this->assertSame($this->size, $this->stream->tell());
-    }
-
-    public function testGetContentsWithoutMaxLengthAndWithSeek()
+    public function testGetContentsWithSeek()
     {
         $this->stream->seek($offset = 10);
 
         $this->assertSame(substr($this->string, $offset), $this->stream->getContents());
         $this->assertSame($this->size, $this->stream->tell());
-    }
-
-    public function testGetContentsWithMaxLengthAndSeek()
-    {
-        $this->stream->seek($offset = 10);
-        $maxLength = 10;
-
-        $this->assertSame(substr($this->string, $offset, $maxLength), $this->stream->getContents($maxLength));
-        $this->assertSame($offset + $maxLength, $this->stream->tell());
     }
 
     public function testToStringWithoutSeek()
@@ -377,11 +393,73 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Gets the metadata provider.
+     *
+     * @return array The metadata provider.
+     */
+    public function metadataProvider()
+    {
+        $metadata = array(array(array()));
+
+        foreach ($this->metadataKeyProvider() as $metadataKey) {
+            if (!isset($metadata[0][0][$metadataKey[0]])) {
+                $metadata[0][0][$metadataKey[0]] = $metadataKey[1];
+            }
+        }
+
+        return $metadata;
+    }
+
+    /**
+     * Gets the metadata key provider.
+     *
+     * @return array The metadata key provider.
+     */
+    public function metadataKeyProvider()
+    {
+        return array(
+            array('wrapper_type', 'plainfile'),
+            array('stream_type', 'STDIO'),
+            array('mode', 'r+'),
+            array('mode', 'a', self::MODE_READ_DISABLED),
+            array('mode', 'r', self::MODE_WRITE_DISABLED),
+            array('unread_bytes', 0),
+            array('seekable', true),
+            array('seekable', false, self::MODE_SEEK_DISABLED),
+            array('uri', realpath(__DIR__.'/../../Fixtures/files/resource.txt')),
+            array('timed_out', false),
+            array('blocked', true),
+            array('eof', false),
+        );
+    }
+
+    /**
+     * Asserts the sub stream.
+     *
+     * @param mixed $subStream The sub stream.
+     */
+    protected function assertSubStream($subStream)
+    {
+        $this->assertSame($this->string, $subStream);
+    }
+
+    /**
      * Creates the stream.
      *
-     * @param string|null $mode The stream mode.
+     * @param string      $string The string.
+     * @param string|null $mode   The mode.
      *
-     * @return \Psr\Http\Message\StreamInterface The stream.
+     * @return \Psr\Http\Message\StreamableInterface The stream.
      */
-    abstract protected function createStream($mode = null);
+    abstract protected function createStream($string, $mode = null);
+
+    /**
+     * Creates the sub stream.
+     *
+     * @param string      $string The string.
+     * @param string|null $mode   The mode.
+     *
+     * @return mixed The sub stream.
+     */
+    abstract protected function createSubStream($string, $mode = null);
 }

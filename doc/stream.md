@@ -2,7 +2,7 @@
 
 A stream represents the body of a request or a response. All stream follows the
 [PSR-7 Standard](https://github.com/php-fig/fig-standards/blob/master/proposed/http-message.md). That means they
-implement the `Psr\Http\Message\StreamInterface`.
+implement the `Psr\Http\Message\StreamableInterface`.
 
 ## API
 
@@ -10,7 +10,11 @@ You can use a stream with the following API:
 
 ``` php
 $result = $stream->close();
-$result = $stream->detach();
+$resource = $stream->detach();
+$stream->attach($resource);
+
+$metadatas = $stream->getMetadata();
+$metadata = $stream->getMetadata('seekable');
 
 $eof = $stream->eof();
 $position = $stream->tell();

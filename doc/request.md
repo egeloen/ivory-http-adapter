@@ -81,8 +81,8 @@ $request->removeHeader('connection');
 
 ## Body
 
-The body represents the content of the request and is defined by the `Psr\Http\Message\StreamInterface`. If you want to
-get/set it, you can use:
+The body represents the content of the request and is defined by the `Psr\Http\Message\StreamableInterface`. If you
+want to get/set it, you can use:
 
 ``` php
 $hasBody = $request->hasBody();

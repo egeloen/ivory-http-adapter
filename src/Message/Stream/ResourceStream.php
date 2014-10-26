@@ -20,29 +20,13 @@ use Ivory\HttpAdapter\HttpAdapterException;
  */
 class ResourceStream extends AbstractStream
 {
-    /** @var string */
-    protected static $isReadable = 'is_readable';
-
-    /** @var string */
-    protected static $isWritable = 'is_writable';
-
-    /** @var string */
-    protected static $isSeekable = 'seekable';
-
-    /** @var string */
-    protected static $isLocal = 'is_local';
-
     /** @var array */
     protected static $modes = array(
         'read' => array(
-            'r' => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
-            'rb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true, 'c+b' => true,
-            'rt' => true, 'w+t' => true, 'r+t' => true, 'x+t' => true, 'c+t' => true, 'a+' => true
+            'r', 'w+', 'r+', 'x+', 'c+', 'rb', 'w+b', 'r+b', 'x+b', 'c+b', 'rt', 'w+t', 'r+t', 'x+t', 'c+t', 'a+',
         ),
         'write' => array(
-            'w' => true, 'w+' => true, 'rw' => true, 'r+' => true, 'x+' => true, 'c+' => true,
-            'wb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true, 'c+b' => true,
-            'w+t' => true, 'r+t' => true, 'x+t' => true, 'c+t' => true, 'a' => true, 'a+' => true
+            'w', 'w+', 'rw', 'r+', 'x+', 'c+', 'wb', 'w+b', 'r+b', 'x+b', 'c+b', 'w+t', 'r+t', 'x+t', 'c+t', 'a', 'a+',
         )
     );
 
@@ -59,17 +43,10 @@ class ResourceStream extends AbstractStream
      * Creates a resource stream.
      *
      * @param resource $resource The resource.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the resource is not valid.
      */
     public function __construct($resource)
     {
-        if (!is_resource($resource)) {
-            throw HttpAdapterException::resourceIsNotValid($resource);
-        }
-
-        $this->resource = $resource;
-        $this->buildCache();
+        $this->attach($resource);
     }
 
     /**
@@ -85,9 +62,30 @@ class ResourceStream extends AbstractStream
      */
     protected function doClose()
     {
-        $this->clearCache();
+        $resource = $this->resource;
+        $this->detach();
 
-        return fclose($this->resource);
+        return fclose($resource);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doAttach($stream)
+    {
+        if (!is_resource($stream)) {
+            throw HttpAdapterException::streamIsNotValid($stream, get_class($this), 'resource');
+        }
+
+        $this->resource = $stream;
+
+        $metadata = $this->getMetadata();
+
+        $this->cache['readable'] = in_array($metadata['mode'], self::$modes['read'], true);
+        $this->cache['writable'] = in_array($metadata['mode'], self::$modes['write'], true);
+        $this->cache['seekable'] = $metadata['seekable'];
+        $this->cache['local'] = stream_is_local($this->resource);
+        $this->cache['uri'] = $metadata['uri'];
     }
 
     /**
@@ -95,10 +93,31 @@ class ResourceStream extends AbstractStream
      */
     protected function doDetach()
     {
-        $this->clearCache();
+        $resource = $this->resource;
+
         $this->resource = null;
 
-        return true;
+        $this->cache['readable'] = false;
+        $this->cache['writable'] = false;
+        $this->cache['seekable'] = false;
+        $this->cache['local'] = false;
+        unset($this->cache['uri']);
+
+        return $resource;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doGetMetadata($key = null)
+    {
+        $metadata = stream_get_meta_data($this->resource);
+
+        if ($key === null) {
+            return $metadata;
+        }
+
+        return isset($metadata[$key]) ? $metadata[$key] : null;
     }
 
     /**
@@ -126,7 +145,7 @@ class ResourceStream extends AbstractStream
             return $this->size;
         }
 
-        if ($this->isLocal()) {
+        if ($this->cache['local']) {
             clearstatcache(true, $this->cache['uri']);
             $stats = fstat($this->resource);
 
@@ -141,7 +160,7 @@ class ResourceStream extends AbstractStream
      */
     protected function doIsSeekable()
     {
-        return $this->cache[self::$isSeekable];
+        return $this->cache['seekable'];
     }
 
     /**
@@ -157,7 +176,7 @@ class ResourceStream extends AbstractStream
      */
     protected function doIsReadable()
     {
-        return $this->cache[self::$isReadable];
+        return $this->cache['readable'];
     }
 
     /**
@@ -173,7 +192,7 @@ class ResourceStream extends AbstractStream
      */
     protected function doIsWritable()
     {
-        return $this->cache[self::$isWritable];
+        return $this->cache['writable'];
     }
 
     /**
@@ -193,9 +212,9 @@ class ResourceStream extends AbstractStream
     /**
      * {@inheritdoc}
      */
-    protected function doGetContents($maxLength)
+    protected function doGetContents()
     {
-        return stream_get_contents($this->resource, $maxLength);
+        return stream_get_contents($this->resource);
     }
 
     /**
@@ -215,37 +234,5 @@ class ResourceStream extends AbstractStream
         }
 
         return $content;
-    }
-
-    /**
-     * Checks if the stream is local.
-     *
-     * @return boolean TRUE if the stream is local else FALSE.
-     */
-    public function isLocal()
-    {
-        return $this->cache[self::$isLocal];
-    }
-
-    /**
-     * Builds the cache.
-     */
-    protected function buildCache()
-    {
-        $this->cache = stream_get_meta_data($this->resource);
-        $this->cache[self::$isLocal] = stream_is_local($this->resource);
-        $this->cache[self::$isReadable] = isset(self::$modes['read'][$this->cache['mode']]);
-        $this->cache[self::$isWritable] = isset(self::$modes['write'][$this->cache['mode']]);
-    }
-
-    /**
-     * Clears the cache.
-     */
-    protected function clearCache()
-    {
-        $this->cache[self::$isReadable] = false;
-        $this->cache[self::$isWritable] = false;
-        $this->cache[self::$isSeekable] = false;
-        $this->cache[self::$isLocal] = false;
     }
 }

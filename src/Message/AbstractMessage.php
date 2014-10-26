@@ -11,7 +11,7 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\StreamableInterface;
 
 /**
  * Abstract message.
@@ -29,7 +29,7 @@ abstract class AbstractMessage implements MessageInterface
     /** @var array */
     protected $headerNames = array();
 
-    /** @var \Psr\Http\Message\StreamInterface|null */
+    /** @var \Psr\Http\Message\StreamableInterface|null */
     protected $body;
 
     /** @var array */
@@ -182,7 +182,7 @@ abstract class AbstractMessage implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function setBody(StreamInterface $body = null)
+    public function setBody(StreamableInterface $body = null)
     {
         $this->body = $body;
     }

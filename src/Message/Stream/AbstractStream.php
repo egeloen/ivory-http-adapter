@@ -11,14 +11,14 @@
 
 namespace Ivory\HttpAdapter\Message\Stream;
 
-use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\StreamableInterface;
 
 /**
  * Abstract stream.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractStream implements StreamInterface
+abstract class AbstractStream implements StreamableInterface
 {
     /**
      * Destructs the stream.
@@ -33,11 +33,16 @@ abstract class AbstractStream implements StreamInterface
      */
     public function close()
     {
-        if (!$this->hasValue()) {
-            return false;
-        }
+        return $this->hasValue() ? $this->doClose() : false;
+    }
 
-        return $this->doClose();
+    /**
+     * {@inheritdoc}
+     */
+    public function attach($stream)
+    {
+        $this->detach();
+        $this->doAttach($stream);
     }
 
     /**
@@ -45,7 +50,15 @@ abstract class AbstractStream implements StreamInterface
      */
     public function detach()
     {
-        return $this->hasValue() ? $this->doDetach() : false;
+        return $this->hasValue() ? $this->doDetach() : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetadata($key = null)
+    {
+        return $this->hasValue() ? $this->doGetMetadata($key) : ($key !== null ? null : array());
     }
 
     /**
@@ -123,9 +136,9 @@ abstract class AbstractStream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getContents($maxLength = -1)
+    public function getContents()
     {
-        return $this->isReadable() ? $this->doGetContents($maxLength) : '';
+        return $this->isReadable() ? $this->doGetContents() : '';
     }
 
     /**
@@ -151,11 +164,27 @@ abstract class AbstractStream implements StreamInterface
     abstract protected function doClose();
 
     /**
+     * Does the attach.
+     *
+     * @param mixed $stream The stream.
+     */
+    abstract protected function doAttach($stream);
+
+    /**
      * Does the detach.
      *
-     * @return boolean TRUE if it is done else FALSE.
+     * @return mixed The detached stream.
      */
     abstract protected function doDetach();
+
+    /**
+     * Does the get metadata.
+     *
+     * @param string|null $key The key.
+     *
+     * @return mixed The metadata.
+     */
+    abstract protected function doGetMetadata($key = null);
 
     /**
      * Does the eof.
@@ -174,7 +203,7 @@ abstract class AbstractStream implements StreamInterface
     /**
      * Does the get size.
      *
-     * @return integer|null The size of FALSE if an error occurred.
+     * @return integer|null The size of NULL if an error occurred.
      */
     abstract protected function doGetSize();
 
@@ -207,7 +236,7 @@ abstract class AbstractStream implements StreamInterface
      *
      * @param integer $length The length.
      *
-     * @return string The readed string or FALSE if an error occurred.
+     * @return string The readed string.
      */
     abstract protected function doRead($length);
 
@@ -230,11 +259,9 @@ abstract class AbstractStream implements StreamInterface
     /**
      * Does the get contents.
      *
-     * @param integer $maxLength The max length.
-     *
-     * @return string The contents or FALSE if an error occurred.
+     * @return string The contents.
      */
-    abstract protected function doGetContents($maxLength);
+    abstract protected function doGetContents();
 
     /**
      * Does the to string.

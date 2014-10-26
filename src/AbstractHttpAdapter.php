@@ -321,12 +321,12 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     /**
      * Creates a response.
      *
-     * @param string                                            $protocolVersion The protocol version.
-     * @param integer                                           $statusCode      The status code.
-     * @param string                                            $reasonPhrase    The reason phrase.
-     * @param array                                             $headers         The headers.
-     * @param resource|string|\Psr\Http\Message\StreamInterface $body            The body.
-     * @param array                                             $parameters      The parameters.
+     * @param string                                                $protocolVersion The protocol version.
+     * @param integer                                               $statusCode      The status code.
+     * @param string                                                $reasonPhrase    The reason phrase.
+     * @param array                                                 $headers         The headers.
+     * @param resource|string|\Psr\Http\Message\StreamableInterface $body            The body.
+     * @param array                                                 $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The created response.
      */
