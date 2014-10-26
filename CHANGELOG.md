@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.2.0 (????-??-??)
+
+ * 4cbd0b5 - [Message] Update according to PSR HTTP message 0.2.0 BC breaks
+
 ### 0.1.2 (2014-10-25)
 
  * 6527485 - [Stream] Fix some returns + PHPDoc
