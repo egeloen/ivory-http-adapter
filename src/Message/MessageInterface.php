@@ -34,6 +34,24 @@ interface MessageInterface extends PsrMessageInterface
     public function hasHeaders();
 
     /**
+     * Sets the headers.
+     *
+     * @param array $headers The headers.
+     *
+     * @return void No return value.
+     */
+    public function setHeaders(array $headers);
+
+    /**
+     * Adds the headers.
+     *
+     * @param array $headers The headers.
+     *
+     * @return void No return value.
+     */
+    public function addHeaders(array $headers);
+
+    /**
      * Removes the headers.
      *
      * @param array $headers The header names.
