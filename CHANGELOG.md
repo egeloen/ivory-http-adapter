@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.4.0 (????-??-??)
+
+ * 75e5f69 - [Message] Update according to PSR HTTP message 0.4.0 BC breaks
+
 ### 0.3.0 (2014-10-26)
 
  * 65ad8ba - [Message] Update according to PSR HTTP message 0.3.0 BC breaks
