@@ -1,5 +1,10 @@
 # UPGRADE
 
+### 0.3 to 0.4
+
+ * The PSR HTTP message dependency has break the backward compatibility.
+   See https://github.com/php-fig/http-message/compare/0.3.0...0.4.0
+
 ### 0.2 to 0.3
 
  * The PSR HTTP message dependency has break the backward compatibility.
