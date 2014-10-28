@@ -15,9 +15,7 @@ use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
-use Ivory\HttpAdapter\HttpAdapterConfigInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Http adapter test.
@@ -210,6 +208,15 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
                 })
             );
 
+        $exceptionOverride
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($internalRequest));
+
+        $exceptionOverride
+            ->expects($this->never())
+            ->method('setResponse');
+
         try {
             $this->httpAdapter->sendInternalRequest($internalRequest);
             $this->fail();
@@ -246,6 +253,15 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
                         && $event->getException() === $exception;
                 })
             );
+
+        $exception
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($internalRequest));
+
+        $exception
+            ->expects($this->never())
+            ->method('setResponse');
 
         try {
             $this->httpAdapter->sendInternalRequest($internalRequest);
@@ -290,6 +306,16 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
                         && $event->getException() === $exception;
                 })
             );
+
+        $exception
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($internalRequest));
+
+        $exception
+            ->expects($this->once())
+            ->method('setResponse')
+            ->with($this->identicalTo($response));
 
         try {
             $this->httpAdapter->sendInternalRequest($internalRequest);

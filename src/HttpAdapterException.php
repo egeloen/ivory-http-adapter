@@ -11,6 +11,9 @@
 
 namespace Ivory\HttpAdapter;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 /**
  * Http adapter exception.
  *
@@ -18,6 +21,72 @@ namespace Ivory\HttpAdapter;
  */
 class HttpAdapterException extends \Exception
 {
+    /** @var \Psr\Http\Message\RequestInterface|null */
+    protected $request;
+
+    /** @var \Psr\Http\Message\ResponseInterface|null */
+    protected $response;
+
+    /**
+     * Checks if there is a request.
+     *
+     * @return boolean TRUE if there is a request ekse FALSE.
+     */
+    public function hasRequest()
+    {
+        return $this->request !== null;
+    }
+
+    /**
+     * Gets the request.
+     *
+     * @return \Psr\Http\Message\RequestInterface|null The request.
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Sets the request.
+     *
+     * @param \Psr\Http\Message\RequestInterface|null $request The request.
+     */
+    public function setRequest(RequestInterface $request = null)
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * Checks if there is a response.
+     *
+     * @return boolean TRUE if there is a response else FALSE.
+     */
+    public function hasResponse()
+    {
+        return $this->response !== null;
+    }
+
+    /**
+     * Gets the response.
+     *
+     * @return \Psr\Http\Message\ResponseInterface|null The response.
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * Sets the response.
+     *
+     * @param \Psr\Http\Message\ResponseInterface|null $response The response.
+     */
+    public function setResponse(ResponseInterface $response = null)
+    {
+        $this->response = $response;
+    }
+
     /**
      * Gets the "CANNOT FETCH URL" exception.
      *
