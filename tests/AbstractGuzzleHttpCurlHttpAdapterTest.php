@@ -11,14 +11,12 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\Guzzle3HttpAdapter;
-
 /**
- * Guzzle 3 http adapter test.
+ * Abstract guzzle http curl http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle3HttpAdapterTest extends AbstractHttpAdapterTest
+abstract class AbstractGuzzleHttpCurlHttpAdapterTest extends AbstractGuzzleHttpHttpAdapterTest
 {
     /**
      * {@inheritdoc}
@@ -30,18 +28,5 @@ class Guzzle3HttpAdapterTest extends AbstractHttpAdapterTest
         }
 
         parent::setUp();
-    }
-
-    public function testGetName()
-    {
-        $this->assertSame('guzzle3', $this->httpAdapter->getName());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createHttpAdapter()
-    {
-        return new Guzzle3HttpAdapter();
     }
 }

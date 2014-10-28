@@ -15,11 +15,11 @@ use Guzzle\Stream\StreamInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
- * Guzzle 3 stream.
+ * Guzzle stream.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle3Stream extends AbstractStream
+class GuzzleStream extends AbstractStream
 {
     /** @var \Guzzle\Stream\StreamInterface */
     protected $stream;

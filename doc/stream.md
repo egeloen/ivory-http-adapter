@@ -65,24 +65,24 @@ $stream = new StringStream($string, StringStream::MODE_SEEK & StringStream:MODE_
 The second paramter represents the capability of the stream (seekable, readable and/or writable). By default, it has
 a full capability but a string stream wraps in a response can only be seek/read.
 
-## Guzzle 3 stream
+## Guzzle stream
 
-A guzzle 3 stream allows to manipulate a guzzle 3 stream. To create one:
+A guzzle stream allows to manipulate a real guzzle stream. To create one:
 
 ``` php
 use Guzzle\Stream\Stream;
-use Ivory\HttpAdapter\Message\Stream\Guzzle3Stream;
+use Ivory\HttpAdapter\Message\Stream\GuzzleStream;
 
-$stream = new Guzzle3Stream(new Stream($resource));
+$stream = new GuzzleStream(new Stream($resource));
 ```
 
-## Guzzle 4 stream
+## Guzzle http stream
 
-A guzzle 4 stream allows to manipulate a guzzle 4 stream. To create one:
+A guzzle http stream allows to manipulate a real guzzle http stream. To create one:
 
 ``` php
 use GuzzleHttp\Stream\Stream;
-use Ivory\HttpAdapter\Message\Stream\Guzzle4Stream;
+use Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream;
 
-$stream = new Guzzle4Stream(new Stream($resource));
+$stream = new GuzzleHttpStream(new Stream($resource));
 ```
