@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.4.1 (????-??-??)
+
+ * a2940f6 - [Exception] Add related request/response if available
+
 ### 0.4.0 (2014-10-26)
 
  * 75e5f69 - [Message] Update according to PSR HTTP message 0.4.0 BC breaks
