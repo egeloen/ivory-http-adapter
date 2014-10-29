@@ -175,6 +175,10 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
             $adapters[] = array(HttpAdapterFactory::GUZZLE_HTTP, 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter');
         }
 
+        if (class_exists('http\Client')) {
+            $adapters[] = array(HttpAdapterFactory::PECL_HTTP, 'Ivory\HttpAdapter\PeclHttpAdapter');
+        }
+
         if (class_exists('React\HttpClient\Factory')) {
             $adapters[] = array(HttpAdapterFactory::REACT, 'Ivory\HttpAdapter\ReactHttpAdapter');
         }

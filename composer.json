@@ -40,6 +40,7 @@
     ],
     "suggest": {
         "ext-curl": "Allows you to use the cURL adapter",
+        "ext-http": "Allows you to use the PECL adapter",
         "guzzle/guzzle": "Allows you to use the Guzzle 3 adapter",
         "guzzlehttp/guzzle": "Allows you to use the Guzzle 4 adapter",
         "kriswallsmith/buzz": "Allows you to use the Buzz adapter",

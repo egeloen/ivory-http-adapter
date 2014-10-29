@@ -78,6 +78,14 @@ use Ivory\HttpAdapter\HttpfulHttpAdapter;
 $httpAdapter = new HttpfulHttpAdapter();
 ```
 
+## Pecl Http
+
+``` php
+use Ivory\HttpAdapter\PeclHttpAdapter;
+
+$peclHttpAdapter = new PeclHttpAdapter();
+```
+
 ## React
 
 ``` php
@@ -174,7 +182,7 @@ $httpAdapter = HttpAdapterFactory::create('curl');
 ```
 
 The available adapters are: `buzz`, `cake`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`,
-`react`, `socket`, `zend1` or `zend2`.
+`pecl_http`, `react`, `socket`, `zend1` or `zend2`.
 
 If you want to know if an adapter is available on your system, you can use:
 
