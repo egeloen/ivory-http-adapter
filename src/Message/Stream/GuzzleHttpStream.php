@@ -11,16 +11,15 @@
 
 namespace Ivory\HttpAdapter\Message\Stream;
 
-use GuzzleHttp\Stream\MetadataStreamInterface;
 use GuzzleHttp\Stream\StreamInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
- * Guzzle 4 stream.
+ * Guzzle http stream.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle4Stream extends AbstractStream
+class GuzzleHttpStream extends AbstractStream
 {
     /** @var \GuzzleHttp\Stream\StreamInterface */
     protected $stream;
@@ -85,7 +84,7 @@ class Guzzle4Stream extends AbstractStream
      */
     protected function doGetMetadata($key = null)
     {
-        return $this->stream instanceof MetadataStreamInterface
+        return method_exists($this->stream, 'getMetadata')
             ? $this->stream->getMetadata($key)
             : ($key !== null ? null : array());
     }

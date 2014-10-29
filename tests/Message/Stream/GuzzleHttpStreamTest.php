@@ -11,15 +11,16 @@
 
 namespace Ivory\Tests\HttpAdapter\Message\Stream;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Stream\Stream;
-use Ivory\HttpAdapter\Message\Stream\Guzzle4Stream;
+use Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream;
 
 /**
- * Guzzle 4 stream test.
+ * Guzzle http stream test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle4StreamTest extends AbstractResourceStreamTest
+class GuzzleHttpStreamTest extends AbstractResourceStreamTest
 {
     /**
      * {@inheritdoc}
@@ -38,7 +39,7 @@ class Guzzle4StreamTest extends AbstractResourceStreamTest
      */
     protected function createStream($string, $mode = null)
     {
-        return new Guzzle4Stream($this->createSubStream($string, $mode));
+        return new GuzzleHttpStream($this->createSubStream($string, $mode));
     }
 
     /**

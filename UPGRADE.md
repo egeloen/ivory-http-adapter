@@ -1,5 +1,19 @@
 # UPGRADE
 
+### 0.4 to 0.5
+
+ * The `Ivory\HttpAdapter\Guzzle3HttpAdapter` has been renamed to `Ivory\HttpAdapter\GuzzleHttpAdapter` and its name
+   has been renamed to from `guzzle3` to `guzzle` as well.
+
+ * The `Ivory\HttpAdapter\Guzzle4HttpAdapter` has been renamed to `Ivory\HttpAdapter\GuzzleHttpHttpAdapter`, its
+   name has been renamed to from `guzzle4` to `guzzle_http` and it now supports Guzzle 5.
+
+ * The `Ivory\HttpAdapter\Message\Stream\Guzzle3Stream` has been renamed to
+   `Ivory\HttpAdapter\Message\Stream\GuzzleStream`.
+
+ * The `Ivory\HttpAdapter\Message\Stream\Guzzle4Stream` has been renamed to
+   `Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream` and it now supports Guzzle 5.
+
 ### 0.3 to 0.4
 
  * The PSR HTTP message dependency has break the backward compatibility.

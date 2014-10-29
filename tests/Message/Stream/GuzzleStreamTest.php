@@ -12,21 +12,21 @@
 namespace Ivory\Tests\HttpAdapter\Message\Stream;
 
 use Guzzle\Stream\Stream;
-use Ivory\HttpAdapter\Message\Stream\Guzzle3Stream;
+use Ivory\HttpAdapter\Message\Stream\GuzzleStream;
 
 /**
- * Guzzle 3 stream test.
+ * Guzzle stream test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle3StreamTest extends AbstractResourceStreamTest
+class GuzzleStreamTest extends AbstractResourceStreamTest
 {
     /**
      * {@inheritdoc}
      */
     protected function createStream($string, $mode = null)
     {
-        return new Guzzle3Stream($this->createSubStream($string, $mode));
+        return new GuzzleStream($this->createSubStream($string, $mode));
     }
 
     /**

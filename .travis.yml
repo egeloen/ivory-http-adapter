@@ -15,6 +15,7 @@ env:
         - PHP_FCGI_CHILDREN=10
         - ENABLE_CURL=true
         - SYMFONY_VERSION=2.3.*
+        - GUZZLE_HTTP_VERSION=5.*
 
 before_install:
     - sudo apt-get update
@@ -35,6 +36,7 @@ before_install:
 before_script:
     - composer self-update
     - composer require --no-update symfony/event-dispatcher:${SYMFONY_VERSION}
+    - composer require --no-update --dev guzzlehttp/guzzle:${GUZZLE_HTTP_VERSION}
     - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove guzzlehttp/guzzle --dev --no-update; fi
     - if [[ "$TRAVIS_PHP_VERSION" = "5.3.3" ]]; then composer remove zendframework/zendframework --dev --no-update; fi
     - composer install --prefer-source
@@ -49,6 +51,8 @@ matrix:
     include:
         - php: 5.5
           env: ENABLE_CURL=false
+        - php: 5.5
+          env: GUZZLE_HTTP_VERSION=4.*
         - php: 5.5
           env: SYMFONY_VERSION=2.1.*
         - php: 5.5

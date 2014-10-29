@@ -11,31 +11,31 @@
 
 namespace Ivory\HttpAdapter;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\ClientInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\Stream\Guzzle3Stream;
+use Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Guzzle 3 http adapter.
+ * Guzzle http http adapter.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
+class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
 {
-    /** @var \Guzzle\Http\ClientInterface */
+    /** @var \GuzzleHttp\ClientInterface */
     protected $client;
 
     /**
-     * Creates a guzzle 3 http adapter.
+     * Creates a guzzle http http adapter.
      *
-     * @param \Guzzle\Http\ClientInterface|null              $client        The guzzle 3 client.
+     * @param \GuzzleHttp\ClientInterface|null               $client        The guzzle 4 client.
      * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
     public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
     {
-        parent::__construct($configuration);
+        parent::__construct($configuration, false);
 
         $this->client = $client ?: new Client();
     }
@@ -45,7 +45,7 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
      */
     public function getName()
     {
-        return 'guzzle3';
+        return 'guzzle_http';
     }
 
     /**
@@ -58,32 +58,31 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
             $url,
-            $this->prepareHeaders($internalRequest),
-            $this->prepareContent($internalRequest),
             array(
                 'exceptions'      => false,
                 'allow_redirects' => false,
                 'timeout'         => $this->configuration->getTimeout(),
                 'connect_timeout' => $this->configuration->getTimeout(),
+                'version'         => $internalRequest->getProtocolVersion(),
+                'headers'         => $this->prepareHeaders($internalRequest),
+                'body'            => $this->prepareContent($internalRequest),
             )
         );
 
-        $request->setProtocolVersion($internalRequest->getProtocolVersion());
-
         try {
-            $response = $request->send();
+            $response = $this->client->send($request);
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
         return $this->createResponse(
             $response->getProtocolVersion(),
-            $response->getStatusCode(),
+            (integer) $response->getStatusCode(),
             $response->getReasonPhrase(),
-            $response->getHeaders()->toArray(),
+            $response->getHeaders(),
             BodyNormalizer::normalize(
                 function () use ($response) {
-                    return new Guzzle3Stream($response->getBody());
+                    return new GuzzleHttpStream($response->getBody());
                 },
                 $internalRequest->getMethod()
             )
@@ -95,6 +94,6 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function createFile($file)
     {
-        return '@'.$file;
+        return fopen($file, 'r');
     }
 }

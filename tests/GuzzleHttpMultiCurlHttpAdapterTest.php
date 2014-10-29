@@ -11,20 +11,25 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use GuzzleHttp\Adapter\StreamAdapter;
+use GuzzleHttp\Adapter\Curl\MultiAdapter;
+use GuzzleHttp\Ring\Client\CurlMultiHandler;
 
 /**
- * Guzzle 4 stream http adapter test.
+ * Guzzle http multi curl http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Guzzle4StreamHttpAdapterTest extends AbstractGuzzle4HttpAdapterTest
+class GuzzleHttpMultiCurlHttpAdapterTest extends AbstractGuzzleHttpCurlHttpAdapterTest
 {
     /**
      * {@inheritdoc}
      */
     protected function createAdapter()
     {
-        return new StreamAdapter($this->createMessageFactory());
+        if (class_exists('GuzzleHttp\Ring\Client\CurlMultiHandler')) {
+            return new CurlMultiHandler();
+        }
+
+        return new MultiAdapter($this->createMessageFactory());
     }
 }

@@ -46,26 +46,26 @@ $httpAdapter = new BuzzHttpAdapter();
 $httpAdapter = new BuzzHttpAdapter(new Browser());
 ```
 
-## Guzzle 3
+## Guzzle
 
 ``` php
 use Guzzle\Http\Client;
-use Ivory\HttpAdapter\Guzzle3HttpAdapter;
+use Ivory\HttpAdapter\GuzzleHttpAdapter;
 
-$httpAdapter = new Guzzle3HttpAdapter();
+$httpAdapter = new GuzzleHttpAdapter();
 // or
-$httpAdapter = new Guzzle3HttpAdapter(new Client());
+$httpAdapter = new GuzzleHttpAdapter(new Client());
 ```
 
-## Guzzle 4
+## Guzzle http
 
 ``` php
 use GuzzleHttp\Client;
-use Ivory\HttpAdapter\Guzzle4HttpAdapter;
+use Ivory\HttpAdapter\GuzzleHttpHttpAdapter;
 
-$httpAdapter = new Guzzle4HttpAdapter();
+$httpAdapter = new GuzzleHttpHttpAdapter();
 // or
-$httpAdapter = new Guzzle4HttpAdapter(new Client());
+$httpAdapter = new GuzzleHttpHttpAdapter(new Client());
 ```
 
 ## Httpful
