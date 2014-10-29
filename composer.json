@@ -22,7 +22,7 @@
         "ext-curl": "*",
         "guzzle/guzzle": "~3.9,>=3.9.2",
         "guzzlehttp/guzzle": "~4.1,>=4.1.4|~5.0",
-        "kriswallsmith/buzz": "~0.13,>=0.13.0",
+        "kriswallsmith/buzz": "~0.13",
         "nategood/httpful": "~0.2,>=0.2.17",
         "psr/log": "~1.0",
         "zendframework/zendframework1": "~1.12,>=1.12.9",
