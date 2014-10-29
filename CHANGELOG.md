@@ -2,6 +2,7 @@
 
 ### 0.5.0 (????-??-??)
 
+ * 198b6f4 - Add Guzzle 5 support
  * a2940f6 - [Exception] Add related request/response if available
 
 ### 0.4.0 (2014-10-26)
