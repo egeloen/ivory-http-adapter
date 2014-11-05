@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.5.0 (????-??-??)
+### 0.5.0 (2014-11-05)
 
  * 4523e62 - [Message] Update according to PSR HTTP message 0.5.0 BC breaks
  * 4e0e387 - [Composer] Refine dependency
