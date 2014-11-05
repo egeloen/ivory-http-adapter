@@ -31,6 +31,38 @@ class InternalRequest extends Request implements InternalRequestInterface
     protected $files = array();
 
     /**
+     * Creates an internal request.
+     *
+     * @param string|object $url             The url.
+     * @param string        $method          The method.
+     * @param float         $protocolVersion The protocol version.
+     * @param array         $headers         The headers.
+     * @param array|string  $datas           The datas.
+     * @param array         $files           The files.
+     * @param array         $parameters      The parameters.
+     */
+    public function __construct(
+        $url,
+        $method = self::METHOD_GET,
+        $protocolVersion = self::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        $datas = array(),
+        array $files = array(),
+        array $parameters = array()
+    )
+    {
+        parent::__construct($url, $method, $protocolVersion, $headers, null, $parameters);
+
+        if (is_string($datas)) {
+            $this->setRawDatas($datas);
+        } else {
+            $this->setDatas($datas);
+        }
+
+        $this->setFiles($files);
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to data/files instead.

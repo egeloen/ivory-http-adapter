@@ -11,14 +11,14 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Psr\Http\Message\RequestInterface as PsrRequestInterface;
+use Psr\Http\Message\OutgoingRequestInterface;
 
 /**
  * Request interface.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-interface RequestInterface extends PsrRequestInterface, MessageInterface
+interface RequestInterface extends OutgoingRequestInterface, MessageInterface
 {
     /** @const string The GET method. */
     const METHOD_GET = 'GET';
@@ -43,4 +43,31 @@ interface RequestInterface extends PsrRequestInterface, MessageInterface
 
     /** @const string The OPTIONS method. */
     const METHOD_OPTIONS = 'OPTIONS';
+
+    /**
+     * Sets the headers.
+     *
+     * @param array $headers The headers.
+     *
+     * @return void No return value.
+     */
+    public function setHeaders(array $headers);
+
+    /**
+     * Adds the headers.
+     *
+     * @param array $headers The headers.
+     *
+     * @return void No return value.
+     */
+    public function addHeaders(array $headers);
+
+    /**
+     * Removes the headers.
+     *
+     * @param array $headers The header names.
+     *
+     * @return void No return value.
+     */
+    public function removeHeaders($headers);
 }

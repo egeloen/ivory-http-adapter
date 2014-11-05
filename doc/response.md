@@ -3,8 +3,8 @@
 The response represents the result of all http adapter sends. It is represented by the
 `Ivory\HttpAdapter\Message\Response` but can be customized as explained [here](/doc/configuration.md#message-factory).
 Like the request, the response follows the [PSR-7 Standard](https://github.com/php-fig/fig-standards/blob/master/proposed/http-message.md).
-That means it implements the `Psr\Http\Message\RespondeInterface`. Additionally, the library adds some features on top of
-it through the `Ivory\HttpAdapter\Message\MessageInterface` and `Ivory\HttpAdapter\Message\ResponseInterface`.
+That means it implements the `Psr\Http\Message\IncomingResponseInterface`. Additionally, the library adds some features
+on top of it through the `Ivory\HttpAdapter\Message\MessageInterface` and `Ivory\HttpAdapter\Message\ResponseInterface`.
 
 ## Protocol version
 

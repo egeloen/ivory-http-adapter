@@ -52,6 +52,10 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame($this->url, $this->internalRequest->getUrl());
         $this->assertSame(InternalRequest::METHOD_GET, $this->internalRequest->getMethod());
+        $this->assertSame(InternalRequest::PROTOCOL_VERSION_1_1, $this->internalRequest->getProtocolVersion());
+
+        $this->assertFalse($this->internalRequest->hasHeaders());
+        $this->assertEmpty($this->internalRequest->getHeaders());
 
         $this->assertFalse($this->internalRequest->hasRawDatas());
         $this->assertSame('', $this->internalRequest->getRawDatas());
@@ -61,14 +65,73 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($this->internalRequest->hasFiles());
         $this->assertEmpty($this->internalRequest->getFiles());
+
+        $this->assertFalse($this->internalRequest->hasParameters());
+        $this->assertEmpty($this->internalRequest->getParameters());
     }
 
-    public function testInitialState()
+    public function testInitialStateWithArrayBody()
     {
-        $this->internalRequest = new InternalRequest($this->url, $method = InternalRequest::METHOD_POST);
+        $this->internalRequest = new InternalRequest(
+            $this->url,
+            $method = InternalRequest::METHOD_POST,
+            $protocolVersion = InternalRequest::PROTOCOL_VERSION_1_0,
+            $headers = array('foo' => array('bar')),
+            $datas = array('baz' => 'bat'),
+            $files = array('bot' => 'ban'),
+            $parameters = array('bip' => 'pog')
+        );
 
         $this->assertSame($this->url, $this->internalRequest->getUrl());
         $this->assertSame($method, $this->internalRequest->getMethod());
+        $this->assertSame($protocolVersion, $this->internalRequest->getProtocolVersion());
+
+        $this->assertTrue($this->internalRequest->hasHeaders());
+        $this->assertSame($headers, $this->internalRequest->getHeaders());
+
+        $this->assertFalse($this->internalRequest->hasRawDatas());
+        $this->assertSame('', $this->internalRequest->getRawDatas());
+
+        $this->assertTrue($this->internalRequest->hasDatas());
+        $this->assertSame($datas, $this->internalRequest->getDatas());
+
+        $this->assertTrue($this->internalRequest->hasFiles());
+        $this->assertSame($files, $this->internalRequest->getFiles());
+
+        $this->assertTrue($this->internalRequest->hasParameters());
+        $this->assertSame($parameters, $this->internalRequest->getParameters());
+    }
+
+    public function testInitialStateWithStringBody()
+    {
+        $this->internalRequest = new InternalRequest(
+            $this->url,
+            $method = InternalRequest::METHOD_POST,
+            $protocolVersion = InternalRequest::PROTOCOL_VERSION_1_0,
+            $headers = array('foo' => array('bar')),
+            $datas = 'baz',
+            array(),
+            $parameters = array('bip' => 'pog')
+        );
+
+        $this->assertSame($this->url, $this->internalRequest->getUrl());
+        $this->assertSame($method, $this->internalRequest->getMethod());
+        $this->assertSame($protocolVersion, $this->internalRequest->getProtocolVersion());
+
+        $this->assertTrue($this->internalRequest->hasHeaders());
+        $this->assertSame($headers, $this->internalRequest->getHeaders());
+
+        $this->assertTrue($this->internalRequest->hasRawDatas());
+        $this->assertSame($datas, $this->internalRequest->getRawDatas());
+
+        $this->assertFalse($this->internalRequest->hasDatas());
+        $this->assertEmpty($this->internalRequest->getDatas());
+
+        $this->assertFalse($this->internalRequest->hasFiles());
+        $this->assertEmpty($this->internalRequest->getFiles());
+
+        $this->assertTrue($this->internalRequest->hasParameters());
+        $this->assertSame($parameters, $this->internalRequest->getParameters());
     }
 
     public function testSetRawDatas()

@@ -11,8 +11,8 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Ivory\HttpAdapter\Message\InternalRequest;
-use Ivory\HttpAdapter\Message\Request;
+use Ivory\HttpAdapter\Message\Stream\ResourceStream;
+use Ivory\HttpAdapter\Message\Stream\StringStream;
 
 /**
  * Message factory.
@@ -24,9 +24,15 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createRequest($url, $method = Request::METHOD_GET)
-    {
-        return new Request($url, $method);
+    public function createRequest(
+        $url,
+        $method = RequestInterface::METHOD_GET,
+        $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        $body = null,
+        array $parameters = array()
+    ) {
+        return new Request($url, $method, $protocolVersion, $headers, $this->createStream($body), $parameters);
     }
 
     /**
@@ -40,9 +46,16 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createInternalRequest($url, $method = Request::METHOD_GET)
-    {
-        return new InternalRequest($url, $method);
+    public function createInternalRequest(
+        $url,
+        $method = RequestInterface::METHOD_GET,
+        $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        $datas = array(),
+        array $files = array(),
+        array $parameters = array()
+    ) {
+        return new InternalRequest($url, $method, $protocolVersion, $headers, $datas, $files, $parameters);
     }
 
     /**
@@ -56,9 +69,22 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createResponse()
-    {
-        return new Response();
+    public function createResponse(
+        $statusCode = 200,
+        $reasonPhrase = 'OK',
+        $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        $body = null,
+        array $parameters = array()
+    ) {
+        return new Response(
+            $statusCode,
+            $reasonPhrase,
+            $protocolVersion,
+            $headers,
+            $this->createStream($body),
+            $parameters
+        );
     }
 
     /**
@@ -67,5 +93,25 @@ class MessageFactory implements MessageFactoryInterface
     public function cloneResponse(ResponseInterface $response)
     {
         return clone $response;
+    }
+
+    /**
+     * Creates a stream.
+     *
+     * @param resource|string|\Psr\Http\Message\StreamableInterface|null $body The body.
+     *
+     * @return \Psr\Http\Message\StreamableInterface|null The stream.
+     */
+    protected function createStream($body)
+    {
+        if (is_resource($body)) {
+            return new ResourceStream($body);
+        }
+
+        if (is_string($body)) {
+            return new StringStream($body, StringStream::MODE_SEEK | StringStream::MODE_READ);
+        }
+
+        return $body;
     }
 }

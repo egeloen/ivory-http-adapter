@@ -12,7 +12,6 @@
 namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\MessageInterface;
-use Psr\Http\Message\StreamableInterface;
 
 /**
  * Message test.
@@ -48,161 +47,48 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     public function testDefaultState()
     {
-        $this->assertNull($this->message->getProtocolVersion());
-        $this->assertNoHeaders();
-        $this->assertNoBody();
+        $this->assertSame(MessageInterface::PROTOCOL_VERSION_1_1, $this->message->getProtocolVersion());
+
+        $this->assertFalse($this->message->hasHeaders());
+        $this->assertEmpty($this->message->getHeaders());
+
+        $this->assertFalse($this->message->hasBody());
+        $this->assertNull($this->message->getBody());
+
         $this->assertNoParameters();
     }
 
-    public function testSetProtocolVersion()
+    public function testInitialState()
     {
-        $this->message->setProtocolVersion($protocolVersion = MessageInterface::PROTOCOL_VERSION_1_1);
+        $this->message = $this->getMockBuilder('Ivory\HttpAdapter\Message\AbstractMessage')
+            ->setConstructorArgs(array(
+                $protocolVersion = MessageInterface::PROTOCOL_VERSION_1_0,
+                array(
+                    ' fOo '  => array(' bar ', ' baz '),
+                    ' baT '  => array(' ban '),
+                    ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
+                ),
+                $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
+                $parameters = array('foo' => 'bar')
+            ))
+            ->getMockForAbstractClass();
 
         $this->assertSame($protocolVersion, $this->message->getProtocolVersion());
-    }
 
-    public function testSetBody()
-    {
-        $this->message->setBody($body = $this->getMock('Psr\Http\Message\StreamableInterface'));
-
-        $this->assertBody($body);
-    }
-
-    public function testSetHeadersAsString()
-    {
-        $this->message->setHeaders(array(
-            ' fOo '  => ' bar ,  baz ',
-            ' baT '  => ' ban ',
-            ' Date ' => ' Fri, 15 aug 2014 12:34:56 UTC ',
-        ));
-
-        $this->assertHeaders(array(
-            'fOo'  => array('bar', 'baz'),
-            'baT'  => array('ban'),
-            'Date' => array('Fri, 15 aug 2014 12:34:56 UTC'),
-        ));
-    }
-
-    public function testSetHeadersAsArray()
-    {
-        $this->message->setHeaders(array(
-            ' fOo '  => array(' bar ', ' baz '),
-            ' baT '  => array(' ban '),
-            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
-        ));
-
-        $this->assertHeaders(array(
-            'fOo'  => array('bar', 'baz'),
-            'baT'  => array('ban'),
-            'Date' => array('Fri, 15 aug 2014 12:34:56 UTC'),
-        ));
-    }
-
-    public function testSetHeadersWithExistingHeaders()
-    {
-        $this->message->setHeaders(array(' fOo ' => ' bar '));
-        $this->message->setHeaders(array(' foO ' => ' baz '));
-
-        $this->assertHeaders(array('foO' => array('baz')));
-    }
-
-    public function testAddHeadersAsString()
-    {
-        $this->message->setHeaders(array(
-            ' fOo '  => ' bar ,  baz ',
-            ' Date ' => ' Fri, 14 aug 2014 12:34:56 UTC ',
-        ));
-
-        $this->message->addHeaders(array(
-            ' foO '  => ' bat ,  ban',
-            ' Date ' => ' Fri, 15 aug 2014 12:34:56 UTC ',
-            ' Bon '  => ' bin ',
-        ));
-
-        $this->assertHeaders(array(
-            'foO'  => array('bar', 'baz', 'bat', 'ban'),
-            'Date' => array(
-                'Fri, 14 aug 2014 12:34:56 UTC',
-                'Fri, 15 aug 2014 12:34:56 UTC',
+        $this->assertTrue($this->message->hasHeaders());
+        $this->assertSame(
+            array(
+                'fOo'  => array('bar', 'baz'),
+                'baT'  => array('ban'),
+                'Date' => array('Fri, 15 aug 2014 12:34:56 UTC'),
             ),
-            'Bon'  => array('bin'),
-        ));
-    }
+            $this->message->getHeaders()
+        );
 
-    public function testAddHeadersAsArray()
-    {
-        $this->message->setHeaders(array(
-            ' fOo '  => array(' bar ', ' baz '),
-            ' Date ' => array(' Fri, 14 aug 2014 12:34:56 UTC '),
-        ));
+        $this->assertTrue($this->message->hasBody());
+        $this->assertSame($body, $this->message->getBody());
 
-        $this->message->addHeaders(array(
-            ' foO '  => array(' bat ', ' ban '),
-            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
-            ' Bon '  => array(' bin '),
-        ));
-
-        $this->assertHeaders(array(
-            'foO' => array('bar', 'baz', 'bat', 'ban'),
-            'Date' => array(
-                'Fri, 14 aug 2014 12:34:56 UTC',
-                'Fri, 15 aug 2014 12:34:56 UTC',
-            ),
-            'Bon' => array('bin'),
-        ));
-    }
-
-    public function testRemoveHeaders()
-    {
-        $this->message->setHeaders($headers = array(' fOo ' => 'bar', ' bAz ' => 'bat'));
-        $this->message->removeHeaders(array_keys($headers));
-
-        $this->assertNoHeaders();
-    }
-
-    public function testSetHeaderAsString()
-    {
-        $this->message->setHeader(' fOo ', 'bar, baz');
-
-        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
-    }
-
-    public function testSetHeaderAsArray()
-    {
-        $this->message->setHeader(' fOo ', array('bar', 'baz'));
-
-        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
-    }
-
-    public function testSetHeaderWithExistingHeader()
-    {
-        $this->message->setHeader(' fOo ', 'bar');
-        $this->message->setHeader(' foO ', 'baz');
-
-        $this->assertHeaders(array('foO' => array('baz')));
-    }
-
-    public function testAddHeaderAsString()
-    {
-        $this->message->setHeader(' fOo ', 'bar, baz');
-        $this->message->addHeader(' foO ', 'bat, ban');
-
-        $this->assertHeaders(array('foO' => array('bar', 'baz', 'bat', 'ban')));
-    }
-
-    public function testAddHeaderAsArray()
-    {
-        $this->message->setHeader(' fOo ', array('bar', 'baz'));
-
-        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
-    }
-
-    public function testRemoveHeader()
-    {
-        $this->message->setHeader($header = ' fOo ', 'bar, baz');
-        $this->message->removeHeader($header);
-
-        $this->assertNoHeader($header);
+        $this->assertParameters($parameters);
     }
 
     public function testSetParameters()
@@ -257,75 +143,6 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->message->removeParameter($name);
 
         $this->assertNoParameter($name);
-    }
-
-    /**
-     * Asserts there are the headers.
-     *
-     * @param array $headers The headers.
-     */
-    protected function assertHeaders(array $headers)
-    {
-        $this->assertTrue($this->message->hasHeaders());
-        $this->assertSame($headers, $this->message->getHeaders());
-
-        foreach ($headers as $header => $value) {
-            $this->assertHeader($header, $value);
-        }
-    }
-
-    /**
-     * Asserts there are no headers.
-     */
-    protected function assertNoHeaders()
-    {
-        $this->assertFalse($this->message->hasHeaders());
-        $this->assertEmpty($this->message->getHeaders());
-    }
-
-    /**
-     * Asserts there is the header.
-     *
-     * @param string $header The header.
-     * @param array  $value  The value.
-     */
-    protected function assertHeader($header, array $value)
-    {
-        $this->assertTrue($this->message->hasHeader($header));
-        $this->assertSame($value, $this->message->getHeaderAsArray($header));
-        $this->assertSame(implode(', ', $value), $this->message->getHeader($header));
-    }
-
-    /**
-     * Asserts there is no header.
-     *
-     * @param string $header The header.
-     */
-    protected function assertNoHeader($header)
-    {
-        $this->assertFalse($this->message->hasHeader($header));
-        $this->assertEmpty($this->message->getHeaderAsArray($header));
-        $this->assertSame('', $this->message->getHeader($header));
-    }
-
-    /**
-     * Asserts there is a body.
-     *
-     * @param \Ivory\Tests\HttpAdapter\Message\StreamableInterface $body The body.
-     */
-    protected function assertBody(StreamableInterface $body)
-    {
-        $this->assertTrue($this->message->hasBody());
-        $this->assertSame($body, $this->message->getBody());
-    }
-
-    /**
-     * Asserts there are no body.
-     */
-    protected function assertNoBody()
-    {
-        $this->assertFalse($this->message->hasBody());
-        $this->assertNull($this->message->getBody());
     }
 
     /**
