@@ -16,10 +16,8 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\Stream\ResourceStream;
-use Ivory\HttpAdapter\Message\Stream\StringStream;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\OutgoingRequestInterface;
 
 /**
  * Abstract http adapter.
@@ -126,25 +124,20 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
      */
     public function send($url, $method, array $headers = array(), $datas = array(), array $files = array())
     {
-        $internalRequest = $this->configuration->getMessageFactory()->createInternalRequest($url, $method);
-        $internalRequest->setProtocolVersion($this->configuration->getProtocolVersion());
-        $internalRequest->addHeaders($headers);
-
-        if (is_string($datas)) {
-            $internalRequest->setRawDatas($datas);
-        } else {
-            $internalRequest->addDatas($datas);
-        }
-
-        $internalRequest->addFiles($files);
-
-        return $this->sendInternalRequest($internalRequest);
+        return $this->sendInternalRequest($this->configuration->getMessageFactory()->createInternalRequest(
+            $url,
+            $method,
+            $this->configuration->getProtocolVersion(),
+            $headers,
+            $datas,
+            $files
+        ));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sendRequest(RequestInterface $request)
+    public function sendRequest(OutgoingRequestInterface $request)
     {
         if ($request instanceof InternalRequestInterface) {
             return $this->sendInternalRequest($request);
@@ -344,22 +337,13 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         $body,
         array $parameters = array()
     ) {
-        $response = $this->configuration->getMessageFactory()->createResponse();
-        $response->setProtocolVersion($protocolVersion);
-        $response->setStatusCode($statusCode);
-        $response->setReasonPhrase($reasonPhrase);
-        $response->addHeaders($headers);
-
-        if (is_resource($body)) {
-            $response->setBody(new ResourceStream($body));
-        } elseif (is_string($body)) {
-            $response->setBody(new StringStream($body, StringStream::MODE_SEEK | StringStream::MODE_READ));
-        } else {
-            $response->setBody($body);
-        }
-
-        $response->addParameters($parameters);
-
-        return $response;
+        return $this->configuration->getMessageFactory()->createResponse(
+            $statusCode,
+            $reasonPhrase,
+            $protocolVersion,
+            $headers,
+            $body,
+            $parameters
+        );
     }
 }

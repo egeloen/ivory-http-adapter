@@ -36,19 +36,32 @@ abstract class AbstractMessage implements MessageInterface
     protected $parameters = array();
 
     /**
-     * {@inheritdoc}
+     * Creates a message.
+     *
+     * @param float                                               $protocolVersion The protocol version.
+     * @param array                                               $headers         The headers.
+     * @param \Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
+     * @param array                                               $parameters      The parameters.
      */
-    public function getProtocolVersion()
-    {
-        return $this->protocolVersion;
+    public function __construct(
+        $protocolVersion = self::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        StreamableInterface $body = null,
+        array $parameters = array()
+    ) {
+        $this->body = $body;
+
+        $this->setProtocolVersion($protocolVersion);
+        $this->setHeaders($headers);
+        $this->setParameters($parameters);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setProtocolVersion($protocolVersion)
+    public function getProtocolVersion()
     {
-        $this->protocolVersion = $protocolVersion;
+        return $this->protocolVersion;
     }
 
     /**
@@ -71,39 +84,6 @@ abstract class AbstractMessage implements MessageInterface
         }
 
         return $headers;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setHeaders(array $headers)
-    {
-        $this->headers = array();
-        $this->headerNames = array();
-
-        foreach ($headers as $header => $value) {
-            $this->setHeader($header, $value);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addHeaders(array $headers)
-    {
-        foreach ($headers as $header => $value) {
-            $this->addHeader($header, $value);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeHeaders($headers)
-    {
-        foreach ($headers as $header) {
-            $this->removeHeader($header);
-        }
     }
 
     /**
@@ -133,39 +113,6 @@ abstract class AbstractMessage implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function setHeader($header, $value)
-    {
-        $this->removeHeader($header);
-        $this->addHeader($header, $value);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addHeader($header, $value)
-    {
-        $this->headerNames[$this->fixHeader($header)] = trim($header);
-        $this->headers[$this->fixHeader($header)] = array_merge(
-            $this->getHeaderAsArray($header),
-            array_map(
-                'trim',
-                is_array($value) ? $value : ((strtotime($value) !== false) ? array($value) : explode(',', $value))
-            )
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeHeader($header)
-    {
-        unset($this->headerNames[$this->fixHeader($header)]);
-        unset($this->headers[$this->fixHeader($header)]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function hasBody()
     {
         return $this->body !== null;
@@ -177,14 +124,6 @@ abstract class AbstractMessage implements MessageInterface
     public function getBody()
     {
         return $this->body;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setBody(StreamableInterface $body = null)
-    {
-        $this->body = $body;
     }
 
     /**
@@ -280,6 +219,80 @@ abstract class AbstractMessage implements MessageInterface
     public function removeParameter($name)
     {
         unset($this->parameters[$name]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setProtocolVersion($protocolVersion)
+    {
+        $this->protocolVersion = $protocolVersion;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setHeaders(array $headers)
+    {
+        $this->headers = array();
+        $this->headerNames = array();
+
+        foreach ($headers as $header => $value) {
+            $this->setHeader($header, $value);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function addHeaders(array $headers)
+    {
+        foreach ($headers as $header => $value) {
+            $this->addHeader($header, $value);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function removeHeaders($headers)
+    {
+        foreach ($headers as $header) {
+            $this->removeHeader($header);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setHeader($header, $value)
+    {
+        $this->removeHeader($header);
+        $this->addHeader($header, $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function addHeader($header, $value)
+    {
+        $this->headerNames[$this->fixHeader($header)] = trim($header);
+        $this->headers[$this->fixHeader($header)] = array_merge(
+            $this->getHeaderAsArray($header),
+            array_map(
+                'trim',
+                is_array($value) ? $value : ((strtotime($value) !== false) ? array($value) : explode(',', $value))
+            )
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function removeHeader($header)
+    {
+        unset($this->headerNames[$this->fixHeader($header)]);
+        unset($this->headers[$this->fixHeader($header)]);
     }
 
     /**

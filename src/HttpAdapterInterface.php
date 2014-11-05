@@ -12,7 +12,7 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\OutgoingRequestInterface;
 
 /**
  * Http adapter interface.
@@ -161,13 +161,13 @@ interface HttpAdapterInterface
     /**
      * Sends a PSR request.
      *
-     * @param \Psr\Http\Message\RequestInterface $request The request.
+     * @param \Psr\Http\Message\OutgoingRequestInterface $request The request.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function sendRequest(RequestInterface $request);
+    public function sendRequest(OutgoingRequestInterface $request);
 
     /**
      * Sends an internal request.

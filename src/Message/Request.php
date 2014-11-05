@@ -13,6 +13,7 @@ namespace Ivory\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Normalizer\MethodNormalizer;
 use Ivory\HttpAdapter\Normalizer\UrlNormalizer;
+use Psr\Http\Message\StreamableInterface;
 
 /**
  * Request.
@@ -30,12 +31,23 @@ class Request extends AbstractMessage implements RequestInterface
     /**
      * Creates a request.
      *
-     * @param string|object $url    The url.
-     * @param string        $method The method.
+     * @param string|object                                       $url             The url.
+     * @param string                                              $method          The method.
+     * @param float                                               $protocolVersion The protocol version.
+     * @param array                                               $headers         The headers.
+     * @param \Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
+     * @param array                                               $parameters      The parameters.
      */
-    public function __construct($url, $method = self::METHOD_GET)
-    {
-        $this->setProtocolVersion(self::PROTOCOL_VERSION_1_1);
+    public function __construct(
+        $url,
+        $method = self::METHOD_GET,
+        $protocolVersion = self::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        StreamableInterface $body = null,
+        array $parameters = array()
+    ) {
+        parent::__construct($protocolVersion, $headers, $body, $parameters);
+
         $this->setUrl($url);
         $this->setMethod($method);
     }
@@ -70,5 +82,69 @@ class Request extends AbstractMessage implements RequestInterface
     public function setMethod($method)
     {
         $this->method = MethodNormalizer::normalize($method);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setProtocolVersion($protocolVersion)
+    {
+        parent::setProtocolVersion($protocolVersion);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHeaders(array $headers)
+    {
+        parent::setHeaders($headers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addHeaders(array $headers)
+    {
+        parent::addHeaders($headers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeHeaders($headers)
+    {
+        parent::removeHeaders($headers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHeader($header, $value)
+    {
+        parent::setHeader($header, $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addHeader($header, $value)
+    {
+        parent::addHeader($header, $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeHeader($header)
+    {
+        parent::removeHeader($header);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setBody(StreamableInterface $body = null)
+    {
+        $this->body = $body;
     }
 }

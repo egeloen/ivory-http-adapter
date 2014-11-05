@@ -11,8 +11,8 @@
 
 namespace Ivory\HttpAdapter;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\IncomingResponseInterface;
+use Psr\Http\Message\OutgoingRequestInterface;
 
 /**
  * Http adapter exception.
@@ -21,10 +21,10 @@ use Psr\Http\Message\ResponseInterface;
  */
 class HttpAdapterException extends \Exception
 {
-    /** @var \Psr\Http\Message\RequestInterface|null */
+    /** @var \Psr\Http\Message\OutgoingRequestInterface|null */
     protected $request;
 
-    /** @var \Psr\Http\Message\ResponseInterface|null */
+    /** @var \Psr\Http\Message\IncomingResponseInterface|null */
     protected $response;
 
     /**
@@ -40,7 +40,7 @@ class HttpAdapterException extends \Exception
     /**
      * Gets the request.
      *
-     * @return \Psr\Http\Message\RequestInterface|null The request.
+     * @return \Psr\Http\Message\OutgoingRequestInterface|null The request.
      */
     public function getRequest()
     {
@@ -50,9 +50,9 @@ class HttpAdapterException extends \Exception
     /**
      * Sets the request.
      *
-     * @param \Psr\Http\Message\RequestInterface|null $request The request.
+     * @param \Psr\Http\Message\OutgoingRequestInterface|null $request The request.
      */
-    public function setRequest(RequestInterface $request = null)
+    public function setRequest(OutgoingRequestInterface $request = null)
     {
         $this->request = $request;
     }
@@ -70,7 +70,7 @@ class HttpAdapterException extends \Exception
     /**
      * Gets the response.
      *
-     * @return \Psr\Http\Message\ResponseInterface|null The response.
+     * @return \Psr\Http\Message\IncomingResponseInterface|null The response.
      */
     public function getResponse()
     {
@@ -80,9 +80,9 @@ class HttpAdapterException extends \Exception
     /**
      * Sets the response.
      *
-     * @param \Psr\Http\Message\ResponseInterface|null $response The response.
+     * @param \Psr\Http\Message\IncomingResponseInterface|null $response The response.
      */
-    public function setResponse(ResponseInterface $response = null)
+    public function setResponse(IncomingResponseInterface $response = null)
     {
         $this->response = $response;
     }

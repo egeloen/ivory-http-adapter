@@ -11,6 +11,8 @@
 
 namespace Ivory\HttpAdapter\Message;
 
+use Psr\Http\Message\StreamableInterface;
+
 /**
  * Response.
  *
@@ -25,6 +27,30 @@ class Response extends AbstractMessage implements ResponseInterface
     protected $reasonPhrase;
 
     /**
+     * Creates a response.
+     *
+     * @param integer                                             $statusCode      The status code.
+     * @param string                                              $reasonPhrase    The reason phrase.
+     * @param float                                               $protocolVersion The protocol version.
+     * @param array                                               $headers         The headers.
+     * @param \Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
+     * @param array                                               $parameters      The parameters.
+     */
+    public function __construct(
+        $statusCode = 200,
+        $reasonPhrase = 'OK',
+        $protocolVersion = self::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        StreamableInterface $body = null,
+        array $parameters = array()
+    ) {
+        parent::__construct($protocolVersion, $headers, $body, $parameters);
+
+        $this->statusCode = $statusCode;
+        $this->reasonPhrase = $reasonPhrase;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getStatusCode()
@@ -35,24 +61,8 @@ class Response extends AbstractMessage implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function setStatusCode($statusCode)
-    {
-        $this->statusCode = $statusCode;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getReasonPhrase()
     {
         return $this->reasonPhrase;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setReasonPhrase($reasonPhrase)
-    {
-        $this->reasonPhrase = $reasonPhrase;
     }
 }

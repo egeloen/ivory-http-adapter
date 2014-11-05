@@ -11,8 +11,6 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Ivory\HttpAdapter\Message\RequestInterface;
-
 /**
  * Message factory interface.
  *
@@ -23,12 +21,23 @@ interface MessageFactoryInterface
     /**
      * Creates a request.
      *
-     * @param string|object $url    The url.
-     * @param string        $method The method.
+     * @param string|object                                                       $url             The url.
+     * @param string                                                              $method          The method.
+     * @param float                                                               $protocolVersion The protocol version.
+     * @param array                                                               $headers         The headers.
+     * @param resource|string|\Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
+     * @param array                                                               $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
      */
-    public function createRequest($url, $method = RequestInterface::METHOD_GET);
+    public function createRequest(
+        $url,
+        $method = RequestInterface::METHOD_GET,
+        $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        $body = null,
+        array $parameters = array()
+    );
 
     /**
      * Clones a request.
@@ -42,12 +51,25 @@ interface MessageFactoryInterface
     /**
      * Creates an internal request.
      *
-     * @param string|object $url    The url.
-     * @param string        $method The method.
+     * @param string|object $url             The url.
+     * @param string        $method          The method.
+     * @param float         $protocolVersion The protocol version.
+     * @param array         $headers         The headers.
+     * @param array|string  $datas           The datas.
+     * @param array         $files           The files.
+     * @param array         $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The internal request.
      */
-    public function createInternalRequest($url, $method = RequestInterface::METHOD_GET);
+    public function createInternalRequest(
+        $url,
+        $method = RequestInterface::METHOD_GET,
+        $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        $datas = array(),
+        array $files = array(),
+        array $parameters = array()
+    );
 
     /**
      * Clones an internal request.
@@ -61,9 +83,23 @@ interface MessageFactoryInterface
     /**
      * Creates a response.
      *
+     * @param integer                                                             $statusCode      The status code.
+     * @param string                                                              $reasonPhrase    The reason phrase.
+     * @param float                                                               $protocolVersion The protocol version.
+     * @param array                                                               $headers         The headers.
+     * @param resource|string|\Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
+     * @param array                                                               $parameters      The parameters.
+     *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function createResponse();
+    public function createResponse(
+        $statusCode = 200,
+        $reasonPhrase = 'OK',
+        $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
+        array $headers = array(),
+        $body = null,
+        array $parameters = array()
+    );
 
     /**
      * Clones a response.
