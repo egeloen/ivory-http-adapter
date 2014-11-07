@@ -63,7 +63,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The string headers.
      */
-    protected function getStringHeaders()
+    private function getStringHeaders()
     {
         return implode("\r\n", $this->getIndexedHeaders());
     }
@@ -73,7 +73,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The indexed headers.
      */
-    protected function getIndexedHeaders()
+    private function getIndexedHeaders()
     {
         $headers = array();
 
@@ -89,7 +89,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The associative headers.
      */
-    protected function getAssociativeHeaders()
+    private function getAssociativeHeaders()
     {
         $headers = array();
 
@@ -109,7 +109,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The sub associative headers.
      */
-    protected function getSubAssociativeHeaders()
+    private function getSubAssociativeHeaders()
     {
         return array(
             'HTTP/1.1 200 OK',
@@ -123,7 +123,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The redirect string headers.
      */
-    protected function getRedirectStringHeaders()
+    private function getRedirectStringHeaders()
     {
         return implode("\r\n", $this->getRedirectIndexedHeaders());
     }
@@ -133,7 +133,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The redirect indexed headers.
      */
-    protected function getRedirectIndexedHeaders()
+    private function getRedirectIndexedHeaders()
     {
         $headers = array();
 
@@ -149,7 +149,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The redirect associative headers.
      */
-    protected function getRedirectAssociativeHeaders()
+    private function getRedirectAssociativeHeaders()
     {
         $headers = array();
 
@@ -169,7 +169,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The redirect sub associative headers.
      */
-    protected function getRedirectSubAssociativeHeaders()
+    private function getRedirectSubAssociativeHeaders()
     {
         return array_merge(
             array(
@@ -187,7 +187,7 @@ abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The redirect location.
      */
-    protected function getRedirectLocation()
+    private function getRedirectLocation()
     {
         return 'http://egeloen.fr/';
     }

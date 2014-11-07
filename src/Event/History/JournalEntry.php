@@ -22,13 +22,13 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 class JournalEntry implements JournalEntryInterface
 {
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
-    protected $request;
+    private $request;
 
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface */
-    protected $response;
+    private $response;
 
     /** @var float */
-    protected $time;
+    private $time;
 
     /**
      * Creates a journal entry.

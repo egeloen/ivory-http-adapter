@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
 class RetrySubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber */
-    protected $retrySubscriber;
+    private $retrySubscriber;
 
     /**
      * {@inheritdoc}
@@ -204,7 +204,7 @@ class RetrySubscriberTest extends AbstractSubscriberTest
      *
      * @return \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface|\PHPUnit_Framework_MockObject_MockObject The retry strategy mock.
      */
-    protected function createRetryStrategyMock()
+    private function createRetryStrategyMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface');
     }

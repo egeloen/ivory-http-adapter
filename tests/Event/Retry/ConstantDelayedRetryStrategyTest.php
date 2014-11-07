@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy;
 class ConstantDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy */
-    protected $constantDelayedRetryStrategy;
+    private $constantDelayedRetryStrategy;
 
     /**
      * {@inheritdoc}

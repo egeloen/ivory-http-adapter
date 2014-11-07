@@ -26,6 +26,6 @@ class ConstantDelayedRetryStrategy extends AbstractDelayedRetryStrategy
      */
     protected function doDelay(InternalRequestInterface $request, HttpAdapterException $exception)
     {
-        return $this->delay;
+        return $this->getDelay();
     }
 }

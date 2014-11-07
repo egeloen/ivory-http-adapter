@@ -37,7 +37,7 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
                 'follow_location'  => false,
                 'max_redirects'    => 1,
                 'ignore_errors'    => true,
-                'timeout'          => $this->configuration->getTimeout(),
+                'timeout'          => $this->getConfiguration()->getTimeout(),
                 'protocol_version' => $internalRequest->getProtocolVersion(),
                 'method'           => $internalRequest->getMethod(),
                 'header'           => $this->prepareHeaders($internalRequest, false),

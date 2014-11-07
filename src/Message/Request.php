@@ -23,10 +23,10 @@ use Psr\Http\Message\StreamableInterface;
 class Request extends AbstractMessage implements RequestInterface
 {
     /** @var string */
-    protected $url;
+    private $url;
 
     /** @var string */
-    protected $method;
+    private $method;
 
     /**
      * Creates a request.
@@ -145,6 +145,6 @@ class Request extends AbstractMessage implements RequestInterface
      */
     public function setBody(StreamableInterface $body = null)
     {
-        $this->body = $body;
+        parent::setBody($body);
     }
 }

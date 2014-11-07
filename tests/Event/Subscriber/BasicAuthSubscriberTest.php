@@ -23,13 +23,13 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 class BasicAuthSubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber */
-    protected $basicAuthSubscriber;
+    private $basicAuthSubscriber;
 
     /** @var string */
-    protected $username;
+    private $username;
 
     /** @var string */
-    protected $password;
+    private $password;
 
     /**
      * {@inheritdoc}

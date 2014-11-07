@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
 class LimitedRetryStrategyTest extends AbstractRetryStrategyTest
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy */
-    protected $limitedRetryStrategy;
+    private $limitedRetryStrategy;
 
     /**
      * {@inheritdoc}

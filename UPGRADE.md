@@ -1,5 +1,10 @@
 # UPGRADE
 
+### 0.5 to 0.6
+
+ * All protected properties and methods have been updated to private except for entry points. This is mostly motivated
+   for enforcing the encapsulation and easing backward compatibility.
+
 ### 0.4 to 0.5
 
  * The `Ivory\HttpAdapter\Guzzle3HttpAdapter` has been renamed to `Ivory\HttpAdapter\GuzzleHttpAdapter` and its name

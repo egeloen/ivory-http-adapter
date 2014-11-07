@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\HttpAdapterException;
 class FileCookieJar extends AbstractPersistentCookieJar
 {
     /** @var string */
-    protected $file;
+    private $file;
 
     /**
      * Creates a file cookie jar.

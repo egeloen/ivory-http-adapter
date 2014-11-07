@@ -86,7 +86,7 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
      *
      * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The named cookie mock.
      */
-    protected function createNamedCookieMock($name)
+    private function createNamedCookieMock($name)
     {
         $cookie = parent::createCookieMock();
         $cookie

@@ -19,7 +19,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject */
-    protected $persistentCookieJar;
+    private $persistentCookieJar;
 
     /**
      * {@inheritdoc}
@@ -94,7 +94,7 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
      *
      * @return \PHPUnit_Framework_MockObject_MockBuilder The persistent cookie jar mock builder.
      */
-    protected function createPersistentCookieJarMockBuilder()
+    private function createPersistentCookieJarMockBuilder()
     {
         return $this->getMockBuilder('Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar');
     }
@@ -104,7 +104,7 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
      *
      * @return \Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject The persistent cookie jar mock.
      */
-    protected function createPersistentCookieJarMock()
+    private function createPersistentCookieJarMock()
     {
         return $this->createPersistentCookieJarMockBuilder()->getMockForAbstractClass();
     }

@@ -53,15 +53,15 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
         $request = Request::init($internalRequest->getMethod())
             ->whenError(function () {})
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
-            ->timeout($this->configuration->getTimeout())
+            ->timeout($this->getConfiguration()->getTimeout())
             ->uri($url)
             ->addHeaders($this->prepareHeaders($internalRequest))
             ->body($this->prepareContent($internalRequest));
 
         if (defined('CURLOPT_CONNECTTIMEOUT_MS')) {
-            $request->addOnCurlOption(CURLOPT_CONNECTTIMEOUT_MS, $this->configuration->getTimeout() * 1000);
+            $request->addOnCurlOption(CURLOPT_CONNECTTIMEOUT_MS, $this->getConfiguration()->getTimeout() * 1000);
         } else { // @codeCoverageIgnoreStart
-            $request->addOnCurlOption(CURLOPT_CONNECTTIMEOUT, $this->configuration->getTimeout());
+            $request->addOnCurlOption(CURLOPT_CONNECTTIMEOUT, $this->getConfiguration()->getTimeout());
         } // @codeCoverageIgnoreEnd
 
         if ($internalRequest->hasFiles()) {

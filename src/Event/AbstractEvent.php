@@ -23,10 +23,10 @@ use Symfony\Component\EventDispatcher\Event;
 abstract class AbstractEvent extends Event
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterInterface */
-    protected $httpAdapter;
+    private $httpAdapter;
 
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
-    protected $request;
+    private $request;
 
     /**
      * Creates a pre send event.

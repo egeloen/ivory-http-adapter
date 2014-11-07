@@ -23,7 +23,7 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 class LimitedRetryStrategy extends AbstractRetryStrategyChain
 {
     /** @var integer */
-    protected $limit;
+    private $limit;
 
     /**
      * Creates a limited retry strategy.

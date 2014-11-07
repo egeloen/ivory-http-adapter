@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
 class LinearDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy */
-    protected $linearDelayedRetryStrategy;
+    private $linearDelayedRetryStrategy;
 
     /**
      * {@inheritdoc}

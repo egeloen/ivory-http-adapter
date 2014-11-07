@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 class Zend1HttpAdapter extends AbstractHttpAdapter
 {
     /** @var \Zend_Http_Client */
-    protected $client;
+    private $client;
 
     /**
      * Creates a zend 1 http adapter.
@@ -56,7 +56,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             ->resetParameters(true)
             ->setConfig(array(
                 'httpversion'  => $internalRequest->getProtocolVersion(),
-                'timeout'      => $this->configuration->getTimeout(),
+                'timeout'      => $this->getConfiguration()->getTimeout(),
                 'maxredirects' => 0,
             ))
             ->setUri($url)

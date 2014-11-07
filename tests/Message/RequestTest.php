@@ -23,10 +23,10 @@ use Psr\Http\Message\StreamableInterface;
 class RequestTest extends AbstractUrlNormalizerTest
 {
     /** @var \Ivory\HttpAdapter\Message\Request */
-    protected $request;
+    private $request;
 
     /** @var string */
-    protected $url;
+    private $url;
 
     /**
      * {@inheritdoc}
@@ -269,7 +269,7 @@ class RequestTest extends AbstractUrlNormalizerTest
      *
      * @param array $headers The headers.
      */
-    protected function assertHeaders(array $headers)
+    private function assertHeaders(array $headers)
     {
         $this->assertTrue($this->request->hasHeaders());
         $this->assertSame($headers, $this->request->getHeaders());
@@ -282,7 +282,7 @@ class RequestTest extends AbstractUrlNormalizerTest
     /**
      * Asserts there are no headers.
      */
-    protected function assertNoHeaders()
+    private function assertNoHeaders()
     {
         $this->assertFalse($this->request->hasHeaders());
         $this->assertEmpty($this->request->getHeaders());
@@ -294,7 +294,7 @@ class RequestTest extends AbstractUrlNormalizerTest
      * @param string $header The header.
      * @param array  $value  The value.
      */
-    protected function assertHeader($header, array $value)
+    private function assertHeader($header, array $value)
     {
         $this->assertTrue($this->request->hasHeader($header));
         $this->assertSame($value, $this->request->getHeaderAsArray($header));
@@ -306,7 +306,7 @@ class RequestTest extends AbstractUrlNormalizerTest
      *
      * @param string $header The header.
      */
-    protected function assertNoHeader($header)
+    private function assertNoHeader($header)
     {
         $this->assertFalse($this->request->hasHeader($header));
         $this->assertEmpty($this->request->getHeaderAsArray($header));
@@ -318,7 +318,7 @@ class RequestTest extends AbstractUrlNormalizerTest
      *
      * @param \Ivory\Tests\HttpAdapter\Message\StreamableInterface $body The body.
      */
-    protected function assertBody(StreamableInterface $body)
+    private function assertBody(StreamableInterface $body)
     {
         $this->assertTrue($this->request->hasBody());
         $this->assertSame($body, $this->request->getBody());
@@ -327,7 +327,7 @@ class RequestTest extends AbstractUrlNormalizerTest
     /**
      * Asserts there are no body.
      */
-    protected function assertNoBody()
+    private function assertNoBody()
     {
         $this->assertFalse($this->request->hasBody());
         $this->assertNull($this->request->getBody());
@@ -338,7 +338,7 @@ class RequestTest extends AbstractUrlNormalizerTest
      *
      * @param array $parameters The parameters.
      */
-    protected function assertParameters(array $parameters)
+    private function assertParameters(array $parameters)
     {
         $this->assertTrue($this->request->hasParameters());
         $this->assertSame($parameters, $this->request->getParameters());
@@ -351,7 +351,7 @@ class RequestTest extends AbstractUrlNormalizerTest
     /**
      * Asserts there are no parameters.
      */
-    protected function assertNoParameters()
+    private function assertNoParameters()
     {
         $this->assertFalse($this->request->hasParameters());
         $this->assertEmpty($this->request->getParameters());
@@ -363,7 +363,7 @@ class RequestTest extends AbstractUrlNormalizerTest
      * @param string $name  The parameter name.
      * @param mixed  $value The parameter value.
      */
-    protected function assertParameter($name, $value)
+    private function assertParameter($name, $value)
     {
         $this->assertTrue($this->request->hasParameter($name));
         $this->assertSame($value, $this->request->getParameter($name));

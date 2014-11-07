@@ -25,7 +25,7 @@ use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
 {
     /** @var \Guzzle\Http\ClientInterface */
-    protected $client;
+    private $client;
 
     /**
      * Creates a guzzle 3 http adapter.
@@ -63,8 +63,8 @@ class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
             array(
                 'exceptions'      => false,
                 'allow_redirects' => false,
-                'timeout'         => $this->configuration->getTimeout(),
-                'connect_timeout' => $this->configuration->getTimeout(),
+                'timeout'         => $this->getConfiguration()->getTimeout(),
+                'connect_timeout' => $this->getConfiguration()->getTimeout(),
             )
         );
 

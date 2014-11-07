@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber;
 class CookieSubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber */
-    protected $cookieSubscriber;
+    private $cookieSubscriber;
 
     /**
      * {@inheritdoc}
@@ -105,7 +105,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
      *
      * @return \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface|\PHPUnit_Framework_MockObject_MockObject The cookie jar mock.
      */
-    protected function createCookieJarMock()
+    private function createCookieJarMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface');
     }

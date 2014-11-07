@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber;
 class StatusCodeSubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber */
-    protected $statusCodeSubscriber;
+    private $statusCodeSubscriber;
 
     /**
      * {@inheritdoc}

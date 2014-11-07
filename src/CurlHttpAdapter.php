@@ -123,9 +123,9 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     private function configureTimeout($curl, $type)
     {
         if (defined($type.'_MS')) {
-            curl_setopt($curl, constant($type.'_MS'), $this->configuration->getTimeout() * 1000);
+            curl_setopt($curl, constant($type.'_MS'), $this->getConfiguration()->getTimeout() * 1000);
         } else { // @codeCoverageIgnoreStart
-            curl_setopt($curl, constant($type), $this->configuration->getTimeout());
+            curl_setopt($curl, constant($type), $this->getConfiguration()->getTimeout());
         } // @codeCoverageIgnoreEnd
     }
 }

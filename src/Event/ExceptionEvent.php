@@ -24,10 +24,10 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 class ExceptionEvent extends AbstractEvent
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException */
-    protected $exception;
+    private $exception;
 
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface|null */
-    protected $response;
+    private $response;
 
     /**
      * Creates an exception event.

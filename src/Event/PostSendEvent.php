@@ -23,7 +23,7 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 class PostSendEvent extends AbstractEvent
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface */
-    protected $response;
+    private $response;
 
     /**
      * Creates a post send event.

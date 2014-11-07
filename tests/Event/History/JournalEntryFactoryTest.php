@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\History\JournalEntryFactory;
 class JournalEntryFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Event\History\JournalEntryFactory */
-    protected $journalEntryFactory;
+    private $journalEntryFactory;
 
     /**
      * {@inheritdoc}

@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\History\Journal;
 class JournalTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Event\History\Journal */
-    protected $journal;
+    private $journal;
 
     /**
      * {@inheritdoc}
@@ -189,7 +189,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequestMock()
+    private function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
@@ -199,7 +199,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponseMock()
+    private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
@@ -209,7 +209,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry factory mock.
      */
-    protected function createJournalEntryFactoryMock()
+    private function createJournalEntryFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface');
     }
@@ -219,7 +219,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry mock.
      */
-    protected function createJournalEntryMock()
+    private function createJournalEntryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryInterface');
     }

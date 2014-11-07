@@ -21,10 +21,10 @@ use Ivory\HttpAdapter\Event\Cookie\Jar\SessionCookieJar;
 class SessionCookieJarTest extends AbstractPersistentCookieJarTest
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\SessionCookieJar */
-    protected $sessionCookieJar;
+    private $sessionCookieJar;
 
     /** @var string */
-    protected $key;
+    private $key;
 
     /**
      * {@inheritdoc}

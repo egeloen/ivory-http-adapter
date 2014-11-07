@@ -31,13 +31,13 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
     const MODE_WRITE_DISABLED = 'write';
 
     /** @var \Psr\Http\Message\StreamableInterface */
-    protected $stream;
+    private $stream;
 
     /** @var string */
-    protected $string;
+    private $string;
 
     /** @var integer */
-    protected $size;
+    private $size;
 
     /**
      * {@inheritdoc}

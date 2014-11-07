@@ -22,10 +22,10 @@ use Psr\Http\Message\OutgoingRequestInterface;
 class HttpAdapterException extends \Exception
 {
     /** @var \Psr\Http\Message\OutgoingRequestInterface|null */
-    protected $request;
+    private $request;
 
     /** @var \Psr\Http\Message\IncomingResponseInterface|null */
-    protected $response;
+    private $response;
 
     /**
      * Checks if there is a request.

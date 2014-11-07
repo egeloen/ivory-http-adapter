@@ -21,19 +21,19 @@ use Psr\Http\Message\StreamableInterface;
 abstract class AbstractMessage implements MessageInterface
 {
     /** @var string */
-    protected $protocolVersion;
+    private $protocolVersion;
 
     /** @var array */
-    protected $headers = array();
+    private $headers = array();
 
     /** @var array */
-    protected $headerNames = array();
+    private $headerNames = array();
 
     /** @var \Psr\Http\Message\StreamableInterface|null */
-    protected $body;
+    private $body;
 
     /** @var array */
-    protected $parameters = array();
+    private $parameters = array();
 
     /**
      * Creates a message.
@@ -296,13 +296,21 @@ abstract class AbstractMessage implements MessageInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function setBody(StreamableInterface $body = null)
+    {
+        $this->body = $body;
+    }
+
+    /**
      * Fixes the header.
      *
      * @param string $header The header.
      *
      * @return string The fixed header.
      */
-    protected function fixHeader($header)
+    private function fixHeader($header)
     {
         return strtolower(trim($header));
     }

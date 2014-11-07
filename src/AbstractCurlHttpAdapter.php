@@ -78,33 +78,6 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Prepares the raw content.
-     *
-     * @param string       $name   The name.
-     * @param array|string $data   The data.
-     * @param boolean      $isFile TRUE if the data is a file path else FALSE.
-     *
-     * @return array The prepared raw content.
-     */
-    protected function prepareRawContent($name, $data, $isFile = false)
-    {
-        if (is_array($data)) {
-            $preparedData = array();
-
-            foreach ($data as $subName => $subData) {
-                $preparedData = array_merge(
-                    $preparedData,
-                    $this->prepareRawContent($this->prepareName($name, $subName), $subData, $isFile)
-                );
-            }
-
-            return $preparedData;
-        }
-
-        return array($name => $isFile ? $this->createFile($data) : $data);
-    }
-
-    /**
      * Creates a file.
      *
      * @param string $file The file.
@@ -124,5 +97,32 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     protected function isSafeUpload()
     {
         return defined('CURLOPT_SAFE_UPLOAD');
+    }
+
+    /**
+     * Prepares the raw content.
+     *
+     * @param string       $name   The name.
+     * @param array|string $data   The data.
+     * @param boolean      $isFile TRUE if the data is a file path else FALSE.
+     *
+     * @return array The prepared raw content.
+     */
+    private function prepareRawContent($name, $data, $isFile = false)
+    {
+        if (is_array($data)) {
+            $preparedData = array();
+
+            foreach ($data as $subName => $subData) {
+                $preparedData = array_merge(
+                    $preparedData,
+                    $this->prepareRawContent($this->prepareName($name, $subName), $subData, $isFile)
+                );
+            }
+
+            return $preparedData;
+        }
+
+        return array($name => $isFile ? $this->createFile($data) : $data);
     }
 }

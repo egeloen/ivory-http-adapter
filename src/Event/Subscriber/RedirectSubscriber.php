@@ -36,13 +36,13 @@ class RedirectSubscriber implements EventSubscriberInterface
     const EFFECTIVE_URL = 'effective_url';
 
     /** @var integer */
-    protected $max;
+    private $max;
 
     /** @var boolean */
-    protected $strict;
+    private $strict;
 
     /** @var boolean */
-    protected $throwException;
+    private $throwException;
 
     /**
      * Creates a redirect subscriber.
@@ -166,7 +166,7 @@ class RedirectSubscriber implements EventSubscriberInterface
      *
      * @return boolean TRUE if the response is a redirect else FALSE.
      */
-    protected function isRedirect(ResponseInterface $response)
+    private function isRedirect(ResponseInterface $response)
     {
         return $response->getStatusCode() >= 300
             && $response->getStatusCode() < 400
@@ -182,7 +182,7 @@ class RedirectSubscriber implements EventSubscriberInterface
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The prepared redirect request.
      */
-    protected function prepareRedirectRequest(
+    private function prepareRedirectRequest(
         HttpAdapterInterface $httpAdapter,
         InternalRequestInterface $request,
         ResponseInterface $response
@@ -210,7 +210,7 @@ class RedirectSubscriber implements EventSubscriberInterface
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
      */
-    protected function prepareResponse(InternalRequestInterface $request, ResponseInterface $response)
+    private function prepareResponse(InternalRequestInterface $request, ResponseInterface $response)
     {
         $response->setParameter(self::REDIRECT_COUNT, (int) $request->getParameter(self::REDIRECT_COUNT));
         $response->setParameter(self::EFFECTIVE_URL, (string) $request->getUrl());
@@ -223,7 +223,7 @@ class RedirectSubscriber implements EventSubscriberInterface
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The root request.
      */
-    protected function getRootRequest(InternalRequestInterface $request)
+    private function getRootRequest(InternalRequestInterface $request)
     {
         $root = $request;
 

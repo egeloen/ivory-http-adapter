@@ -80,7 +80,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The string headers.
      */
-    protected function getStringHeaders()
+    private function getStringHeaders()
     {
         return implode("\r\n", $this->getIndexedHeaders());
     }
@@ -90,7 +90,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The indexed headers.
      */
-    protected function getIndexedHeaders()
+    private function getIndexedHeaders()
     {
         $headers = array();
 
@@ -106,7 +106,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The associative headers.
      */
-    protected function getAssociativeHeaders()
+    private function getAssociativeHeaders()
     {
         $headers = array();
 
@@ -126,7 +126,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The sub associative headers.
      */
-    protected function getSubAssociativeHeaders()
+    private function getSubAssociativeHeaders()
     {
         return array(
             'HTTP/1.1 200 OK',

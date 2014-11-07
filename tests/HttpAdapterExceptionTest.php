@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\HttpAdapterException;
 class HttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException */
-    protected $exception;
+    private $exception;
 
     /**
      * {@inheritdoc}
@@ -85,7 +85,7 @@ class HttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Psr\Http\Message\OutgoingRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequestMock()
+    private function createRequestMock()
     {
         return $this->getMock('Psr\Http\Message\OutgoingRequestInterface');
     }
@@ -95,7 +95,7 @@ class HttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Psr\Http\Message\IncomingResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponseMock()
+    private function createResponseMock()
     {
         return $this->getMock('Psr\Http\Message\IncomingResponseInterface');
     }

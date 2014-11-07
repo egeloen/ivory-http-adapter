@@ -24,13 +24,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class BasicAuthSubscriber implements EventSubscriberInterface
 {
     /** @var string */
-    protected $username;
+    private $username;
 
     /** @var string */
-    protected $password;
+    private $password;
 
     /** @var string|callable|null */
-    protected $matcher;
+    private $matcher;
 
     /**
      * Creates a basic auth subscriber.
@@ -146,7 +146,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
      *
      * @return boolean TRUE if the request matches the matcher else FALSE.
      */
-    protected function match(InternalRequestInterface $request)
+    private function match(InternalRequestInterface $request)
     {
         if (!$this->hasMatcher()) {
             return true;

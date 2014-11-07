@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Message\RequestInterface;
 class MessageFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Message\MessageFactory */
-    protected $messageFactory;
+    private $messageFactory;
 
     /**
      * {@inheritdoc}

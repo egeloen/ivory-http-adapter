@@ -19,7 +19,7 @@ namespace Ivory\HttpAdapter\Event\Retry;
 abstract class AbstractDelayedRetryStrategy extends AbstractRetryStrategyChain
 {
     /** @var float */
-    protected $delay;
+    private $delay;
 
     /**
      * Creates a delayed retry strategy.

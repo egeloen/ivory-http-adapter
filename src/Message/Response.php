@@ -21,10 +21,10 @@ use Psr\Http\Message\StreamableInterface;
 class Response extends AbstractMessage implements ResponseInterface
 {
     /** @var integer */
-    protected $statusCode;
+    private $statusCode;
 
     /** @var string */
-    protected $reasonPhrase;
+    private $reasonPhrase;
 
     /**
      * Creates a response.

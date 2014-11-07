@@ -102,7 +102,7 @@ class MessageFactory implements MessageFactoryInterface
      *
      * @return \Psr\Http\Message\StreamableInterface|null The stream.
      */
-    protected function createStream($body)
+    private function createStream($body)
     {
         if (is_resource($body)) {
             return new ResourceStream($body);

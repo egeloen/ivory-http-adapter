@@ -79,7 +79,7 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
      */
-    protected function createHttpAdapterMock()
+    private function createHttpAdapterMock()
     {
         return $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
     }
@@ -89,7 +89,7 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequestMock()
+    private function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }

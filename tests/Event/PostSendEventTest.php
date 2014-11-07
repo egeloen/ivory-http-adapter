@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\PostSendEvent;
 class PostSendEventTest extends AbstractEventTest
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface[\PHPUnit_Framework_MockObject_MockObject */
-    protected $response;
+    private $response;
 
     /**
      * {@inheritdoc}
@@ -70,7 +70,7 @@ class PostSendEventTest extends AbstractEventTest
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface[\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponseMock()
+    private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }

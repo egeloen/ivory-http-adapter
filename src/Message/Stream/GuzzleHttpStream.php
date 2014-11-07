@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\HttpAdapterException;
 class GuzzleHttpStream extends AbstractStream
 {
     /** @var \GuzzleHttp\Stream\StreamInterface */
-    protected $stream;
+    private $stream;
 
     /**
      * Creates a guzzle stream.

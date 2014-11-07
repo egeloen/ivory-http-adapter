@@ -24,7 +24,7 @@ use Ivory\HttpAdapter\Event\History\JournalInterface;
 class HistorySubscriber extends AbstractTimerSubscriber
 {
     /** @var \Ivory\HttpAdapter\Event\History\JournalInterface */
-    protected $journal;
+    private $journal;
 
     /**
      * Creates an history subscriber.
@@ -61,9 +61,7 @@ class HistorySubscriber extends AbstractTimerSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        parent::onPostSend($event);
-
-        $this->journal->record($event->getRequest(), $event->getResponse(), $this->time);
+        $this->journal->record($event->getRequest(), $event->getResponse(), parent::onPostSend($event));
     }
 
     /**
