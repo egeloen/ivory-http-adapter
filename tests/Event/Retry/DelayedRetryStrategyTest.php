@@ -19,7 +19,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Retry;
 class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\AbstractDelayedRetryStrategy */
-    protected $delayedRetryStrategy;
+    private $delayedRetryStrategy;
 
     /**
      * {@inheritdoc}
@@ -74,7 +74,7 @@ class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
      *
      * @return \PHPUnit_Framework_MockObject_MockBuilder The delayed retry strategy mock builder.
      */
-    protected function createDelayedRetryStrategyMockBuilder()
+    private function createDelayedRetryStrategyMockBuilder()
     {
         return $this->getMockBuilder('Ivory\HttpAdapter\Event\Retry\AbstractDelayedRetryStrategy');
     }

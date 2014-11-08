@@ -40,20 +40,30 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     {
         $url = (string) $internalRequest->getUrl();
         list($protocol, $host, $port, $path) = $this->parseUrl($url);
-        $remote = $protocol.'://'.$host.':'.$port;
 
-        if (($socket = @stream_socket_client($remote, $errno, $errstr, $this->configuration->getTimeout())) === false) {
+        $socket = @stream_socket_client(
+            $protocol.'://'.$host.':'.$port,
+            $errno,
+            $errstr,
+            $this->getConfiguration()->getTimeout()
+        );
+
+        if ($socket === false) {
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $errstr);
         }
 
-        stream_set_timeout($socket, $this->configuration->getTimeout());
+        stream_set_timeout($socket, $this->getConfiguration()->getTimeout());
         fwrite($socket, $this->prepareRequest($internalRequest, $path, $host, $port));
         list($responseHeaders, $body) = $this->parseResponse($socket);
         $hasTimeout = $this->detectTimeout($socket);
         fclose($socket);
 
         if ($hasTimeout) {
-            throw HttpAdapterException::timeoutExceeded($url, $this->configuration->getTimeout(), $this->getName());
+            throw HttpAdapterException::timeoutExceeded(
+                $url,
+                $this->getConfiguration()->getTimeout(),
+                $this->getName()
+            );
         }
 
         return $this->createResponse(
@@ -75,7 +85,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      *
      * @return string The prepared request.
      */
-    protected function prepareRequest(InternalRequestInterface $internalRequest, $path, $host, $port)
+    private function prepareRequest(InternalRequestInterface $internalRequest, $path, $host, $port)
     {
         $body = $this->prepareBody($internalRequest);
 
@@ -98,7 +108,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      *
      * @return array The response (0 => headers, 1 => body).
      */
-    protected function parseResponse($socket)
+    private function parseResponse($socket)
     {
         $headers = '';
         $body = '';
@@ -127,7 +137,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      *
      * @return string The decoded body.
      */
-    protected function decodeBody(array $headers, $body)
+    private function decodeBody(array $headers, $body)
     {
         $headers = array_change_key_case($headers);
 
@@ -152,7 +162,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      *
      * @return array The parsed url (0 => protocol, 1 => host, 2 => port, 3 => path).
      */
-    protected function parseUrl($url)
+    private function parseUrl($url)
     {
         $info = parse_url($url);
 
@@ -175,7 +185,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      *
      * @return boolean TRUE if the socket has timeout else FALSE.
      */
-    protected function detectTimeout($socket)
+    private function detectTimeout($socket)
     {
         $info = stream_get_meta_data($socket);
 

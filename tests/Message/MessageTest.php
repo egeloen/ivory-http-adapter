@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Message\MessageInterface;
 class MessageTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Message\AbstractMessage|\PHPUnit_Framework_MockObject_MockObject */
-    protected $message;
+    private $message;
 
     /**
      * {@inheritdoc}
@@ -150,7 +150,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      *
      * @param array $parameters The parameters.
      */
-    protected function assertParameters(array $parameters)
+    private function assertParameters(array $parameters)
     {
         $this->assertTrue($this->message->hasParameters());
         $this->assertSame($parameters, $this->message->getParameters());
@@ -163,7 +163,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     /**
      * Asserts there are no parameters.
      */
-    protected function assertNoParameters()
+    private function assertNoParameters()
     {
         $this->assertFalse($this->message->hasParameters());
         $this->assertEmpty($this->message->getParameters());
@@ -175,7 +175,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      * @param string $name  The parameter name.
      * @param mixed  $value The parameter value.
      */
-    protected function assertParameter($name, $value)
+    private function assertParameter($name, $value)
     {
         $this->assertTrue($this->message->hasParameter($name));
         $this->assertSame($value, $this->message->getParameter($name));
@@ -186,7 +186,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      *
      * @param string $name The parameter name.
      */
-    protected function assertNoParameter($name)
+    private function assertNoParameter($name)
     {
         $this->assertFalse($this->message->hasParameter($name));
         $this->assertNull($this->message->getParameter($name));

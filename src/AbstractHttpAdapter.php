@@ -27,7 +27,7 @@ use Psr\Http\Message\OutgoingRequestInterface;
 abstract class AbstractHttpAdapter implements HttpAdapterInterface
 {
     /** @var \Ivory\HttpAdapter\ConfigurationInterface */
-    protected $configuration;
+    private $configuration;
 
     /**
      * Creates an http adapter.
@@ -274,37 +274,6 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     }
 
     /**
-     * Prepares the raw body.
-     *
-     * @param string       $name   The name.
-     * @param array|string $data   The data.
-     * @param boolean      $isFile TRUE if the data is a file path else FALSE.
-     *
-     * @return string The formatted raw body.
-     */
-    protected function prepareRawBody($name, $data, $isFile = false)
-    {
-        if (is_array($data)) {
-            $body = '';
-
-            foreach ($data as $subName => $subData) {
-                $body .= $this->prepareRawBody($this->prepareName($name, $subName), $subData, $isFile);
-            }
-
-            return $body;
-        }
-
-        $body = '--'.$this->configuration->getBoundary()."\r\n".'Content-Disposition: form-data; name="'.$name.'"';
-
-        if ($isFile) {
-            $body .= '; filename="'.basename($data).'"';
-            $data = file_get_contents($data);
-        }
-
-        return $body."\r\n\r\n".$data."\r\n";
-    }
-
-    /**
      * Prepares the name.
      *
      * @param string $name    The name.
@@ -345,5 +314,36 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
             $body,
             $parameters
         );
+    }
+
+    /**
+     * Prepares the raw body.
+     *
+     * @param string       $name   The name.
+     * @param array|string $data   The data.
+     * @param boolean      $isFile TRUE if the data is a file path else FALSE.
+     *
+     * @return string The formatted raw body.
+     */
+    private function prepareRawBody($name, $data, $isFile = false)
+    {
+        if (is_array($data)) {
+            $body = '';
+
+            foreach ($data as $subName => $subData) {
+                $body .= $this->prepareRawBody($this->prepareName($name, $subName), $subData, $isFile);
+            }
+
+            return $body;
+        }
+
+        $body = '--'.$this->configuration->getBoundary()."\r\n".'Content-Disposition: form-data; name="'.$name.'"';
+
+        if ($isFile) {
+            $body .= '; filename="'.basename($data).'"';
+            $data = file_get_contents($data);
+        }
+
+        return $body."\r\n\r\n".$data."\r\n";
     }
 }

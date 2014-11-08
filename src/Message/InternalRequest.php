@@ -22,13 +22,13 @@ use Psr\Http\Message\StreamableInterface;
 class InternalRequest extends Request implements InternalRequestInterface
 {
     /** @var string */
-    protected $rawDatas = '';
+    private $rawDatas = '';
 
     /** @var array */
-    protected $datas = array();
+    private $datas = array();
 
     /** @var array */
-    protected $files = array();
+    private $files = array();
 
     /**
      * Creates an internal request.

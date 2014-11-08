@@ -21,16 +21,16 @@ use Ivory\HttpAdapter\Event\History\JournalEntry;
 class JournalEntryTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Event\History\JournalEntry */
-    protected $journalEntry;
+    private $journalEntry;
 
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
-    protected $request;
+    private $request;
 
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject */
-    protected $response;
+    private $response;
 
     /** @var float */
-    protected $time;
+    private $time;
 
     /**
      * {@inheritdoc}
@@ -88,7 +88,7 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequestMock()
+    private function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
@@ -98,7 +98,7 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponseMock()
+    private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }

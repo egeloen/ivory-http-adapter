@@ -21,10 +21,10 @@ use Ivory\HttpAdapter\Message\InternalRequest;
 class InternalRequestTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Message\InternalRequest */
-    protected $internalRequest;
+    private $internalRequest;
 
     /** @var string */
-    protected $url;
+    private $url;
 
     /**
      * {@inheritdoc}
@@ -397,7 +397,7 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The raw datas.
      */
-    protected function getRawDatas()
+    private function getRawDatas()
     {
         return http_build_query($this->getDatas());
     }
@@ -407,7 +407,7 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The datas.
      */
-    protected function getDatas()
+    private function getDatas()
     {
         return array('foo' => 'bar');
     }
@@ -417,7 +417,7 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The files.
      */
-    protected function getFiles()
+    private function getFiles()
     {
         return array(
             'file1' => realpath(__DIR__.'/../Fixtures/files/file1.txt'),

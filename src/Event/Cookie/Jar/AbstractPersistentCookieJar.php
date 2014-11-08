@@ -62,18 +62,18 @@ abstract class AbstractPersistentCookieJar extends CookieJar implements Persiste
         $data = json_decode($serialized, true);
 
         if (empty($data)) {
-            $this->cookies = array();
+            $this->clear();
         } else {
-            $cookieFactory = $this->cookieFactory;
+            $cookieFactory = $this->getCookieFactory();
 
-            $this->cookies = array_map(function (array $cookie) use ($cookieFactory) {
+            $this->setCookies(array_map(function (array $cookie) use ($cookieFactory) {
                 return $cookieFactory->create(
                     $cookie['name'],
                     $cookie['value'],
                     $cookie['attributes'],
                     $cookie['created_at']
                 );
-            }, $data);
+            }, $data));
         }
     }
 }

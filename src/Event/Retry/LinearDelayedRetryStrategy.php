@@ -27,6 +27,6 @@ class LinearDelayedRetryStrategy extends AbstractDelayedRetryStrategy
      */
     protected function doDelay(InternalRequestInterface $request, HttpAdapterException $exception)
     {
-        return $this->delay * $request->getParameter(RetrySubscriber::RETRY_COUNT);
+        return $this->getDelay() * $request->getParameter(RetrySubscriber::RETRY_COUNT);
     }
 }

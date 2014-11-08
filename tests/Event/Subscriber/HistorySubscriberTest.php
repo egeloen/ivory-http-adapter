@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber;
 class HistorySubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber */
-    protected $historySubscriber;
+    private $historySubscriber;
 
     /**
      * {@inheritdoc}
@@ -92,7 +92,7 @@ class HistorySubscriberTest extends AbstractSubscriberTest
      *
      * @return \Ivory\HttpAdapter\Event\History\JournalInterface|\PHPUnit_Framework_MockObject_MockObject The journal mock.
      */
-    protected function createJournalMock()
+    private function createJournalMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\History\JournalInterface');
     }

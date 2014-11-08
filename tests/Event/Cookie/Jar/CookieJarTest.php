@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
 class CookieJarTest extends AbstractCookieJarTest
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar */
-    protected $cookieJar;
+    private $cookieJar;
 
     /**
      * {@inheritdoc}
@@ -486,7 +486,7 @@ class CookieJarTest extends AbstractCookieJarTest
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    protected function createRequestMock()
+    private function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
@@ -496,7 +496,7 @@ class CookieJarTest extends AbstractCookieJarTest
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponseMock()
+    private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }

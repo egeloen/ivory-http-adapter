@@ -21,16 +21,16 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 class Cookie implements CookieInterface
 {
     /** @var string|null */
-    protected $name;
+    private $name;
 
     /** @var string|null */
-    protected $value;
+    private $value;
 
     /** @var array */
-    protected $attributes;
+    private $attributes;
 
     /** @var integer */
-    protected $createdAt;
+    private $createdAt;
 
     /**
      * Creates a cookie.
@@ -315,7 +315,7 @@ class Cookie implements CookieInterface
      *
      * @return string The fixes attribute.
      */
-    protected function fixAttribute($attribute)
+    private function fixAttribute($attribute)
     {
         return strtolower(trim($attribute));
     }

@@ -23,7 +23,7 @@ use Ivory\Tests\HttpAdapter\Parser\AbstractCookieParserTest;
 class CookieFactoryTest extends AbstractCookieParserTest
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\CookieFactory */
-    protected $cookieFactory;
+    private $cookieFactory;
 
     /**
      * {@inheritdoc}

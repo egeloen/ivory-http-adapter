@@ -24,7 +24,7 @@ use Ivory\HttpAdapter\HttpAdapterException;
 class RedirectSubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber */
-    protected $redirectSubscriber;
+    private $redirectSubscriber;
 
     /**
      * {@inheritdoc}
@@ -510,7 +510,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
      *
      * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
      */
-    protected function createMessageFactoryMock()
+    private function createMessageFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }

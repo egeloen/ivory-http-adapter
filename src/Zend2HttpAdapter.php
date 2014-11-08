@@ -24,7 +24,7 @@ use Zend\Http\Response\Stream;
 class Zend2HttpAdapter extends AbstractHttpAdapter
 {
     /** @var \Zend\Http\Client */
-    protected $client;
+    private $client;
 
     /**
      * Creates a zend 2 http adapter.
@@ -58,7 +58,7 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
             ->resetParameters(true)
             ->setOptions(array(
                 'httpversion'  => $internalRequest->getProtocolVersion(),
-                'timeout'      => $this->configuration->getTimeout(),
+                'timeout'      => $this->getConfiguration()->getTimeout(),
                 'maxredirects' => 0,
             ))
             ->setUri($url)

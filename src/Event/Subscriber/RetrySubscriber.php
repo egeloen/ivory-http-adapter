@@ -29,7 +29,7 @@ class RetrySubscriber implements EventSubscriberInterface
     const RETRY_COUNT = 'retry_count';
 
     /** @var \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface */
-    protected $strategy;
+    private $strategy;
 
     /**
      * Creates a retry subscriber.

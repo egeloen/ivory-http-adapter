@@ -19,7 +19,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 class TimerTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber|\PHPUnit_Framework_MockObject_MockObject */
-    protected $timerSubscriber;
+    private $timerSubscriber;
 
     /**
      * {@inheritdoc}
@@ -41,12 +41,16 @@ class TimerTest extends AbstractSubscriberTest
     public function testPostSendEvent()
     {
         $this->timerSubscriber->onPreSend($this->createPreSendEvent());
-        $this->timerSubscriber->onPostSend($this->createPostSendEvent());
+        $time = $this->timerSubscriber->onPostSend($this->createPostSendEvent());
 
-        $reflectionProperty = new \ReflectionProperty($this->timerSubscriber, 'time');
-        $reflectionProperty->setAccessible(true);
+        $this->assertGreaterThanOrEqual(0, $time);
+        $this->assertLessThanOrEqual(1, $time);
+    }
 
-        $time = $reflectionProperty->getValue($this->timerSubscriber);
+    public function testExceptionEvent()
+    {
+        $this->timerSubscriber->onPreSend($this->createPreSendEvent());
+        $time = $this->timerSubscriber->onException($this->createExceptionEvent());
 
         $this->assertGreaterThanOrEqual(0, $time);
         $this->assertLessThanOrEqual(1, $time);

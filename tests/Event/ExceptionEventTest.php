@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 class ExceptionEventTest extends AbstractEventTest
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject */
-    protected $exception;
+    private $exception;
 
     /**
      * {@inheritdoc}
@@ -79,7 +79,7 @@ class ExceptionEventTest extends AbstractEventTest
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
      */
-    protected function createExceptionMock()
+    private function createExceptionMock()
     {
         return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
     }
@@ -89,7 +89,7 @@ class ExceptionEventTest extends AbstractEventTest
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface[\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponseMock()
+    private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }

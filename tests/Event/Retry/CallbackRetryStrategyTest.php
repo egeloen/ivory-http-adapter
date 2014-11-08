@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy;
 class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy */
-    protected $callbackRetryStrategy;
+    private $callbackRetryStrategy;
 
     /**
      * {@inheritdoc}

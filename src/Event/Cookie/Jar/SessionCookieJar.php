@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
 class SessionCookieJar extends AbstractPersistentCookieJar
 {
     /** @var string */
-    protected $key;
+    private $key;
 
     /**
      * Creates a session cookie jar.

@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
 class ExponentialDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\ExponentialDelayedRetryStrategy */
-    protected $exponentialRetryStrategy;
+    private $exponentialRetryStrategy;
 
     /**
      * {@inheritdoc}

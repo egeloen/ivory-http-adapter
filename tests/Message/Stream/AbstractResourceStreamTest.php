@@ -19,7 +19,7 @@ namespace Ivory\Tests\HttpAdapter\Message\Stream;
 abstract class AbstractResourceStreamTest extends AbstractStreamTest
 {
     /** @var resource */
-    protected $resource;
+    private $resource;
 
     /**
      * {@inheritdoc}
@@ -75,7 +75,7 @@ abstract class AbstractResourceStreamTest extends AbstractStreamTest
     /**
      * Closes the resource.
      */
-    protected function closeResource()
+    private function closeResource()
     {
         if (is_resource($this->resource)) {
             fclose($this->resource);

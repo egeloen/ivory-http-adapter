@@ -23,19 +23,19 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 class CookieTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\Cookie */
-    protected $cookie;
+    private $cookie;
 
     /** @var string */
-    protected $name;
+    private $name;
 
     /** @var string */
-    protected $value;
+    private $value;
 
     /** @var array */
-    protected $attributes;
+    private $attributes;
 
     /** @var integer */
-    protected $createdAt;
+    private $createdAt;
 
     /**
      * {@inheritdoc}

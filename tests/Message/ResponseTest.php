@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Message\Response;
 class ResponseTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Message\Response */
-    protected $response;
+    private $response;
 
     /**
      * {@inheritdoc}

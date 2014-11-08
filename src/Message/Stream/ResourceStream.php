@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\HttpAdapterException;
 class ResourceStream extends AbstractStream
 {
     /** @var array */
-    protected static $modes = array(
+    private static $modes = array(
         'read' => array(
             'r', 'w+', 'r+', 'x+', 'c+', 'rb', 'w+b', 'r+b', 'x+b', 'c+b', 'rt', 'w+t', 'r+t', 'x+t', 'c+t', 'a+',
         ),
@@ -31,13 +31,13 @@ class ResourceStream extends AbstractStream
     );
 
     /** @var resource */
-    protected $resource;
+    private $resource;
 
     /** @var array */
-    protected $cache;
+    private $cache;
 
     /** @var integer|null */
-    protected $size;
+    private $size;
 
     /**
      * Creates a resource stream.

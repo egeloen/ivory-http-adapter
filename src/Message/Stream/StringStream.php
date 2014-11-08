@@ -28,16 +28,16 @@ class StringStream extends AbstractStream
     const MODE_WRITE = 4;
 
     /** @var string */
-    protected $string;
+    private $string;
 
     /** @var integer */
-    protected $modeMask;
+    private $modeMask;
 
     /** @var integer */
-    protected $size;
+    private $size;
 
     /** @var integer */
-    protected $cursor = 0;
+    private $cursor = 0;
 
     /**
      * Creates a string stream.
@@ -276,7 +276,7 @@ class StringStream extends AbstractStream
      * @param integer $offset The offset.
      * @param integer $whence The whence flag.
      */
-    protected function forceSeek($offset, $whence = SEEK_SET)
+    private function forceSeek($offset, $whence = SEEK_SET)
     {
         $modeMask = $this->modeMask;
         $this->modeMask = $modeMask | self::MODE_SEEK;

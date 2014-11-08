@@ -25,7 +25,7 @@ use Ivory\HttpAdapter\HttpAdapterException;
 class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\AbstractHttpAdapter|\PHPUnit_Framework_MockObject_MockObject */
-    protected $httpAdapter;
+    private $httpAdapter;
 
     /**
      * {@inheritdoc}
@@ -330,7 +330,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return \PHPUnit_Framework_MockObject_MockBuilder The http adapter mock builder.
      */
-    protected function createHttpAdapterMockBuilder()
+    private function createHttpAdapterMockBuilder()
     {
         return $this->getMockBuilder('Ivory\HttpAdapter\AbstractHttpAdapter');
     }
@@ -340,7 +340,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
      */
-    protected function createMessageFactoryMock()
+    private function createMessageFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }
@@ -350,7 +350,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject The configuration mock.
      */
-    protected function createConfigurationMock()
+    private function createConfigurationMock()
     {
         return $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
     }
@@ -360,7 +360,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject The event dispatcher mock.
      */
-    protected function createEventDispatcherMock()
+    private function createEventDispatcherMock()
     {
         return $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
     }
@@ -370,7 +370,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The internal request mock.
      */
-    protected function createInternalRequestMock()
+    private function createInternalRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
@@ -380,7 +380,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
-    protected function createResponseMock()
+    private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
@@ -390,7 +390,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
      */
-    protected function createExceptionMock()
+    private function createExceptionMock()
     {
         return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
     }

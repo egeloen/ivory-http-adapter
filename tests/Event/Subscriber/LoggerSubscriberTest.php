@@ -22,10 +22,10 @@ use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
 class LoggerSubscriberTest extends AbstractSubscriberTest
 {
     /** @var \Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber */
-    protected $loggerSubscriber;
+    private $loggerSubscriber;
 
     /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject */
-    protected $logger;
+    private $logger;
 
     /**
      * {@inheritdoc}
@@ -115,7 +115,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->with(
                 $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
                 $this->callback(function ($context) use ($request, $exception) {
-                    return $context['request']['protocol_version'] === $request->getProtocolVersion()
+                    return $context['time'] > 0 && $context['time'] < 1
+                        && $context['request']['protocol_version'] === $request->getProtocolVersion()
                         && $context['request']['url'] === $request->getUrl()
                         && $context['request']['method'] === $request->getMethod()
                         && $context['request']['headers'] === $request->getHeaders()
@@ -130,17 +131,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 })
             );
 
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
         $this->loggerSubscriber->onException($this->createExceptionEvent(null, $request, $exception));
-    }
-
-    /**
-     * Creates a logger mock.
-     *
-     * @return \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject The logger mock.
-     */
-    protected function createLoggerMock()
-    {
-        return $this->getMock('Psr\Log\LoggerInterface');
     }
 
     /**
@@ -258,5 +250,15 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->will($this->returnValue(__FILE__));
 
         return $exception;
+    }
+
+    /**
+     * Creates a logger mock.
+     *
+     * @return \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject The logger mock.
+     */
+    private function createLoggerMock()
+    {
+        return $this->getMock('Psr\Log\LoggerInterface');
     }
 }

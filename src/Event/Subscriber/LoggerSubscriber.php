@@ -27,7 +27,7 @@ use Psr\Log\LoggerInterface;
 class LoggerSubscriber extends AbstractTimerSubscriber
 {
     /** @var \Psr\Log\LoggerInterface */
-    protected $logger;
+    private $logger;
 
     /**
      * Creates a logger subscriber.
@@ -64,17 +64,17 @@ class LoggerSubscriber extends AbstractTimerSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        parent::onPostSend($event);
+        $time = parent::onPostSend($event);
 
         $this->logger->debug(
             sprintf(
                 'Send "%s %s" in %.2f ms.',
                 $event->getRequest()->getMethod(),
                 (string) $event->getRequest()->getUrl(),
-                $this->time
+                $time
             ),
             array(
-                'time'     => $this->time,
+                'time'     => $time,
                 'request'  => $this->formatRequest($event->getRequest()),
                 'response' => $this->formatResponse($event->getResponse()),
             )
@@ -95,6 +95,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
                 (string) $event->getRequest()->getUrl()
             ),
             array(
+                'time'      => parent::onException($event),
                 'request'   => $this->formatRequest($event->getRequest()),
                 'exception' => $this->formatException($event->getException()),
             )
@@ -120,7 +121,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
      *
      * @return array The formatted request.
      */
-    protected function formatRequest(InternalRequestInterface $request)
+    private function formatRequest(InternalRequestInterface $request)
     {
         return array(
             'protocol_version' => $request->getProtocolVersion(),
@@ -141,7 +142,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
      *
      * @return array The formatted response.
      */
-    protected function formatResponse(ResponseInterface $response)
+    private function formatResponse(ResponseInterface $response)
     {
         return array(
             'protocol_version' => $response->getProtocolVersion(),
@@ -160,7 +161,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
      *
      * @return array The formatted exception.
      */
-    protected function formatException(HttpAdapterException $exception)
+    private function formatException(HttpAdapterException $exception)
     {
         return array(
             'code'    => $exception->getCode(),

@@ -25,10 +25,10 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 class CookieJar implements CookieJarInterface
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface */
-    protected $cookieFactory;
+    private $cookieFactory;
 
     /** @var array */
-    protected $cookies = array();
+    private $cookies = array();
 
     /**
      * Creates a cookie jar.

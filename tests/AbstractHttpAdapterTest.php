@@ -25,7 +25,7 @@ use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 {
     /** @var string */
-    protected static $file;
+    private static $file;
 
     /** @var \Ivory\HttpAdapter\HttpAdapterInterface */
     protected $httpAdapter;
@@ -440,7 +440,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return string|null The url.
      */
-    protected function getUrl(array $query = array())
+    private function getUrl(array $query = array())
     {
         return !empty($query) ? PHPUnitUtility::getUrl().'?'.http_build_query($query) : PHPUnitUtility::getUrl();
     }
@@ -450,7 +450,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The client error url.
      */
-    protected function getClientErrorUrl()
+    private function getClientErrorUrl()
     {
         return $this->getUrl(array('client_error' => true));
     }
@@ -460,7 +460,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The server error url.
      */
-    protected function getServerErrorUrl()
+    private function getServerErrorUrl()
     {
         return $this->getUrl(array('server_error' => true));
     }
@@ -472,7 +472,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The delay url.
      */
-    protected function getDelayUrl($delay = 1)
+    private function getDelayUrl($delay = 1)
     {
         return $this->getUrl(array('delay' => $delay + 0.01));
     }
@@ -482,7 +482,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return string The redirect url.
      */
-    protected function getRedirectUrl()
+    private function getRedirectUrl()
     {
         return $this->getUrl(array('redirect' => true));
     }
@@ -492,7 +492,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The headers.
      */
-    protected function getHeaders()
+    private function getHeaders()
     {
         return array('Accept-Charset' => 'utf-8', 'Accept-Language:fr');
     }
@@ -502,7 +502,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The data.
      */
-    protected function getData()
+    private function getData()
     {
         return array('param1' => 'foo', 'param2' => array('bar', array('baz')));
     }
@@ -512,7 +512,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The files.
      */
-    protected function getFiles()
+    private function getFiles()
     {
         return array(
             'file1' => realpath(__DIR__.'/Fixtures/files/file1.txt'),
@@ -529,7 +529,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
      * @param array                                        $options  The options.
      */
-    protected function assertResponse($response, array $options = array())
+    private function assertResponse($response, array $options = array())
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\ResponseInterface', $response);
 
@@ -583,7 +583,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param array  $files           The files.
      * @param string $protocolVersion The protocol version.
      */
-    protected function assertRequest(
+    private function assertRequest(
         $method,
         array $headers = array(),
         array $data = array(),
@@ -635,7 +635,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param array $request The request.
      * @param array $data    The data.
      */
-    protected function assertRequestData(array $request, array $data)
+    private function assertRequestData(array $request, array $data)
     {
         foreach ($data as $name => $value) {
             $this->assertArrayHasKey($name, $request['POST']);
@@ -650,7 +650,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param array   $data      The data.
      * @param boolean $multipart TRUE if the input data is multipart else FALSE.
      */
-    protected function assertRequestInputData(array $request, array $data, $multipart)
+    private function assertRequestInputData(array $request, array $data, $multipart)
     {
         if ($multipart) {
             foreach ($data as $name => $value) {
@@ -669,7 +669,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param string       $name    The name.
      * @param array|string $data    The data.
      */
-    protected function assertRequestMultipartData(array $request, $name, $data)
+    private function assertRequestMultipartData(array $request, $name, $data)
     {
         if (is_array($data)) {
             foreach ($data as $subName => $subValue) {
@@ -687,7 +687,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param array $request The request.
      * @param array $files   The files.
      */
-    protected function assertRequestFiles(array $request, array $files)
+    private function assertRequestFiles(array $request, array $files)
     {
         foreach ($files as $name => $file) {
             $this->assertRequestFile($request, $name, $file);
@@ -701,7 +701,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param string $name    The name.
      * @param string $file    The file.
      */
-    protected function assertRequestFile(array $request, $name, $file)
+    private function assertRequestFile(array $request, $name, $file)
     {
         if (is_array($file)) {
             foreach ($file as $subName => $subFile) {
@@ -733,7 +733,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param array  $file     The file.
      * @param array  $levels   The levels.
      */
-    protected function assertRequestPropertyFile($expected, $property, array $file, array $levels = array())
+    private function assertRequestPropertyFile($expected, $property, array $file, array $levels = array())
     {
         if (!empty($levels)) {
             $this->assertRequestPropertyFile($expected, $levels[0], $file[$property], array_slice($levels, 1));
@@ -748,7 +748,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param array $request The request.
      * @param array $files   The files.
      */
-    protected function assertRequestInputFiles(array $request, array $files)
+    private function assertRequestInputFiles(array $request, array $files)
     {
         foreach ($files as $name => $file) {
             $this->assertRequestInputFile($request, $name, $file);
@@ -762,7 +762,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @param string       $name    The name.
      * @param array|string $file    The file.
      */
-    protected function assertRequestInputFile(array $request, $name, $file)
+    private function assertRequestInputFile(array $request, $name, $file)
     {
         if (is_array($file)) {
             foreach ($file as $subName => $subFile) {
@@ -784,7 +784,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      *
      * @return array The request.
      */
-    protected function getRequest()
+    private function getRequest()
     {
         $file = fopen(self::$file, 'r');
         flock($file, LOCK_EX);

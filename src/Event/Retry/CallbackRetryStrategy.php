@@ -22,10 +22,10 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 class CallbackRetryStrategy extends AbstractRetryStrategyChain
 {
     /** @var callable|null */
-    protected $verifyCallback;
+    private $verifyCallback;
 
     /** @var callable|null */
-    protected $delayCallback;
+    private $delayCallback;
 
     /**
      * Creates a callback retry strategy.

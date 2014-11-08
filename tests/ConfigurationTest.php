@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Configuration */
-    protected $configuration;
+    private $configuration;
 
     /**
      * {@inheritdoc}
@@ -129,7 +129,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
      */
-    protected function createMessageFactoryMock()
+    private function createMessageFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }
@@ -139,7 +139,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject The event dispatcher mock.
      */
-    protected function createEventDispatcherMock()
+    private function createEventDispatcherMock()
     {
         return $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
     }

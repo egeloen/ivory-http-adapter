@@ -26,7 +26,7 @@ use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 class BuzzHttpAdapter extends AbstractCurlHttpAdapter
 {
     /** @var \Buzz\Browser */
-    protected $browser;
+    private $browser;
 
     /**
      * Creates a buzz http adapter.
@@ -65,7 +65,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
-        $this->browser->getClient()->setTimeout($this->configuration->getTimeout());
+        $this->browser->getClient()->setTimeout($this->getConfiguration()->getTimeout());
         $this->browser->getClient()->setMaxRedirects(0);
 
         $url = (string) $internalRequest->getUrl();

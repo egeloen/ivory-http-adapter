@@ -26,7 +26,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class CookieSubscriber implements EventSubscriberInterface
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface */
-    protected $cookieJar;
+    private $cookieJar;
 
     /**
      * Creates a cookie subscriber.

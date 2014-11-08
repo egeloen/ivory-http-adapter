@@ -25,28 +25,28 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class Configuration implements ConfigurationInterface
 {
     /** @var \Ivory\HttpAdapter\Message\MessageFactoryInterface */
-    protected $messageFactory;
+    private $messageFactory;
 
     /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface */
-    protected $eventDispatcher;
+    private $eventDispatcher;
 
     /** @var string */
-    protected $protocolVersion = MessageInterface::PROTOCOL_VERSION_1_1;
+    private $protocolVersion = MessageInterface::PROTOCOL_VERSION_1_1;
 
     /** @var boolean */
-    protected $keepAlive = false;
+    private $keepAlive = false;
 
     /** @var string|null */
-    protected $encodingType;
+    private $encodingType;
 
     /** @var string */
-    protected $boundary;
+    private $boundary;
 
     /** @var float */
-    protected $timeout = 10;
+    private $timeout = 10;
 
     /** @var string */
-    protected $userAgent = 'Ivory Http Adapter';
+    private $userAgent = 'Ivory Http Adapter';
 
     /**
      * Creates an http adapter.

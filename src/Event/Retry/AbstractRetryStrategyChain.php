@@ -22,7 +22,7 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface */
-    protected $next;
+    private $next;
 
     /**
      * Creates a chained retry strategy.

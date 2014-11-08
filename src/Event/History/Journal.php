@@ -22,13 +22,13 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 class Journal implements JournalInterface
 {
     /** @var \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface */
-    protected $journalEntryFactory;
+    private $journalEntryFactory;
 
     /** @var array */
-    protected $entries = array();
+    private $entries = array();
 
     /** @var integer */
-    protected $limit = 10;
+    private $limit = 10;
 
     /**
      * Creates a journal.
