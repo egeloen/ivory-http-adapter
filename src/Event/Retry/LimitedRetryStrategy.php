@@ -63,6 +63,6 @@ class LimitedRetryStrategy extends AbstractRetryStrategyChain
      */
     protected function doVerify(InternalRequestInterface $request, HttpAdapterException $exception)
     {
-        return $request->getParameter(RetrySubscriber::RETRY_COUNT) > $this->limit;
+        return $request->getParameter(RetrySubscriber::RETRY_COUNT) < $this->limit;
     }
 }

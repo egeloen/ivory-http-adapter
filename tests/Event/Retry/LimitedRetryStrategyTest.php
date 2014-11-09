@@ -84,7 +84,7 @@ class LimitedRetryStrategyTest extends AbstractRetryStrategyTest
             ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT))
             ->will($this->returnValue(null));
 
-        $this->assertFalse($this->limitedRetryStrategy->verify($request, $exception));
+        $this->assertTrue($this->limitedRetryStrategy->verify($request, $exception));
     }
 
     public function testVerifyWithRetryCount()
@@ -100,7 +100,7 @@ class LimitedRetryStrategyTest extends AbstractRetryStrategyTest
             ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT))
             ->will($this->returnValue(++$limit));
 
-        $this->assertTrue($this->limitedRetryStrategy->verify($request, $exception));
+        $this->assertFalse($this->limitedRetryStrategy->verify($request, $exception));
     }
 
     public function testDelay()
