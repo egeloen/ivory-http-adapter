@@ -73,6 +73,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
     public function testPostSendEvent()
     {
+        $httpAdapter = $this->createHttpAdapterMock();
         $request = $this->createRequestMock();
         $response = $this->createResponseMock();
 
@@ -81,8 +82,9 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->method('debug')
             ->with(
                 $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
-                $this->callback(function ($context) use ($request, $response) {
+                $this->callback(function ($context) use ($httpAdapter, $request, $response) {
                     return $context['time'] > 0 && $context['time'] < 1
+                        && $context['adapter'] === $httpAdapter->getName()
                         && $context['request']['protocol_version'] === $request->getProtocolVersion()
                         && $context['request']['url'] === $request->getUrl()
                         && $context['request']['method'] === $request->getMethod()
@@ -100,12 +102,13 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 })
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
-        $this->loggerSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
+        $this->loggerSubscriber->onPostSend($this->createPostSendEvent($httpAdapter, $request, $response));
     }
 
     public function testExceptionEvent()
     {
+        $httpAdapter = $this->createHttpAdapterMock();
         $request = $this->createRequestMock();
         $exception = $this->createExceptionMock();
 
@@ -114,8 +117,9 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->method('error')
             ->with(
                 $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
-                $this->callback(function ($context) use ($request, $exception) {
+                $this->callback(function ($context) use ($httpAdapter, $request, $exception) {
                     return $context['time'] > 0 && $context['time'] < 1
+                        && $context['adapter'] === $httpAdapter->getName()
                         && $context['request']['protocol_version'] === $request->getProtocolVersion()
                         && $context['request']['url'] === $request->getUrl()
                         && $context['request']['method'] === $request->getMethod()
@@ -131,8 +135,22 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 })
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
-        $this->loggerSubscriber->onException($this->createExceptionEvent(null, $request, $exception));
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
+        $this->loggerSubscriber->onException($this->createExceptionEvent($httpAdapter, $request, $exception));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createHttpAdapterMock()
+    {
+        $httpAdapter = parent::createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue('name'));
+
+        return $httpAdapter;
     }
 
     /**
@@ -178,7 +196,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
         $request
             ->expects($this->any())
-            ->method('getParamters')
+            ->method('getParameters')
             ->will($this->returnValue(array('ban' => 'bor')));
 
         return $request;
@@ -212,8 +230,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
         $response
             ->expects($this->any())
-            ->method('getStream')
-            ->will($this->returnValue('stream'));
+            ->method('getBody')
+            ->will($this->returnValue('body'));
 
         $response
             ->expects($this->any())
