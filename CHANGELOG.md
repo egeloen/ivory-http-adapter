@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * cc3f5f2 - [Event][Retry] Fix verify for limited retry strategy
  * 6e10883 - [Encapsulation] Move everything from protected to private (except for entry point)
 
 ### 0.5.0 (2014-11-05)
