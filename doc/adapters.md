@@ -96,3 +96,23 @@ $zend2HttpAdapter = new Zend2HttpAdapter();
 // or
 $zend2HttpAdapter = new Zend2HttpAdapter(new Client());
 ```
+
+## Stopwatch
+
+The stopwatch http adapter allows you to time the http adaper process (including subscribers, etc) through the Symfony2
+stopwatch component.
+
+``` php
+use Ivory\HttpAdapter\CurlHttpAdapter;
+use Ivory\HttpAdapter\SocketHttpAdapter;
+use Ivory\HttpAdapter\StopwatchHttpAdapter;
+use Symfony\Component\Stopwatch\Stopwatch;
+
+$httpAdapter = new CurlHttpAdapter();
+// or
+$httpAdapter = new SocketHttpAdpater();
+
+$stopwatch = new Stopwatch();
+
+$stopwatchHttpAdapter = new StopwatchHttpAdapter($httpAdapter, $stopwatch);
+```

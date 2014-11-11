@@ -14,9 +14,6 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -24,7 +21,7 @@ use Psr\Log\LoggerInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class LoggerSubscriber extends AbstractTimerSubscriber
+class LoggerSubscriber extends AbstractDebuggerSubscriber
 {
     /** @var \Psr\Log\LoggerInterface */
     private $logger;
@@ -60,24 +57,22 @@ class LoggerSubscriber extends AbstractTimerSubscriber
     }
 
     /**
-     * {@inheritdoc}
+     * On post send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The post send event.
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $time = parent::onPostSend($event);
+        $datas = parent::onPostSend($event);
 
         $this->logger->debug(
             sprintf(
                 'Send "%s %s" in %.2f ms.',
                 $event->getRequest()->getMethod(),
                 (string) $event->getRequest()->getUrl(),
-                $time
+                $datas['time']
             ),
-            array(
-                'time'     => $time,
-                'request'  => $this->formatRequest($event->getRequest()),
-                'response' => $this->formatResponse($event->getResponse()),
-            )
+            $datas
         );
     }
 
@@ -94,11 +89,7 @@ class LoggerSubscriber extends AbstractTimerSubscriber
                 $event->getRequest()->getMethod(),
                 (string) $event->getRequest()->getUrl()
             ),
-            array(
-                'time'      => parent::onException($event),
-                'request'   => $this->formatRequest($event->getRequest()),
-                'exception' => $this->formatException($event->getException()),
-            )
+            parent::onException($event)
         );
     }
 
@@ -111,63 +102,6 @@ class LoggerSubscriber extends AbstractTimerSubscriber
             Events::PRE_SEND  => array('onPreSend', 100),
             Events::POST_SEND => array('onPostSend', 100),
             Events::EXCEPTION => array('onException', 100),
-        );
-    }
-
-    /**
-     * Formats the request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return array The formatted request.
-     */
-    private function formatRequest(InternalRequestInterface $request)
-    {
-        return array(
-            'protocol_version' => $request->getProtocolVersion(),
-            'url'              => (string) $request->getUrl(),
-            'method'           => $request->getMethod(),
-            'headers'          => $request->getHeaders(),
-            'raw_datas'        => $request->getRawDatas(),
-            'datas'            => $request->getDatas(),
-            'files'            => $request->getFiles(),
-            'parameters'       => $request->getParameters(),
-        );
-    }
-
-    /**
-     * Formats the response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return array The formatted response.
-     */
-    private function formatResponse(ResponseInterface $response)
-    {
-        return array(
-            'protocol_version' => $response->getProtocolVersion(),
-            'status_code'      => $response->getStatusCode(),
-            'reason_phrase'    => $response->getReasonPhrase(),
-            'headers'          => $response->getHeaders(),
-            'body'             => (string) $response->getBody(),
-            'parameters'       => $response->getParameters(),
-        );
-    }
-
-    /**
-     * Formats the exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
-     *
-     * @return array The formatted exception.
-     */
-    private function formatException(HttpAdapterException $exception)
-    {
-        return array(
-            'code'    => $exception->getCode(),
-            'message' => $exception->getMessage(),
-            'line'    => $exception->getLine(),
-            'file'    => $exception->getFile(),
         );
     }
 }

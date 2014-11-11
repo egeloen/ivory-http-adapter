@@ -24,7 +24,7 @@ use Psr\Http\Message\OutgoingRequestInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractHttpAdapter implements HttpAdapterInterface
+abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
 {
     /** @var \Ivory\HttpAdapter\ConfigurationInterface */
     private $configuration;
@@ -53,70 +53,6 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     public function setConfiguration(ConfigurationInterface $configuration)
     {
         $this->configuration = $configuration;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($url, array $headers = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_GET, $headers);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function head($url, array $headers = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_HEAD, $headers);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function trace($url, array $headers = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_TRACE, $headers);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function post($url, array $headers = array(), $datas = array(), array $files = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_POST, $headers, $datas, $files);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function put($url, array $headers = array(), $datas = array(), array $files = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_PUT, $headers, $datas, $files);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($url, array $headers = array(), $datas = array(), array $files = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_PATCH, $headers, $datas, $files);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($url, array $headers = array(), $datas = array(), array $files = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_DELETE, $headers, $datas, $files);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function options($url, array $headers = array(), $datas = array(), array $files = array())
-    {
-        return $this->send($url, InternalRequestInterface::METHOD_OPTIONS, $headers, $datas, $files);
     }
 
     /**

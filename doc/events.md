@@ -750,12 +750,35 @@ $time = $entry->getTime();
 $entry->setTime($time);
 ```
 
+### Stopwatch
+
+The stopwatch subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\StopwatchSubscriber` and allows you to
+time the http adapter sending through the Symfony2 Stopwatch component. To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\StopwatchSubscriber;
+use Symfony\Component\Stopwatch\Stopwatch;
+
+$stopwatch = new Stopwatch();
+$stopwatchSubscriber = new StopwatchSubscriber($stopwatch);
+
+$httpAdapter->getEventDispatcher()->addSubscriber($stopwatchSubscriber);
+```
+
+You can also change the stopwatch at runtime:
+
+``` php
+$stopwatch = $stopwatchSubscriber->getStopwatch();
+$stopwatchSubscriber->setStopwatch($stopwatch);
+```
+
 ## Event Subscriber Priorities
 
 All event subscribers can work together (thanks to the event priorities). Here, the summary:
 
 | Event Subscriber | Pre Send Event | Post Send Event | Exception Event |
 | ---------------- | :------------: | :-------------: | :-------------: |
+| Stopwatch        | 10000          | 10000           | 10000           |
 | Basic Auth       | 300            | -               | -               |
 | Cookie           | 300            | 300             | -               |
 | Status Code      | -              | 200             | -               |

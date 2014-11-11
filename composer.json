@@ -50,7 +50,8 @@
         "nategood/httpful": "Allows you to use the httpful adapter",
         "zendframework/zendframework1": "Allows you to use the Zend 1 adapter",
         "zendframework/zend-http": "Allows you to use the Zend 2 adapter",
-        "psr/log": "Allows you to use the logger event subscriber"
+        "psr/log": "Allows you to use the logger event subscriber",
+        "symfony/stopwatch": "Allows you to use the stopwatch event subscriber"
     },
     "autoload": {
         "psr-4": { "Ivory\\HttpAdapter\\": "src/" }
