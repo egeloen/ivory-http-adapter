@@ -8,41 +8,34 @@ on top of it through the `Ivory\HttpAdapter\Message\MessageInterface` and `Ivory
 
 ## Protocol version
 
-The protocol version represents the version for the http response received (1.0 or 1.1). If you want to get/set it,
-you can use:
+The protocol version represents the version for the http response received (1.0 or 1.1). If you want to get it, you can
+use:
 
 ``` php
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 $protocolVersion = $response->getProtocolVersion();
-
-$response->setProtocolVersion(ResponseInterface::PROTOCOL_VERSION_1_0);
-// or
-$response->setProtocolVersion(ResponseInterface::PROTOCOL_VERSION_1_1);
 ```
 
 ## Status code
 
-The status code represents the code for the http response received. If you want to get/set it, you can use:
+The status code represents the code for the http response received. If you want to get it, you can use:
 
 ``` php
 $statusCode = $response->getStatusCode();
-$response->setStatusCode(200);
 ```
 
 ## Reason phrase
 
-The reason phrase represents the sentence associated to the status code received. It you want to get/set it, you can
-use:
+The reason phrase represents the sentence associated to the status code received. It you want to get it, you can use:
 
 ``` php
 $reasonPhrase = $response->getReasonPhrase();
-$response->setReasonPhrase('OK');
 ```
 
 ## Headers
 
-The headers represents the metadatas which have be received. If you want to get/set them, you can use:
+The headers represents the metadatas which have be received. If you want to get them, you can use:
 
 ``` php
 $hasHeaders = $response->hasHeaders();
@@ -51,29 +44,20 @@ $response->setHeaders(array(
     'connection'      => 'close',
     'accept-language' => array('en', 'fr'),
 ));
-$response->addHeaders(array('accept-language' => 'it'));
-$response->removeHeaders(array('connection', 'accept-language'));
 
 $hasHeader = $response->hasHeader('connection');
 $header = $response->getHeader('connection');
 $headerAsArray = $response->getHeaderAsArray('connection');
-$response->setHeader('connection', 'close');
-$response->addHeader('accept-language', 'pt');
-$response->removeHeader('connection');
 ```
 
 ## Body
 
 The body represents the content of the response and is defined by the `Psr\Http\Message\StreamableInterface`. If you
-want to get/set it, you can use:
+want to get it, you can use:
 
 ``` php
 $hasBody = $request->hasBody();
 $body = $request->getBody();
-
-$request->setBody($body);
-// or
-$request->setBody(null);
 ```
 
 If you want to learn more about the stream body, you can read this [doc](/doc/stream.md).

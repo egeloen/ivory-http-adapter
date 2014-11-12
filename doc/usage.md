@@ -13,7 +13,6 @@ an associative array describing key/path pair.
 ## Send a GET request
 
 ``` php
-
 $response = $httpAdapter->get($url, $headers);
 ```
 
