@@ -35,6 +35,7 @@ if ($delay > 0) {
 }
 
 if ($redirect) {
+    header('HTTP/1.1 302 Moved Temporarily', true, 302);
     header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']);
     echo 'Redirect';
 } else {
