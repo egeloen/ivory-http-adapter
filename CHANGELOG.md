@@ -2,6 +2,9 @@
 
 ### 0.6.0 (????-??-??)
 
+ * c918dbf - [Composer] Rely on autoload-dev
+ * a88709c - [Test] Rename debug file to ivory-http-adapter.log
+ * d00e1f7 - [Test] Add Apache 2.4 compatibility
  * e4f6efb - Add Symfony2 stopwatch support
  * cc3f5f2 - [Event][Retry] Fix verify for limited retry strategy
  * 6e10883 - [Encapsulation] Move everything from protected to private (except for entry point)
