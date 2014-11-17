@@ -56,6 +56,9 @@
     "autoload": {
         "psr-4": { "Ivory\\HttpAdapter\\": "src/" }
     },
+    "autoload-dev": {
+        "psr-4": { "Ivory\\Tests\\HttpAdapter\\": "tests/" }
+    },
     "config": {
         "bin-dir": "bin"
     },
