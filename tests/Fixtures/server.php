@@ -13,7 +13,7 @@ require_once __DIR__.'/../Utility/PHPUnitUtility.php';
 
 use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
-$file = fopen(PHPUnitUtility::getFile(true, 'http-adapter.log'), 'c');
+$file = fopen(PHPUnitUtility::getFile(true, 'ivory-http-adapter.log'), 'c');
 flock($file, LOCK_EX);
 ftruncate($file, 0);
 

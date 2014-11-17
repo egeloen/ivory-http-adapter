@@ -35,7 +35,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
-        self::$file = PHPUnitUtility::getFile(true, 'http-adapter.log');
+        self::$file = PHPUnitUtility::getFile(true, 'ivory-http-adapter.log');
     }
 
     /**
