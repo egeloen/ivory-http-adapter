@@ -116,3 +116,26 @@ $stopwatch = new Stopwatch();
 
 $stopwatchHttpAdapter = new StopwatchHttpAdapter($httpAdapter, $stopwatch);
 ```
+
+## Factory
+
+You can either construct your http adapter through a factory. For example, in order to create a curl http adapter, you
+can do:
+
+``` php
+use Ivory\HttpAdapter\HttpAdapterFactory;
+
+$httpAdapter = HttpAdapterFactory::create('curl');
+```
+
+The available adapters are: `buzz`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`,
+`socket`, `zend1` or `zend2`.
+
+You can additionally register your own http adapters:
+
+``` php
+use Ivory\HttpAdapter\HttpAdapterFactory;
+
+HttpAdapterFactory::register('my_http_adapter', 'My\Own\HttpAdapter');
+$httpAdapter = HttpAdapterFactory::create('my_http_adapter');
+```
