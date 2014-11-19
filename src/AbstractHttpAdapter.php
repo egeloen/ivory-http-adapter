@@ -145,13 +145,15 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      * @param boolean                                             $associative     TRUE if the prepared headers should be associative else FALSE.
      * @param boolean                                             $contentType     TRUE if the content type header should be prepared else FALSE.
+     * @param boolean                                             $contentLength   TRUE if the content length header should be prepared else FALSE.
      *
      * @return array The prepared headers.
      */
     protected function prepareHeaders(
         InternalRequestInterface $internalRequest,
         $associative = true,
-        $contentType = true
+        $contentType = true,
+        $contentLength = false
     ) {
         if (!$internalRequest->hasHeader('Connection')) {
             $internalRequest->setHeader('Connection', $this->configuration->getKeepAlive() ? 'keep-alive' : 'close');
@@ -168,6 +170,11 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
             } elseif ($contentType && $internalRequest->hasDatas()) {
                 $internalRequest->setHeader('Content-Type', ConfigurationInterface::ENCODING_TYPE_URLENCODED);
             }
+        }
+
+        if ($contentLength && !$internalRequest->hasHeader('Content-Length')
+            && ($length = strlen($this->prepareBody($internalRequest))) > 0) {
+            $internalRequest->setHeader('Content-Length', $length);
         }
 
         if (!$internalRequest->hasHeader('User-Agent')) {

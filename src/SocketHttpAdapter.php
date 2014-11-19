@@ -87,16 +87,10 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      */
     private function prepareRequest(InternalRequestInterface $internalRequest, $path, $host, $port)
     {
-        $body = $this->prepareBody($internalRequest);
-
-        if (!$internalRequest->hasHeader('content-length') && ($contentLength = strlen($body)) > 0) {
-            $internalRequest->setHeader('content-length', $contentLength);
-        }
-
         $request = $internalRequest->getMethod().' '.$path.' HTTP/'.$internalRequest->getProtocolVersion()."\r\n";
         $request .= 'Host: '.$host.($port !== 80 ? ':'.$port : '')."\r\n";
-        $request .= implode("\r\n", $this->prepareHeaders($internalRequest, false))."\r\n\r\n";
-        $request .= $body."\r\n";
+        $request .= implode("\r\n", $this->prepareHeaders($internalRequest, false, true, true))."\r\n\r\n";
+        $request .= $this->prepareBody($internalRequest)."\r\n";
 
         return $request;
     }

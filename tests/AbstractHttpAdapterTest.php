@@ -106,7 +106,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $options = array(
             'headers' => array('Content-Type' => 'message/http'),
-            'body'    => 'TRACE /server.php HTTP/1.1',
+            'body'    => 'TRACE /server.php',
         );
 
         $this->assertResponse($response, $options);
@@ -173,7 +173,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $options['body'] = null;
         } else if ($method === Request::METHOD_TRACE) {
             $options['headers'] = array('Content-Type' => 'message/http');
-            $options['body'] = 'TRACE /server.php HTTP/1.1';
+            $options['body'] = 'TRACE /server.php';
         }
 
         $response = $this->httpAdapter->sendRequest($request);
@@ -209,7 +209,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $options['body'] = null;
         } else if ($method === Request::METHOD_TRACE) {
             $options['headers'] = array('Content-Type' => 'message/http');
-            $options['body'] = 'TRACE /server.php HTTP/1.1';
+            $options['body'] = 'TRACE /server.php';
         }
 
         $response = $this->httpAdapter->sendRequest($internalRequest);
@@ -434,6 +434,112 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     abstract protected function createHttpAdapter();
 
     /**
+     * Asserts the response.
+     *
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param array                                        $options  The options.
+     */
+    protected function assertResponse($response, array $options = array())
+    {
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\ResponseInterface', $response);
+
+        $options = array_merge(
+            array(
+                'protocol_version' => Request::PROTOCOL_VERSION_1_1,
+                'status_code'      => 200,
+                'reason_phrase'    => 'OK',
+                'headers'          => array('Content-Type' => 'text/html'),
+                'body'             => 'Ok',
+            ),
+            $options
+        );
+
+        $this->assertSame($options['protocol_version'], $response->getProtocolVersion());
+        $this->assertSame($options['status_code'], $response->getStatusCode());
+        $this->assertSame($options['reason_phrase'], $response->getReasonPhrase());
+
+        $this->assertNotEmpty($response->getHeaders());
+
+        foreach ($options['headers'] as $name => $value) {
+            $this->assertTrue($response->hasHeader($name));
+            $this->assertStringStartsWith($value, $response->getHeader($name));
+        }
+
+        if ($options['body'] === null) {
+            $this->assertFalse($response->hasBody());
+        } else {
+            $this->assertContains($options['body'], (string) $response->getBody());
+        }
+
+        $parameters = array();
+
+        if (isset($options['redirect_count'])) {
+            $parameters['redirect_count'] = $options['redirect_count'];
+        }
+
+        if (isset($options['effective_url'])) {
+            $parameters['effective_url'] = $options['effective_url'];
+        }
+
+        $this->assertSame($parameters, $response->getParameters());
+    }
+
+    /**
+     * Asserts the request.
+     *
+     * @param string $method          The method.
+     * @param array  $headers         The headers.
+     * @param array  $data            The data.
+     * @param array  $files           The files.
+     * @param string $protocolVersion The protocol version.
+     */
+    protected function assertRequest(
+        $method,
+        array $headers = array(),
+        array $data = array(),
+        array $files = array(),
+        $protocolVersion = Request::PROTOCOL_VERSION_1_1
+    ) {
+        $request = $this->getRequest();
+
+        $this->assertSame($protocolVersion, substr($request['SERVER']['SERVER_PROTOCOL'], 5));
+        $this->assertSame($method, $request['SERVER']['REQUEST_METHOD']);
+
+        $defaultHeaders = array(
+            'Connection' => 'close',
+            'User-Agent' => 'Ivory Http Adapter',
+        );
+
+        $headers = array_merge($defaultHeaders, $headers);
+
+        foreach ($headers as $name => $value) {
+            if (is_int($name)) {
+                list($name, $value) = explode(':', $value);
+            }
+
+            $name = strtoupper(str_replace(array('-'), array('_'), 'http-'.$name));
+
+            $this->assertArrayHasKey($name, $request['SERVER']);
+            $this->assertSame($value, $request['SERVER'][$name]);
+        }
+
+        $inputMethods = array(
+            Request::METHOD_PUT,
+            Request::METHOD_PATCH,
+            Request::METHOD_DELETE,
+            Request::METHOD_OPTIONS,
+        );
+
+        if (in_array($method, $inputMethods)) {
+            $this->assertRequestInputData($request, $data, !empty($files));
+            $this->assertRequestInputFiles($request, $files);
+        } else {
+            $this->assertRequestData($request, $data);
+            $this->assertRequestFiles($request, $files);
+        }
+    }
+
+    /**
      * Gets the url.
      *
      * @param array $query The query.
@@ -521,112 +627,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
                 array(realpath(__DIR__.'/Fixtures/files/file3.txt')),
             ),
         );
-    }
-
-    /**
-     * Asserts the response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     * @param array                                        $options  The options.
-     */
-    private function assertResponse($response, array $options = array())
-    {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Message\ResponseInterface', $response);
-
-        $options = array_merge(
-            array(
-                'protocol_version' => Request::PROTOCOL_VERSION_1_1,
-                'status_code'      => 200,
-                'reason_phrase'    => 'OK',
-                'headers'          => array('Content-Type' => 'text/html'),
-                'body'             => 'Ok',
-            ),
-            $options
-        );
-
-        $this->assertSame($options['protocol_version'], $response->getProtocolVersion());
-        $this->assertSame($options['status_code'], $response->getStatusCode());
-        $this->assertSame($options['reason_phrase'], $response->getReasonPhrase());
-
-        $this->assertNotEmpty($response->getHeaders());
-
-        foreach ($options['headers'] as $name => $value) {
-            $this->assertTrue($response->hasHeader($name));
-            $this->assertStringStartsWith($value, $response->getHeader($name));
-        }
-
-        if ($options['body'] === null) {
-            $this->assertFalse($response->hasBody());
-        } else {
-            $this->assertContains($options['body'], (string) $response->getBody());
-        }
-
-        $parameters = array();
-
-        if (isset($options['redirect_count'])) {
-            $parameters['redirect_count'] = $options['redirect_count'];
-        }
-
-        if (isset($options['effective_url'])) {
-            $parameters['effective_url'] = $options['effective_url'];
-        }
-
-        $this->assertSame($parameters, $response->getParameters());
-    }
-
-    /**
-     * Asserts the request.
-     *
-     * @param string $method          The method.
-     * @param array  $headers         The headers.
-     * @param array  $data            The data.
-     * @param array  $files           The files.
-     * @param string $protocolVersion The protocol version.
-     */
-    private function assertRequest(
-        $method,
-        array $headers = array(),
-        array $data = array(),
-        array $files = array(),
-        $protocolVersion = Request::PROTOCOL_VERSION_1_1
-    ) {
-        $request = $this->getRequest();
-
-        $this->assertSame($protocolVersion, substr($request['SERVER']['SERVER_PROTOCOL'], 5));
-        $this->assertSame($method, $request['SERVER']['REQUEST_METHOD']);
-
-        $defaultHeaders = array(
-            'Connection' => 'close',
-            'User-Agent' => 'Ivory Http Adapter',
-        );
-
-        $headers = array_merge($defaultHeaders, $headers);
-
-        foreach ($headers as $name => $value) {
-            if (is_int($name)) {
-                list($name, $value) = explode(':', $value);
-            }
-
-            $name = strtoupper(str_replace(array('-'), array('_'), 'http-'.$name));
-
-            $this->assertArrayHasKey($name, $request['SERVER']);
-            $this->assertSame($value, $request['SERVER'][$name]);
-        }
-
-        $inputMethods = array(
-            Request::METHOD_PUT,
-            Request::METHOD_PATCH,
-            Request::METHOD_DELETE,
-            Request::METHOD_OPTIONS,
-        );
-
-        if (in_array($method, $inputMethods)) {
-            $this->assertRequestInputData($request, $data, !empty($files));
-            $this->assertRequestInputFiles($request, $files);
-        } else {
-            $this->assertRequestData($request, $data);
-            $this->assertRequestFiles($request, $files);
-        }
     }
 
     /**
