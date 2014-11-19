@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * 5145b12 - Introduce http adapter factory
  * c918dbf - [Composer] Rely on autoload-dev
  * a88709c - [Test] Rename debug file to ivory-http-adapter.log
  * d00e1f7 - [Test] Add Apache 2.4 compatibility
