@@ -129,6 +129,30 @@ class HttpAdapterException extends \Exception
     {
         return new self(sprintf('An error occurred when saving the cookie jar ("%s").', $error));
     }
+    
+    /**
+     * Gets the "HTTP ADAPTER DOES NOT EXIST" exception.
+     * 
+     * @param string $name The name.
+     * 
+     * @return HttpAdapterException The "HTTP ADAPTER DOES NOT EXIST" exception.
+     */
+    public static function httpAdapterDoesNotExist($name)
+    {
+        return new self(sprintf('The http adapter "%s" does not exist.', $name));
+    }
+    
+    /**
+     * Gets the "HTTP ADAPTER MUST IMPLEMENT INTERFACE" exception.
+     * 
+     * @param string $class The class.
+     * 
+     * @return HttpAdapterException The "HTTP ADAPTER MUST IMPLEMENT INTERFACE" exception.
+     */
+    public static function httpAdapterMustImplementInterface($class)
+    {
+        return new self(sprintf('The class "%s" must implement "Ivory\HttpAdapter\HttpAdapterInterface".', $class));
+    }
 
     /**
      * Gets the "DOES NOT SUPPORT BODY" exception.
