@@ -1,7 +1,7 @@
 {
     "name": "egeloen/http-adapter",
     "description": "Issue HTTP request for PHP 5.3+.",
-    "keywords": [ "request", "http" ],
+    "keywords": [ "http", "http-adapter", "http-client", "psr-7" ],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -25,6 +25,7 @@
         "kriswallsmith/buzz": "~0.13",
         "nategood/httpful": "~0.2,>=0.2.17",
         "psr/log": "~1.0",
+        "react/http-client": "~0.4",
         "zendframework/zendframework1": "~1.12,>=1.12.9",
         "zendframework/zendframework": "dev-http-curl-adapter"
     },
@@ -36,10 +37,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/zf2.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/egeloen/RingPHP.git"
         }
     ],
     "suggest": {

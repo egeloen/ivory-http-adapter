@@ -16,7 +16,7 @@ namespace Ivory\HttpAdapter;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class HttpAdapterFactory 
+class HttpAdapterFactory
 {
     const BUZZ = 'buzz';
     const CURL = 'curl';
@@ -25,10 +25,11 @@ class HttpAdapterFactory
     const GUZZLE = 'guzzle';
     const GUZZLE_HTTP = 'guzzle_http';
     const HTTPFUL = 'httpful';
+    const REACT = 'react';
     const SOCKET = 'socket';
     const ZEND1 = 'zend1';
     const ZEND2 = 'zend2';
-    
+
     /** @var array */
     private static $classes = array(
         self::BUZZ              => 'Ivory\HttpAdapter\BuzzHttpAdapter',
@@ -38,18 +39,19 @@ class HttpAdapterFactory
         self::GUZZLE            => 'Ivory\HttpAdapter\GuzzleHttpAdapter',
         self::GUZZLE_HTTP       => 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter',
         self::HTTPFUL           => 'Ivory\HttpAdapter\HttpfulHttpAdapter',
+        self::REACT             => 'Ivory\HttpAdapter\ReactHttpAdapter',
         self::SOCKET            => 'Ivory\HttpAdapter\SocketHttpAdapter',
         self::ZEND1             => 'Ivory\HttpAdapter\Zend1HttpAdapter',
         self::ZEND2             => 'Ivory\HttpAdapter\Zend2HttpAdapter',
     );
-    
+
     /**
      * Creates an http adapter.
-     * 
+     *
      * @param string $name The name.
-     * 
+     *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the http adapter does not exist.
-     * 
+     *
      * @return \Ivory\HttpAdapter\HttpAdapterInterface The http adapter.
      */
     public static function create($name)
@@ -57,16 +59,16 @@ class HttpAdapterFactory
         if (!isset(self::$classes[$name])) {
             throw HttpAdapterException::httpAdapterDoesNotExist($name);
         }
-        
+
         return new self::$classes[$name]();
     }
-    
+
     /**
      * Registers an http adapter.
-     * 
+     *
      * @param string $name  The name.
      * @param string $class The class.
-     * 
+     *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If the class is not an http adapter.
      */
     public static function register($name, $class)
@@ -74,7 +76,7 @@ class HttpAdapterFactory
         if (!in_array('Ivory\HttpAdapter\HttpAdapterInterface', class_implements($class), true)) {
             throw HttpAdapterException::httpAdapterMustImplementInterface($class);
         }
-        
+
         self::$classes[$name] = $class;
     }
 }

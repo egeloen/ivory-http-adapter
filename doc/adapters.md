@@ -97,6 +97,19 @@ $zend2HttpAdapter = new Zend2HttpAdapter();
 $zend2HttpAdapter = new Zend2HttpAdapter(new Client());
 ```
 
+## React
+
+``` php
+use Ivory\HttpAdapter\ReactHttpAdapter;
+
+$reactHttpAdapter = new ReactHttpAdapter();
+```
+
+The React http adapter does not support all features. The limitations are:
+
+ * HTTP 1.1 not supported.
+ * Timeout not suppoted.
+
 ## Stopwatch
 
 The stopwatch http adapter allows you to time the http adaper process (including subscribers, etc) through the Symfony2
@@ -128,7 +141,7 @@ use Ivory\HttpAdapter\HttpAdapterFactory;
 $httpAdapter = HttpAdapterFactory::create('curl');
 ```
 
-The available adapters are: `buzz`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`,
+The available adapters are: `buzz`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`, `react`,
 `socket`, `zend1` or `zend2`.
 
 You can additionally register your own http adapters:

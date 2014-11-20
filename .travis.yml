@@ -11,7 +11,7 @@ php:
 
 env:
     global:
-        - TEST_SERVER=http://localhost:10000/server.php
+        - TEST_SERVER=http://127.0.0.1:10000/server.php
         - PHP_FCGI_CHILDREN=10
         - ENABLE_CURL=true
         - SYMFONY_VERSION=2.3.*
@@ -38,6 +38,7 @@ before_script:
     - composer require --no-update symfony/event-dispatcher:${SYMFONY_VERSION}
     - composer require --no-update --dev guzzlehttp/guzzle:${GUZZLE_HTTP_VERSION}
     - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove guzzlehttp/guzzle --dev --no-update; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove react/http-client --dev --no-update; fi
     - if [[ "$TRAVIS_PHP_VERSION" = "5.3.3" ]]; then composer remove zendframework/zendframework --dev --no-update; fi
     - composer install --prefer-source
 
