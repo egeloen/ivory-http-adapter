@@ -27,16 +27,12 @@
         "psr/log": "~1.0",
         "react/http-client": "~0.4",
         "zendframework/zendframework1": "~1.12,>=1.12.9",
-        "zendframework/zendframework": "dev-http-curl-adapter"
+        "zendframework/zendframework": "~2.3@dev"
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/phpunit-mock-objects.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/egeloen/zf2.git"
         }
     ],
     "suggest": {
