@@ -3,20 +3,35 @@
 In order to make an http request, you need to create an adapter. An adapter is designed around the
 `Ivory\HttpAdapter\HttpAdapterInterface` and represents the central point of the library.
 
+## Buzz
+
+``` php
+use Buzz\Browser;
+use Ivory\HttpAdapter\BuzzHttpAdapter;
+
+$httpAdapter = new BuzzHttpAdapter();
+// or
+$httpAdapter = new BuzzHttpAdapter(new Browser());
+```
+
+## Cake
+
+``` php
+use Ivory\HttpAdapter\CakeHttpAdapter;
+
+$httpAdapter = new CakeHttpAdapter();
+// or
+$httpAdapter = new CakeHttpAdapter(new \HttpSocket());
+```
+
+The Cake http adapter does not support HTTP 1.0.
+
 ## cURL
 
 ``` php
 use Ivory\HttpAdapter\CurlHttpAdapter;
 
 $httpAdapter = new CurlHttpAdapter();
-```
-
-## Fopen
-
-``` php
-use Ivory\HttpAdapter\FopenHttpAdapter;
-
-$httpAdapter = new FopenHttpAdapter();
 ```
 
 ## File get contents
@@ -27,23 +42,12 @@ use Ivory\HttpAdapter\FileGetContentsHttpAdapter;
 $httpAdapter = new FileGetContentsHttpAdapter();
 ```
 
-## Socket
+## Fopen
 
 ``` php
-use Ivory\HttpAdapter\SocketHttpAdapter;
+use Ivory\HttpAdapter\FopenHttpAdapter;
 
-$httpAdapter = new SocketHttpAdapter();
-```
-
-## Buzz
-
-``` php
-use Buzz\Browser;
-use Ivory\HttpAdapter\BuzzHttpAdapter;
-
-$httpAdapter = new BuzzHttpAdapter();
-// or
-$httpAdapter = new BuzzHttpAdapter(new Browser());
+$httpAdapter = new FopenHttpAdapter();
 ```
 
 ## Guzzle
@@ -76,6 +80,27 @@ use Ivory\HttpAdapter\HttpfulHttpAdapter;
 $httpAdapter = new HttpfulHttpAdapter();
 ```
 
+## React
+
+``` php
+use Ivory\HttpAdapter\ReactHttpAdapter;
+
+$reactHttpAdapter = new ReactHttpAdapter();
+```
+
+The React http adapter does not support all features. The limitations are:
+
+ * HTTP 1.1 not supported.
+ * Timeout not suppoted.
+
+## Socket
+
+``` php
+use Ivory\HttpAdapter\SocketHttpAdapter;
+
+$httpAdapter = new SocketHttpAdapter();
+```
+
 ## Zend 1
 
 ``` php
@@ -96,19 +121,6 @@ $zend2HttpAdapter = new Zend2HttpAdapter();
 // or
 $zend2HttpAdapter = new Zend2HttpAdapter(new Client());
 ```
-
-## React
-
-``` php
-use Ivory\HttpAdapter\ReactHttpAdapter;
-
-$reactHttpAdapter = new ReactHttpAdapter();
-```
-
-The React http adapter does not support all features. The limitations are:
-
- * HTTP 1.1 not supported.
- * Timeout not suppoted.
 
 ## Stopwatch
 
@@ -141,8 +153,8 @@ use Ivory\HttpAdapter\HttpAdapterFactory;
 $httpAdapter = HttpAdapterFactory::create('curl');
 ```
 
-The available adapters are: `buzz`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`, `react`,
-`socket`, `zend1` or `zend2`.
+The available adapters are: `buzz`, `cake`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`,
+`react`, `socket`, `zend1` or `zend2`.
 
 You can additionally register your own http adapters:
 

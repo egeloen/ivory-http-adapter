@@ -19,6 +19,7 @@ namespace Ivory\HttpAdapter;
 class HttpAdapterFactory
 {
     const BUZZ = 'buzz';
+    const CAKE = 'cake';
     const CURL = 'curl';
     const FILE_GET_CONTENTS = 'file_get_contents';
     const FOPEN = 'fopen';
@@ -33,6 +34,7 @@ class HttpAdapterFactory
     /** @var array */
     private static $classes = array(
         self::BUZZ              => 'Ivory\HttpAdapter\BuzzHttpAdapter',
+        self::CAKE              => 'Ivory\HttpAdapter\CakeHttpAdapter',
         self::CURL              => 'Ivory\HttpAdapter\CurlHttpAdapter',
         self::FILE_GET_CONTENTS => 'Ivory\HttpAdapter\FileGetContentsHttpAdapter',
         self::FOPEN             => 'Ivory\HttpAdapter\FopenHttpAdapter',

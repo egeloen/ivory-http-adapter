@@ -12,15 +12,16 @@
 
 The library allows to issue HTTP requests with PHP 5.3+. The supported adapters are:
 
- - [cURL](http://curl.haxx.se/)
- - [Fopen](http://php.net/manual/en/function.fopen.php)
- - [FileGetContents](http://php.net/manual/en/function.file-get-contents.php)
- - [Socket](http://php.net/manual/en/function.stream-socket-client.php)
  - [Buzz](https://github.com/kriswallsmith/Buzz)
+ - [Cake](http://cakephp.org/)
+ - [cURL](http://curl.haxx.se/)
+ - [FileGetContents](http://php.net/manual/en/function.file-get-contents.php)
+ - [Fopen](http://php.net/manual/en/function.fopen.php)
  - [Guzzle](http://guzzle3.readthedocs.org/)
  - [GuzzleHttp](http://guzzle.readthedocs.org/)
  - [Httpful](http://phphttpclient.com/)
  - [React](http://reactphp.org/)
+ - [Socket](http://php.net/manual/en/function.stream-socket-client.php)
  - [Zend1](http://framework.zend.com/manual/1.12/en/zend.http.html)
  - [Zend2](http://framework.zend.com/manual/2.0/en/modules/zend.http.html)
 
