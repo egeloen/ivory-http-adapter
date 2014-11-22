@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * dfe5877 - Add CakePHP http adapter
  * dc3fa00 - Add ReactPHP http adapter
  * 5145b12 - Introduce http adapter factory
  * c918dbf - [Composer] Rely on autoload-dev
