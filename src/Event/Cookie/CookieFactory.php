@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter\Event\Cookie;
 
-use Ivory\HttpAdapter\Event\Cookie\Cookie;
 use Ivory\HttpAdapter\Parser\CookieParser;
 
 /**

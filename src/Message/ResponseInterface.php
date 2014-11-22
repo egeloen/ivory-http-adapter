@@ -20,5 +20,4 @@ use Psr\Http\Message\IncomingResponseInterface;
  */
 interface ResponseInterface extends IncomingResponseInterface, MessageInterface
 {
-
 }

@@ -133,8 +133,6 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
 
         $this->basicAuthSubscriber->setMatcher($matcher);
         $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request));
-
-
     }
 
     /**
@@ -147,9 +145,11 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         return array(
             array(null),
             array('/^http:\/\/egeloen\.fr$/'),
-            array(function (InternalRequestInterface $request) {
-                return $request->getUrl() === 'http://egeloen.fr';
-            }),
+            array(
+                function (InternalRequestInterface $request) {
+                    return $request->getUrl() === 'http://egeloen.fr';
+                },
+            ),
         );
     }
 
@@ -162,9 +162,11 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
     {
         return array(
             array('/^foo$/'),
-            array(function (InternalRequestInterface $request) {
-                return $request->getUrl() === 'foo';
-            }),
+            array(
+                function (InternalRequestInterface $request) {
+                    return $request->getUrl() === 'foo';
+                },
+            ),
         );
     }
 

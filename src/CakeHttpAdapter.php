@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\ConfigurationInterface;
 use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;

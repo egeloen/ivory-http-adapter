@@ -69,7 +69,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
                     ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
                 ),
                 $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
-                $parameters = array('foo' => 'bar')
+                $parameters = array('foo' => 'bar'),
             ))
             ->getMockForAbstractClass();
 

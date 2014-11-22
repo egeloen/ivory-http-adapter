@@ -139,7 +139,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             for ($decodedBody = ''; !empty($body); $body = trim($body)) {
                 $pos = strpos($body, "\r\n");
                 $length = hexdec(substr($body, 0, $pos));
-                $decodedBody.= substr($body, $pos + 2, $length);
+                $decodedBody .= substr($body, $pos + 2, $length);
                 $body = substr($body, $pos + $length + 2);
             }
 
@@ -161,14 +161,14 @@ class SocketHttpAdapter extends AbstractHttpAdapter
         $info = parse_url($url);
 
         return array(
-            isset($info['scheme']) ? ($info['scheme'] === 'http' ? 'tcp': 'ssl') : 'tcp',
+            isset($info['scheme']) ? ($info['scheme'] === 'http' ? 'tcp' : 'ssl') : 'tcp',
             $info['host'],
             isset($info['port']) ? $info['port'] : 80,
             sprintf(
                 '%s%s',
                 isset($info['path']) ? $info['path'] : '/',
                 isset($info['query']) ? '?'.$info['query'] : ''
-            )
+            ),
         );
     }
 

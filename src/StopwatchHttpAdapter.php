@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Psr\Http\Message\OutgoingRequestInterface;
 use Symfony\Component\Stopwatch\Stopwatch;

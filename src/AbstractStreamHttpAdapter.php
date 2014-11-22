@@ -42,7 +42,7 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
                 'method'           => $internalRequest->getMethod(),
                 'header'           => $this->prepareHeaders($internalRequest, false),
                 'content'          => $this->prepareBody($internalRequest),
-            )
+            ),
         ));
 
         list($body, $headers) = $this->process($url, $context);

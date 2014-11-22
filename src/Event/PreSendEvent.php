@@ -18,5 +18,4 @@ namespace Ivory\HttpAdapter\Event;
  */
 class PreSendEvent extends AbstractEvent
 {
-
 }

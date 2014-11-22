@@ -399,7 +399,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
             ->method('getParameter')
             ->will($this->returnValueMap(array(
                 array(RedirectSubscriber::REDIRECT_COUNT, 1),
-                array(RedirectSubscriber::PARENT_REQUEST, $parentRequest = $this->createRequestMock())
+                array(RedirectSubscriber::PARENT_REQUEST, $parentRequest = $this->createRequestMock()),
             )));
 
         $parentRequest

@@ -237,7 +237,6 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
             'file3' => realpath(__DIR__.'/../Fixtures/files/file3.txt'),
         ));
 
-
         $this->assertSame(
             array(
                 'file1' => realpath(__DIR__.'/../Fixtures/files/file1.txt'),

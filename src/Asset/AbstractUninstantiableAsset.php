@@ -25,6 +25,5 @@ abstract class AbstractUninstantiableAsset
      */
     final private function __construct()
     {
-
     }
 }

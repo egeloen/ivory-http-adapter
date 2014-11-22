@@ -11,7 +11,6 @@
 
 namespace Ivory\Tests\HttpAdapter\Message\Stream;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Stream\Stream;
 use Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream;
 

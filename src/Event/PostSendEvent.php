@@ -29,8 +29,8 @@ class PostSendEvent extends AbstractEvent
      * Creates a post send event.
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response    The response.
      */
     public function __construct(
         HttpAdapterInterface $httpAdapter,

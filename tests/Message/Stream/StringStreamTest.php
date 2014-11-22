@@ -22,7 +22,6 @@ class StringStreamTest extends AbstractStreamTest
 {
     public function testAttachInvalid()
     {
-
     }
 
     /**

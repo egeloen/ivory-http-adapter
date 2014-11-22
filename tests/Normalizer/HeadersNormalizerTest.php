@@ -133,7 +133,7 @@ class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
             ' fOo '  => array(' bar '),
             'fOo'    => array(' bot '),
             ' Baz '  => array(' bat ', ' ban '),
-            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC ')
+            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
         );
     }
 }

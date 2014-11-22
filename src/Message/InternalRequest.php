@@ -49,8 +49,7 @@ class InternalRequest extends Request implements InternalRequestInterface
         $datas = array(),
         array $files = array(),
         array $parameters = array()
-    )
-    {
+    ) {
         parent::__construct($url, $method, $protocolVersion, $headers, null, $parameters);
 
         if (is_string($datas)) {

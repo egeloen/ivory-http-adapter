@@ -27,7 +27,7 @@ class ResourceStream extends AbstractStream
         ),
         'write' => array(
             'w', 'w+', 'rw', 'r+', 'x+', 'c+', 'wb', 'w+b', 'r+b', 'x+b', 'c+b', 'w+t', 'r+t', 'x+t', 'c+t', 'a', 'a+',
-        )
+        ),
     );
 
     /** @var resource */

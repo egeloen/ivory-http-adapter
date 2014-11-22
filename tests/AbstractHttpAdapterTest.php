@@ -171,7 +171,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $options = array();
         if ($method === Request::METHOD_HEAD) {
             $options['body'] = null;
-        } else if ($method === Request::METHOD_TRACE) {
+        } elseif ($method === Request::METHOD_TRACE) {
             $options['headers'] = array('Content-Type' => 'message/http');
             $options['body'] = 'TRACE /server.php';
         }
@@ -207,7 +207,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $options = array();
         if ($method === Request::METHOD_HEAD) {
             $options['body'] = null;
-        } else if ($method === Request::METHOD_TRACE) {
+        } elseif ($method === Request::METHOD_TRACE) {
             $options['headers'] = array('Content-Type' => 'message/http');
             $options['body'] = 'TRACE /server.php';
         }

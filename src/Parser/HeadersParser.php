@@ -50,7 +50,6 @@ class HeadersParser extends AbstractUninstantiableAsset
             } else {
                 $parsedHeaders[] = $name.': '.$value;
             }
-
         }
 
         return $parsedHeaders;
