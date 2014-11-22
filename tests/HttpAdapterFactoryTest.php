@@ -65,6 +65,7 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $adapters = array(
             array('buzz', 'Ivory\HttpAdapter\BuzzHttpAdapter'),
+            array('cake', 'Ivory\HttpAdapter\CakeHttpAdapter'),
             array('file_get_contents', 'Ivory\HttpAdapter\FileGetContentsHttpAdapter'),
             array('fopen', 'Ivory\HttpAdapter\FopenHttpAdapter'),
             array('socket', 'Ivory\HttpAdapter\SocketHttpAdapter'),

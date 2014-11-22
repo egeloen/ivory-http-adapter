@@ -16,16 +16,17 @@
         "symfony/event-dispatcher": "~2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
-        "phpunit/phpunit-mock-objects": "dev-matcher-verify as 2.3.x-dev",
-        "satooshi/php-coveralls": "~0.6",
+        "cakephp/cakephp": "~2.0",
         "ext-curl": "*",
         "guzzle/guzzle": "~3.9,>=3.9.2",
         "guzzlehttp/guzzle": "~4.1,>=4.1.4|~5.0",
         "kriswallsmith/buzz": "~0.13",
         "nategood/httpful": "~0.2,>=0.2.17",
+        "phpunit/phpunit": "~4.0",
+        "phpunit/phpunit-mock-objects": "dev-matcher-verify as 2.3.x-dev",
         "psr/log": "~1.0",
         "react/http-client": "~0.4",
+        "satooshi/php-coveralls": "~0.6",
         "zendframework/zendframework1": "~1.12,>=1.12.9",
         "zendframework/zendframework": "~2.3@dev"
     },
