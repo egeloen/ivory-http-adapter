@@ -17,7 +17,13 @@ env:
         - SYMFONY_VERSION=2.3.*
         - GUZZLE_HTTP_VERSION=5.*
 
-before_install:
+cache:
+    apt: true
+    directories:
+        - vendor
+        - $HOME/.composer/cache
+
+install:
     - sudo apt-get update
     - sudo apt-get install apache2 libapache2-mod-fastcgi
     - sudo a2enmod actions fastcgi alias
@@ -32,8 +38,6 @@ before_install:
     - if [[ "$TRAVIS_PHP_VERSION" = "5.3" ]]; then ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm; fi
     - if [[ "$TRAVIS_PHP_VERSION" != "5.3" && "$TRAVIS_PHP_VERSION" != hhvm* ]]; then php-cgi -b 127.0.0.1:9000 & fi
     - if [[ "$TRAVIS_PHP_VERSION" = hhvm* ]]; then hhvm --mode server -vServer.Type=fastcgi -vServer.Port=9000 -vServer.FixPathInfo=true & fi
-
-before_script:
     - composer self-update
     - composer require --no-update symfony/event-dispatcher:${SYMFONY_VERSION}
     - composer require --no-update --dev guzzlehttp/guzzle:${GUZZLE_HTTP_VERSION}
@@ -46,28 +50,31 @@ script: bin/phpunit --coverage-clover clover.xml
 
 after_script:
     - sed -i "/^disable_functions =.*$/d" ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-    - bin/coveralls
+    - bin/coveralls -v
 
 matrix:
     include:
-        - php: 5.5
+        - php: 5.6
           env: ENABLE_CURL=false
-        - php: 5.5
+        - php: 5.6
           env: GUZZLE_HTTP_VERSION=4.*
-        - php: 5.5
+        - php: 5.6
           env: SYMFONY_VERSION=2.1.*
-        - php: 5.5
+        - php: 5.6
           env: SYMFONY_VERSION=2.2.*
-        - php: 5.5
+        - php: 5.6
           env: SYMFONY_VERSION=2.4.*
-        - php: 5.5
+        - php: 5.6
           env: SYMFONY_VERSION=2.5.*
-        - php: 5.5
-          env: SYMFONY_VERSION=dev-master
+        - php: 5.6
+          env: SYMFONY_VERSION=2.6.*@dev
+        - php: 5.6
+          env: SYMFONY_VERSION=2.7.*@dev
     allow_failures:
         - php: hhvm
         - php: hhvm-nightly
-        - env: SYMFONY_VERSION=dev-master
+        - env: SYMFONY_VERSION=2.6.*@dev
+        - env: SYMFONY_VERSION=2.7.*@dev
 
 notifications:
     email: geloen.eric@gmail.com
