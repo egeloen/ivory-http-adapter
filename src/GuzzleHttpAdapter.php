@@ -13,7 +13,10 @@ namespace Ivory\HttpAdapter;
 
 use Guzzle\Http\Client;
 use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Exception\MultiTransferException;
+use Guzzle\Http\Message\Response as GuzzleResponse;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\Message\Stream\GuzzleStream;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
@@ -53,11 +56,79 @@ class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSend(InternalRequestInterface $internalRequest)
     {
-        $url = (string) $internalRequest->getUrl();
+        $request = $this->createGuzzleRequest($internalRequest);
 
+        try {
+            $response = $request->send();
+        } catch (\Exception $e) {
+            throw HttpAdapterException::cannotFetchUrl((string) $internalRequest->getUrl(), $this->getName(), $e->getMessage());
+        }
+
+        return $this->createResponseFromGuzzleResponse($response, $internalRequest->getMethod());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createFile($file)
+    {
+        return '@'.$file;
+    }
+
+    /**
+     * @param \Psr\Http\Message\OutgoingRequestInterface[] $requests
+     * @param null $success
+     * @param null $error
+     */
+    protected function doSendMulti(array $requests, $success = null, $error = null)
+    {
+        foreach ($requests as &$request) {
+            $request = $this->createGuzzleRequest($request);
+        }
+
+        try {
+            $responses = $this->client->send($requests);
+        } catch (MultiTransferException $e) {
+            foreach ($e->getSuccessfulRequests() as $request) {
+                if (is_callable($success)) {
+                    $success(
+                        $this->createResponseFromGuzzleResponse($request->getResponse(), $request->getMethod()),
+                        $this->getConfiguration()->getMessageFactory()->createRequest(
+                            $request->getUrl() //... TODO finish building proper request
+                        )
+                    );
+                }
+            }
+
+            foreach ($e->getFailedRequests() as $request) {
+                if (is_callable($error)) {
+                    $error(new HttpAdapterException()); // TODO add request
+                }
+            }
+
+            return;
+        }
+
+        foreach ($responses as $response) {
+            if (is_callable($success)) {
+                $success(
+                    $this->createResponseFromGuzzleResponse($response, null), // TODO don't have access to original request here
+                    new Request('http://foo.com') // TODO don't have access to original request here
+                );
+            }
+        }
+    }
+
+    /**
+     * @param InternalRequestInterface $internalRequest
+     *
+     * @return \Guzzle\Http\Message\RequestInterface
+     */
+    private function createGuzzleRequest(InternalRequestInterface $internalRequest)
+    {
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
-            $url,
+            (string) $internalRequest->getUrl(),
             $this->prepareHeaders($internalRequest),
             $this->prepareContent($internalRequest),
             array(
@@ -70,12 +141,17 @@ class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
 
         $request->setProtocolVersion($internalRequest->getProtocolVersion());
 
-        try {
-            $response = $request->send();
-        } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
-        }
+        return $request;
+    }
 
+    /**
+     * @param GuzzleResponse $response
+     * @param string         $method
+     *
+     * @return Message\ResponseInterface
+     */
+    private function createResponseFromGuzzleResponse(GuzzleResponse $response, $method)
+    {
         return $this->createResponse(
             $response->getProtocolVersion(),
             $response->getStatusCode(),
@@ -85,16 +161,8 @@ class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
                 function () use ($response) {
                     return new GuzzleStream($response->getBody());
                 },
-                $internalRequest->getMethod()
+                $method
             )
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createFile($file)
-    {
-        return '@'.$file;
     }
 }

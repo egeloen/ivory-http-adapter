@@ -313,6 +313,37 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @group multi
+     */
+    public function testSendMultiAllSuccessful()
+    {
+        $adapter = $this->createHttpAdapter();
+        $self = $this;
+        $successCount = 0;
+        $errorCount = 0;
+        $requests = array_map(
+            function ($args) {
+                return new Request($args[0], $args[1]);
+            },
+            $this->requestProvider()
+        );
+
+        $success = function ($response, $request) use ($self, &$successCount) {
+            $self->assertInstanceOf('\Ivory\HttpAdapter\Message\ResponseInterface', $response);
+            $self->assertInstanceOf('\Psr\Http\Message\OutgoingRequestInterface', $request);
+            $successCount++;
+        };
+        $error = function($exception) use ($self, &$errorCount) {
+            $errorCount++;
+        };
+
+        $adapter->sendMulti($requests, $success, $error);
+
+        $this->assertSame(26, $successCount);
+        $this->assertSame(0, $errorCount);
+    }
+
+    /**
+     * @group multi
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Request must be of type "Psr\Http\Message\OutgoingRequestInterface", "string" given.
      */
