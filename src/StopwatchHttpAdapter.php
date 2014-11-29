@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Psr\Http\Message\OutgoingRequestInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -110,14 +109,6 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
     public function sendRequest(OutgoingRequestInterface $request)
     {
         return $this->watch('sendRequest', array($request));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function sendInternalRequest(InternalRequestInterface $internalRequest)
-    {
-        return $this->watch('sendInternalRequest', array($internalRequest));
     }
 
     /**

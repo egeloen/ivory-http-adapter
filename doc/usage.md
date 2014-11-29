@@ -69,22 +69,14 @@ All methods are described by the `Ivory\HttpAdapter\Message\RequestInterface::ME
 ## Send a PSR-7 request
 
 ``` php
+use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
 
 $response = $httpAdapter->sendRequest(new Request($url, $method));
-```
-
-If you want to learn more about the `Ivory\HttpAdapter\Message\Request`, your can read this [doc](/doc/request.md).
-
-## Send an internal request
-
-``` php
-use Ivory\HttpAdapter\Message\InternalRequest;
-
-$response = $httpAdapter->sendInternalRequest(new InternalRequest($url, $method));
 // or
 $response = $httpAdapter->sendRequest(new InternalRequest($url, $method));
 ```
 
-If you want to learn more about the `Ivory\HttpAdapter\Message\InternalRequest`, your can read this
-[doc](/doc/internal_request.md).
+If you want to learn more about the `Ivory\HttpAdapter\Message\Request`, your can read this [doc](/doc/request.md) or
+if you want to learn more about the `Ivory\HttpAdapter\Message\InternalRequest`, your can read this
+[doc](/doc/internal_request.md)..

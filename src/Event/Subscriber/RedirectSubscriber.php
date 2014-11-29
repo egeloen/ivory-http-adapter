@@ -145,10 +145,9 @@ class RedirectSubscriber implements EventSubscriberInterface
             return $this->prepareResponse($request, $response);
         }
 
-        $redirectRequest = $this->prepareRedirectRequest($httpAdapter, $request, $response);
-        $redirectResponse = $httpAdapter->sendInternalRequest($redirectRequest);
-
-        $event->setResponse($redirectResponse);
+        $event->setResponse(
+            $httpAdapter->sendRequest($this->prepareRedirectRequest($httpAdapter, $request, $response))
+        );
     }
 
     /**

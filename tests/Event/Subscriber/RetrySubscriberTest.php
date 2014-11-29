@@ -133,7 +133,7 @@ class RetrySubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter
             ->expects($this->once())
-            ->method('sendInternalRequest')
+            ->method('sendRequest')
             ->with($this->identicalTo($request))
             ->will($this->returnValue($response = $this->createResponseMock()));
 
@@ -182,7 +182,7 @@ class RetrySubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter
             ->expects($this->once())
-            ->method('sendInternalRequest')
+            ->method('sendRequest')
             ->with($this->identicalTo($request))
             ->will($this->returnValue($response = $this->createResponseMock()));
 

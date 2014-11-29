@@ -95,40 +95,6 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function sendInternalRequest(InternalRequestInterface $internalRequest)
-    {
-        $preSendEvent = new PreSendEvent($this, $internalRequest);
-
-        try {
-            $this->configuration->getEventDispatcher()->dispatch(Events::PRE_SEND, $preSendEvent);
-
-            $response = $this->doSend($preSendEvent->getRequest());
-
-            $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response);
-            $this->configuration->getEventDispatcher()->dispatch(Events::POST_SEND, $postSendEvent);
-        } catch (HttpAdapterException $e) {
-            $exceptionEvent = new ExceptionEvent($this, $preSendEvent->getRequest(), $e);
-            $this->configuration->getEventDispatcher()->dispatch(Events::EXCEPTION, $exceptionEvent);
-
-            if ($exceptionEvent->hasResponse()) {
-                return $exceptionEvent->getResponse();
-            }
-
-            $exceptionEvent->getException()->setRequest($preSendEvent->getRequest());
-
-            if (isset($response)) {
-                $exceptionEvent->getException()->setResponse($response);
-            }
-
-            throw $exceptionEvent->getException();
-        }
-
-        return $postSendEvent->getResponse();
-    }
-
-    /**
      * Does a request send.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
@@ -257,6 +223,40 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
             $body,
             $parameters
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    private function sendInternalRequest(InternalRequestInterface $internalRequest)
+    {
+        $preSendEvent = new PreSendEvent($this, $internalRequest);
+
+        try {
+            $this->configuration->getEventDispatcher()->dispatch(Events::PRE_SEND, $preSendEvent);
+
+            $response = $this->doSend($preSendEvent->getRequest());
+
+            $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response);
+            $this->configuration->getEventDispatcher()->dispatch(Events::POST_SEND, $postSendEvent);
+        } catch (HttpAdapterException $e) {
+            $exceptionEvent = new ExceptionEvent($this, $preSendEvent->getRequest(), $e);
+            $this->configuration->getEventDispatcher()->dispatch(Events::EXCEPTION, $exceptionEvent);
+
+            if ($exceptionEvent->hasResponse()) {
+                return $exceptionEvent->getResponse();
+            }
+
+            $exceptionEvent->getException()->setRequest($preSendEvent->getRequest());
+
+            if (isset($response)) {
+                $exceptionEvent->getException()->setResponse($response);
+            }
+
+            throw $exceptionEvent->getException();
+        }
+
+        return $postSendEvent->getResponse();
     }
 
     /**

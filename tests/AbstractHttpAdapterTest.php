@@ -12,7 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\ConfigurationInterface;
-use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
 use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
@@ -189,42 +188,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * @dataProvider internalRequestProvider
-     */
-    public function testSendInternalRequest(
-        $url,
-        $method,
-        array $headers = array(),
-        array $data = array(),
-        array $files = array()
-    ) {
-        $internalRequest = new InternalRequest($url, $method);
-        $internalRequest->setHeaders($headers);
-        $internalRequest->setDatas($data);
-        $internalRequest->setFiles($files);
-
-        $options = array();
-        if ($method === Request::METHOD_HEAD) {
-            $options['body'] = null;
-        } elseif ($method === Request::METHOD_TRACE) {
-            $options['headers'] = array('Content-Type' => 'message/http');
-            $options['body'] = 'TRACE /server.php';
-        }
-
-        $response = $this->httpAdapter->sendRequest($internalRequest);
-
-        if ($method === Request::METHOD_TRACE && $response->getStatusCode() === 405) {
-            $this->markTestIncomplete();
-        }
-
-        $this->assertResponse($response, $options);
-
-        if ($method !== Request::METHOD_TRACE) {
-            $this->assertRequest($method, $headers, $data, $files);
-        }
-    }
-
     public function testSendWithProtocolVersion10()
     {
         $this->httpAdapter->getConfiguration()->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_1_0);
@@ -348,41 +311,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function requestProvider()
     {
-        return array_merge(
-            $this->internalRequestProvider(),
-            array(
-                array($this->getUrl(), Request::METHOD_GET),
-                array($this->getUrl(), Request::METHOD_GET, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_HEAD),
-                array($this->getUrl(), Request::METHOD_HEAD, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_TRACE),
-                array($this->getUrl(), Request::METHOD_TRACE, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_POST),
-                array($this->getUrl(), Request::METHOD_POST, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_POST, $this->getHeaders(), $this->getData()),
-                array($this->getUrl(), Request::METHOD_PUT),
-                array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_PUT, $this->getHeaders(), $this->getData()),
-                array($this->getUrl(), Request::METHOD_PATCH),
-                array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_PATCH, $this->getHeaders(), $this->getData()),
-                array($this->getUrl(), Request::METHOD_DELETE),
-                array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_DELETE, $this->getHeaders(), $this->getData()),
-                array($this->getUrl(), Request::METHOD_OPTIONS),
-                array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders()),
-                array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
-            )
-        );
-    }
-
-    /**
-     * Gets the internal request provider.
-     *
-     * @return array The internal request provider.
-     */
-    public function internalRequestProvider()
-    {
         return array(
             array($this->getUrl(), Request::METHOD_GET),
             array($this->getUrl(), Request::METHOD_GET, $this->getHeaders()),
@@ -410,6 +338,18 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders()),
             array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
             array($this->getUrl(), Request::METHOD_OPTIONS, $this->getHeaders(), $this->getData(), $this->getFiles()),
+        );
+    }
+
+    /**
+     * Gets the internal request provider.
+     *
+     * @return array The internal request provider.
+     */
+    public function internalRequestProvider()
+    {
+        return array(
+
         );
     }
 

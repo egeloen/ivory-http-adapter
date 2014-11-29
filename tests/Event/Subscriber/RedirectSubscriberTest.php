@@ -191,7 +191,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter
             ->expects($this->once())
-            ->method('sendInternalRequest')
+            ->method('sendRequest')
             ->with($this->identicalTo($requestClone))
             ->will($this->returnValue($redirectResponse = $this->createResponseMock()));
 
@@ -283,7 +283,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter
             ->expects($this->once())
-            ->method('sendInternalRequest')
+            ->method('sendRequest')
             ->with($this->identicalTo($requestClone))
             ->will($this->returnValue($redirectResponse = $this->createResponseMock()));
 
@@ -372,7 +372,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $httpAdapter
             ->expects($this->once())
-            ->method('sendInternalRequest')
+            ->method('sendRequest')
             ->with($this->identicalTo($requestClone))
             ->will($this->returnValue($redirectResponse = $this->createResponseMock()));
 

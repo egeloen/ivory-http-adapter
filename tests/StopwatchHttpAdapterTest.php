@@ -170,11 +170,6 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
             array('options'),
             array('send', array('url', RequestInterface::METHOD_GET)),
             array('sendRequest', array($this->getMock('Psr\Http\Message\OutgoingRequestInterface')), 'sendRequest'),
-            array(
-                'sendInternalRequest',
-                array($this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface')),
-                'sendInternalRequest',
-            ),
         );
     }
 

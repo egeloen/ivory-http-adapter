@@ -80,7 +80,7 @@ class RetrySubscriber implements EventSubscriberInterface
         }
 
         $request->setParameter(self::RETRY_COUNT, $request->getParameter(self::RETRY_COUNT) + 1);
-        $response = $event->getHttpAdapter()->sendInternalRequest($request);
+        $response = $event->getHttpAdapter()->sendRequest($request);
 
         $event->setResponse($response);
     }

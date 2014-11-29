@@ -11,7 +11,6 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Psr\Http\Message\OutgoingRequestInterface;
 
 /**
@@ -168,17 +167,6 @@ interface HttpAdapterInterface
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
     public function sendRequest(OutgoingRequestInterface $request);
-
-    /**
-     * Sends an internal request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
-     */
-    public function sendInternalRequest(InternalRequestInterface $internalRequest);
 
     /**
      * Gets the name.

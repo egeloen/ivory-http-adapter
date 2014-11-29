@@ -64,7 +64,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($configuration, $this->httpAdapter->getConfiguration());
     }
 
-    public function testSendInternalRequestDispatchPreSendEvent()
+    public function testSendRequestDispatchPreSendEvent()
     {
         $httpAdapter = $this->httpAdapter;
         $internalRequest = $this->createInternalRequestMock();
@@ -97,10 +97,10 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
                 })
             );
 
-        $this->assertSame($response, $this->httpAdapter->sendInternalRequest($internalRequest));
+        $this->assertSame($response, $this->httpAdapter->sendRequest($internalRequest));
     }
 
-    public function testSendInternalRequestDispatchPostSendEvent()
+    public function testSendRequestDispatchPostSendEvent()
     {
         $httpAdapter = $this->httpAdapter;
         $internalRequest = $this->createInternalRequestMock();
@@ -134,10 +134,10 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
                 })
             );
 
-        $this->assertSame($responseOverride, $this->httpAdapter->sendInternalRequest($internalRequest));
+        $this->assertSame($responseOverride, $this->httpAdapter->sendRequest($internalRequest));
     }
 
-    public function testSendInternalRequestDispatchExceptionEventAndReturnResponse()
+    public function testSendRequestDispatchExceptionEventAndReturnResponse()
     {
         $httpAdapter = $this->httpAdapter;
         $internalRequest = $this->createInternalRequestMock();
@@ -171,10 +171,10 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
                 })
             );
 
-        $this->assertSame($response, $this->httpAdapter->sendInternalRequest($internalRequest));
+        $this->assertSame($response, $this->httpAdapter->sendRequest($internalRequest));
     }
 
-    public function testSendInternalRequestDispatchExceptionEventWhenDoSendThrowException()
+    public function testSendRequestDispatchExceptionEventWhenDoSendThrowException()
     {
         $httpAdapter = $this->httpAdapter;
         $internalRequest = $this->createInternalRequestMock();
@@ -218,14 +218,14 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('setResponse');
 
         try {
-            $this->httpAdapter->sendInternalRequest($internalRequest);
+            $this->httpAdapter->sendRequest($internalRequest);
             $this->fail();
         } catch (HttpAdapterException $e) {
             $this->assertSame($e, $exceptionOverride);
         }
     }
 
-    public function testSendInternalRequestDispatchExceptionEventWhenPreSendThrowException()
+    public function testSendRequestDispatchExceptionEventWhenPreSendThrowException()
     {
         $httpAdapter = $this->httpAdapter;
         $internalRequest = $this->createInternalRequestMock();
@@ -264,14 +264,14 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('setResponse');
 
         try {
-            $this->httpAdapter->sendInternalRequest($internalRequest);
+            $this->httpAdapter->sendRequest($internalRequest);
             $this->fail();
         } catch (HttpAdapterException $e) {
             $this->assertSame($e, $exception);
         }
     }
 
-    public function testSendInternalRequestDispatchExceptionEventWhenPostSendThrowException()
+    public function testSendRequestDispatchExceptionEventWhenPostSendThrowException()
     {
         $httpAdapter = $this->httpAdapter;
         $internalRequest = $this->createInternalRequestMock();
@@ -318,7 +318,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($response));
 
         try {
-            $this->httpAdapter->sendInternalRequest($internalRequest);
+            $this->httpAdapter->sendRequest($internalRequest);
             $this->fail();
         } catch (HttpAdapterException $e) {
             $this->assertSame($e, $exception);
