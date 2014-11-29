@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * a260489 - [Travis] Move Symfony 2.6.*@dev to 2.6.*
  * 605d943 - Remove HttpAdapterInterface::sendInternalRequest method
  * 4c33b6c - [Travis] Update config
  * 90c58a3 - Add .gitattributes
