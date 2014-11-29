@@ -342,18 +342,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Gets the internal request provider.
-     *
-     * @return array The internal request provider.
-     */
-    public function internalRequestProvider()
-    {
-        return array(
-
-        );
-    }
-
-    /**
      * Gets the timeout provider.
      *
      * @return array The timeout provider.
