@@ -99,13 +99,22 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      */
     final public function sendMulti(array $requests, $success = null, $error = null)
     {
-        foreach ($requests as $request) {
+        foreach ($requests as &$request) {
             if (!$request instanceof OutgoingRequestInterface) {
                 throw new \InvalidArgumentException(
                     sprintf(
                         'Request must be of type "Psr\Http\Message\OutgoingRequestInterface", "%s" given.',
                         gettype($request) === 'object' ? get_class($request) : gettype($request)
                     )
+                );
+            }
+
+            if (!$request instanceof InternalRequestInterface) {
+                $request = $this->configuration->getMessageFactory()->createInternalRequest(
+                    $request->getUrl(),
+                    $request->getMethod(),
+                    $this->configuration->getProtocolVersion(),
+                    $request->getHeaders()
                 );
             }
         }
@@ -116,9 +125,9 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * Does a sendMulti.
      *
-     * @param \Psr\Http\Message\OutgoingRequestInterface[] $requests Array or requests.
-     * @param callback|null                                $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface and \Psr\Http\Message\OutgoingRequestInterface as arguments.
-     * @param callback|null                                $error    Error callback with instance of \Ivory\HttpAdapter\HttpAdapterException as the argument.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface[] $requests Array or requests.
+     * @param callback|null                                         $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface and \Psr\Http\Message\OutgoingRequestInterface as arguments.
+     * @param callback|null                                         $error    Error callback with instance of \Ivory\HttpAdapter\HttpAdapterException as the argument.
      */
     protected function doSendMulti(array $requests, $success = null, $error = null)
     {
