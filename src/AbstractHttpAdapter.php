@@ -108,7 +108,21 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
                     )
                 );
             }
+        }
 
+        $this->doSendMulti($requests, $success, $error);
+    }
+
+    /**
+     * Does a sendMulti.
+     *
+     * @param \Psr\Http\Message\OutgoingRequestInterface[] $requests Array or requests.
+     * @param callback|null                                $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface as the argument.
+     * @param callback|null                                $error    Error callback with instance of \Ivory\HttpAdapter\HttpAdapterException as the argument.
+     */
+    protected function doSendMulti(array $requests, $success = null, $error = null)
+    {
+        foreach ($requests as $request) {
             try {
                 $response = $this->sendRequest($request);
 
