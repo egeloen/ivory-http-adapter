@@ -97,7 +97,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
-    public function sendMulti(array $requests, $success = null, $error = null)
+    final public function sendMulti(array $requests, $success = null, $error = null)
     {
         foreach ($requests as $request) {
             if (!$request instanceof OutgoingRequestInterface) {
