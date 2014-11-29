@@ -117,7 +117,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      * Does a sendMulti.
      *
      * @param \Psr\Http\Message\OutgoingRequestInterface[] $requests Array or requests.
-     * @param callback|null                                $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface as the argument.
+     * @param callback|null                                $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface and \Psr\Http\Message\OutgoingRequestInterface as arguments.
      * @param callback|null                                $error    Error callback with instance of \Ivory\HttpAdapter\HttpAdapterException as the argument.
      */
     protected function doSendMulti(array $requests, $success = null, $error = null)
@@ -127,7 +127,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
                 $response = $this->sendRequest($request);
 
                 if (is_callable($success)) {
-                    $success($response);
+                    $success($response, $request);
                 }
             } catch (HttpAdapterException $e) {
                 if (is_callable($error)) {

@@ -172,7 +172,7 @@ interface HttpAdapterInterface
      * Sends multiple PSR requests.
      *
      * @param \Psr\Http\Message\OutgoingRequestInterface[] $requests Array or requests.
-     * @param callback|null                                $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface as the argument.
+     * @param callback|null                                $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface and \Psr\Http\Message\OutgoingRequestInterface as arguments.
      * @param callback|null                                $error    Error callback with instance of \Ivory\HttpAdapter\HttpAdapterException as the argument.
      */
     public function sendMulti(array $requests, $success = null, $error = null);
