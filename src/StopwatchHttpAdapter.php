@@ -114,6 +114,14 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
+    public function sendMulti(array $requests, $success = null, $error = null)
+    {
+        return $this->watch('sendMulti', array($requests, $success, $error));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return $this->httpAdapter->getName();

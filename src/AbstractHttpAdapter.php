@@ -95,6 +95,35 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function sendMulti(array $requests, $success = null, $error = null)
+    {
+        foreach ($requests as $request) {
+            if (!$request instanceof OutgoingRequestInterface) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Request must be of type "Psr\Http\Message\OutgoingRequestInterface", "%s" given.',
+                        gettype($request) === 'object' ? get_class($request) : gettype($request)
+                    )
+                );
+            }
+
+            try {
+                $response = $this->sendRequest($request);
+
+                if (is_callable($success)) {
+                    $success($response);
+                }
+            } catch (HttpAdapterException $e) {
+                if (is_callable($error)) {
+                    $error($e);
+                }
+            }
+        }
+    }
+
+    /**
      * Does a request send.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
