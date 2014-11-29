@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * 605d943 - Remove HttpAdapterInterface::sendInternalRequest method
  * 4c33b6c - [Travis] Update config
  * 90c58a3 - Add .gitattributes
  * dfe5877 - Add CakePHP http adapter
