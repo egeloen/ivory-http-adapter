@@ -95,6 +95,58 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function sendMulti(array $requests, $success = null, $error = null)
+    {
+        foreach ($requests as &$request) {
+            if (!$request instanceof OutgoingRequestInterface) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Request must be of type "Psr\Http\Message\OutgoingRequestInterface", "%s" given.',
+                        gettype($request) === 'object' ? get_class($request) : gettype($request)
+                    )
+                );
+            }
+
+            if (!$request instanceof InternalRequestInterface) {
+                $request = $this->configuration->getMessageFactory()->createInternalRequest(
+                    $request->getUrl(),
+                    $request->getMethod(),
+                    $this->configuration->getProtocolVersion(),
+                    $request->getHeaders()
+                );
+            }
+        }
+
+        $this->doSendMulti($requests, $success, $error);
+    }
+
+    /**
+     * Does a sendMulti.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface[] $requests Array or requests.
+     * @param callback|null                                         $success  Success callback with instance of \Ivory\HttpAdapter\Message\ResponseInterface and \Psr\Http\Message\OutgoingRequestInterface as arguments.
+     * @param callback|null                                         $error    Error callback with instance of \Ivory\HttpAdapter\HttpAdapterException as the argument.
+     */
+    protected function doSendMulti(array $requests, $success = null, $error = null)
+    {
+        foreach ($requests as $request) {
+            try {
+                $response = $this->sendRequest($request);
+
+                if (is_callable($success)) {
+                    $success($response, $request);
+                }
+            } catch (HttpAdapterException $e) {
+                if (is_callable($error)) {
+                    $error($e);
+                }
+            }
+        }
+    }
+
+    /**
      * Does a request send.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
