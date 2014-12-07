@@ -200,27 +200,29 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      */
     private function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $preSendEvent = new PreSendEvent($this, $internalRequest);
-
         try {
-            $this->configuration->getEventDispatcher()->dispatch(Events::PRE_SEND, $preSendEvent);
+            $this->configuration->getEventDispatcher()->dispatch(
+                Events::PRE_SEND,
+                $preSendEvent = new PreSendEvent($this, $internalRequest)
+            );
 
             $response = $this->doSendInternalRequest($preSendEvent->getRequest());
 
-            $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response);
-            $this->configuration->getEventDispatcher()->dispatch(Events::POST_SEND, $postSendEvent);
+            $this->configuration->getEventDispatcher()->dispatch(
+                Events::POST_SEND,
+                $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response)
+            );
         } catch (HttpAdapterException $e) {
-            $exceptionEvent = new ExceptionEvent($this, $preSendEvent->getRequest(), $e);
-            $this->configuration->getEventDispatcher()->dispatch(Events::EXCEPTION, $exceptionEvent);
+            $e->setRequest($internalRequest);
+            $e->setResponse(isset($response) ? $response : null);
+
+            $this->configuration->getEventDispatcher()->dispatch(
+                Events::EXCEPTION,
+                $exceptionEvent = new ExceptionEvent($this, $internalRequest, $e)
+            );
 
             if ($exceptionEvent->hasResponse()) {
                 return $exceptionEvent->getResponse();
-            }
-
-            $exceptionEvent->getException()->setRequest($preSendEvent->getRequest());
-
-            if (isset($response)) {
-                $exceptionEvent->getException()->setResponse($response);
             }
 
             throw $exceptionEvent->getException();
