@@ -2,6 +2,9 @@
 
 ### 0.5 to 0.6
 
+ * The `Ivory\HttpAdapter\AbstractHttpAdapter::doSend` has been renamed to `doSendInternalRequest`.
+ * The `Ivory\HttpAdapter\AbstractHttpAdapter::createResponse` has been removed. You should rely on
+   `Ivory\HttpAdapter\Message\MessageFactory::createResponse` instead.
  * The `Ivory\HttpAdapter\HttpAdapterInterface::sendInternalRequest` has been removed. You should rely on
   `Ivory\HttpAdapter\HttpAdapterInterface::sendRequest` instead.
  * All protected properties and methods have been updated to private except for entry points. This is mostly motivated
