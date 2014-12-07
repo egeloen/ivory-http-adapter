@@ -71,10 +71,10 @@ class CakeHttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error);
         }
 
-        return $this->createResponse(
-            ProtocolVersionExtractor::extract($response->httpVersion),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             (integer) $response->code,
             $response->reasonPhrase,
+            ProtocolVersionExtractor::extract($response->httpVersion),
             $response->headers,
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod())
         );

@@ -74,10 +74,10 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
-        return $this->createResponse(
-            ProtocolVersionExtractor::extract($response->raw_headers),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             $response->code,
             ReasonPhraseExtractor::extract($response->raw_headers),
+            ProtocolVersionExtractor::extract($response->raw_headers),
             $response->headers->toArray(),
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod())
         );

@@ -72,10 +72,10 @@ class ReactHttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error->getMessage());
         }
 
-        return $this->createResponse(
-            $response->getVersion(),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             (integer) $response->getCode(),
             $response->getReasonPhrase(),
+            $response->getVersion(),
             $response->getHeaders(),
             BodyNormalizer::normalize($body, $internalRequest->getMethod())
         );

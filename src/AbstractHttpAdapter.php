@@ -196,36 +196,6 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     }
 
     /**
-     * Creates a response.
-     *
-     * @param string                                                $protocolVersion The protocol version.
-     * @param integer                                               $statusCode      The status code.
-     * @param string                                                $reasonPhrase    The reason phrase.
-     * @param array                                                 $headers         The headers.
-     * @param resource|string|\Psr\Http\Message\StreamableInterface $body            The body.
-     * @param array                                                 $parameters      The parameters.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The created response.
-     */
-    protected function createResponse(
-        $protocolVersion,
-        $statusCode,
-        $reasonPhrase,
-        array $headers,
-        $body,
-        array $parameters = array()
-    ) {
-        return $this->configuration->getMessageFactory()->createResponse(
-            $statusCode,
-            $reasonPhrase,
-            $protocolVersion,
-            $headers,
-            $body,
-            $parameters
-        );
-    }
-
-    /**
      * {@inheritdoc}
      */
     private function sendInternalRequest(InternalRequestInterface $internalRequest)

@@ -66,10 +66,10 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             );
         }
 
-        return $this->createResponse(
-            ProtocolVersionExtractor::extract($responseHeaders),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             StatusCodeExtractor::extract($responseHeaders),
             ReasonPhraseExtractor::extract($responseHeaders),
+            ProtocolVersionExtractor::extract($responseHeaders),
             $responseHeaders = HeadersNormalizer::normalize($responseHeaders),
             BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod())
         );

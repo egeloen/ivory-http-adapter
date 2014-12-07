@@ -105,10 +105,10 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         $headers = substr($response, 0, $headersSize);
         $body = substr($response, $headersSize);
 
-        return $this->createResponse(
-            ProtocolVersionExtractor::extract($headers),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             StatusCodeExtractor::extract($headers),
             ReasonPhraseExtractor::extract($headers),
+            ProtocolVersionExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
             BodyNormalizer::normalize($body, $internalRequest->getMethod())
         );

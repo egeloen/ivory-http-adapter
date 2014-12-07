@@ -86,10 +86,10 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
-        return $this->createResponse(
-            (string) $response->getProtocolVersion(),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             $response->getStatusCode(),
             $response->getReasonPhrase(),
+            (string) $response->getProtocolVersion(),
             HeadersNormalizer::normalize($response->getHeaders()),
             BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod())
         );

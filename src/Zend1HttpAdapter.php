@@ -70,10 +70,10 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
-        return $this->createResponse(
-            $response->getVersion(),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             $response->getStatus(),
             $response->getMessage(),
+            $response->getVersion(),
             $response->getHeaders(),
             BodyNormalizer::normalize(
                 function () use ($response) {

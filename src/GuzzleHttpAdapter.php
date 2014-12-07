@@ -76,10 +76,10 @@ class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }
 
-        return $this->createResponse(
-            $response->getProtocolVersion(),
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
             $response->getStatusCode(),
             $response->getReasonPhrase(),
+            $response->getProtocolVersion(),
             $response->getHeaders()->toArray(),
             BodyNormalizer::normalize(
                 function () use ($response) {
