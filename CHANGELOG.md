@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * f16767a - Set request/response on exception before passing it to exception listeners
  * 613132a - [Test] Reintroduce send internal request tests
  * 7eb424b - Rename AbstractHttpAdapter::doSend to doSendInternalRequest
  * b91f40f - Remove AbstractHttpAdapter::createResponse and rely on MessageFactory::createResponse instead

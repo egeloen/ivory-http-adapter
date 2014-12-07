@@ -208,14 +208,15 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
                 })
             );
 
-        $exceptionOverride
+        $exception
             ->expects($this->once())
             ->method('setRequest')
             ->with($this->identicalTo($internalRequest));
 
-        $exceptionOverride
-            ->expects($this->never())
-            ->method('setResponse');
+        $exception
+            ->expects($this->once())
+            ->method('setResponse')
+            ->with($this->isNull());
 
         try {
             $this->httpAdapter->sendRequest($internalRequest);
@@ -260,8 +261,9 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequest));
 
         $exception
-            ->expects($this->never())
-            ->method('setResponse');
+            ->expects($this->once())
+            ->method('setResponse')
+            ->with($this->isNull());
 
         try {
             $this->httpAdapter->sendRequest($internalRequest);
