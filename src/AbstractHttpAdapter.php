@@ -95,7 +95,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     }
 
     /**
-     * Does a request send.
+     * Does an internal request send.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
@@ -103,7 +103,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    abstract protected function doSend(InternalRequestInterface $internalRequest);
+    abstract protected function doSendInternalRequest(InternalRequestInterface $internalRequest);
 
     /**
      * Prepares the headers.
@@ -205,7 +205,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
         try {
             $this->configuration->getEventDispatcher()->dispatch(Events::PRE_SEND, $preSendEvent);
 
-            $response = $this->doSend($preSendEvent->getRequest());
+            $response = $this->doSendInternalRequest($preSendEvent->getRequest());
 
             $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response);
             $this->configuration->getEventDispatcher()->dispatch(Events::POST_SEND, $postSendEvent);

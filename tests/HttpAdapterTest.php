@@ -73,7 +73,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->httpAdapter
             ->expects($this->once())
-            ->method('doSend')
+            ->method('doSendInternalRequest')
             ->with($this->identicalTo($internalRequestOverride))
             ->will($this->returnValue($response));
 
@@ -109,7 +109,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->httpAdapter
             ->expects($this->once())
-            ->method('doSend')
+            ->method('doSendInternalRequest')
             ->with($this->identicalTo($internalRequest))
             ->will($this->returnValue($response));
 
@@ -146,7 +146,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->httpAdapter
             ->expects($this->once())
-            ->method('doSend')
+            ->method('doSendInternalRequest')
             ->with($this->identicalTo($internalRequest))
             ->will($this->throwException($exception));
 
@@ -183,7 +183,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->httpAdapter
             ->expects($this->once())
-            ->method('doSend')
+            ->method('doSendInternalRequest')
             ->with($this->identicalTo($internalRequest))
             ->will($this->throwException($exception));
 
@@ -280,7 +280,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->httpAdapter
             ->expects($this->once())
-            ->method('doSend')
+            ->method('doSendInternalRequest')
             ->with($this->identicalTo($internalRequest))
             ->will($this->returnValue($response));
 

@@ -36,7 +36,7 @@ class ReactHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend(InternalRequestInterface $internalRequest)
+    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $loop = EventLoopFactory::create();
         $dnsResolverFactory = new DnsResolverFactory();

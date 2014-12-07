@@ -46,7 +46,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSend(InternalRequestInterface $internalRequest)
+    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $url = (string) $internalRequest->getUrl();
 

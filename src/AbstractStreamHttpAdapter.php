@@ -28,7 +28,7 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inhertdoc}
      */
-    protected function doSend(InternalRequestInterface $internalRequest)
+    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $url = (string) $internalRequest->getUrl();
 
