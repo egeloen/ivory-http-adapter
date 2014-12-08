@@ -114,7 +114,8 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
                     $request->getUrl(),
                     $request->getMethod(),
                     $this->configuration->getProtocolVersion(),
-                    $request->getHeaders()
+                    $request->getHeaders(),
+                    (string) $request->getBody()
                 );
             }
         }
