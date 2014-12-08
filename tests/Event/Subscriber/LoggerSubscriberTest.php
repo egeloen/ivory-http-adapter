@@ -76,6 +76,27 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $httpAdapter = $this->createHttpAdapterMock();
         $request = $this->createRequestMock();
         $response = $this->createResponseMock();
+        $timer = null;
+
+        $request
+            ->expects($this->once())
+            ->method('setParameter')
+            ->with(
+                $this->identicalTo(LoggerSubscriber::TIMER),
+                $this->callback(function ($parameter) use (&$timer) {
+                    $timer = $parameter;
+
+                    return true;
+                })
+            );
+
+        $request
+            ->expects($this->once())
+            ->method('getParameter')
+            ->with($this->identicalTo(LoggerSubscriber::TIMER))
+            ->will($this->returnCallback(function() use (&$timer) {
+                return $timer;
+            }));
 
         $this->logger
             ->expects($this->once())
@@ -111,6 +132,27 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $httpAdapter = $this->createHttpAdapterMock();
         $request = $this->createRequestMock();
         $exception = $this->createExceptionMock();
+        $timer = null;
+
+        $request
+            ->expects($this->once())
+            ->method('setParameter')
+            ->with(
+                $this->identicalTo(LoggerSubscriber::TIMER),
+                $this->callback(function ($parameter) use (&$timer) {
+                    $timer = $parameter;
+
+                    return true;
+                })
+            );
+
+        $request
+            ->expects($this->once())
+            ->method('getParameter')
+            ->with($this->identicalTo(LoggerSubscriber::TIMER))
+            ->will($this->returnCallback(function() use (&$timer) {
+                return $timer;
+            }));
 
         $this->logger
             ->expects($this->once())

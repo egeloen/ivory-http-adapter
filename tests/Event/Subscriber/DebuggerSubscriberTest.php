@@ -11,6 +11,8 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
+use Ivory\HttpAdapter\Event\Subscriber\AbstractDebuggerSubscriber;
+
 /**
  * Debugger subscriber test.
  *
@@ -52,6 +54,27 @@ class DebuggerSubscriberTest extends AbstractSubscriberTest
         $httpAdapter = $this->createHttpAdapterMock();
         $request = $this->createRequestMock();
         $response = $this->createResponseMock();
+        $timer = null;
+
+        $request
+            ->expects($this->once())
+            ->method('setParameter')
+            ->with(
+                $this->identicalTo(AbstractDebuggerSubscriber::TIMER),
+                $this->callback(function($parameter) use (&$timer) {
+                    $timer = $parameter;
+
+                    return true;
+                })
+            );
+
+        $request
+            ->expects($this->once())
+            ->method('getParameter')
+            ->with($this->identicalTo(AbstractDebuggerSubscriber::TIMER))
+            ->will($this->returnCallback(function() use (&$timer) {
+                return $timer;
+            }));
 
         $this->debuggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
         $datas = $this->debuggerSubscriber->onPostSend($this->createPostSendEvent($httpAdapter, $request, $response));
@@ -99,6 +122,27 @@ class DebuggerSubscriberTest extends AbstractSubscriberTest
         $httpAdapter = $this->createHttpAdapterMock();
         $request = $this->createRequestMock();
         $exception = $this->createExceptionMock();
+        $timer = null;
+
+        $request
+            ->expects($this->once())
+            ->method('setParameter')
+            ->with(
+                $this->identicalTo('timer'),
+                $this->callback(function ($parameter) use (&$timer) {
+                    $timer = $parameter;
+
+                    return true;
+                })
+            );
+
+        $request
+            ->expects($this->once())
+            ->method('getParameter')
+            ->with($this->identicalTo('timer'))
+            ->will($this->returnCallback(function() use (&$timer) {
+                return $timer;
+            }));
 
         $this->debuggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
         $datas = $this->debuggerSubscriber->onException(

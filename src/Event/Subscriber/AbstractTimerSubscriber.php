@@ -14,6 +14,7 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -23,8 +24,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 abstract class AbstractTimerSubscriber implements EventSubscriberInterface
 {
-    /** @var float */
-    private $start;
+    /** @const string The timer parameter */
+    const TIMER = 'timer';
 
     /**
      * On pre send event.
@@ -33,7 +34,7 @@ abstract class AbstractTimerSubscriber implements EventSubscriberInterface
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->start();
+        $this->start($event->getRequest());
     }
 
     /**
@@ -45,7 +46,7 @@ abstract class AbstractTimerSubscriber implements EventSubscriberInterface
      */
     public function onPostSend(PostSendEvent $event)
     {
-        return $this->stop();
+        return $this->stop($event->getRequest());
     }
 
     /**
@@ -57,24 +58,31 @@ abstract class AbstractTimerSubscriber implements EventSubscriberInterface
      */
     public function onException(ExceptionEvent $event)
     {
-        return $this->stop();
+        return $this->stop($event->getRequest());
     }
 
     /**
      * Starts the timer.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      */
-    private function start()
+    private function start(InternalRequestInterface $internalRequest)
     {
-        $this->start = microtime(true);
+        $internalRequest->setParameter(self::TIMER, microtime(true));
     }
 
     /**
      * Stops the timer.
      *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
      * @return float The time.
      */
-    private function stop()
+    private function stop(InternalRequestInterface $internalRequest)
     {
-        return microtime(true) - $this->start;
+        $time = microtime(true) - $internalRequest->getParameter(self::TIMER);
+        $internalRequest->removeParameter(self::TIMER);
+
+        return $time;
     }
 }
