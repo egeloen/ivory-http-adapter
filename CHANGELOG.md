@@ -2,6 +2,8 @@
 
 ### 0.6.0 (????-??-??)
 
+ * 77173c4 - Make http_buil_query independant of arg_separator.output ini setting
+ * bbcf51a - Introduce Version
  * 1b15d7b - [Event] Make timer subscriber stateless
  * f16767a - Set request/response on exception before passing it to exception listeners
  * 613132a - [Test] Reintroduce send internal request tests
