@@ -168,7 +168,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $method,
             Request::PROTOCOL_VERSION_1_1,
             $headers,
-            new StringStream(http_build_query($data))
+            new StringStream(http_build_query($data, null, '&'))
         );
 
         if ($request->hasBody()) {
@@ -234,6 +234,20 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         if ($method !== Request::METHOD_TRACE) {
             $this->assertRequest($method, $headers, $data, $files);
         }
+    }
+
+    public function testSendWithCustomArgSeparatorOutput()
+    {
+        $argSeparatorOutput = ini_get('arg_separator.output');
+        ini_set('arg_separator.output', '&amp;');
+
+        $this->assertResponse(
+            $this->httpAdapter->post($this->getUrl(), $headers = $this->getHeaders(), $data = $this->getData())
+        );
+
+        $this->assertRequest(Request::METHOD_POST, $headers, $data);
+
+        ini_set('arg_separator.output', $argSeparatorOutput);
     }
 
     public function testSendWithProtocolVersion10()
@@ -319,7 +333,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $this->getUrl(),
             Request::METHOD_POST,
             array(),
-            http_build_query($this->getData()),
+            http_build_query($this->getData(), null, '&'),
             $this->getFiles()
         );
     }
@@ -573,7 +587,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function getUrl(array $query = array())
     {
-        return !empty($query) ? PHPUnitUtility::getUrl().'?'.http_build_query($query) : PHPUnitUtility::getUrl();
+        return !empty($query) ? PHPUnitUtility::getUrl().'?'.http_build_query($query, null, '&') : PHPUnitUtility::getUrl();
     }
 
     /**

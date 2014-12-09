@@ -398,7 +398,7 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
      */
     private function getRawDatas()
     {
-        return http_build_query($this->getDatas());
+        return http_build_query($this->getDatas(), null, '&');
     }
 
     /**

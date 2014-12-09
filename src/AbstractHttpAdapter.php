@@ -164,7 +164,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
         }
 
         if (!$internalRequest->hasFiles()) {
-            return http_build_query($internalRequest->getDatas());
+            return http_build_query($internalRequest->getDatas(), null, '&');
         }
 
         $body = '';
