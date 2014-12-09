@@ -12,6 +12,7 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\ConfigurationInterface;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
@@ -531,7 +532,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $defaultHeaders = array(
             'Connection' => 'close',
-            'User-Agent' => 'Ivory Http Adapter',
+            'User-Agent' => 'Ivory Http Adapter '.HttpAdapterInterface::VERSION,
         );
 
         $headers = array_merge($defaultHeaders, $headers);

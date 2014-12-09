@@ -46,7 +46,7 @@ class Configuration implements ConfigurationInterface
     private $timeout = 10;
 
     /** @var string */
-    private $userAgent = 'Ivory Http Adapter';
+    private $userAgent;
 
     /**
      * Creates an http adapter.
@@ -61,6 +61,7 @@ class Configuration implements ConfigurationInterface
         $this->setMessageFactory($messageFactory ?: new MessageFactory());
         $this->setEventDispatcher($eventDispatcher ?: new EventDispatcher());
         $this->setBoundary(sha1(microtime()));
+        $this->setUserAgent('Ivory Http Adapter '.HttpAdapterInterface::VERSION);
     }
 
     /**

@@ -20,6 +20,13 @@ use Psr\Http\Message\OutgoingRequestInterface;
  */
 interface HttpAdapterInterface
 {
+    const VERSION = '0.6.0-DEV';
+    const VERSION_ID = '00600';
+    const MAJOR_VERSION = '0';
+    const MINOR_VERSION = '6';
+    const PATCH_VERSION = '0';
+    const EXTRA_VERSION = 'DEV';
+
     /**
      * Gets the configuration.
      *

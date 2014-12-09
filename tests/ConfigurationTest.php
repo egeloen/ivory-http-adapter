@@ -12,6 +12,7 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\Configuration;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -54,7 +55,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->configuration->hasEncodingType());
         $this->assertInternalType('string', $this->configuration->getBoundary());
         $this->assertSame(10, $this->configuration->getTimeout());
-        $this->assertSame('Ivory Http Adapter', $this->configuration->getUserAgent());
+        $this->assertSame('Ivory Http Adapter '.HttpAdapterInterface::VERSION, $this->configuration->getUserAgent());
     }
 
     public function testInitialState()

@@ -16,6 +16,7 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 
 /**
  * Http adapter test.
@@ -33,6 +34,36 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->httpAdapter = $this->createHttpAdapterMockBuilder()->getMockForAbstractClass();
+    }
+
+    public function testVersion()
+    {
+        $this->assertRegExp('/\d+\.\d+\.\d+(-(.?))?/', HttpAdapterInterface::VERSION);
+    }
+
+    public function testVersionId()
+    {
+        $this->assertRegExp('/\d+\d+\d+\d+\d+/', HttpAdapterInterface::VERSION_ID);
+    }
+
+    public function testMajorVersion()
+    {
+        $this->assertRegExp('/\d+/', HttpAdapterInterface::MAJOR_VERSION);
+    }
+
+    public function testMinorVersion()
+    {
+        $this->assertRegExp('/\d+/', HttpAdapterInterface::MINOR_VERSION);
+    }
+
+    public function testPatchVersion()
+    {
+        $this->assertRegExp('/\d+/', HttpAdapterInterface::PATCH_VERSION);
+    }
+
+    public function testExtraVersion()
+    {
+        $this->assertRegExp('/.?/', HttpAdapterInterface::EXTRA_VERSION);
     }
 
     /**
