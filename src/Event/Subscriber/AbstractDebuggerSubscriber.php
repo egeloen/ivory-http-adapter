@@ -31,10 +31,10 @@ abstract class AbstractDebuggerSubscriber extends AbstractTimerSubscriber
      *
      * @return array The formatted event.
      */
-    public function onPostSend(PostSendEvent $event)
+    protected function formatPostSendEvent(PostSendEvent $event)
     {
         return array(
-            'time'     => parent::onPostSend($event),
+            'time'     => $this->stopTimer($event->getRequest()),
             'adapter'  => $event->getHttpAdapter()->getName(),
             'request'  => $this->formatRequest($event->getRequest()),
             'response' => $this->formatResponse($event->getResponse()),
@@ -48,10 +48,10 @@ abstract class AbstractDebuggerSubscriber extends AbstractTimerSubscriber
      *
      * @return array The formatted event.
      */
-    public function onException(ExceptionEvent $event)
+    protected function formatExceptionEvent(ExceptionEvent $event)
     {
         return array(
-            'time'      => parent::onException($event),
+            'time'      => $this->stopTimer($event->getRequest()),
             'adapter'   => $event->getHttpAdapter()->getName(),
             'request'   => $this->formatRequest($event->getRequest()),
             'exception' => $this->formatException($event->getException()),

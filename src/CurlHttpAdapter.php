@@ -51,9 +51,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     {
         $curl = curl_init();
 
-        $url = (string) $internalRequest->getUrl();
-
-        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_URL, $url = (string) $internalRequest->getUrl());
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest));
         curl_setopt($curl, CURLOPT_HEADER, true);
@@ -103,14 +101,13 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         curl_close($curl);
 
         $headers = substr($response, 0, $headersSize);
-        $body = substr($response, $headersSize);
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             StatusCodeExtractor::extract($headers),
             ReasonPhraseExtractor::extract($headers),
             ProtocolVersionExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
-            BodyNormalizer::normalize($body, $internalRequest->getMethod())
+            BodyNormalizer::normalize(substr($response, $headersSize), $internalRequest->getMethod())
         );
     }
 

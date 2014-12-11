@@ -48,13 +48,11 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $url = (string) $internalRequest->getUrl();
-
         $request = Request::init($internalRequest->getMethod())
             ->whenError(function () {})
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
             ->timeout($this->getConfiguration()->getTimeout())
-            ->uri($url)
+            ->uri($url = (string) $internalRequest->getUrl())
             ->addHeaders($this->prepareHeaders($internalRequest))
             ->body($this->prepareContent($internalRequest));
 

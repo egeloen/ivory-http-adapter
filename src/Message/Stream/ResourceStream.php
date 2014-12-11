@@ -23,10 +23,14 @@ class ResourceStream extends AbstractStream
     /** @var array */
     private static $modes = array(
         'read' => array(
-            'r', 'w+', 'r+', 'x+', 'c+', 'rb', 'w+b', 'r+b', 'x+b', 'c+b', 'rt', 'w+t', 'r+t', 'x+t', 'c+t', 'a+',
+            'r'=> true, 'w+'=> true, 'r+'=> true, 'x+'=> true, 'c+'=> true, 'rb'=> true,
+            'w+b'=> true, 'r+b'=> true, 'x+b'=> true, 'c+b'=> true, 'rt'=> true,
+            'w+t'=> true, 'r+t'=> true, 'x+t'=> true, 'c+t'=> true, 'a+'=> true,
         ),
         'write' => array(
-            'w', 'w+', 'rw', 'r+', 'x+', 'c+', 'wb', 'w+b', 'r+b', 'x+b', 'c+b', 'w+t', 'r+t', 'x+t', 'c+t', 'a', 'a+',
+            'w'=> true, 'w+'=> true, 'rw'=> true, 'r+'=> true, 'x+'=> true, 'c+'=> true,
+            'wb'=> true, 'w+b'=> true, 'r+b'=> true, 'x+b'=> true, 'c+b'=> true, 'w+t'=> true,
+            'r+t'=> true, 'x+t'=> true, 'c+t'=> true, 'a'=> true, 'a+'=> true,
         ),
     );
 
@@ -81,8 +85,8 @@ class ResourceStream extends AbstractStream
 
         $metadata = $this->getMetadata();
 
-        $this->cache['readable'] = in_array($metadata['mode'], self::$modes['read'], true);
-        $this->cache['writable'] = in_array($metadata['mode'], self::$modes['write'], true);
+        $this->cache['readable'] = isset(self::$modes['read'][$metadata['mode']]);
+        $this->cache['writable'] = isset(self::$modes['write'][$metadata['mode']]);
         $this->cache['seekable'] = $metadata['seekable'];
         $this->cache['local'] = stream_is_local($this->resource);
         $this->cache['uri'] = $metadata['uri'];

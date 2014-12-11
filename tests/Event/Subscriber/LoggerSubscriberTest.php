@@ -94,7 +94,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->expects($this->once())
             ->method('getParameter')
             ->with($this->identicalTo(LoggerSubscriber::TIMER))
-            ->will($this->returnCallback(function() use (&$timer) {
+            ->will($this->returnCallback(function () use (&$timer) {
                 return $timer;
             }));
 
@@ -150,7 +150,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->expects($this->once())
             ->method('getParameter')
             ->with($this->identicalTo(LoggerSubscriber::TIMER))
-            ->will($this->returnCallback(function() use (&$timer) {
+            ->will($this->returnCallback(function () use (&$timer) {
                 return $timer;
             }));
 

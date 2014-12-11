@@ -388,7 +388,7 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetBody()
     {
-        $this->internalRequest->setBody();
+        $this->internalRequest->setBody($this->getMock('Psr\Http\Message\StreamableInterface'));
     }
 
     /**

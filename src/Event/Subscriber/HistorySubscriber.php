@@ -13,6 +13,7 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\History\Journal;
 use Ivory\HttpAdapter\Event\History\JournalInterface;
 
@@ -57,11 +58,23 @@ class HistorySubscriber extends AbstractTimerSubscriber
     }
 
     /**
-     * {@inheritdoc}
+     * On pre send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\PreSendEvent $event The pre send event.
+     */
+    public function onPreSend(PreSendEvent $event)
+    {
+        $this->startTimer($event->getRequest());
+    }
+
+    /**
+     * On post send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event Th post send event.
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $this->journal->record($event->getRequest(), $event->getResponse(), parent::onPostSend($event));
+        $this->journal->record($event->getRequest(), $event->getResponse(), $this->stopTimer($event->getRequest()));
     }
 
     /**

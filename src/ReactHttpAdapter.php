@@ -41,7 +41,6 @@ class ReactHttpAdapter extends AbstractHttpAdapter
         $loop = EventLoopFactory::create();
         $dnsResolverFactory = new DnsResolverFactory();
         $httpClientFactory = new HttpClientFactory();
-        $url = (string) $internalRequest->getUrl();
 
         $error = null;
         $response = null;
@@ -49,7 +48,7 @@ class ReactHttpAdapter extends AbstractHttpAdapter
 
         $request = $httpClientFactory->create($loop, $dnsResolverFactory->createCached('8.8.8.8', $loop))->request(
             $internalRequest->getMethod(),
-            $url,
+            $url = (string) $internalRequest->getUrl(),
             $this->prepareHeaders($internalRequest, true, true, true)
         );
 

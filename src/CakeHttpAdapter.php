@@ -51,18 +51,19 @@ class CakeHttpAdapter extends AbstractHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $url = (string) $internalRequest->getUrl();
         $this->httpSocket->config['timeout'] = $this->getConfiguration()->getTimeout();
 
+        $request = array(
+            'version'  => $this->getConfiguration()->getProtocolVersion(),
+            'redirect' => false,
+            'uri'      => $url = (string) $internalRequest->getUrl(),
+            'method'   => $internalRequest->getMethod(),
+            'header'   => $this->prepareHeaders($internalRequest),
+            'body'     => $this->prepareBody($internalRequest),
+        );
+
         try {
-            $response = $this->httpSocket->request(array(
-                'version'  => $this->getConfiguration()->getProtocolVersion(),
-                'redirect' => false,
-                'uri'      => $url,
-                'method'   => $internalRequest->getMethod(),
-                'header'   => $this->prepareHeaders($internalRequest),
-                'body'     => $this->prepareBody($internalRequest),
-            ));
+            $response = $this->httpSocket->request($request);
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
         }

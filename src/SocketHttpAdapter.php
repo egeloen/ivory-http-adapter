@@ -38,8 +38,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $url = (string) $internalRequest->getUrl();
-        list($protocol, $host, $port, $path) = $this->parseUrl($url);
+        list($protocol, $host, $port, $path) = $this->parseUrl($url = (string) $internalRequest->getUrl());
 
         $socket = @stream_socket_client(
             $protocol.'://'.$host.':'.$port,

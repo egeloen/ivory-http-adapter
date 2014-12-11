@@ -2,8 +2,16 @@
 
 ### 0.5 to 0.6
 
- * The `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::start` property has been removed in order to make
-   the subscriber staleless. The start timer is now stores as parameter in the request.
+ * The `Ivory\HttpAdapter\Event\Subscriber\AbstractDebuggerSubscriber::onPostSend` and
+   `Ivory\HttpAdapter\Event\Subscriber\AbstractDebuggerSubscriber::onException` methods have been moved to protected
+   and renamed respectively to `formatPostSendEvent` and `formatExceptionEvent`.
+ * The `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::start` and
+   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::stop` methods have been moved to protected and renamed
+   respectively to `startTimer` and `stopTimer`. Additionnaly, the
+   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::onPreSend`,
+   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::onPostSend`,
+   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::onException` methods have been removed. You should rely
+   on `startTimer` and `stopTimer` instead.
  * The `Ivory\HttpAdapter\AbstractHttpAdapter::doSend` has been renamed to `doSendInternalRequest`.
  * The `Ivory\HttpAdapter\AbstractHttpAdapter::createResponse` has been removed. You should rely on
    `Ivory\HttpAdapter\Message\MessageFactory::createResponse` instead.

@@ -14,6 +14,7 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\PreSendEvent;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -57,13 +58,23 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
     }
 
     /**
+     * On pre send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\PreSendEvent $event The pre send event.
+     */
+    public function onPreSend(PreSendEvent $event)
+    {
+        $this->startTimer($event->getRequest());
+    }
+
+    /**
      * On post send event.
      *
      * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The post send event.
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $datas = parent::onPostSend($event);
+        $datas = $this->formatPostSendEvent($event);
 
         $this->logger->debug(
             sprintf(
@@ -89,7 +100,7 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
                 $event->getRequest()->getMethod(),
                 (string) $event->getRequest()->getUrl()
             ),
-            parent::onException($event)
+            $this->formatExceptionEvent($event)
         );
     }
 

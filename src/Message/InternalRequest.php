@@ -88,7 +88,9 @@ class InternalRequest extends Request implements InternalRequestInterface
      */
     public function setBody(StreamableInterface $body = null)
     {
-        throw HttpAdapterException::doesNotSupportBody();
+        if ($body !== null) {
+            throw HttpAdapterException::doesNotSupportBody();
+        }
     }
 
     /**

@@ -49,10 +49,9 @@ abstract class AbstractMessage implements MessageInterface
         StreamableInterface $body = null,
         array $parameters = array()
     ) {
-        $this->body = $body;
-
         $this->setProtocolVersion($protocolVersion);
         $this->setHeaders($headers);
+        $this->setBody($body);
         $this->setParameters($parameters);
     }
 

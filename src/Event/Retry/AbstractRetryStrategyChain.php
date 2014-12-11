@@ -66,7 +66,7 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
         $verify = $this->doVerify($request, $exception);
 
         if ($verify && $this->hasNext()) {
-            $verify = $verify && $this->next->verify($request, $exception);
+            return $this->next->verify($request, $exception);
         }
 
         return $verify;
@@ -80,7 +80,7 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
         $delay = $this->doDelay($request, $exception);
 
         if ($this->hasNext() && (($nextDelay = $this->next->delay($request, $exception)) > $delay)) {
-            $delay = $nextDelay;
+            return $nextDelay;
         }
 
         return $delay;

@@ -50,8 +50,6 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $url = (string) $internalRequest->getUrl();
-
         $this->client
             ->resetParameters(true)
             ->setConfig(array(
@@ -59,7 +57,7 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
                 'timeout'      => $this->getConfiguration()->getTimeout(),
                 'maxredirects' => 0,
             ))
-            ->setUri($url)
+            ->setUri($url = (string) $internalRequest->getUrl())
             ->setMethod($internalRequest->getMethod())
             ->setHeaders($this->prepareHeaders($internalRequest))
             ->setRawData($this->prepareBody($internalRequest));

@@ -53,11 +53,9 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $url = (string) $internalRequest->getUrl();
-
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
-            $url,
+            $url = (string) $internalRequest->getUrl(),
             array(
                 'exceptions'      => false,
                 'allow_redirects' => false,

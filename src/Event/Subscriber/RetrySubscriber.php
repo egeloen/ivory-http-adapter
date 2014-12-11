@@ -70,9 +70,7 @@ class RetrySubscriber implements EventSubscriberInterface
         $exception = $event->getException();
 
         if (!$this->strategy->verify($request, $exception)) {
-            $request->setParameter(self::RETRY_COUNT, (int) $request->getParameter(self::RETRY_COUNT));
-
-            return;
+            return $request->setParameter(self::RETRY_COUNT, (int) $request->getParameter(self::RETRY_COUNT));
         }
 
         if (($delay = $this->strategy->delay($request, $exception)) > 0) {
@@ -80,9 +78,7 @@ class RetrySubscriber implements EventSubscriberInterface
         }
 
         $request->setParameter(self::RETRY_COUNT, $request->getParameter(self::RETRY_COUNT) + 1);
-        $response = $event->getHttpAdapter()->sendRequest($request);
-
-        $event->setResponse($response);
+        $event->setResponse($event->getHttpAdapter()->sendRequest($request));
     }
 
     /**
