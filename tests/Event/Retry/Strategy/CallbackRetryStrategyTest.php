@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Retry;
+namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy;
+use Ivory\HttpAdapter\Event\Retry\Strategy\CallbackRetryStrategy;
 
 /**
  * Callback retry strategy test.
@@ -20,7 +20,7 @@ use Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy;
  */
 class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy */
+    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\CallbackRetryStrategy */
     private $callbackRetryStrategy;
 
     /**
@@ -42,7 +42,7 @@ class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
     public function testDefaultState()
     {
         $this->assertInstanceOf(
-            'Ivory\HttpAdapter\Event\Retry\AbstractRetryStrategyChain',
+            'Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain',
             $this->callbackRetryStrategy
         );
 
@@ -92,53 +92,43 @@ class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
 
     public function testVerifyWithoutCallback()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $this->assertTrue($this->callbackRetryStrategy->verify($request, $exception));
+        $this->assertTrue($this->callbackRetryStrategy->verify($this->createRequestMock()));
     }
 
     public function testVerifyWithCallback()
     {
         $that = $this;
         $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
 
-        $verifyCallback = function ($callbackRequest, $callbackException) use ($that, $request, $exception) {
+        $verifyCallback = function ($callbackRequest) use ($that, $request) {
             $that->assertSame($request, $callbackRequest);
-            $that->assertSame($exception, $callbackException);
 
             return false;
         };
 
         $this->callbackRetryStrategy->setVerifyCallback($verifyCallback);
 
-        $this->assertFalse($this->callbackRetryStrategy->verify($request, $exception));
+        $this->assertFalse($this->callbackRetryStrategy->verify($request));
     }
 
     public function testDelayWithoutCallback()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $this->assertSame(0, $this->callbackRetryStrategy->delay($request, $exception));
+        $this->assertSame(0, $this->callbackRetryStrategy->delay($this->createRequestMock()));
     }
 
     public function testDelayWithCallback()
     {
         $that = $this;
         $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
 
-        $delayCallback = function ($callbackRequest, $callbackException) use ($that, $request, $exception) {
+        $delayCallback = function ($callbackRequest) use ($that, $request) {
             $that->assertSame($request, $callbackRequest);
-            $that->assertSame($exception, $callbackException);
 
             return 1;
         };
 
         $this->callbackRetryStrategy->setDelayCallback($delayCallback);
 
-        $this->assertSame(1, $this->callbackRetryStrategy->delay($request, $exception));
+        $this->assertSame(1, $this->callbackRetryStrategy->delay($request));
     }
 }

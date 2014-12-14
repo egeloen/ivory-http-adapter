@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Retry;
+namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
 /**
  * Retry strategy chain test.
@@ -18,7 +18,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Retry;
  */
 class RetryStrategyChainTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\AbstractRetryStrategyChain|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain|\PHPUnit_Framework_MockObject_MockObject */
     private $retryStrategyChain;
 
     /**
@@ -63,78 +63,66 @@ class RetryStrategyChainTest extends AbstractRetryStrategyTest
 
     public function testVerifyWithoutChain()
     {
-        $this->assertTrue($this->retryStrategyChain->verify($this->createRequestMock(), $this->createExceptionMock()));
+        $this->assertTrue($this->retryStrategyChain->verify($this->createRequestMock()));
     }
 
     public function testVerifyWithChainVerified()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
         $this->retryStrategyChain->setNext($next = $this->createRetryStrategyChainMock());
 
         $next
             ->expects($this->once())
             ->method('verify')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
+            ->with($this->identicalTo($request = $this->createRequestMock()))
             ->will($this->returnValue(true));
 
-        $this->assertTrue($this->retryStrategyChain->verify($request, $exception));
+        $this->assertTrue($this->retryStrategyChain->verify($request));
     }
 
     public function testVerifyWithChainNotVerified()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
         $this->retryStrategyChain->setNext($next = $this->createRetryStrategyChainMock());
 
         $next
             ->expects($this->once())
             ->method('verify')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
+            ->with($this->identicalTo($request = $this->createRequestMock()))
             ->will($this->returnValue(false));
 
-        $this->assertFalse($this->retryStrategyChain->verify($request, $exception));
+        $this->assertFalse($this->retryStrategyChain->verify($request));
     }
 
     public function testDelayWithoutChain()
     {
-        $delay = $this->retryStrategyChain->delay($this->createRequestMock(), $this->createExceptionMock());
+        $delay = $this->retryStrategyChain->delay($this->createRequestMock());
 
         $this->assertSame(0, $delay);
     }
 
     public function testDelayWithChainDelayed()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
         $this->retryStrategyChain->setNext($next = $this->createRetryStrategyChainMock());
 
         $next
             ->expects($this->once())
             ->method('delay')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
+            ->with($this->identicalTo($request = $this->createRequestMock()))
             ->will($this->returnValue($delay = 1));
 
-        $this->assertSame($delay, $this->retryStrategyChain->delay($request, $exception));
+        $this->assertSame($delay, $this->retryStrategyChain->delay($request));
     }
 
     public function testDelayWithChainNotDelayed()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
         $this->retryStrategyChain->setNext($next = $this->createRetryStrategyChainMock());
 
         $next
             ->expects($this->once())
             ->method('delay')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
+            ->with($this->identicalTo($request = $this->createRequestMock()))
             ->will($this->returnValue($delay = 0));
 
-        $this->assertSame($delay, $this->retryStrategyChain->delay($request, $exception));
+        $this->assertSame($delay, $this->retryStrategyChain->delay($request));
     }
 
     /**
@@ -144,6 +132,6 @@ class RetryStrategyChainTest extends AbstractRetryStrategyTest
      */
     private function createRetryStrategyChainMockBuilder()
     {
-        return $this->getMockBuilder('Ivory\HttpAdapter\Event\Retry\AbstractRetryStrategyChain');
+        return $this->getMockBuilder('Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain');
     }
 }

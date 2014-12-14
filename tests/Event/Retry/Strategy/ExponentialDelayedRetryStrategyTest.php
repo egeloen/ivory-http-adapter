@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Retry;
+namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\Event\Retry\ExponentialDelayedRetryStrategy;
-use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
+use Ivory\HttpAdapter\Event\Retry\RetryInterface;
+use Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy;
 
 /**
  * Exponential delayed retry strategy test.
@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
  */
 class ExponentialDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\ExponentialDelayedRetryStrategy */
+    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy */
     private $exponentialRetryStrategy;
 
     /**
@@ -43,7 +43,7 @@ class ExponentialDelayedRetryStrategyTest extends AbstractRetryStrategyTest
     public function testDefaultState()
     {
         $this->assertInstanceOf(
-            'Ivory\HttpAdapter\Event\Retry\AbstractRetryStrategyChain',
+            'Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain',
             $this->exponentialRetryStrategy
         );
 
@@ -63,37 +63,29 @@ class ExponentialDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 
     public function testVerify()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $this->assertTrue($this->exponentialRetryStrategy->verify($request, $exception));
+        $this->assertTrue($this->exponentialRetryStrategy->verify($this->createRequestMock()));
     }
 
     public function testDelayWithoutRetryCount()
     {
         $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
         $request
             ->expects($this->once())
             ->method('getParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT))
-            ->will($this->returnValue(null));
+            ->with($this->identicalTo(RetryInterface::RETRY_COUNT));
 
-        $this->assertSame(1, $this->exponentialRetryStrategy->delay($request, $exception));
+        $this->assertSame(1, $this->exponentialRetryStrategy->delay($request));
     }
 
     public function testDelayWithRetryCount()
     {
         $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
         $request
             ->expects($this->once())
             ->method('getParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT))
+            ->with($this->identicalTo(RetryInterface::RETRY_COUNT))
             ->will($this->returnValue(5));
 
-        $this->assertSame(32, $this->exponentialRetryStrategy->delay($request, $exception));
+        $this->assertSame(32, $this->exponentialRetryStrategy->delay($request));
     }
 }

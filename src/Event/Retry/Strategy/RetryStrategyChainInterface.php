@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
 /**
  * Retry strategy chain.
@@ -28,14 +28,14 @@ interface RetryStrategyChainInterface extends RetryStrategyInterface
     /**
      * Gets the next chained retry strategy.
      *
-     * @return \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null The next retry strategy chain.
+     * @return \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null The next retry strategy chain.
      */
     public function getNext();
 
     /**
      * Sets the next chained retry strategy.
      *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null $next The next retry strategy chain.
+     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next The next retry strategy chain.
      *
      * @return void No return value.
      */

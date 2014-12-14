@@ -9,9 +9,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -30,9 +29,9 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     /**
      * Creates a callback retry strategy.
      *
-     * @param callable|null                                                   $verifyCallback The verify callback.
-     * @param callable|null                                                   $delayCallback  The delay callback.
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null $next           The next retry strategy chain.
+     * @param callable|null                                                            $verifyCallback The verify callback.
+     * @param callable|null                                                            $delayCallback  The delay callback.
+     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next           The next retry strategy chain.
      */
     public function __construct($verifyCallback = null, $delayCallback = null, RetryStrategyChainInterface $next = null)
     {
@@ -105,24 +104,24 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     /**
      * {@inheritdoc}
      */
-    protected function doVerify(InternalRequestInterface $request, HttpAdapterException $exception)
+    protected function doVerify(InternalRequestInterface $request)
     {
         if ($this->hasVerifyCallback()) {
-            return call_user_func($this->verifyCallback, $request, $exception);
+            return call_user_func($this->verifyCallback, $request);
         }
 
-        return parent::doVerify($request, $exception);
+        return parent::doVerify($request);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doDelay(InternalRequestInterface $request, HttpAdapterException $exception)
+    protected function doDelay(InternalRequestInterface $request)
     {
         if ($this->hasDelayCallback()) {
-            return call_user_func($this->delayCallback, $request, $exception);
+            return call_user_func($this->delayCallback, $request);
         }
 
-        return parent::doDelay($request, $exception);
+        return parent::doDelay($request);
     }
 }

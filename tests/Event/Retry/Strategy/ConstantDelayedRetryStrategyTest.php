@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Retry;
+namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy;
+use Ivory\HttpAdapter\Event\Retry\Strategy\ConstantDelayedRetryStrategy;
 
 /**
  * Constant delayed retry strategy test.
@@ -20,7 +20,7 @@ use Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy;
  */
 class ConstantDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy */
+    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\ConstantDelayedRetryStrategy */
     private $constantDelayedRetryStrategy;
 
     /**
@@ -42,7 +42,7 @@ class ConstantDelayedRetryStrategyTest extends AbstractRetryStrategyTest
     public function testDefaultState()
     {
         $this->assertInstanceOf(
-            'Ivory\HttpAdapter\Event\Retry\AbstractDelayedRetryStrategy',
+            'Ivory\HttpAdapter\Event\Retry\Strategy\AbstractDelayedRetryStrategy',
             $this->constantDelayedRetryStrategy
         );
 
@@ -67,19 +67,13 @@ class ConstantDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 
     public function testVerify()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $this->assertTrue($this->constantDelayedRetryStrategy->verify($request, $exception));
+        $this->assertTrue($this->constantDelayedRetryStrategy->verify($this->createRequestMock()));
     }
 
     public function testDelay()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
         $this->constantDelayedRetryStrategy->setDelay($delay = 10);
 
-        $this->assertSame($delay, $this->constantDelayedRetryStrategy->delay($request, $exception));
+        $this->assertSame($delay, $this->constantDelayedRetryStrategy->delay($this->createRequestMock()));
     }
 }
