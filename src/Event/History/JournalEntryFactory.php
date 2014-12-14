@@ -24,8 +24,8 @@ class JournalEntryFactory implements JournalEntryFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create(InternalRequestInterface $request, ResponseInterface $response, $time)
+    public function create(InternalRequestInterface $request, ResponseInterface $response)
     {
-        return new JournalEntry($request, $response, $time);
+        return new JournalEntry($request, $response);
     }
 }

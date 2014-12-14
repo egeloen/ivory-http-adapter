@@ -27,21 +27,16 @@ class JournalEntry implements JournalEntryInterface
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface */
     private $response;
 
-    /** @var float */
-    private $time;
-
     /**
      * Creates a journal entry.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
-     * @param float                                               $time     The time.
      */
-    public function __construct(InternalRequestInterface $request, ResponseInterface $response, $time)
+    public function __construct(InternalRequestInterface $request, ResponseInterface $response)
     {
         $this->setRequest($request);
         $this->setResponse($response);
-        $this->setTime($time);
     }
 
     /**
@@ -74,21 +69,5 @@ class JournalEntry implements JournalEntryInterface
     public function setResponse(ResponseInterface $response)
     {
         $this->response = $response;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTime()
-    {
-        return $this->time;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setTime($time)
-    {
-        $this->time = $time;
     }
 }

@@ -26,9 +26,8 @@ interface JournalEntryFactoryInterface
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
-     * @param float                                               $time     The time.
      *
      * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface The journal entry.
      */
-    public function create(InternalRequestInterface $request, ResponseInterface $response, $time);
+    public function create(InternalRequestInterface $request, ResponseInterface $response);
 }

@@ -43,12 +43,10 @@ class JournalEntryFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $entry = $this->journalEntryFactory->create(
             $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface'),
-            $response = $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface'),
-            $time = 1.234
+            $response = $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface')
         );
 
         $this->assertSame($request, $entry->getRequest());
         $this->assertSame($response, $entry->getResponse());
-        $this->assertSame($time, $entry->getTime());
     }
 }
