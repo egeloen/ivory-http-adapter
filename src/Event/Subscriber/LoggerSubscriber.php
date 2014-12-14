@@ -13,8 +13,10 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,7 +24,7 @@ use Psr\Log\LoggerInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class LoggerSubscriber extends AbstractDebuggerSubscriber
+class LoggerSubscriber extends AbstractFormatterSubscriber
 {
     /** @var \Psr\Log\LoggerInterface */
     private $logger;
@@ -30,10 +32,17 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
     /**
      * Creates a logger subscriber.
      *
-     * @param \Psr\Log\LoggerInterface $logger The logger.
+     * @param \Psr\Log\LoggerInterface                                   $logger    The logger.
+     * @param \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|null $formatter The formatter.
+     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface|null         $timer     The timer.
      */
-    public function __construct(LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        FormatterInterface $formatter = null,
+        TimerInterface $timer = null
+    ) {
+        parent::__construct($formatter, $timer);
+
         $this->setLogger($logger);
     }
 
@@ -64,7 +73,7 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->startTimer($event->getRequest());
+        $this->getTimer()->start($event->getRequest());
     }
 
     /**
@@ -74,16 +83,16 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $datas = $this->formatPostSendEvent($event);
+        $this->getTimer()->stop($event->getRequest());
 
         $this->logger->debug(
             sprintf(
                 'Send "%s %s" in %.2f ms.',
                 $event->getRequest()->getMethod(),
                 (string) $event->getRequest()->getUrl(),
-                $datas['time']
+                $event->getRequest()->getParameter(TimerInterface::TIME)
             ),
-            $datas
+            $this->formatPostSendEvent($event)
         );
     }
 
@@ -94,11 +103,13 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
      */
     public function onException(ExceptionEvent $event)
     {
+        $this->getTimer()->stop($event->getException()->getRequest());
+
         $this->logger->error(
             sprintf(
                 'Unable to send "%s %s".',
-                $event->getRequest()->getMethod(),
-                (string) $event->getRequest()->getUrl()
+                $event->getException()->getRequest()->getMethod(),
+                (string) $event->getException()->getRequest()->getUrl()
             ),
             $this->formatExceptionEvent($event)
         );
