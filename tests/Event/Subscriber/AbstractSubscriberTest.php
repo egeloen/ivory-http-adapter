@@ -132,16 +132,20 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates an exception mock.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null   $response        The response.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $internalRequest The internal request.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null        $response        The response.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
      */
     protected function createExceptionMock(
-        InternalRequestInterface $internalRequest,
+        InternalRequestInterface $internalRequest = null,
         ResponseInterface $response = null
     ) {
         $exception = $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+
+        if ($internalRequest === null) {
+            $internalRequest = $this->createRequestMock();
+        }
 
         $exception
             ->expects($this->any())
