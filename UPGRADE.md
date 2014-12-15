@@ -2,16 +2,9 @@
 
 ### 0.5 to 0.6
 
- * The `Ivory\HttpAdapter\Event\Subscriber\AbstractDebuggerSubscriber::onPostSend` and
-   `Ivory\HttpAdapter\Event\Subscriber\AbstractDebuggerSubscriber::onException` methods have been moved to protected
-   and renamed respectively to `formatPostSendEvent` and `formatExceptionEvent`.
- * The `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::start` and
-   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::stop` methods have been moved to protected and renamed
-   respectively to `startTimer` and `stopTimer`. Additionnaly, the
-   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::onPreSend`,
-   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::onPostSend`,
-   `Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber::onException` methods have been removed. You should rely
-   on `startTimer` and `stopTimer` instead.
+ * The `Ivory\HttpAdapter\Event` namespace has been rewrite and so, it is plenty of BC breaks... Basically, it works
+   pretty the same way but not exactly... If you're using them, it will be really easy to migrate your app so, please
+   read the new documentation related to events.
  * The `Ivory\HttpAdapter\AbstractHttpAdapter::doSend` has been renamed to `doSendInternalRequest`.
  * The `Ivory\HttpAdapter\AbstractHttpAdapter::createResponse` has been removed. You should rely on
    `Ivory\HttpAdapter\Message\MessageFactory::createResponse` instead.

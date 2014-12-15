@@ -50,8 +50,8 @@ $postSendEvent->setResponse($response);
 ### Exception
 
 The `Ivory\HttpAdapter\Event\Events::EXCEPTION` describes the event trigger if an error occurred. It is represented by
-the `Ivory\HttpAdapter\Event\ExceptionEvent` and wraps the http adapter, the internal request and the exception.
-To get/set them, you can use:
+the `Ivory\HttpAdapter\Event\ExceptionEvent` and wraps the http adapter and the exception. To get/set them, you can
+use:
 
 ``` php
 use Ivory\HttpAdapter\Event\ExceptionEvent;
@@ -61,11 +61,11 @@ $exceptionEvent = new ExceptionEvent($httpAdapter, $request, $exception);
 $httpAdapter = $exceptionEvent->getHttpAdapter();
 $exceptionEvent->setHttpAdapter($httpAdapter);
 
-$request = $exceptionEvent->getRequest();
-$exceptionEvent->setRequest($request);
-
 $exception = $exceptionEvent->getException();
 $exceptionEvent->setException($exception);
+
+$request = $exception->getRequest();
+$response = $exception->getResponse();
 ```
 
 Additionally, this event allows you to manage a response. That means if you want to by-pass the exception, just set the
@@ -81,307 +81,53 @@ $exceptionEvent->setResponse($response);
 ## Available subscribers
 
 The library provides some useful built-in subscribers you can directly use. Obviously, you can define your own and
-propose to add them in the core.
+propose to add them in the core. The built-in ones are:
 
-### Logger
+ * [Basic authentication](/doc/events.md#basic-authentication)
+ * [Cookie](/doc/events.md#cookie)
+ * [History](/doc/events.md#history)
+ * [Logger](/doc/events.md#logger)
+ * [Redirect](/doc/events.md#redirect)
+ * [Retry](/doc/events.md#retry)
+ * [Status](/doc/events.md#status-code)
+ * [Stopwatch](/doc/events.md#stopwatch)
 
-The logger subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber` and allows you to log all
-requests sent/errorred through a PSR logger. As Monolog follows the [PSR-3 Standard](http://www.php-fig.org/psr/psr-3/),
-here an example using it and its stream handler but you can use any PSR compliant logger:
+### Basic authentication
+
+The basic authentication subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber` and
+allows you to do an HTTP basic authentication. To use it:
 
 ``` php
-use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Ivory\HttpAdapter\Event\BasicAuth\BasicAuth;
+use Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber;
 
-$monolog = new Logger('name');
-$monolog->pushHandler(new StreamHandler('path/to/your.log'));
+$basicAuthSubscriber = new BasicAuthSubscriber(new BasicAuth('username', 'password'));
 
-$loggerSubscriber = new LoggerSubscriber($monolog);
-
-$httpAdapter->getEventDispatcher()->addSubscriber($loggerSubscriber);
+$httpAdapter->getEventDispatcher()->addSubscriber($basicAuthSubscriber);
 ```
 
-You can also change the logger at runtime:
+Internally, the basic auth subscriber uses the `Ivory\HttpAdapter\Event\BasicAuth\BasicAuth` in order to do the
+authentication. Since the username and passord is mandatory, the basic auth is too. It takes respectively as first and
+second argument the username and the password. The basic authentication accepts a third argument known as matcher. A
+matcher is responsible to check if the request should be authenticated according to your rules. It can be either:
+
+ - `null`: all requests are authenticated (default).
+ - `string`: only requests with the url matching the string (regex pattern) are authenticated.
+ - `callable`: only requests matching your callable are authenticated (the callable receives the event request as
+   argument and should return true/false).
+
+Finally, all constructor arguments can be updated at runtime:
 
 ``` php
-$logger = $loggerSubscriber->getLogger();
-$loggerSubscriber->setLogger($logger);
-```
-
-### Status Code
-
-The status code subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber` and allow you
-to detect errored response. Basically, by default, all http adapters don't throw an exception if a 4xx or 5xx response
-is returned. Then, if you want to throw an exception for this kind of response, just register the status code
-subscriber:
-
-``` php
-use Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber;
-
-$statusCodeSubscriber = new StatusCodeSubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($statusCodeSubscriber);
-```
-
-### Redirect
-
-The redirect subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber` and allow you to
-follow redirects. Basically, by default, all http adapters don't follow the redirect and will give you the 3xx
-response. Then, if you want to follow redirect, just register the redirect subscriber:
-
-``` php
-use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
-
-$redirectSubscriber = new RedirectSubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($redirectSubscriber);
-```
-
-First, by default, the redirect subscriber allows you to follow 5 redirects. If you want to increase or decrease it,
-you can specify it as first constructor argument or via getter/setter:
-
-``` php
-use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
-
-$redirectSubscriber = new RedirectSubscriber(10);
-
-$max = $redirectSubscriber->getMax();
-$redirectSubscriber->setMax($max);
-```
-
-Second, by default, the redirect subscriber does not follow strictly the RFC and will prefer to do what most browser
-does (convert to a GET request). If you want to follow strictly the RFC, you can specify it as second constructor
-argument or via getter/setter:
-
-``` php
-use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
-
-$redirectSubscriber = new RedirectSubscriber(5, true);
-
-$strict = $redirectSubscriber->isStrict();
-$redirectSubscriber->setStrict($strict);
-```
-
-Third, by default, the redirect subscriber will throw an exception when the maximum number of redirects is exceeded.
-If you want to just stop the redirection and return the redirect response reached, you can specify it as third
-constructor argument or via getter/setter:
-
-``` php
-use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
-
-$redirectSubscriber = new RedirectSubscriber(5, false, false);
-
-$throwException = $redirectSubscriber->getThrowException();
-$redirectSubscriber->setThrowException($throwException);
-```
-
-Finally, when you use the redirect subscriber, some parameters are available on the response:
-
- - `effective_url`: The final url of the redirection.
- - `redirect_count`: The number of redirects which have been followed.
-
-### Retry
-
-The retry subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber` and allow you to retry an
-errored request (more precisely when an exception is thrown). To use it:
-
-``` php
-use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
-
-$retrySubscriber = new RetrySubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($retrySubscriber);
-```
-
-When you use the retry subscriber, some parameters are available on the request:
-
- - `retry_count`: The number of retries which have been done.
-
-Additionally, by default, the subscriber uses a limited retry strategy of 3 retries combined to an exponential delayed
-one. Basically, that means it will retry 3 times maximum and wait more and more between each retry. This strategy can
-be configured through the constructor or via getter/setter:
-
-``` php
-$retrySubscriber = new RetrySubscriber($retryStrategy);
-
-$retryStrategy = $retrySubscriber->getStrategy();
-$retrySubscriber->setStrategy($retryStrategy);
-```
-
-If you want to know more about the retry strategies, the next sections are for you.
-
-#### Constant Delayed Strategy
-
-The constant delayed retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy` and
-allow you to retry a request following the exact same delay between each retry (by default: 5 seconds).
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy;
-
-$retryStrategy = new ConstantDelayedRetryStrategy();
-```
-
-The delay can be configured through the constructor or via getter/setter:
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\ConstantDelayedRetryStrategy;
-
-$retryStrategy = new ConstantDelayedRetryStrategy(2);
-
-$delay = $retryStrategy->getDelay();
-$retryStrategy->setDelay(2);
-```
-
-#### Linear Delayed Strategy
-
-The linear delayed retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy` and
-allow you to retry a request following a linear delay between each retry (delay = configured delay * retry count).
-By default, the configured delay is 5 seconds.
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy;
-
-$retryStrategy = new LinearDelayedRetryStrategy();
-```
-
-The delay can be configured through the constructor or via getter/setter:
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy;
-
-$retryStrategy = new LinearDelayedRetryStrategy(2);
-
-$delay = $retryStrategy->getDelay();
-$retryStrategy->setDelay(2);
-```
-
-#### Exponential Delayed Strategy
-
-The exponential retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\ExponentialRetryStrategy` and allow
-you to retry a request following an exponential delay between each retry (delay = 2 ^ redirect count).
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\ExponentialDelayedRetryStrategy;
-
-$retryStrategy = new ExponentialDelayedRetryStrategy();
-```
-
-#### Limited Strategy
-
-The limited retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy` and allow you to
-limit the number of retry (by default: 3).
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy;
-
-$retryStrategy = new LimitedRetryStrategy();
-```
-
-The limit can be configured through the constructor or via getter/setter:
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy;
-
-$retryStrategy = new LimitedRetryStrategy(5);
-
-$limit = $retryStrategy->getLimit();
-$retryStrategy->setLimit(5);
-```
-
-#### Callback Strategy
-
-The callback retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy` and allow you to
-limit the number of retry or specify the delay between each retry through two callbacks. They can be configured through
-the constructor or via getter/setter:
-
-``` php
-use Ivory\HttpAdapter\Event\Retry\CallbackRetryStrategy;
-use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
-
-$retryStrategy = new CallbackRetryStrategy(
-    // Verify callback
-    function (InternalRequestInterface $request, HttpAdapterException $exception) {
-        // Return TRUE if you want to retry the request otherwise FALSE.
-    },
-    // Delay callback
-    function (InternalRequestInterface $request, HttpAdapterException $exception) {
-        // Return the delay to wait before retrying the request.
-    }
-);
-
-$hasVerifyCallback = $retryStrategy->hasVerifyCallback();
-$verifyCallback = $retryStrategy->getVerifyCallback();
-$retryStrategy->setVerifyCallback($verifyCallback);
-
-$hasDelayCallback = $retryStrategy->hasDelayCallback();
-$delayCallback = $retryStrategy->getDelayCallback();
-$retryStrategy->setDelayCallback($delayCallback);
-```
-
-The two callbacks are not mandatory. If you don't provide the verify callback, it will consider it should retry the
-request and if you don't provide the delay callback, it will consider it should not wait before retrying the request.
-
-#### Custom Strategy
-
-All retry strategies implement the `Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface`. Then, if you want to define
-your own strategy, you will need to implement this interface. Here, an example which rely on information wraps in the
-header:
-
-``` php
-namespace My\Own\Namespace;
-
-use Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface;
-use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
-
-class MyOwnRetryStrategy implements RetryStrategyInterface
-{
-    public function verify(InternalRequestInterface $request, HttpAdapterException $exception)
-    {
-        return $request->getHeader('X-Can-Retry') === 'true';
-    }
-
-    public function delay(InternalRequestInterface $request, HttpAdapterException $exception)
-    {
-        return (float) $request->getHeader('X-Retry-Delay');
-    }
-}
-```
-
-#### Chain of Responsibility
-
-All retry strategies implement a chain of responsibility. That means you can combine strategies together in order to
-archive more complex behavior. For example, by default, the retry subscriber combines the limited retry strategy with
-the exponential delayed one.
-
-To do that, all retry strategies implement the `Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface` and extend
-the `Ivory\HttpAdapter\Event\Retry\AbstractRetryStrategyChain` where the default chain of responsibility
-implementation is done. Then, a chained retry strategy wraps a next strategy which is involved when it decides if it
-should retry the request and for calculating the delay to wait if it should retry.
-
-The behavior of the chain of responsibility is the following:
-
- - It retries a request if all retry strategies in the chain of responsibility agree about retrying it.
- - It waits the biggest delay stored in the chain of responsibility.
-
-So, technically, all retry strategies accept the next strategy as second constructor argument. Here, an example on
-how you should instantiate them:
-
-``` php
-Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy;
-Ivory\HttpAdapter\Event\Retry\LinearDelayedRetryStrategy;
-
-$retryStrategy = new LimitedRetryStrategy(5, new LinearDelayedRetryStrategy(2));
-```
-
-Additionally, you can update the chain of responsibility at runtime with the following API:
-
-``` php
-$hasNext = $retryStrategy->hasNext();
-$next = $retryStrategy->getNext();
-$retryStrategy->setNext($next);
+$username = $basicAuth->getUsername();
+$basicAuth->setUsername($username);
+
+$password = $basicAuth->getPassword();
+$basicAuth->setPassword($password);
+
+$hasMatcher = $basicAuth->hasMatcher();
+$matcher = $basicAuth->getMatcher();
+$basicAuth->setMatcher($matcher);
 ```
 
 ### Cookie
@@ -597,41 +343,6 @@ $array = $cookie->toArray();
 $string = (string) $cookie;
 ```
 
-### Basic authentication
-
-The basic authentication subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber` and
-allows you to do an HTTP basic authentication. To use it:
-
-``` php
-use Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber;
-
-$basicAuthSubscriber = new BasicAuthSubscriber('username', 'password');
-
-$httpAdapter->getEventDispatcher()->addSubscriber($basicAuthSubscriber);
-```
-
-Additionally, the basic authentication subscriber accepts a third argument known as matcher. A matcher is responsible
-to check if the request should be authenticated according to your rules. It can be either:
-
- - `null`: all requests are authenticated (default).
- - `string`: only requests with the url matching the string (regex pattern) are authenticated.
- - `callable`: only requests matching your callable are authenticated (the callable receives the event request as
-   argument and should return true/false).
-
-Finally, all constructor arguments can be updated at runtime:
-
-``` php
-$username = $basicAuthSubscriber->getUsername();
-$basicAuthSubscriber->setUsername($username);
-
-$password = $basicAuthSubscriber->getPassword();
-$basicAuthSubscriber->setPassword($password);
-
-$hasMatcher = $basicAuthSubscriber->hasMatcher();
-$matcher = $basicAuthSubscriber->getMatcher();
-$basicAuthSubscriber->setMatcher($matcher);
-```
-
 ### History
 
 The history subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber` and allow you to
@@ -733,21 +444,391 @@ A journal entry is described by the `Ivory\HttpAdapter\Event\Subscriber\History\
 implementation is `Ivory\HttpAdapter\Event\Subscriber\History\JournalEntry`. As there is an interface, you can define
 your own implementation through the factory.
 
-It wraps the request, the response and the request execution time. To get/set them, you can use the following API:
+It wraps the request and the response. To get/set them, you can use the following API:
 
 ``` php
 use Ivory\HttpAdapter\Event\Subscriber\History\JournalEntry;
 
-$entry = new JournalEntry($request, $response, $time);
+$entry = new JournalEntry($request, $response);
 
 $request = $entry->getRequest();
 $entry->setRequest($request);
 
 $response = $entry->getResponse();
 $entry->setResponse($response);
+```
 
-$time = $entry->getTime();
-$entry->setTime($time);
+### Logger
+
+The logger subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber` and allows you to log all
+requests sent/errorred through a PSR logger. As Monolog follows the [PSR-3 Standard](http://www.php-fig.org/psr/psr-3/),
+here an example using it and its stream handler but you can use any PSR compliant logger:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+$monolog = new Logger('name');
+$monolog->pushHandler(new StreamHandler('path/to/your.log'));
+
+$loggerSubscriber = new LoggerSubscriber($monolog);
+
+$httpAdapter->getEventDispatcher()->addSubscriber($loggerSubscriber);
+```
+
+You can also change the logger at runtime:
+
+``` php
+$logger = $loggerSubscriber->getLogger();
+$loggerSubscriber->setLogger($logger);
+```
+
+Internally, the logger subscriber uses the `Ivory\HttpAdapter\Event\Formatter\Formatter` in order to format the log
+context and and the `Ivory\HttpAdapter\Timer\Timer` in order to time the request. By default, if you don't provide
+them, it will be created automatically. If you want to use your own, you can pass them via constructor or getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Formatter\Formatter;
+use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
+use Ivory\HttpAdapter\Event\Timer\Timer;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+$monolog = new Logger('name');
+$monolog->pushHandler(new StreamHandler('path/to/your.log'));
+
+$loggerSubscriber = new LoggerSubscriber($monolog, new Formatter(), new Timer());
+
+$formatter = $loggerSubscriber->getFormatter();
+$loggerSubscriber->setFormatter($formatter);
+
+$timer = $loggerSubscriber->getTimer();
+$loggerSubscriber->setTimer($timer);
+```
+
+### Redirect
+
+The redirect subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber` and allow you to
+follow redirects. Basically, by default, all http adapters don't follow the redirect and will give you the 3xx
+response. Then, if you want to follow redirect, just register the redirect subscriber:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+
+$redirectSubscriber = new RedirectSubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($redirectSubscriber);
+```
+
+When you use the redirect subscriber, some parameters are available on the response:
+
+ - `effective_url`: The final url of the redirection.
+ - `redirect_count`: The number of redirects which have been followed.
+
+Internally, the redirect subscriber uses the `Ivory\HttpAdapter\Event\Redirect\Redirect` in order to do a redirect.
+By default, if you don't provide it, it will be created automatically. If you want to use your own, you can pass it via
+constructor or getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Redirect\Redirect;
+use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+
+$redirectSubscriber = new RedirectSubscriber(new Redirect());
+
+$redirect = $redirectSubscriber->getRedirect();
+$redirectSubscriber->setRedirect($redirect);
+```
+
+The redirect is also configurable and allow you to modify its behavior.
+
+First, by default, the redirect allows you to follow 5 redirects. If you want to increase or decrease it, you can
+specify it as first constructor argument or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Redirect\Redirect;
+
+$redirect = new Redirect(10);
+
+$max = $redirect->getMax();
+$redirect->setMax($max);
+```
+
+Second, by default, the redirect does not follow strictly the RFC and will prefer to do what most browser does (convert
+to a GET request). If you want to follow strictly the RFC, you can specify it as second constructor argument or via
+getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Redirect\Redirect;
+
+$redirect = new Redirect(5, true);
+
+$strict = $redirect->isStrict();
+$redirect->setStrict($strict);
+```
+
+Third, by default, the redirect will throw an exception when the maximum number of redirects is exceeded. If you want
+to just stop the redirection and return the redirect response reached, you can specify it as third constructor argument
+or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Redirect\Redirect;
+
+$redirect = new Redirect(5, false, false);
+
+$throwException = $redirect->getThrowException();
+$redirect->setThrowException($throwException);
+```
+
+### Retry
+
+The retry subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber` and allow you to retry an
+errored request (more precisely when an exception is thrown). To use it:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
+
+$retrySubscriber = new RetrySubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($retrySubscriber);
+```
+
+When you use the retry subscriber, some parameters are available on the request:
+
+ - `retry_count`: The number of retries which have been done.
+
+Internally, the retry subscriber uses the `Ivory\HttpAdapter\Event\Retry\Retry` in order to do a retry. By default, if
+you don't provide it, it will be created automatically. If you want to use your own, you can pass it via constructor or
+getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
+use Ivory\HttpAdapter\Event\Retry\Retry;
+
+$retrySubscriber = new RetrySubscriber(new Retry());
+
+$retry = $retrySubscriber->getRetry();
+$retrySubscriber->setRetry($retry);
+```
+
+The retry is also configurable and allows you to modify its behavior.
+
+By default, the retry uses a limited retry strategy of 3 retries combined to an exponential delayed one. Basically,
+that means it will retry 3 times maximum and wait more and more between each retry (2 ^ retry_count). This strategy can
+be configured through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy;
+use Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy;
+
+$retry = new Retry(new LimitedRetryStrategy(3, new ExponentialDelayedRetryStrategy()));
+
+$strategy = $retry->getStrategy();
+$retry->setStrategy($strategy);
+```
+
+If you want to know more about the retry strategies, the next sections are for you.
+
+#### Constant Delayed Strategy
+
+The constant delayed retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\Strategy\ConstantDelayedRetryStrategy`
+and allow you to retry a request following the exact same delay between each retry (by default: 5 seconds).
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\ConstantDelayedRetryStrategy;
+
+$retryStrategy = new ConstantDelayedRetryStrategy();
+```
+
+The delay can be configured through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\ConstantDelayedRetryStrategy;
+
+$retryStrategy = new ConstantDelayedRetryStrategy(2);
+
+$delay = $retryStrategy->getDelay();
+$retryStrategy->setDelay(2);
+```
+
+#### Linear Delayed Strategy
+
+The linear delayed retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\Strategy\LinearDelayedRetryStrategy`
+and allow you to retry a request following a linear delay between each retry (delay = configured delay * retry count).
+By default, the configured delay is 5 seconds.
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\LinearDelayedRetryStrategy;
+
+$retryStrategy = new LinearDelayedRetryStrategy();
+```
+
+The delay can be configured through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\LinearDelayedRetryStrategy;
+
+$retryStrategy = new LinearDelayedRetryStrategy(2);
+
+$delay = $retryStrategy->getDelay();
+$retryStrategy->setDelay(2);
+```
+
+#### Exponential Delayed Strategy
+
+The exponential retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialRetryStrategy` and
+allow you to retry a request following an exponential delay between each retry (delay = 2 ^ redirect count).
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy;
+
+$retryStrategy = new ExponentialDelayedRetryStrategy();
+```
+
+#### Limited Strategy
+
+The limited retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy` and allow
+you to limit the number of retry (by default: 3).
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy;
+
+$retryStrategy = new LimitedRetryStrategy();
+```
+
+The limit can be configured through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy;
+
+$retryStrategy = new LimitedRetryStrategy(5);
+
+$limit = $retryStrategy->getLimit();
+$retryStrategy->setLimit(5);
+```
+
+#### Callback Strategy
+
+The callback retry strategy is defined by the `Ivory\HttpAdapter\Event\Retry\Strategy\CallbackRetryStrategy` and allow
+you to limit the number of retry or specify the delay between each retry through two callbacks. They can be configured
+through the constructor or via getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\Retry\Strategy\CallbackRetryStrategy;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+
+$retryStrategy = new CallbackRetryStrategy(
+    // Verify callback
+    function (InternalRequestInterface $request, HttpAdapterException $exception) {
+        // Return TRUE if you want to retry the request otherwise FALSE.
+    },
+    // Delay callback
+    function (InternalRequestInterface $request, HttpAdapterException $exception) {
+        // Return the delay to wait before retrying the request.
+    }
+);
+
+$hasVerifyCallback = $retryStrategy->hasVerifyCallback();
+$verifyCallback = $retryStrategy->getVerifyCallback();
+$retryStrategy->setVerifyCallback($verifyCallback);
+
+$hasDelayCallback = $retryStrategy->hasDelayCallback();
+$delayCallback = $retryStrategy->getDelayCallback();
+$retryStrategy->setDelayCallback($delayCallback);
+```
+
+The two callbacks are not mandatory. If you don't provide the verify callback, it will consider it should retry the
+request and if you don't provide the delay callback, it will consider it should not wait before retrying the request.
+
+#### Custom Strategy
+
+All retry strategies implement the `Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface`. Then, if you want
+to define your own strategy, you will need to implement this interface. Here, an example which rely on information
+wraps in the header:
+
+``` php
+namespace My\Own\Namespace;
+
+use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+
+class MyOwnRetryStrategy implements RetryStrategyInterface
+{
+    public function verify(InternalRequestInterface $request, HttpAdapterException $exception)
+    {
+        return $request->getHeader('X-Can-Retry') === 'true';
+    }
+
+    public function delay(InternalRequestInterface $request, HttpAdapterException $exception)
+    {
+        return (float) $request->getHeader('X-Retry-Delay');
+    }
+}
+```
+
+#### Chain of Responsibility
+
+All retry strategies implement a chain of responsibility. That means you can combine strategies together in order to
+archive more complex behavior. For example, by default, the retry subscriber combines the limited retry strategy with
+the exponential delayed one.
+
+To do that, all retry strategies implement the `Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface` and
+extend the `Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain` where the default chain of responsibility
+implementation is done. Then, a chained retry strategy wraps a next strategy which is involved when it decides if it
+should retry the request and for calculating the delay to wait if it should retry.
+
+The behavior of the chain of responsibility is the following:
+
+ - It retries a request if all retry strategies in the chain of responsibility agree about retrying it.
+ - It waits the biggest delay stored in the chain of responsibility.
+
+So, technically, all retry strategies accept the next strategy as second constructor argument. Here, an example on
+how you should instantiate them:
+
+``` php
+Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy;
+Ivory\HttpAdapter\Event\Retry\Strategy\LinearDelayedRetryStrategy;
+
+$retryStrategy = new LimitedRetryStrategy(5, new LinearDelayedRetryStrategy(2));
+```
+
+Additionally, you can update the chain of responsibility at runtime with the following API:
+
+``` php
+$hasNext = $retryStrategy->hasNext();
+$next = $retryStrategy->getNext();
+$retryStrategy->setNext($next);
+```
+
+### Status Code
+
+The status code subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber` and allow you
+to detect errored response. Basically, by default, all http adapters don't throw an exception if a 4xx or 5xx response
+is returned. Then, if you want to throw an exception for this kind of response, just register the status code
+subscriber:
+
+``` php
+use Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber;
+
+$statusCodeSubscriber = new StatusCodeSubscriber();
+
+$httpAdapter->getEventDispatcher()->addSubscriber($statusCodeSubscriber);
+```
+
+Internally, the status code subscriber uses the `Ivory\HttpAdapter\Event\StatusCode\StatusCode` in order to detect if
+a request is valid. By default, if you don't provide it, it will be created automatically. If you want to use your own,
+you can pass it via cosntructor or getter/setter:
+
+``` php
+use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
+use Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber;
+
+$statusCodeSubscriber = new StatusCodeSubscriber(new StatusCode());
+
+$statusCode = $statusCodeSubscriber->getStatusCode();
+$statusCodeSubscriber->setStatusCode($statusCode);
 ```
 
 ### Stopwatch
