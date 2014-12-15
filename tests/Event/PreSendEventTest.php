@@ -20,11 +20,58 @@ use Ivory\HttpAdapter\Event\PreSendEvent;
  */
 class PreSendEventTest extends AbstractEventTest
 {
+    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
+    protected $request;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        $this->request = $this->createRequestMock();
+
+        parent::setUp();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown()
+    {
+        unset($this->request);
+
+        parent::tearDown();
+    }
+
+    public function testDefaultState()
+    {
+        parent::setUp();
+
+        $this->assertSame($this->request, $this->event->getRequest());
+    }
+
+    public function testSetRequest()
+    {
+        $this->event->setRequest($request = $this->createRequestMock());
+
+        $this->assertSame($request, $this->event->getRequest());
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function createEvent()
     {
         return new PreSendEvent($this->httpAdapter, $this->request);
+    }
+
+    /**
+     * Creates a request mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     */
+    private function createRequestMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 }

@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter\Event;
 
 use Ivory\HttpAdapter\HttpAdapterInterface;
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -25,19 +24,14 @@ abstract class AbstractEvent extends Event
     /** @var \Ivory\HttpAdapter\HttpAdapterInterface */
     private $httpAdapter;
 
-    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
-    private $request;
-
     /**
-     * Creates a pre send event.
+     * Creates an event.
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
      */
-    public function __construct(HttpAdapterInterface $httpAdapter, InternalRequestInterface $request)
+    public function __construct(HttpAdapterInterface $httpAdapter)
     {
         $this->setHttpAdapter($httpAdapter);
-        $this->setRequest($request);
     }
 
     /**
@@ -58,25 +52,5 @@ abstract class AbstractEvent extends Event
     public function setHttpAdapter(HttpAdapterInterface $httpAdapter)
     {
         $this->httpAdapter = $httpAdapter;
-    }
-
-    /**
-     * Gets the request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The request.
-     */
-    public function getRequest()
-    {
-        return $this->request;
-    }
-
-    /**
-     * Sets the request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     */
-    public function setRequest(InternalRequestInterface $request)
-    {
-        $this->request = $request;
     }
 }

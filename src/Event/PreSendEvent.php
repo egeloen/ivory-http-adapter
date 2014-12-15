@@ -11,6 +11,9 @@
 
 namespace Ivory\HttpAdapter\Event;
 
+use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+
 /**
  * Pre send event.
  *
@@ -18,4 +21,39 @@ namespace Ivory\HttpAdapter\Event;
  */
 class PreSendEvent extends AbstractEvent
 {
+    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
+    private $request;
+
+    /**
+     * Creates a pre send event.
+     *
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
+     */
+    public function __construct(HttpAdapterInterface $httpAdapter, InternalRequestInterface $request)
+    {
+        parent::__construct($httpAdapter);
+
+        $this->setRequest($request);
+    }
+
+    /**
+     * Gets the request.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The request.
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Sets the request.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     */
+    public function setRequest(InternalRequestInterface $request)
+    {
+        $this->request = $request;
+    }
 }
