@@ -196,7 +196,13 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     }
 
     /**
-     * {@inheritdoc}
+     * Sends an internal request.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occured.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
     private function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
@@ -218,7 +224,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
 
             $this->configuration->getEventDispatcher()->dispatch(
                 Events::EXCEPTION,
-                $exceptionEvent = new ExceptionEvent($this, $internalRequest, $e)
+                $exceptionEvent = new ExceptionEvent($this, $e)
             );
 
             if ($exceptionEvent->hasResponse()) {
