@@ -11,8 +11,8 @@
 
 namespace Ivory\HttpAdapter;
 
-use Psr\Http\Message\IncomingResponseInterface;
-use Psr\Http\Message\OutgoingRequestInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
  * Http adapter exception.
@@ -21,10 +21,10 @@ use Psr\Http\Message\OutgoingRequestInterface;
  */
 class HttpAdapterException extends \Exception
 {
-    /** @var \Psr\Http\Message\OutgoingRequestInterface|null */
+    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|null */
     private $request;
 
-    /** @var \Psr\Http\Message\IncomingResponseInterface|null */
+    /** @var \Ivory\HttpAdapter\Message\ResponseInterface|null */
     private $response;
 
     /**
@@ -40,7 +40,7 @@ class HttpAdapterException extends \Exception
     /**
      * Gets the request.
      *
-     * @return \Psr\Http\Message\OutgoingRequestInterface|null The request.
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|null The request.
      */
     public function getRequest()
     {
@@ -50,9 +50,9 @@ class HttpAdapterException extends \Exception
     /**
      * Sets the request.
      *
-     * @param \Psr\Http\Message\OutgoingRequestInterface|null $request The request.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request The request.
      */
-    public function setRequest(OutgoingRequestInterface $request = null)
+    public function setRequest(InternalRequestInterface $request = null)
     {
         $this->request = $request;
     }
@@ -70,7 +70,7 @@ class HttpAdapterException extends \Exception
     /**
      * Gets the response.
      *
-     * @return \Psr\Http\Message\IncomingResponseInterface|null The response.
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|null The response.
      */
     public function getResponse()
     {
@@ -80,9 +80,9 @@ class HttpAdapterException extends \Exception
     /**
      * Sets the response.
      *
-     * @param \Psr\Http\Message\IncomingResponseInterface|null $response The response.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null $response The response.
      */
-    public function setResponse(IncomingResponseInterface $response = null)
+    public function setResponse(ResponseInterface $response = null)
     {
         $this->response = $response;
     }
