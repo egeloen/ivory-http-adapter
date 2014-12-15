@@ -11,7 +11,8 @@
 
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Event\Timer\Timer;
+use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -21,31 +22,36 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 abstract class AbstractTimerSubscriber implements EventSubscriberInterface
 {
-    /** @const string The timer parameter */
-    const TIMER = 'timer';
+    /** @var \Ivory\HttpAdapter\Event\Timer\TimerInterface */
+    private $timer;
 
     /**
-     * Starts the timer.
+     * Creates a timer subscriber.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface|null $timer The timer.
      */
-    protected function startTimer(InternalRequestInterface $internalRequest)
+    public function __construct(TimerInterface $timer = null)
     {
-        $internalRequest->setParameter(self::TIMER, microtime(true));
+        $this->setTimer($timer ?: new Timer());
     }
 
     /**
-     * Stops the timer.
+     * Gets the timer.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return float The time.
+     * @return \Ivory\HttpAdapter\Event\Timer\TimerInterface The timer.
      */
-    protected function stopTimer(InternalRequestInterface $internalRequest)
+    public function getTimer()
     {
-        $time = microtime(true) - $internalRequest->getParameter(self::TIMER);
-        $internalRequest->removeParameter(self::TIMER);
+        return $this->timer;
+    }
 
-        return $time;
+    /**
+     * Sets the timer.
+     *
+     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface $timer The timer.
+     */
+    public function setTimer(TimerInterface $timer)
+    {
+        $this->timer = $timer;
     }
 }
