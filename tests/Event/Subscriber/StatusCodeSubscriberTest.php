@@ -24,12 +24,15 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
     /** @var \Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber */
     private $statusCodeSubscriber;
 
+    /** @var \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $statusCode;
+
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->statusCodeSubscriber = new StatusCodeSubscriber();
+        $this->statusCodeSubscriber = new StatusCodeSubscriber($this->statusCode = $this->createStatusCodeMock());
     }
 
     /**
@@ -37,7 +40,23 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
      */
     protected function tearDown()
     {
+        unset($this->statusCode);
         unset($this->statusCodeSubscriber);
+    }
+
+    public function testDefaultState()
+    {
+        $this->statusCodeSubscriber = new StatusCodeSubscriber();
+
+        $this->assertInstanceOf(
+            'Ivory\HttpAdapter\Event\StatusCode\StatusCode',
+            $this->statusCodeSubscriber->getStatusCode()
+        );
+    }
+
+    public function testInitialState()
+    {
+        $this->assertSame($this->statusCode, $this->statusCodeSubscriber->getStatusCode());
     }
 
     public function testSubscribedEvents()
@@ -48,59 +67,85 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
         $this->assertSame(array('onPostSend', 200), $events[Events::POST_SEND]);
     }
 
-    /**
-     * @dataProvider validStatusCodeProvider
-     */
-    public function testPostSendEventWithValidStatusCode($statusCode)
+    public function testPostSendEventWithValidStatusCode()
     {
-        $response = $this->createResponseMock();
-        $response
-            ->expects($this->any())
-            ->method('getStatusCode')
-            ->will($this->returnValue($statusCode));
+        $this->statusCode
+            ->expects($this->once())
+            ->method('validate')
+            ->with($this->identicalTo($response = $this->createResponseMock($valid = true)))
+            ->will($this->returnValue($valid));
 
         $this->statusCodeSubscriber->onPostSend($this->createPostSendEvent(null, null, $response));
     }
 
     /**
-     * @dataProvider invalidStatusCodeProvider
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @expectedExceptionMessage An error occurred when fetching the URL "http://egeloen.fr" with the adapter "name" ("Status code: 500").
      */
-    public function testPostSendEventWithInvalidStatusCode($statusCode)
+    public function testPostSendEventWithInvalidStatusCode()
     {
-        $response = $this->createResponseMock();
-        $response
-            ->expects($this->any())
-            ->method('getStatusCode')
-            ->will($this->returnValue($statusCode));
+        $this->statusCode
+            ->expects($this->once())
+            ->method('validate')
+            ->with($this->identicalTo($response = $this->createResponseMock($valid = false)))
+            ->will($this->returnValue($valid));
 
         $this->statusCodeSubscriber->onPostSend($this->createPostSendEvent(null, null, $response));
     }
 
     /**
-     * Gets the valid status code provider.
-     *
-     * @return array The valid status code provider.
+     * {@inheritdoc}
      */
-    public function validStatusCodeProvider()
+    protected function createHttpAdapterMock()
     {
-        return array(
-            array(100),
-            array(200),
-            array(300),
-        );
+        $httpAdapter = parent::createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue('name'));
+
+        return $httpAdapter;
     }
 
     /**
-     * Gets the invalid status code provider.
-     *
-     * @return array The invalid status code provider.
+     * {@inheritdoc}
      */
-    public function invalidStatusCodeProvider()
+    protected function createRequestMock()
     {
-        return array(
-            array(400),
-            array(500),
-        );
+        $request = parent::createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('getUrl')
+            ->will($this->returnValue('http://egeloen.fr'));
+
+        return $request;
+    }
+
+    /**
+     * Creates a response mock.
+     *
+     * @param boolean $valid TRUE if the status code is valid else FALSE.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     */
+    protected function createResponseMock($valid = true)
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue($valid ? 200 : 500));
+
+        return $response;
+    }
+
+    /**
+     * Creates a status code mock.
+     *
+     * @return \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface|\PHPUnit_Framework_MockObject_MockObject The status code mock.
+     */
+    private function createStatusCodeMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface');
     }
 }

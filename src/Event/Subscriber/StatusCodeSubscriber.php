@@ -13,6 +13,8 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
+use Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -23,6 +25,39 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class StatusCodeSubscriber implements EventSubscriberInterface
 {
+    /** @var \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface */
+    private $statusCode;
+
+    /**
+     * Creates a status code subscriber.
+     *
+     * @param \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface|null $statusCode The status code.
+     */
+    public function __construct(StatusCodeInterface $statusCode = null)
+    {
+        $this->setStatusCode($statusCode ?: new StatusCode());
+    }
+
+    /**
+     * Gets the status code.
+     *
+     * @return \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface The status code.
+     */
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
+
+    /**
+     * Sets the status code.
+     *
+     * @param \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface $statusCode The status code.
+     */
+    public function setStatusCode(StatusCodeInterface $statusCode)
+    {
+        $this->statusCode = $statusCode;
+    }
+
     /**
      * On post send event.
      *
@@ -32,13 +67,11 @@ class StatusCodeSubscriber implements EventSubscriberInterface
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $statusCode = (string) $event->getResponse()->getStatusCode();
-
-        if ($statusCode[0] === '4' || $statusCode[0] === '5') {
+        if (!$this->statusCode->validate($event->getResponse())) {
             throw HttpAdapterException::cannotFetchUrl(
                 (string) $event->getRequest()->getUrl(),
                 $event->getHttpAdapter()->getName(),
-                sprintf('Status code: %d', $statusCode)
+                sprintf('Status code: %d', $event->getResponse()->getStatusCode())
             );
         }
     }
