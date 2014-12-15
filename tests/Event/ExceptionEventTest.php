@@ -71,7 +71,7 @@ class ExceptionEventTest extends AbstractEventTest
      */
     protected function createEvent()
     {
-        return new ExceptionEvent($this->httpAdapter, $this->request, $this->exception);
+        return new ExceptionEvent($this->httpAdapter, $this->exception);
     }
 
     /**
