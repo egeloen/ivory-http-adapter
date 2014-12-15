@@ -20,7 +20,7 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PostSendEvent extends AbstractEvent
+class PostSendEvent extends PreSendEvent
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface */
     private $response;

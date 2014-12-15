@@ -18,7 +18,7 @@ use Ivory\HttpAdapter\Event\PostSendEvent;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PostSendEventTest extends AbstractEventTest
+class PostSendEventTest extends PreSendEventTest
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface[\PHPUnit_Framework_MockObject_MockObject */
     private $response;
