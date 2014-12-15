@@ -16,7 +16,7 @@
         "symfony/event-dispatcher": "~2.1"
     },
     "require-dev": {
-        "cakephp/cakephp": "~2.0",
+        "cakephp/cakephp": "~2.5,>=2.5.7",
         "ext-curl": "*",
         "guzzle/guzzle": "~3.9,>=3.9.2",
         "guzzlehttp/guzzle": "~4.1,>=4.1.4|~5.0",
@@ -45,7 +45,7 @@
         "zendframework/zendframework1": "Allows you to use the Zend 1 adapter",
         "zendframework/zend-http": "Allows you to use the Zend 2 adapter",
         "psr/log": "Allows you to use the logger event subscriber",
-        "symfony/stopwatch": "Allows you to use the stopwatch event subscriber"
+        "symfony/stopwatch": "Allows you to use the stopwatch http adapter and event subscriber"
     },
     "autoload": {
         "psr-4": { "Ivory\\HttpAdapter\\": "src/" }

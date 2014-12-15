@@ -24,8 +24,6 @@ $httpAdapter = new CakeHttpAdapter();
 $httpAdapter = new CakeHttpAdapter(new \HttpSocket());
 ```
 
-The Cake http adapter does not support HTTP 1.0.
-
 ## cURL
 
 ``` php
