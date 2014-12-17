@@ -16,6 +16,9 @@ use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
 use Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -68,10 +71,10 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     public function onPostSend(PostSendEvent $event)
     {
         if (!$this->statusCode->validate($event->getResponse())) {
-            throw HttpAdapterException::cannotFetchUrl(
-                (string) $event->getRequest()->getUrl(),
-                $event->getHttpAdapter()->getName(),
-                sprintf('Status code: %d', $event->getResponse()->getStatusCode())
+            throw $this->createStatusCodeException(
+                $event->getResponse(),
+                $event->getRequest(),
+                $event->getHttpAdapter()
             );
         }
     }
@@ -82,5 +85,26 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(Events::POST_SEND => array('onPostSend', 200));
+    }
+
+    /**
+     * Creates a status code exception.
+     *
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The status code exception.
+     */
+    private function createStatusCodeException(
+        ResponseInterface $response,
+        InternalRequestInterface $internalRequest,
+        HttpAdapterInterface $httpAdapter
+    ) {
+        return HttpAdapterException::cannotFetchUrl(
+            (string) $internalRequest->getUrl(),
+            $httpAdapter->getName(),
+            sprintf('Status code: %d', $response->getStatusCode())
+        );
     }
 }

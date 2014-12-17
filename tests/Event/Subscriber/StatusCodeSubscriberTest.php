@@ -80,7 +80,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
 
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     * @expectedExceptionMessage An error occurred when fetching the URL "http://egeloen.fr" with the adapter "name" ("Status code: 500").
+     * @expectedExceptionMessage An error occurred when fetching the URL "http://egeloen.fr" with the adapter "http_adapter" ("Status code: 500").
      */
     public function testPostSendEventWithInvalidStatusCode()
     {
