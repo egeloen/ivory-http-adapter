@@ -105,7 +105,7 @@ class BasicAuth implements BasicAuthInterface
     public function authenticate(InternalRequestInterface $internalRequest)
     {
         if ($this->match($internalRequest)) {
-            $internalRequest->addHeader('Authorization', 'Basic '.base64_encode($this->username.':'.$this->password));
+            $internalRequest->setHeader('Authorization', 'Basic '.base64_encode($this->username.':'.$this->password));
         }
     }
 

@@ -92,7 +92,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
         $request = $this->createRequestMock();
         $request
             ->expects($this->once())
-            ->method('addHeader')
+            ->method('setHeader')
             ->with(
                 $this->identicalTo('Authorization'),
                 $this->identicalTo('Basic dXNlcm5hbWU6cGFzc3dvcmQ=')
@@ -111,7 +111,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
         $request = $this->createRequestMock();
         $request
             ->expects($this->once())
-            ->method('addHeader')
+            ->method('setHeader')
             ->with(
                 $this->identicalTo('Authorization'),
                 $this->identicalTo('Basic dXNlcm5hbWU6cGFzc3dvcmQ=')
@@ -130,7 +130,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
         $request = $this->createRequestMock();
         $request
             ->expects($this->never())
-            ->method('addHeader');
+            ->method('setHeader');
 
         $this->basicAuth->authenticate($request);
     }
