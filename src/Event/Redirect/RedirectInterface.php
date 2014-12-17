@@ -11,8 +11,8 @@
 
 namespace Ivory\HttpAdapter\Event\Redirect;
 
-use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
@@ -74,19 +74,52 @@ interface RedirectInterface
     public function setThrowException($throwException);
 
     /**
-     * Redirects a response.
+     * Checks if it is a redirect response.
+     *
+     * @param response \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     *
+     * @return boolean TRUE if it is a redirect response else FALSE.
+     */
+    public function isRedirectResponse(ResponseInterface $response);
+
+    /**
+     * Checks if it a max redirect request.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @return boolean TRUE if it a max redirect request else FALSE.
+     */
+    public function isMaxRedirectRequest(InternalRequestInterface $internalRequest);
+
+    /**
+     * Creates a redirect request.
      *
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
+     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface  $messageFactory  The message factory.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occured.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The redirected response.
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The redirect request.
      */
-    public function redirect(
+    public function createRedirectRequest(
         ResponseInterface $response,
         InternalRequestInterface $internalRequest,
-        HttpAdapterInterface $httpAdapter
+        MessageFactoryInterface $messageFactory
     );
+
+    /**
+     * Prepares a response.
+     *
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     */
+    public function prepareResponse(ResponseInterface $response, InternalRequestInterface $internalRequest);
+
+    /**
+     * Gets the root request.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The root request.
+     */
+    public function getRootRequest(InternalRequestInterface $internalRequest);
 }

@@ -11,8 +11,6 @@
 
 namespace Ivory\HttpAdapter\Event\Redirect;
 
-use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
@@ -98,47 +96,25 @@ class Redirect implements RedirectInterface
     /**
      * {@inheritdoc}
      */
-    public function redirect(
-        ResponseInterface $response,
-        InternalRequestInterface $internalRequest,
-        HttpAdapterInterface $httpAdapter
-    ) {
-        if ($response->getStatusCode() < 300
-            || $response->getStatusCode() >= 400
-            || !$response->hasHeader('Location')
-        ) {
-            return $this->prepareResponse($response, $internalRequest);
-        }
-
-        if ($internalRequest->getParameter(self::REDIRECT_COUNT) >= $this->max) {
-            if ($this->throwException) {
-                throw HttpAdapterException::maxRedirectsExceeded(
-                    (string) $this->getRootRequest($internalRequest)->getUrl(),
-                    $this->max,
-                    $httpAdapter->getName()
-                );
-            }
-
-            return $this->prepareResponse($response, $internalRequest);
-        }
-
-        return $httpAdapter->sendRequest($this->prepareRedirectRequest(
-            $response,
-            $internalRequest,
-            $httpAdapter->getConfiguration()->getMessageFactory()
-        ));
+    public function isRedirectResponse(ResponseInterface $response)
+    {
+        return $response->getStatusCode() >= 300
+            && $response->getStatusCode() < 400
+            && $response->hasHeader('Location');
     }
 
     /**
-     * Prepares a redirect request.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface  $messageFactory  The message factory.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The prepared redirect request.
+     * {@inheritdoc}
      */
-    private function prepareRedirectRequest(
+    public function isMaxRedirectRequest(InternalRequestInterface $internalRequest)
+    {
+        return $internalRequest->getParameter(self::REDIRECT_COUNT) >= $this->max;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createRedirectRequest(
         ResponseInterface $response,
         InternalRequestInterface $internalRequest,
         MessageFactoryInterface $messageFactory
@@ -161,29 +137,18 @@ class Redirect implements RedirectInterface
     }
 
     /**
-     * Prepares a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The prepared response.
+     * {@inheritdoc}
      */
-    private function prepareResponse(ResponseInterface $response, InternalRequestInterface $internalRequest)
+    public function prepareResponse(ResponseInterface $response, InternalRequestInterface $internalRequest)
     {
         $response->setParameter(self::REDIRECT_COUNT, (int) $internalRequest->getParameter(self::REDIRECT_COUNT));
         $response->setParameter(self::EFFECTIVE_URL, (string) $internalRequest->getUrl());
-
-        return $response;
     }
 
     /**
-     * Gets the root request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The root request.
+     * {@inheritdoc}
      */
-    private function getRootRequest(InternalRequestInterface $internalRequest)
+    public function getRootRequest(InternalRequestInterface $internalRequest)
     {
         $root = $internalRequest;
 

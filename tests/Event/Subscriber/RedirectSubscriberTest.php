@@ -66,20 +66,133 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->assertSame(array('onPostSend', 0), $events[Events::POST_SEND]);
     }
 
-    public function testPostSendEvent()
+    public function testPostSendEventWithRedirectResponse()
     {
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->identicalTo($redirectRequest = $this->createRequestMock()))
+            ->will($this->returnValue($redirectResponse = $this->createResponseMock()));
+
         $this->redirect
             ->expects($this->once())
-            ->method('redirect')
+            ->method('isRedirectResponse')
+            ->with($this->identicalTo($response = $this->createResponseMock()))
+            ->will($this->returnValue(true));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('isMaxRedirectRequest')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(false));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('createRedirectRequest')
             ->with(
-                $this->identicalTo($response = $this->createResponseMock()),
-                $this->identicalTo($request = $this->createRequestMock()),
-                $httpAdapter = $this->createHttpAdapterMock()
+                $this->identicalTo($response),
+                $this->identicalTo($request),
+                $this->identicalTo($httpAdapter->getConfiguration()->getMessageFactory())
             )
-            ->will($this->returnValue($redirectResponse = $this->createResponseMock()));
+            ->will($this->returnValue($redirectRequest));
 
         $this->redirectSubscriber->onPostSend($event = $this->createPostSendEvent($httpAdapter, $request, $response));
 
         $this->assertSame($redirectResponse, $event->getResponse());
+    }
+
+    public function testPostSendEventWithoutRedirectResponse()
+    {
+        $this->redirect
+            ->expects($this->once())
+            ->method('isRedirectResponse')
+            ->with($this->identicalTo($response = $this->createResponseMock()))
+            ->will($this->returnValue(false));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('prepareResponse')
+            ->with($this->identicalTo($response), $this->identicalTo($request = $this->createRequestMock()));
+
+        $this->redirectSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+    }
+
+    public function testPostSendEventWithMaxRedirectReachedDontThrowException()
+    {
+        $this->redirect
+            ->expects($this->once())
+            ->method('isRedirectResponse')
+            ->with($this->identicalTo($response = $this->createResponseMock()))
+            ->will($this->returnValue(true));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('isMaxRedirectRequest')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(true));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('getThrowException')
+            ->will($this->returnValue(false));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('prepareResponse')
+            ->with($this->identicalTo($response));
+
+        $this->redirectSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @expectedExceptionMessage An error occurred when fetching the URL "url" with the adapter "http_adapter" ("Max redirects exceeded (0)").
+     */
+    public function testPostSendEventWithMaxRedirectReachedThrowException()
+    {
+        $this->redirect
+            ->expects($this->once())
+            ->method('isRedirectResponse')
+            ->with($this->identicalTo($response = $this->createResponseMock()))
+            ->will($this->returnValue(true));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('isMaxRedirectRequest')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(true));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('getThrowException')
+            ->will($this->returnValue(true));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('getRootRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->returnValue($rootRequest = $this->createRequestMock()));
+
+        $rootRequest
+            ->expects($this->once())
+            ->method('getUrl')
+            ->will($this->returnValue('url'));
+
+        $this->redirectSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createConfigurationMock()
+    {
+        $configuration = parent::createConfigurationMock();
+        $configuration
+            ->expects($this->any())
+            ->method('getMessageFactory')
+            ->will($this->returnValue($this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface')));
+
+        return $configuration;
     }
 }
