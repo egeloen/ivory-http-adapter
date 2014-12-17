@@ -14,7 +14,6 @@ namespace Ivory\HttpAdapter\Event\Formatter;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\HttpAdapterInterface;
 
 /**
  * Formatter
@@ -23,13 +22,6 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
  */
 interface FormatterInterface
 {
-    /**
-     * Formats an http adapter.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
-     */
-    public function formatHttpAdapter(HttpAdapterInterface $httpAdapter);
-
     /**
      * Formats the request.
      *

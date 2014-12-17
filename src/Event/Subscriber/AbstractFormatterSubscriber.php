@@ -11,10 +11,8 @@
 
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
-use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\Formatter\Formatter;
 use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
-use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 
 /**
@@ -58,46 +56,5 @@ abstract class AbstractFormatterSubscriber extends AbstractTimerSubscriber
     public function setFormatter(FormatterInterface $formatter)
     {
         $this->formatter = $formatter;
-    }
-
-    /**
-     * Formats a post send event.
-     *
-     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The post send event.
-     *
-     * @return array The formatted post send event.
-     */
-    protected function formatPostSendEvent(PostSendEvent $event)
-    {
-        return array(
-            'adapter'  => $this->getFormatter()->formatHttpAdapter($event->getHttpAdapter()),
-            'request'  => $this->getFormatter()->formatRequest($event->getRequest()),
-            'response' => $this->getFormatter()->formatResponse($event->getResponse()),
-        );
-    }
-
-    /**
-     * Formats an exception event.
-     *
-     * @param \Ivory\HttpAdapter\Event\ExceptionEvent $event The exception event.
-     *
-     * @return array The formatted exception event.
-     */
-    protected function formatExceptionEvent(ExceptionEvent $event)
-    {
-        $request = $event->getException()->hasRequest()
-            ? $this->formatter->formatRequest($event->getException()->getRequest())
-            : null;
-
-        $response = $event->getException()->hasResponse()
-            ? $this->formatter->formatResponse($event->getException()->getResponse())
-            : null;
-
-        return array(
-            'adapter'   => $this->getFormatter()->formatHttpAdapter($event->getHttpAdapter()),
-            'exception' => $this->getFormatter()->formatException($event->getException()),
-            'request'   => $request,
-            'response'  => $response,
-        );
     }
 }

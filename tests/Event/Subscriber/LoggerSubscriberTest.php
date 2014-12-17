@@ -118,12 +118,6 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
         $this->formatter
             ->expects($this->once())
-            ->method('formatHttpAdapter')
-            ->with($this->identicalTo($httpAdapter = $this->createHttpAdapterMock()))
-            ->will($this->returnValue($formattedHttpAdapter = 'http_adapter'));
-
-        $this->formatter
-            ->expects($this->once())
             ->method('formatRequest')
             ->with($this->identicalTo($request))
             ->will($this->returnValue($formattedRequest = 'request'));
@@ -140,14 +134,14 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->with(
                 $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
                 $this->identicalTo(array(
-                    'adapter'  => $formattedHttpAdapter,
+                    'adapter'  => 'http_adapter',
                     'request'  => $formattedRequest,
                     'response' => $formattedResponse,
                 ))
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
-        $this->loggerSubscriber->onPostSend($this->createPostSendEvent($httpAdapter, $request, $response));
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->loggerSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
     }
 
     public function testExceptionEvent()
@@ -161,12 +155,6 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->expects($this->once())
             ->method('stop')
             ->with($this->identicalTo($request));
-
-        $this->formatter
-            ->expects($this->once())
-            ->method('formatHttpAdapter')
-            ->with($this->identicalTo($httpAdapter = $this->createHttpAdapterMock()))
-            ->will($this->returnValue($formattedHttpAdapter = 'http_adapter'));
 
         $this->formatter
             ->expects($this->once())
@@ -192,15 +180,15 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->with(
                 $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
                 $this->identicalTo(array(
-                    'adapter'   => $formattedHttpAdapter,
+                    'adapter'   => 'http_adapter',
                     'exception' => $formattedException,
                     'request'   => $formattedRequest,
                     'response'  => $formattedResponse,
                 ))
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
-        $this->loggerSubscriber->onException($this->createExceptionEvent($httpAdapter, $exception));
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->loggerSubscriber->onException($this->createExceptionEvent(null, $exception));
     }
 
     /**

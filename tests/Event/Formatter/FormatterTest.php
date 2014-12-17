@@ -39,11 +39,6 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
         unset($this->formatter);
     }
 
-    public function testFormatHttpAdapter()
-    {
-        $this->assertSame('name', $this->formatter->formatHttpAdapter($this->createHttpAdapterMock()));
-    }
-
     public function testFormatRequest()
     {
         $this->assertSame(
@@ -87,22 +82,6 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
             ),
             $this->formatter->formatException($this->createExceptionMock())
         );
-    }
-
-    /**
-     * Creates an http adapter mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
-     */
-    private function createHttpAdapterMock()
-    {
-        $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
-        $httpAdapter
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('name'));
-
-        return $httpAdapter;
     }
 
     /**

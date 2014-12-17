@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter\Event\Formatter;
 
 use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
@@ -23,14 +22,6 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
  */
 class Formatter implements FormatterInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function formatHttpAdapter(HttpAdapterInterface $httpAdapter)
-    {
-        return $httpAdapter->getName();
-    }
-
     /**
      * {@inheritdoc}
      */
