@@ -93,6 +93,29 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         $this->assertSame($retryResponse, $event->getResponse());
     }
 
+    public function testExceptionEventRetriedThrowException()
+    {
+        $this->retry
+            ->expects($this->once())
+            ->method('retry')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(true));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->retrySubscriber->onException(
+            $event = $this->createExceptionEvent($httpAdapter, $this->createExceptionMock($request))
+        );
+
+        $this->assertFalse($event->hasResponse());
+        $this->assertSame($exception, $event->getException());
+    }
+
     public function testExceptionEventNotRetried()
     {
         $this->retry

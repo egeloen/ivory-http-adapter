@@ -359,7 +359,66 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with(
                 $this->identicalTo(Events::EXCEPTION),
-                $this->callback(function ($event) use ($httpAdapter, $exception, $internalRequest, $response) {
+                $this->callback(function ($event) use ($httpAdapter, $exception) {
+                    return $event instanceof ExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getException() === $exception;
+                })
+            );
+
+        try {
+            $this->httpAdapter->sendRequest($internalRequest);
+            $this->fail();
+        } catch (HttpAdapterException $e) {
+            $this->assertSame($e, $exception);
+        }
+    }
+
+    public function testSendRequestDispatchExceptionEventWhenPostSendEventHasException()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $internalRequest = $this->createInternalRequestMock();
+        $response = $this->createResponseMock();
+        $exception = $this->createExceptionMock();
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest))
+            ->will($this->returnValue($response));
+
+        $exception
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($internalRequest));
+
+        $exception
+            ->expects($this->once())
+            ->method('setResponse')
+            ->with($this->identicalTo($response));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::POST_SEND),
+                $this->callback(function ($event) use ($exception) {
+                    $event->setException($exception);
+
+                    return true;
+                })
+            );
+
+        $eventDispatcher
+            ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $exception) {
                     return $event instanceof ExceptionEvent
                         && $event->getHttpAdapter() === $httpAdapter
                         && $event->getException() === $exception;

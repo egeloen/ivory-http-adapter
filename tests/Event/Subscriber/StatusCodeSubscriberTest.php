@@ -75,13 +75,11 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($response = $this->createResponseMock($valid = true)))
             ->will($this->returnValue($valid));
 
-        $this->statusCodeSubscriber->onPostSend($this->createPostSendEvent(null, null, $response));
+        $this->statusCodeSubscriber->onPostSend($event = $this->createPostSendEvent(null, null, $response));
+
+        $this->assertFalse($event->hasException());
     }
 
-    /**
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     * @expectedExceptionMessage An error occurred when fetching the URL "http://egeloen.fr" with the adapter "http_adapter" ("Status code: 500").
-     */
     public function testPostSendEventWithInvalidStatusCode()
     {
         $this->statusCode
@@ -90,7 +88,13 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($response = $this->createResponseMock($valid = false)))
             ->will($this->returnValue($valid));
 
-        $this->statusCodeSubscriber->onPostSend($this->createPostSendEvent(null, null, $response));
+        $this->statusCodeSubscriber->onPostSend($event = $this->createPostSendEvent(null, null, $response));
+
+        $this->assertTrue($event->hasException());
+        $this->assertSame(
+            'An error occurred when fetching the URL "http://egeloen.fr" with the adapter "http_adapter" ("Status code: 500").',
+            $event->getException()->getMessage()
+        );
     }
 
     /**

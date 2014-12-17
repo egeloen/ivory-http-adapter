@@ -218,6 +218,10 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
                 Events::POST_SEND,
                 $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response)
             );
+
+            if ($postSendEvent->hasException()) {
+                throw $postSendEvent->getException();
+            }
         } catch (HttpAdapterException $e) {
             $e->setRequest($internalRequest);
             $e->setResponse(isset($response) ? $response : null);

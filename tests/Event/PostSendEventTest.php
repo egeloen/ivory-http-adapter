@@ -48,6 +48,8 @@ class PostSendEventTest extends PreSendEventTest
         parent::testDefaultState();
 
         $this->assertSame($this->response, $this->event->getResponse());
+        $this->assertFalse($this->event->hasException());
+        $this->assertNull($this->event->getException());
     }
 
     public function testSetResponse()
@@ -55,6 +57,14 @@ class PostSendEventTest extends PreSendEventTest
         $this->event->setResponse($response = $this->createResponseMock());
 
         $this->assertSame($response, $this->event->getResponse());
+    }
+
+    public function testSetException()
+    {
+        $this->event->setException($exception = $this->createExceptionMock());
+
+        $this->assertTrue($this->event->hasException());
+        $this->assertSame($exception, $this->event->getException());
     }
 
     /**
@@ -73,5 +83,15 @@ class PostSendEventTest extends PreSendEventTest
     private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
+
+    /**
+     * Creates an exception mock.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException[\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     */
+    private function createExceptionMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 }

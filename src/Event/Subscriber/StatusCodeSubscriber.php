@@ -71,11 +71,11 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     public function onPostSend(PostSendEvent $event)
     {
         if (!$this->statusCode->validate($event->getResponse())) {
-            throw $this->createStatusCodeException(
+            $event->setException($this->createStatusCodeException(
                 $event->getResponse(),
                 $event->getRequest(),
                 $event->getHttpAdapter()
-            );
+            ));
         }
     }
 

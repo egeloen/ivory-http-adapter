@@ -15,6 +15,7 @@ use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\Retry\Retry;
 use Ivory\HttpAdapter\Event\Retry\RetryInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -62,8 +63,14 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public function onException(ExceptionEvent $event)
     {
-        if ($this->retry->retry($event->getException()->getRequest())) {
+        if (!$this->retry->retry($event->getException()->getRequest())) {
+            return;
+        }
+
+        try {
             $event->setResponse($event->getHttpAdapter()->sendRequest($event->getException()->getRequest()));
+        } catch (HttpAdapterException $e) {
+            $event->setException($e);
         }
     }
 

@@ -102,6 +102,43 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($redirectResponse, $event->getResponse());
     }
 
+    public function testPostSendEventWithRedirectResponseThrowException()
+    {
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->identicalTo($redirectRequest = $this->createRequestMock()))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('isRedirectResponse')
+            ->with($this->identicalTo($response = $this->createResponseMock()))
+            ->will($this->returnValue(true));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('isMaxRedirectRequest')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(false));
+
+        $this->redirect
+            ->expects($this->once())
+            ->method('createRedirectRequest')
+            ->with(
+                $this->identicalTo($response),
+                $this->identicalTo($request),
+                $this->identicalTo($httpAdapter->getConfiguration()->getMessageFactory())
+            )
+            ->will($this->returnValue($redirectRequest));
+
+        $this->redirectSubscriber->onPostSend($event = $this->createPostSendEvent($httpAdapter, $request, $response));
+
+        $this->assertTrue($event->hasException());
+        $this->assertSame($exception, $event->getException());
+    }
+
     public function testPostSendEventWithoutRedirectResponse()
     {
         $this->redirect

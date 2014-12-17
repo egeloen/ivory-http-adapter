@@ -15,8 +15,8 @@ use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\Redirect\Redirect;
 use Ivory\HttpAdapter\Event\Redirect\RedirectInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Redirect subscriber.
@@ -66,7 +66,9 @@ class RedirectSubscriber implements EventSubscriberInterface
     public function onPostSend(PostSendEvent $event)
     {
         if (!$this->redirect->isRedirectResponse($event->getResponse())) {
-            return $this->redirect->prepareResponse($event->getResponse(), $event->getRequest());
+            $this->redirect->prepareResponse($event->getResponse(), $event->getRequest());
+
+            return;
         }
 
         if ($this->redirect->isMaxRedirectRequest($event->getRequest())) {
@@ -78,14 +80,20 @@ class RedirectSubscriber implements EventSubscriberInterface
                 );
             }
 
-            return $this->redirect->prepareResponse($event->getResponse(), $event->getRequest());
+            $this->redirect->prepareResponse($event->getResponse(), $event->getRequest());
+
+            return;
         }
 
-        $event->setResponse($event->getHttpAdapter()->sendRequest($this->redirect->createRedirectRequest(
-            $event->getResponse(),
-            $event->getRequest(),
-            $event->getHttpAdapter()->getConfiguration()->getMessageFactory()
-        )));
+        try {
+            $event->setResponse($event->getHttpAdapter()->sendRequest($this->redirect->createRedirectRequest(
+                $event->getResponse(),
+                $event->getRequest(),
+                $event->getHttpAdapter()->getConfiguration()->getMessageFactory()
+            )));
+        } catch (HttpAdapterException $e) {
+            $event->setException($e);
+        }
     }
 
     /**
