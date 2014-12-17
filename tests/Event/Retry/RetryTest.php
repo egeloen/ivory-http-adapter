@@ -91,7 +91,7 @@ class RetryTest extends \PHPUnit_Framework_TestCase
             ->method('setParameter')
             ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo((int) $retryCount));
 
-        $this->assertNull($this->retry->retry($request, $this->createHttpAdapterMock()));
+        $this->assertFalse($this->retry->retry($request));
     }
 
     public function testRetryWithStrategyVerified()
@@ -113,19 +113,12 @@ class RetryTest extends \PHPUnit_Framework_TestCase
             ->method('setParameter')
             ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo(++$retryCount));
 
-        $httpAdapter = $this->createHttpAdapterMock();
-        $httpAdapter
-            ->expects($this->once())
-            ->method('sendRequest')
-            ->with($this->identicalTo($request))
-            ->will($this->returnValue($response = $this->createResponseMock()));
-
         $before = microtime(true);
-        $retryResponse = $this->retry->retry($request, $httpAdapter);
+        $result = $this->retry->retry($request);
         $after = microtime(true);
 
         $this->assertLessThanOrEqual(0.1, $after - $before);
-        $this->assertSame($retryResponse, $response);
+        $this->assertTrue($result);
     }
 
     public function testRetryWithStrategyDelayed()
@@ -153,20 +146,13 @@ class RetryTest extends \PHPUnit_Framework_TestCase
             ->method('setParameter')
             ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo(++$retryCount));
 
-        $httpAdapter = $this->createHttpAdapterMock();
-        $httpAdapter
-            ->expects($this->once())
-            ->method('sendRequest')
-            ->with($this->identicalTo($request))
-            ->will($this->returnValue($response = $this->createResponseMock()));
-
         $before = microtime(true);
-        $retryResponse = $this->retry->retry($request, $httpAdapter);
+        $result = $this->retry->retry($request);
         $after = microtime(true);
 
         $this->assertGreaterThanOrEqual($delay, $after - $before);
         $this->assertLessThanOrEqual($delay + 0.1, $after - $before);
-        $this->assertSame($retryResponse, $response);
+        $this->assertTrue($result);
     }
 
     /**
@@ -187,25 +173,5 @@ class RetryTest extends \PHPUnit_Framework_TestCase
     private function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
-    }
-
-    /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
-     */
-    private function createResponseMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
-    }
-
-    /**
-     * Creates an http adapter mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
-     */
-    private function createHttpAdapterMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
     }
 }

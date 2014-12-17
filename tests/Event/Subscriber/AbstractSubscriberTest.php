@@ -93,6 +93,11 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
         $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
         $httpAdapter
             ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue('http_adapter'));
+
+        $httpAdapter
+            ->expects($this->any())
             ->method('getConfiguration')
             ->will($this->returnValue($this->createConfigurationMock()));
 

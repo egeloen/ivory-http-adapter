@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter\Event\Retry;
 
 use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface;
-use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -40,14 +39,11 @@ interface RetryInterface
     public function setStrategy(RetryStrategyInterface $strategy);
 
     /**
-     * Retries a request.
+     * Checks if it should retry a request.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occured.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|null The response.
+     * @return boolean TRUE if should retry the request else FALSE.
      */
-    public function retry(InternalRequestInterface $internalRequest, HttpAdapterInterface $httpAdapter);
+    public function retry(InternalRequestInterface $internalRequest);
 }

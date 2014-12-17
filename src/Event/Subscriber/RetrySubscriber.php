@@ -62,10 +62,8 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public function onException(ExceptionEvent $event)
     {
-        $response = $this->retry->retry($event->getException()->getRequest(), $event->getHttpAdapter());
-
-        if ($response !== null) {
-            $event->setResponse($response);
+        if ($this->retry->retry($event->getException()->getRequest())) {
+            $event->setResponse($event->getHttpAdapter()->sendRequest($event->getException()->getRequest()));
         }
     }
 

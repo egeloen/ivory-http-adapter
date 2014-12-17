@@ -15,7 +15,6 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy;
 use Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy;
 use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface;
-use Ivory\HttpAdapter\HttpAdapterInterface;
 
 /**
  * Retry.
@@ -56,7 +55,7 @@ class Retry implements RetryInterface
     /**
      * {@inheritdoc}
      */
-    public function retry(InternalRequestInterface $internalRequest, HttpAdapterInterface $httpAdapter)
+    public function retry(InternalRequestInterface $internalRequest)
     {
         if (!$this->strategy->verify($internalRequest)) {
             $internalRequest->setParameter(
@@ -64,7 +63,7 @@ class Retry implements RetryInterface
                 (int) $internalRequest->getParameter(self::RETRY_COUNT)
             );
 
-            return;
+            return false;
         }
 
         if (($delay = $this->strategy->delay($internalRequest)) > 0) {
@@ -73,6 +72,6 @@ class Retry implements RetryInterface
 
         $internalRequest->setParameter(self::RETRY_COUNT, $internalRequest->getParameter(self::RETRY_COUNT) + 1);
 
-        return $httpAdapter->sendRequest($internalRequest);
+        return true;
     }
 }

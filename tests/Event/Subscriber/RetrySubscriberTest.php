@@ -71,22 +71,47 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         $this->assertSame(array('onException', 0), $events[Events::EXCEPTION]);
     }
 
-    public function testExceptionEvent()
+    public function testExceptionEventRetried()
     {
         $this->retry
             ->expects($this->once())
             ->method('retry')
-            ->with(
-                $this->identicalTo($request = $this->createRequestMock()),
-                $this->identicalTo($httpAdapter = $this->createHttpAdapterMock())
-            )
-            ->will($this->returnValue($response = $this->createResponseMock()));
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(true));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->returnValue($retryResponse = $this->createResponseMock()));
 
         $this->retrySubscriber->onException(
             $event = $this->createExceptionEvent($httpAdapter, $this->createExceptionMock($request))
         );
 
-        $this->assertSame($response, $event->getResponse());
+        $this->assertSame($retryResponse, $event->getResponse());
+    }
+
+    public function testExceptionEventNotRetried()
+    {
+        $this->retry
+            ->expects($this->once())
+            ->method('retry')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(false));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->never())
+            ->method('sendRequest');
+
+        $this->retrySubscriber->onException($event = $this->createExceptionEvent(
+            $httpAdapter,
+            $this->createExceptionMock($request)
+        ));
+
+        $this->assertNull($event->getResponse());
     }
 
     /**
