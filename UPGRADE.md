@@ -2,9 +2,12 @@
 
 ### 0.5 to 0.6
 
- * The `Ivory\HttpAdapter\Event` namespace has been rewrite and so, it is plenty of BC breaks... Basically, it works
-   pretty the same way but not exactly... If you're using them, it will be really easy to migrate your app so, please
-   read the new documentation related to events.
+ * The `Ivory\HttpAdapter\Event` namespace has been rewrite and so, it is plenty of BC breaks... Basically, lot of
+   logic stored in event subscribers have been moved to dedicated classes so, it works pretty the same way but not
+   exactly... If you're using them, it will be really easy to migrate your app so, please read the new documentation
+   related to events.
+ * The `symfony/event-dispatcher` is now optional. Accordingly, the  `Ivory\HttpAdapter\Configuration::$eventDispatcher`
+   has been made optional too and the `hasEventSubscriber` method has been introduced.
  * The `Ivory\HttpAdapter\AbstractHttpAdapter::doSend` has been renamed to `doSendInternalRequest`.
  * The `Ivory\HttpAdapter\AbstractHttpAdapter::createResponse` has been removed. You should rely on
    `Ivory\HttpAdapter\Message\MessageFactory::createResponse` instead.

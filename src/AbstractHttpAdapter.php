@@ -207,38 +207,50 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     private function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         try {
-            $this->configuration->getEventDispatcher()->dispatch(
-                Events::PRE_SEND,
-                $preSendEvent = new PreSendEvent($this, $internalRequest)
-            );
+            if ($this->configuration->hasEventDispatcher()) {
+                $this->configuration->getEventDispatcher()->dispatch(
+                    Events::PRE_SEND,
+                    $preSendEvent = new PreSendEvent($this, $internalRequest)
+                );
 
-            $response = $this->doSendInternalRequest($preSendEvent->getRequest());
+                $internalRequest = $preSendEvent->getRequest();
+            }
 
-            $this->configuration->getEventDispatcher()->dispatch(
-                Events::POST_SEND,
-                $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response)
-            );
+            $response = $this->doSendInternalRequest($internalRequest);
 
-            if ($postSendEvent->hasException()) {
-                throw $postSendEvent->getException();
+            if ($this->configuration->hasEventDispatcher()) {
+                $this->configuration->getEventDispatcher()->dispatch(
+                    Events::POST_SEND,
+                    $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response)
+                );
+
+                if ($postSendEvent->hasException()) {
+                    throw $postSendEvent->getException();
+                }
+
+                $response = $postSendEvent->getResponse();
             }
         } catch (HttpAdapterException $e) {
             $e->setRequest($internalRequest);
             $e->setResponse(isset($response) ? $response : null);
 
-            $this->configuration->getEventDispatcher()->dispatch(
-                Events::EXCEPTION,
-                $exceptionEvent = new ExceptionEvent($this, $e)
-            );
+            if ($this->configuration->hasEventDispatcher()) {
+                $this->configuration->getEventDispatcher()->dispatch(
+                    Events::EXCEPTION,
+                    $exceptionEvent = new ExceptionEvent($this, $e)
+                );
 
-            if ($exceptionEvent->hasResponse()) {
-                return $exceptionEvent->getResponse();
+                if ($exceptionEvent->hasResponse()) {
+                    return $exceptionEvent->getResponse();
+                }
+
+                $e = $exceptionEvent->getException();
             }
 
-            throw $exceptionEvent->getException();
+            throw $e;
         }
 
-        return $postSendEvent->getResponse();
+        return $response;
     }
 
     /**
