@@ -65,32 +65,26 @@ class RedirectSubscriber implements EventSubscriberInterface
      */
     public function onPostSend(PostSendEvent $event)
     {
-        if (!$this->redirect->isRedirectResponse($event->getResponse())) {
-            $this->redirect->prepareResponse($event->getResponse(), $event->getRequest());
+        try {
+            $redirectRequest = $this->redirect->createRedirectRequest(
+                $event->getResponse(),
+                $event->getRequest(),
+                $event->getHttpAdapter()
+            );
+        } catch (HttpAdapterException $e) {
+            $event->setException($e);
 
             return;
         }
 
-        if ($this->redirect->isMaxRedirectRequest($event->getRequest())) {
-            if ($this->redirect->getThrowException()) {
-                throw HttpAdapterException::maxRedirectsExceeded(
-                    (string) $this->redirect->getRootRequest($event->getRequest())->getUrl(),
-                    $this->redirect->getMax(),
-                    $event->getHttpAdapter()->getName()
-                );
-            }
-
+        if ($redirectRequest === false) {
             $this->redirect->prepareResponse($event->getResponse(), $event->getRequest());
 
             return;
         }
 
         try {
-            $event->setResponse($event->getHttpAdapter()->sendRequest($this->redirect->createRedirectRequest(
-                $event->getResponse(),
-                $event->getRequest(),
-                $event->getHttpAdapter()->getConfiguration()->getMessageFactory()
-            )));
+            $event->setResponse($event->getHttpAdapter()->sendRequest($redirectRequest));
         } catch (HttpAdapterException $e) {
             $event->setException($e);
         }

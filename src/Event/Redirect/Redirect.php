@@ -12,8 +12,9 @@
 namespace Ivory\HttpAdapter\Event\Redirect;
 
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 
 /**
  * Redirect.
@@ -96,30 +97,30 @@ class Redirect implements RedirectInterface
     /**
      * {@inheritdoc}
      */
-    public function isRedirectResponse(ResponseInterface $response)
-    {
-        return $response->getStatusCode() >= 300
-            && $response->getStatusCode() < 400
-            && $response->hasHeader('Location');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isMaxRedirectRequest(InternalRequestInterface $internalRequest)
-    {
-        return $internalRequest->getParameter(self::REDIRECT_COUNT) >= $this->max;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createRedirectRequest(
         ResponseInterface $response,
         InternalRequestInterface $internalRequest,
-        MessageFactoryInterface $messageFactory
+        HttpAdapterInterface $httpAdapter
     ) {
-        $redirect = $messageFactory->cloneInternalRequest($internalRequest);
+        if ($response->getStatusCode() < 300
+            || $response->getStatusCode() >= 400
+            || !$response->hasHeader('Location')) {
+            return false;
+        }
+
+        if ($internalRequest->getParameter(self::REDIRECT_COUNT) >= $this->max) {
+            if ($this->throwException) {
+                throw HttpAdapterException::maxRedirectsExceeded(
+                    (string) $this->getRootRequest($internalRequest)->getUrl(),
+                    $this->max,
+                    $httpAdapter->getName()
+                );
+            }
+
+            return false;
+        }
+
+        $redirect = $httpAdapter->getConfiguration()->getMessageFactory()->cloneInternalRequest($internalRequest);
 
         if ($response->getStatusCode() === 303 || (!$this->strict && $response->getStatusCode() <= 302)) {
             $redirect->setMethod(InternalRequestInterface::METHOD_GET);
@@ -148,14 +149,12 @@ class Redirect implements RedirectInterface
     /**
      * {@inheritdoc}
      */
-    public function getRootRequest(InternalRequestInterface $internalRequest)
+    private function getRootRequest(InternalRequestInterface $internalRequest)
     {
-        $root = $internalRequest;
-
-        while ($root->hasParameter(self::PARENT_REQUEST)) {
-            $root = $root->getParameter(self::PARENT_REQUEST);
+        if ($internalRequest->hasParameter(self::PARENT_REQUEST)) {
+            return $this->getRootRequest($internalRequest->getParameter(self::PARENT_REQUEST));
         }
 
-        return $root;
+        return $internalRequest;
     }
 }

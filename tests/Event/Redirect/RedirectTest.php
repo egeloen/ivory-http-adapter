@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Redirect;
 
 use Ivory\HttpAdapter\Event\Redirect\Redirect;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 
 /**
  * Redirect test.
@@ -78,9 +79,9 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider redirectResponseProvider
+     * @dataProvider validStatusCodeProvider
      */
-    public function testIsRedirectResponse($expected, $statusCode = 200, $location = false)
+    public function testCreateRedirectRequestWithoutRedirectResponse($statusCode)
     {
         $response = $this->createResponseMock();
         $response
@@ -92,16 +93,32 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('hasHeader')
             ->with($this->identicalTo('Location'))
-            ->will($this->returnValue($location));
+            ->will($this->returnValue(true));
 
-        $this->assertSame($expected, $this->redirect->isRedirectResponse($response));
+        $this->assertFalse($this->redirect->createRedirectRequest(
+            $response,
+            $this->createRequestMock(),
+            $this->createHttpAdapterMock()
+        ));
     }
 
     /**
-     * @dataProvider maxRedirectRequestProvider
+     * @dataProvider maxRedirectReachedProvider
      */
-    public function testIsMaxRedirectRequest($expected, $redirectCount, $max)
+    public function testCreateRedirectRequestWithMaxRedirectReachedReturnFalse($redirectCount, $max)
     {
+        $response = $this->createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue(300));
+
+        $response
+            ->expects($this->any())
+            ->method('hasHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue(true));
+
         $request = $this->createRequestMock();
         $request
             ->expects($this->once())
@@ -109,22 +126,67 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo(Redirect::REDIRECT_COUNT))
             ->will($this->returnValue($redirectCount));
 
+        $this->redirect->setThrowException(false);
         $this->redirect->setMax($max);
 
-        $this->assertSame($expected, $this->redirect->isMaxRedirectRequest($request));
+        $this->assertFalse($this->redirect->createRedirectRequest(
+            $response,
+            $request,
+            $this->createHttpAdapterMock()
+        ));
     }
 
     /**
-     * @dataProvider createRedirectRequestProvider
+     * @dataProvider maxRedirectReachedProvider
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @expectedExceptionMessage An error occurred when fetching the URL "http://egeloen.fr" with the adapter "http_adapter" ("Max redirects exceeded (5)")
      */
-    public function testCreateRedirectRequest($statusCode, $strict = false, $clear = true)
+    public function testCreateRedirectRequestWithMaxRedirectReachedThrowException($redirectCount, $max)
+    {
+        $response = $this->createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getStatusCode')
+            ->will($this->returnValue(300));
+
+        $response
+            ->expects($this->any())
+            ->method('hasHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue(true));
+
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('hasParameter')
+            ->with($this->identicalTo(Redirect::PARENT_REQUEST))
+            ->will($this->returnValue(true));
+
+        $request
+            ->expects($this->exactly(2))
+            ->method('getParameter')
+            ->will($this->returnValueMap(array(
+                array(Redirect::REDIRECT_COUNT, $redirectCount),
+                array(Redirect::PARENT_REQUEST, $rootRequest = $this->createRequestMock())
+            )));
+
+        $this->redirect->setThrowException(true);
+        $this->redirect->setMax($max);
+
+        $this->redirect->createRedirectRequest($response, $request, $this->createHttpAdapterMock());
+    }
+
+    /**
+     * @dataProvider redirectStatusCodeProvider
+     */
+    public function testCreateRedirectRequestWithRedirectResponse($statusCode, $strict = false, $clear = true)
     {
         $messageFactory = $this->createMessageFactoryMock();
         $messageFactory
             ->expects($this->once())
             ->method('cloneInternalRequest')
             ->with($this->identicalTo($request = $this->createRequestMock()))
-            ->will($this->returnValue($requestClone = $this->createRequestMock()));
+            ->will($this->returnValue($redirectRequest = $this->createRequestMock()));
 
         $response = $this->createResponseMock();
         $response
@@ -134,38 +196,44 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
 
         $response
             ->expects($this->any())
+            ->method('hasHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue(true));
+
+        $response
+            ->expects($this->any())
             ->method('getHeader')
             ->with($this->identicalTo('Location'))
             ->will($this->returnValue($location = 'http://egeloen.fr'));
 
-        $requestClone
+        $redirectRequest
             ->expects($clear ? $this->once() : $this->never())
             ->method('setMethod')
             ->with($this->identicalTo(InternalRequestInterface::METHOD_GET));
 
-        $requestClone
+        $redirectRequest
             ->expects($clear ? $this->once() : $this->never())
             ->method('removeHeaders')
             ->with($this->identicalTo(array('Content-Type', 'Content-Length')));
 
-        $requestClone
+        $redirectRequest
             ->expects($clear ? $this->once() : $this->never())
             ->method('clearRawDatas');
 
-        $requestClone
+        $redirectRequest
             ->expects($clear ? $this->once() : $this->never())
             ->method('clearDatas');
 
-        $requestClone
+        $redirectRequest
             ->expects($clear ? $this->once() : $this->never())
             ->method('clearFiles');
 
-        $requestClone
+        $redirectRequest
             ->expects($this->once())
             ->method('setUrl')
             ->with($this->identicalTo($location));
 
-        $requestClone
+        $redirectRequest
             ->expects($this->exactly(2))
             ->method('setParameter')
             ->withConsecutive(
@@ -175,7 +243,11 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
 
         $this->redirect->setStrict($strict);
 
-        $this->assertSame($requestClone, $this->redirect->createRedirectRequest($response, $request, $messageFactory));
+        $this->assertSame($redirectRequest, $this->redirect->createRedirectRequest(
+            $response,
+            $request,
+            $this->createHttpAdapterMock($messageFactory)
+        ));
     }
 
     public function testPrepareResponse()
@@ -204,57 +276,27 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $this->redirect->prepareResponse($response, $request);
     }
 
-    public function testGetRootRequest()
-    {
-        $rootRequest = $this->createRequestMock();
-        $nodeRequest = $this->createRequestMock($rootRequest);
-        $request = $this->createRequestMock($nodeRequest);
-
-        $this->assertSame($rootRequest, $this->redirect->getRootRequest($request));
-    }
-
     /**
-     * Gets the redirect response provider.
+     * Gets the valid status code provider.
      *
-     * @return array The redirect response provider.
+     * @return array The valid status code provider.
      */
-    public function redirectResponseProvider()
+    public function validStatusCodeProvider()
     {
         return array(
-            array(false),
-            array(false, 300),
-            array(false, 301),
-            array(false, 302),
-            array(false, 303),
-            array(true, 300, true),
-            array(true, 301, true),
-            array(true, 302, true),
-            array(true, 303, true),
+            array(100),
+            array(200),
+            array(400),
+            array(500),
         );
     }
 
     /**
-     * Gets the max redirect request provider.
+     * Gets the redirect status code provider.
      *
-     * @return array The max redirect request provider.
+     * @return array The redirect status code provider.
      */
-    public function maxRedirectRequestProvider()
-    {
-        return array(
-            array(false, 0, 5),
-            array(false, 4, 5),
-            array(true, 5, 5),
-            array(true, 6, 5),
-            array(true, 10, 5),
-        );
-    }
-
-    /**
-     * Gets the create redirect request provider.
-     *
-     * @return array The create redirect request provider.
-     */
-    public function createRedirectRequestProvider()
+    public function redirectStatusCOdeProvider()
     {
         return array(
             array(300),
@@ -273,6 +315,20 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Gets the max redirect reached  provider.
+     *
+     * @return array The max redirect reached provider.
+     */
+    public function maxRedirectReachedProvider()
+    {
+        return array(
+            array(5, 5),
+            array(6, 5),
+            array(10, 5),
+        );
+    }
+
+    /**
      * Creates a request mock.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $parent The parent request.
@@ -282,6 +338,10 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
     private function createRequestMock($parent = null)
     {
         $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        $request
+            ->expects($this->any())
+            ->method('getUrl')
+            ->will($this->returnValue('http://egeloen.fr'));
 
         if ($parent !== null) {
             $request
@@ -308,6 +368,34 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
     private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
+
+    /**
+     * Creates an http adapter mock.
+     *
+     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
+     */
+    private function createHttpAdapterMock(MessageFactoryInterface $messageFactory = null)
+    {
+        $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        $httpAdapter
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue('http_adapter'));
+
+        $httpAdapter
+            ->expects($this->any())
+            ->method('getConfiguration')
+            ->will($this->returnValue($configuration = $this->getMock('Ivory\HttpAdapter\ConfigurationInterface')));
+
+        $configuration
+            ->expects($this->any())
+            ->method('getMessageFactory')
+            ->will($this->returnValue($messageFactory ?: $this->createMessageFactoryMock()));
+
+        return $httpAdapter;
     }
 
     /**

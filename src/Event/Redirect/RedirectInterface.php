@@ -12,8 +12,8 @@
 namespace Ivory\HttpAdapter\Event\Redirect;
 
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 
 /**
  * Redirect.
@@ -74,36 +74,22 @@ interface RedirectInterface
     public function setThrowException($throwException);
 
     /**
-     * Checks if it is a redirect response.
-     *
-     * @param response \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return boolean TRUE if it is a redirect response else FALSE.
-     */
-    public function isRedirectResponse(ResponseInterface $response);
-
-    /**
-     * Checks if it a max redirect request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return boolean TRUE if it a max redirect request else FALSE.
-     */
-    public function isMaxRedirectRequest(InternalRequestInterface $internalRequest);
-
-    /**
      * Creates a redirect request.
      *
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface  $messageFactory  The message factory.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
      *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The redirect request.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If the max redirect is reached and it uses exceptions.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|false The redirect request of FALSE if the response
+     *                                                                   is not a redirect one or the max redirect is
+     *                                                                   reached and the it doesn't use exceptions.
      */
     public function createRedirectRequest(
         ResponseInterface $response,
         InternalRequestInterface $internalRequest,
-        MessageFactoryInterface $messageFactory
+        HttpAdapterInterface $httpAdapter
     );
 
     /**
@@ -113,13 +99,4 @@ interface RedirectInterface
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      */
     public function prepareResponse(ResponseInterface $response, InternalRequestInterface $internalRequest);
-
-    /**
-     * Gets the root request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The root request.
-     */
-    public function getRootRequest(InternalRequestInterface $internalRequest);
 }
