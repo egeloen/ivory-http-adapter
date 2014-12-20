@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Retry subscriber test.
@@ -69,6 +70,9 @@ class RetrySubscriberTest extends AbstractSubscriberTest
 
         $this->assertArrayHasKey(Events::EXCEPTION, $events);
         $this->assertSame(array('onException', 0), $events[Events::EXCEPTION]);
+
+        $this->assertArrayHasKey(Events::MULTI_EXCEPTION, $events);
+        $this->assertSame(array('onMultiException', 0), $events[Events::MULTI_EXCEPTION]);
     }
 
     public function testExceptionEventRetried()
@@ -135,6 +139,141 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         ));
 
         $this->assertNull($event->getResponse());
+    }
+
+    public function testMultiExceptionEventRetried()
+    {
+        $requests = array(
+            $request1 = $this->createRequestMock(),
+            $request2 = $this->createRequestMock(),
+        );
+
+        $responses = array(
+            $response1 = $this->createResponseMock($request1),
+            $response2 = $this->createResponseMock($request2),
+        );
+
+        $exceptions = array(
+            $exception1 = $this->createExceptionMock($request1, $response1),
+            $exception2 = $this->createExceptionMock($request2, $response2),
+        );
+
+        $retryResponses = array($this->createResponseMock(), $this->createResponseMock());
+
+        $this->retry
+            ->expects($this->exactly(count($responses)))
+            ->method('retry')
+            ->will($this->returnValueMap(array(
+                array($request1, false, true),
+                array($request2, false, true),
+            )));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequests')
+            ->with($this->identicalTo($requests))
+            ->will($this->returnValue($retryResponses));
+
+        $event = $this->createMultiExceptionEvent($httpAdapter, $exceptions);
+        $event->getException()
+            ->expects($this->exactly(count($exceptions)))
+            ->method('removeException')
+            ->withConsecutive(array($exception1), array($exception2));
+
+        $event->getException()
+            ->expects($this->once())
+            ->method('addResponses')
+            ->with($this->identicalTo($retryResponses));
+
+        $this->retrySubscriber->onMultiException($event);
+    }
+
+    public function testMultiExceptionEventRetriedThrowException()
+    {
+        $requests = array(
+            $request1 = $this->createRequestMock(),
+            $request2 = $this->createRequestMock(),
+        );
+
+        $exceptions = array(
+            $exception1 = $this->createExceptionMock($request1, $response1 = $this->createResponseMock($request1)),
+            $exception2 = $this->createExceptionMock($request2, $response2 = $this->createResponseMock($request2)),
+        );
+
+        $this->retry
+            ->expects($this->exactly(count($requests)))
+            ->method('retry')
+            ->will($this->returnValueMap(array(
+                array($request1, false, true),
+                array($request2, false, true),
+            )));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequests')
+            ->with($this->identicalTo($requests))
+            ->will($this->throwException($exception = $this->createMultiExceptionMock($exceptions)));
+
+        $event = $this->createMultiExceptionEvent($httpAdapter, $exceptions);
+        $event->getException()
+            ->expects($this->exactly(count($exceptions)))
+            ->method('removeException')
+            ->withConsecutive(array($exception1), array($exception2));
+
+        $event->getException()
+            ->expects($this->once())
+            ->method('addExceptions')
+            ->with($this->identicalTo($exceptions));
+
+        $event->getException()
+            ->expects($this->once())
+            ->method('addResponses')
+            ->with($this->identicalTo(array()));
+
+        $this->retrySubscriber->onMultiException($event);
+    }
+
+    public function testMultiExceptionEventNotRetried()
+    {
+        $responses = array(
+            $this->createResponseMock($request1 = $this->createRequestMock()),
+            $this->createResponseMock($request2 = $this->createRequestMock()),
+        );
+
+        $this->retry
+            ->expects($this->exactly(count($responses)))
+            ->method('retry')
+            ->will($this->returnValueMap(array(
+                array($request1, false, false),
+                array($request2, false, false),
+            )));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->never())
+            ->method('sendRequests');
+
+        $this->retrySubscriber->onMultiException($event = $this->createMultiExceptionEvent(
+            $httpAdapter,
+            array($this->createExceptionMock($request1), $this->createExceptionMock($request2))
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResponseMock(InternalRequestInterface $internalRequest = null)
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($internalRequest));
+
+        return $response;
     }
 
     /**

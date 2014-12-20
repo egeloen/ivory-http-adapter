@@ -42,8 +42,9 @@ interface RetryInterface
      * Checks if it should retry a request.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param boolean                                             $wait            TRUE if the delay should be considered else FALSE.
      *
      * @return boolean TRUE if should retry the request else FALSE.
      */
-    public function retry(InternalRequestInterface $internalRequest);
+    public function retry(InternalRequestInterface $internalRequest, $wait = true);
 }

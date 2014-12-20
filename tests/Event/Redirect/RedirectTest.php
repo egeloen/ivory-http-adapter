@@ -167,7 +167,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
             ->method('getParameter')
             ->will($this->returnValueMap(array(
                 array(Redirect::REDIRECT_COUNT, $redirectCount),
-                array(Redirect::PARENT_REQUEST, $rootRequest = $this->createRequestMock())
+                array(Redirect::PARENT_REQUEST, $rootRequest = $this->createRequestMock()),
             )));
 
         $this->redirect->setThrowException(true);

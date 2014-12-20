@@ -62,6 +62,9 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
 
         $this->assertArrayHasKey(Events::PRE_SEND, $events);
         $this->assertSame(array('onPreSend', 300), $events[Events::PRE_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
+        $this->assertSame(array('onMultiPreSend', 300), $events[Events::MULTI_PRE_SEND]);
     }
 
     public function testPreSendEvent()
@@ -72,6 +75,18 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($request = $this->createRequestMock()));
 
         $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+    }
+
+    public function testMultiPreSendEvent()
+    {
+        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
+
+        $this->basicAuth
+            ->expects($this->exactly(count($requests)))
+            ->method('authenticate')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->basicAuthSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
     }
 
     /**

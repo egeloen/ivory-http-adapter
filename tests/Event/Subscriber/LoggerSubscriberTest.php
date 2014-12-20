@@ -14,6 +14,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Logger subscriber test.
@@ -191,6 +192,174 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->loggerSubscriber->onException($this->createExceptionEvent(null, $exception));
     }
 
+    public function testMultiPostSendEvent()
+    {
+        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
+
+        $responses = array(
+            $response1 = $this->createResponseMock($request1),
+            $response2 = $this->createResponseMock($request2),
+        );
+
+        $this->timer
+            ->expects($this->exactly(count($responses)))
+            ->method('start')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->timer
+            ->expects($this->exactly(count($responses)))
+            ->method('stop')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->formatter
+            ->expects($this->exactly(count($responses)))
+            ->method('formatRequest')
+            ->will($this->returnValueMap(array(
+                array($request1, $formattedRequest1 = 'request1'),
+                array($request2, $formattedRequest2 = 'request2'),
+            )));
+
+        $this->formatter
+            ->expects($this->exactly(count($responses)))
+            ->method('formatResponse')
+            ->will($this->returnValueMap(array(
+                array($response1, $formattedResponse1 = 'response1'),
+                array($response2, $formattedResponse2 = 'response2'),
+            )));
+
+        $this->logger
+            ->expects($this->exactly(count($responses)))
+            ->method('debug')
+            ->withConsecutive(
+                array(
+                    $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
+                    array(
+                        'adapter'  => 'http_adapter',
+                        'request'  => $formattedRequest1,
+                        'response' => $formattedResponse1,
+                    ),
+                ),
+                array(
+                    $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
+                    array(
+                        'adapter'  => 'http_adapter',
+                        'request'  => $formattedRequest2,
+                        'response' => $formattedResponse2,
+                    ),
+                )
+            );
+
+        $this->loggerSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $this->loggerSubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+    }
+
+    public function testMultiExceptionEvent()
+    {
+        $requests = array(
+            $request1 = $this->createRequestMock(),
+            $request2 = $this->createRequestMock(),
+            $request3 = $this->createRequestMock(),
+            $request4 = $this->createRequestMock(),
+        );
+
+        $responses = array(
+            $response1 = $this->createResponseMock($request1),
+            $response2 = $this->createResponseMock($request2),
+        );
+
+        $exceptions = array(
+            $exception1 = $this->createExceptionMock($request3, $response3 = $this->createResponseMock($request3)),
+            $exception2 = $this->createExceptionMock($request4, $response4 = $this->createResponseMock($request4)),
+        );
+
+        $this->timer
+            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->method('start')
+            ->withConsecutive(array($request1), array($request2), array($request3), array($request4));
+
+        $this->timer
+            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->method('stop')
+            ->withConsecutive(array($request1), array($request2), array($request3), array($request4));
+
+        $this->formatter
+            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->method('formatRequest')
+            ->will($this->returnValueMap(array(
+                array($request1, $formattedRequest1 = 'request1'),
+                array($request2, $formattedRequest2 = 'request2'),
+                array($request3, $formattedRequest3 = 'request3'),
+                array($request4, $formattedRequest4 = 'request4'),
+            )));
+
+        $this->formatter
+            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->method('formatResponse')
+            ->will($this->returnValueMap(array(
+                array($response1, $formattedResponse1 = 'response1'),
+                array($response2, $formattedResponse2 = 'response2'),
+                array($response3, $formattedResponse3 = 'response3'),
+                array($response4, $formattedResponse4 = 'response4'),
+            )));
+
+        $this->formatter
+            ->expects($this->exactly(count($exceptions)))
+            ->method('formatException')
+            ->will($this->returnValueMap(array(
+                array($exception1, $formattedException1 = 'exception1'),
+                array($exception2, $formattedException2 = 'exception1'),
+            )));
+
+        $this->logger
+            ->expects($this->exactly(count($responses)))
+            ->method('debug')
+            ->withConsecutive(
+                array(
+                    $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
+                    array(
+                        'adapter'  => 'http_adapter',
+                        'request'  => $formattedRequest1,
+                        'response' => $formattedResponse1,
+                    ),
+                ),
+                array(
+                    $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
+                    array(
+                        'adapter'  => 'http_adapter',
+                        'request'  => $formattedRequest2,
+                        'response' => $formattedResponse2,
+                    ),
+                )
+            );
+
+        $this->logger
+            ->expects($this->exactly(count($exceptions)))
+            ->method('error')
+            ->withConsecutive(
+                array(
+                    $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
+                    $this->identicalTo(array(
+                        'adapter'   => 'http_adapter',
+                        'exception' => $formattedException1,
+                        'request'   => $formattedRequest3,
+                        'response'  => $formattedResponse3,
+                    )),
+                ),
+                array(
+                    $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
+                    $this->identicalTo(array(
+                        'adapter'   => 'http_adapter',
+                        'exception' => $formattedException2,
+                        'request'   => $formattedRequest4,
+                        'response'  => $formattedResponse4,
+                    )),
+                )
+            );
+
+        $this->loggerSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $this->loggerSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions, $responses));
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -215,6 +384,21 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->will($this->returnValue(123));
 
         return $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResponseMock(InternalRequestInterface $internalRequest = null)
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($internalRequest));
+
+        return $response;
     }
 
     /**

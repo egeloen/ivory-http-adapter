@@ -12,10 +12,12 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\MultiPostSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\Redirect\Redirect;
 use Ivory\HttpAdapter\Event\Redirect\RedirectInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\MultiHttpAdapterException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -91,10 +93,55 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * On multi post send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     */
+    public function onMultiPostSend(MultiPostSendEvent $event)
+    {
+        $redirectRequests = array();
+
+        foreach ($event->getResponses() as $response) {
+            try {
+                $redirectRequest = $this->redirect->createRedirectRequest(
+                    $response,
+                    $response->getParameter('request'),
+                    $event->getHttpAdapter()
+                );
+            } catch (HttpAdapterException $e) {
+                $event->removeResponse($response);
+                $event->addException($e);
+                continue;
+            }
+
+            if ($redirectRequest === false) {
+                $this->redirect->prepareResponse($response, $response->getParameter('request'));
+            } else {
+                $redirectRequests[] = $redirectRequest;
+                $event->removeResponse($response);
+            }
+        }
+
+        if (empty($redirectRequests)) {
+            return;
+        }
+
+        try {
+            $event->addResponses($event->getHttpAdapter()->sendRequests($redirectRequests));
+        } catch (MultiHttpAdapterException $e) {
+            $event->addResponses($e->getResponses());
+            $event->addExceptions($e->getExceptions());
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
-        return array(Events::POST_SEND => array('onPostSend', 0));
+        return array(
+            Events::POST_SEND       => array('onPostSend', 0),
+            Events::MULTI_POST_SEND => array('onMultiPostSend', 0),
+        );
     }
 }

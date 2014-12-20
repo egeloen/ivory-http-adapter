@@ -114,6 +114,14 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
+    public function sendRequests(array $requests, $success = null, $error = null)
+    {
+        return $this->watch('sendRequests', array($requests, $success, $error));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return $this->httpAdapter->getName();
@@ -125,7 +133,7 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
      * @param string $method The method.
      * @param array  $params The parameters.
      *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return mixed The result.
      */
     private function watch($method, array $params = array())
     {
@@ -134,7 +142,7 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
         $this->stopwatch->start($name);
 
         try {
-            $response = call_user_func_array(array($this->httpAdapter, $method), $params);
+            $result = call_user_func_array(array($this->httpAdapter, $method), $params);
         } catch (\Exception $e) {
             $this->stopwatch->stop($name);
 
@@ -143,6 +151,6 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
 
         $this->stopwatch->stop($name);
 
-        return $response;
+        return $result;
     }
 }

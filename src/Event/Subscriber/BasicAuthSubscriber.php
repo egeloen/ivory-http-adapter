@@ -13,6 +13,7 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface;
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\MultiPreSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -67,10 +68,25 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * On multi pre send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     */
+    public function onMultiPreSend(MultiPreSendEvent $event)
+    {
+        foreach ($event->getRequests() as $request) {
+            $this->basicAuth->authenticate($request);
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
-        return array(Events::PRE_SEND => array('onPreSend', 300));
+        return array(
+            Events::PRE_SEND       => array('onPreSend', 300),
+            Events::MULTI_PRE_SEND => array('onMultiPreSend', 300),
+        );
     }
 }

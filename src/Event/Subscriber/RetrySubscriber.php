@@ -13,9 +13,11 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiExceptionEvent;
 use Ivory\HttpAdapter\Event\Retry\Retry;
 use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\MultiHttpAdapterException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -75,10 +77,41 @@ class RetrySubscriber implements EventSubscriberInterface
     }
 
     /**
+     * On multi exception event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
+     */
+    public function onMultiException(MultiExceptionEvent $event)
+    {
+        $retryRequests = array();
+
+        foreach ($event->getException()->getExceptions() as $exception) {
+            if ($this->retry->retry($exception->getRequest(), false)) {
+                $retryRequests[] = $exception->getRequest();
+                $event->getException()->removeException($exception);
+            }
+        }
+
+        if (empty($retryRequests)) {
+            return;
+        }
+
+        try {
+            $event->getException()->addResponses($event->getHttpAdapter()->sendRequests($retryRequests));
+        } catch (MultiHttpAdapterException $e) {
+            $event->getException()->addResponses($e->getResponses());
+            $event->getException()->addExceptions($e->getExceptions());
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
-        return array(Events::EXCEPTION => array('onException', 0));
+        return array(
+            Events::EXCEPTION       => array('onException', 0),
+            Events::MULTI_EXCEPTION => array('onMultiException', 0),
+        );
     }
 }

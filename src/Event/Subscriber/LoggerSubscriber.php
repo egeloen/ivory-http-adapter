@@ -14,6 +14,9 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
+use Ivory\HttpAdapter\Event\MultiExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiPostSendEvent;
+use Ivory\HttpAdapter\Event\MultiPreSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
@@ -87,7 +90,6 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $this->getTimer()->stop($event->getRequest());
         $this->debug($event->getHttpAdapter(), $event->getRequest(), $event->getResponse());
     }
 
@@ -98,8 +100,47 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     public function onException(ExceptionEvent $event)
     {
-        $this->getTimer()->stop($event->getException()->getRequest());
         $this->error($event->getHttpAdapter(), $event->getException());
+    }
+
+    /**
+     * On multi pre send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     */
+    public function onMultiPreSend(MultiPreSendEvent $event)
+    {
+        foreach ($event->getRequests() as $request) {
+            $this->getTimer()->start($request);
+        }
+    }
+
+    /**
+     * On multi post send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     */
+    public function onMultiPostSend(MultiPostSendEvent $event)
+    {
+        foreach ($event->getResponses() as $response) {
+            $this->debug($event->getHttpAdapter(), $response->getParameter('request'), $response);
+        }
+    }
+
+    /**
+     * On multi exception event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
+     */
+    public function onMultiException(MultiExceptionEvent $event)
+    {
+        foreach ($event->getException()->getResponses() as $response) {
+            $this->debug($event->getHttpAdapter(), $response->getParameter('request'), $response);
+        }
+
+        foreach ($event->getException()->getExceptions() as $exception) {
+            $this->error($event->getHttpAdapter(), $exception);
+        }
     }
 
     /**
@@ -108,9 +149,12 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND  => array('onPreSend', 100),
-            Events::POST_SEND => array('onPostSend', 100),
-            Events::EXCEPTION => array('onException', 100),
+            Events::PRE_SEND        => array('onPreSend', 100),
+            Events::POST_SEND       => array('onPostSend', 100),
+            Events::EXCEPTION       => array('onException', 100),
+            Events::MULTI_PRE_SEND  => array('onMultiPreSend', 100),
+            Events::MULTI_POST_SEND => array('onMultiPostSend', 100),
+            Events::MULTI_EXCEPTION => array('onMultiException', 100),
         );
     }
 
@@ -126,6 +170,8 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
         InternalRequestInterface $request,
         ResponseInterface $response
     ) {
+        $this->getTimer()->stop($request);
+
         $this->logger->debug(
             sprintf(
                 'Send "%s %s" in %.2f ms.',
@@ -149,6 +195,8 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     private function error(HttpAdapterInterface $httpAdapter, HttpAdapterException $exception)
     {
+        $this->getTimer()->stop($exception->getRequest());
+
         $this->logger->error(
             sprintf(
                 'Unable to send "%s %s".',

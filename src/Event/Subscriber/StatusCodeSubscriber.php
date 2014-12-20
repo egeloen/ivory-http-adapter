@@ -12,6 +12,7 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\MultiPostSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
 use Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface;
@@ -65,8 +66,6 @@ class StatusCodeSubscriber implements EventSubscriberInterface
      * On post send event.
      *
      * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The event.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the response status code is an error one.
      */
     public function onPostSend(PostSendEvent $event)
     {
@@ -80,11 +79,34 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * On multi post send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     */
+    public function onMultiPostSend(MultiPostSendEvent $event)
+    {
+        foreach ($event->getResponses() as $response) {
+            if (!$this->statusCode->validate($response)) {
+                $event->addException($this->createStatusCodeException(
+                    $response,
+                    $response->getParameter('request'),
+                    $event->getHttpAdapter()
+                ));
+
+                $event->removeResponse($response);
+            }
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
-        return array(Events::POST_SEND => array('onPostSend', 200));
+        return array(
+            Events::POST_SEND       => array('onPostSend', 200),
+            Events::MULTI_POST_SEND => array('onMultiPostSend', 200),
+        );
     }
 
     /**
@@ -101,10 +123,15 @@ class StatusCodeSubscriber implements EventSubscriberInterface
         InternalRequestInterface $internalRequest,
         HttpAdapterInterface $httpAdapter
     ) {
-        return HttpAdapterException::cannotFetchUrl(
+        $exception = HttpAdapterException::cannotFetchUrl(
             (string) $internalRequest->getUrl(),
             $httpAdapter->getName(),
             sprintf('Status code: %d', $response->getStatusCode())
         );
+
+        $exception->setRequest($internalRequest);
+        $exception->setResponse($response);
+
+        return $exception;
     }
 }

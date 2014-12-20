@@ -13,10 +13,14 @@ namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiPostSendEvent;
+use Ivory\HttpAdapter\Event\MultiPreSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\MultiHttpAdapterException;
 
 /**
  * Http adapter test.
@@ -131,13 +135,12 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $httpAdapter = $this->httpAdapter;
         $internalRequest = $this->createInternalRequestMock();
         $internalRequestOverride = $this->createInternalRequestMock();
-        $response = $this->createResponseMock();
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSendInternalRequest')
             ->with($this->identicalTo($internalRequestOverride))
-            ->will($this->returnValue($response));
+            ->will($this->returnValue($response = $this->createResponseMock()));
 
         $this->httpAdapter->getConfiguration()->setEventDispatcher(
             $eventDispatcher = $this->createEventDispatcherMock()
@@ -202,15 +205,13 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function testSendRequestDispatchExceptionEventAndReturnResponse()
     {
         $httpAdapter = $this->httpAdapter;
-        $internalRequest = $this->createInternalRequestMock();
-        $exception = $this->createExceptionMock();
         $response = $this->createResponseMock();
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSendInternalRequest')
-            ->with($this->identicalTo($internalRequest))
-            ->will($this->throwException($exception));
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
 
         $exception
             ->expects($this->once())
@@ -245,18 +246,61 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($response, $this->httpAdapter->sendRequest($internalRequest));
     }
 
+    public function testSendRequestDispatchExceptionEventWhenPreSendThrowException()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $exception = $this->createExceptionMock();
+
+        $exception
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()));
+
+        $exception
+            ->expects($this->once())
+            ->method('setResponse')
+            ->with($this->isNull());
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with($this->identicalTo(Events::PRE_SEND), $this->anything())
+            ->will($this->throwException($exception));
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $exception) {
+                    return $event instanceof ExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getException() === $exception;
+                })
+            );
+
+        try {
+            $this->httpAdapter->sendRequest($internalRequest);
+            $this->fail();
+        } catch (HttpAdapterException $e) {
+            $this->assertSame($e, $exception);
+        }
+    }
+
     public function testSendRequestDispatchExceptionEventWhenDoSendThrowException()
     {
         $httpAdapter = $this->httpAdapter;
-        $internalRequest = $this->createInternalRequestMock();
-        $exception = $this->createExceptionMock();
         $exceptionOverride = $this->createExceptionMock();
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSendInternalRequest')
-            ->with($this->identicalTo($internalRequest))
-            ->will($this->throwException($exception));
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
 
         $exception
             ->expects($this->once())
@@ -306,64 +350,16 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSendRequestDispatchExceptionEventWhenPreSendThrowException()
-    {
-        $httpAdapter = $this->httpAdapter;
-        $internalRequest = $this->createInternalRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $exception
-            ->expects($this->once())
-            ->method('setRequest')
-            ->with($this->identicalTo($internalRequest));
-
-        $exception
-            ->expects($this->once())
-            ->method('setResponse')
-            ->with($this->isNull());
-
-        $this->httpAdapter->getConfiguration()->setEventDispatcher(
-            $eventDispatcher = $this->createEventDispatcherMock()
-        );
-
-        $eventDispatcher
-            ->expects($this->at(0))
-            ->method('dispatch')
-            ->with($this->identicalTo(Events::PRE_SEND), $this->anything())
-            ->will($this->throwException($exception));
-
-        $eventDispatcher
-            ->expects($this->at(1))
-            ->method('dispatch')
-            ->with(
-                $this->identicalTo(Events::EXCEPTION),
-                $this->callback(function ($event) use ($httpAdapter, $exception) {
-                    return $event instanceof ExceptionEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getException() === $exception;
-                })
-            );
-
-        try {
-            $this->httpAdapter->sendRequest($internalRequest);
-            $this->fail();
-        } catch (HttpAdapterException $e) {
-            $this->assertSame($e, $exception);
-        }
-    }
-
     public function testSendRequestDispatchExceptionEventWhenPostSendThrowException()
     {
         $httpAdapter = $this->httpAdapter;
-        $internalRequest = $this->createInternalRequestMock();
-        $response = $this->createResponseMock();
         $exception = $this->createExceptionMock();
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSendInternalRequest')
-            ->with($this->identicalTo($internalRequest))
-            ->will($this->returnValue($response));
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->returnValue($response = $this->createResponseMock()));
 
         $exception
             ->expects($this->once())
@@ -408,15 +404,13 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function testSendRequestDispatchExceptionEventWhenPostSendEventHasException()
     {
         $httpAdapter = $this->httpAdapter;
-        $internalRequest = $this->createInternalRequestMock();
-        $response = $this->createResponseMock();
         $exception = $this->createExceptionMock();
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('doSendInternalRequest')
-            ->with($this->identicalTo($internalRequest))
-            ->will($this->returnValue($response));
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->returnValue($response = $this->createResponseMock()));
 
         $exception
             ->expects($this->once())
@@ -461,6 +455,335 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             $this->fail();
         } catch (HttpAdapterException $e) {
             $this->assertSame($e, $exception);
+        }
+    }
+
+    public function testSendRequestsWithDisabledEventDispatcher()
+    {
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->returnValue($response = $this->createResponseMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(null);
+
+        $this->assertSame(array($response), $this->httpAdapter->sendRequests(array($internalRequest)));
+    }
+
+    public function testSendRequestsWithDisabledEventDispatcherThrowException()
+    {
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(null);
+
+        try {
+            $this->httpAdapter->sendRequests(array($internalRequest));
+            $this->fail();
+        } catch (MultiHttpAdapterException $e) {
+            $exceptions = $e->getExceptions();
+            $this->assertCount(1, $exceptions);
+            $this->assertArrayHasKey(0, $exceptions);
+            $this->assertSame($exception, $exceptions[0]);
+        }
+    }
+
+    public function testSendRequestsDispatchMultiPreSendEvent()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $internalRequests = array($this->createInternalRequestMock());
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequestOverride = $this->createInternalRequestMock()))
+            ->will($this->returnValue($response = $this->createResponseMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_PRE_SEND),
+                $this->callback(function ($event) use ($httpAdapter, $internalRequests, $internalRequestOverride) {
+                    $result =  $event instanceof MultiPreSendEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getRequests() === $internalRequests;
+
+                    $event->setRequests(array($internalRequestOverride));
+
+                    return $result;
+                })
+            );
+
+        $this->assertSame(array($response), $this->httpAdapter->sendRequests($internalRequests));
+    }
+
+    public function testSendRequestsDispatchMultiPostSendEvent()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $responseOverride = $this->createResponseMock();
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->returnValue($response = $this->createResponseMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_POST_SEND),
+                $this->callback(function ($event) use ($httpAdapter, $response, $responseOverride) {
+                    $result = $event instanceof MultiPostSendEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getResponses() === array($response)
+                        && !$event->hasExceptions();
+
+                    $event->setResponses(array($responseOverride));
+
+                    return $result;
+                })
+            );
+
+        $this->assertSame(array($responseOverride), $this->httpAdapter->sendRequests(array($internalRequest)));
+    }
+
+    public function testSendRequestsDispatchMultiExceptionEventAndReturnResponses()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $responses = array($this->createResponseMock());
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $exception, $responses) {
+                    $result = $event instanceof MultiExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getException()->getExceptions() === array($exception)
+                        && !$event->getException()->hasResponses();
+
+                    $event->getException()->setExceptions(array());
+                    $event->getException()->setResponses($responses);
+
+                    return $result;
+                })
+            );
+
+        $this->assertSame($responses, $this->httpAdapter->sendRequests(array($internalRequest)));
+    }
+
+    public function testSendRequestsDispatchMultiExceptionEventWhenMultiPreSendThrowException()
+    {
+        $httpAdapter = $this->httpAdapter;
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with($this->identicalTo(Events::MULTI_PRE_SEND), $this->anything())
+            ->will($this->throwException($multiException = $this->createMultiExceptionMock()));
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $multiException) {
+                    return $event instanceof MultiExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getException() === $multiException;
+                })
+            );
+
+        try {
+            $this->httpAdapter->sendRequests(array($this->createInternalRequestMock()));
+            $this->fail();
+        } catch (MultiHttpAdapterException $e) {
+            $this->assertSame($e->getExceptions(), $multiException->getExceptions());
+            $this->assertSame($e->getResponses(), $multiException->getResponses());
+        }
+    }
+
+    public function testSendRequestsDispatchMultiExceptionEventWhenDoSendThrowException()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $exceptionOverride = $this->createExceptionMock();
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $exception, $exceptionOverride) {
+                    $result = $event instanceof MultiExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getException()->getExceptions() === array($exception)
+                        && !$event->getException()->hasResponses();
+
+                    $event->getException()->setExceptions(array($exceptionOverride));
+
+                    return $result;
+                })
+            );
+
+        try {
+            $this->httpAdapter->sendRequests(array($internalRequest));
+            $this->fail();
+        } catch (MultiHttpAdapterException $e) {
+            $this->assertSame($e->getExceptions(), array($exceptionOverride));
+            $this->assertFalse($e->hasResponses());
+        }
+    }
+
+    public function testSendRequestsDispatchMultiExceptionEventWhenMultiPostSendThrowException()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $multiException = $this->createMultiExceptionMock($exceptions = array($this->createExceptionMock()));
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->returnValue($response = $this->createResponseMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with($this->identicalTo(Events::MULTI_POST_SEND), $this->anything())
+            ->will($this->throwException($multiException));
+
+        $eventDispatcher
+            ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $multiException) {
+                    return $event instanceof MultiExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getException() === $multiException;
+                })
+            );
+
+        try {
+            $this->httpAdapter->sendRequests(array($internalRequest));
+            $this->fail();
+        } catch (MultiHttpAdapterException $e) {
+            $this->assertSame($e->getExceptions(), $multiException->getExceptions());
+            $this->assertSame($e->getResponses(), $multiException->getResponses());
+        }
+    }
+
+    public function testSendRequestsDispatchMultiExceptionEventWhenMultiPostSendEventHasExceptions()
+    {
+        $httpAdapter = $this->httpAdapter;
+        $exceptions = array($this->createExceptionMock());
+
+        $this->httpAdapter
+            ->expects($this->once())
+            ->method('doSendInternalRequest')
+            ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
+            ->will($this->returnValue($response = $this->createResponseMock()));
+
+        $this->httpAdapter->getConfiguration()->setEventDispatcher(
+            $eventDispatcher = $this->createEventDispatcherMock()
+        );
+
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_POST_SEND),
+                $this->callback(function ($event) use ($exceptions) {
+                    $event->setExceptions($exceptions);
+
+                    return true;
+                })
+            );
+
+        $eventDispatcher
+            ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(
+                $this->identicalTo(Events::MULTI_EXCEPTION),
+                $this->callback(function ($event) use ($httpAdapter, $exceptions) {
+                    return $event instanceof MultiExceptionEvent
+                        && $event->getHttpAdapter() === $httpAdapter
+                        && $event->getException()->getExceptions() === $exceptions;
+                })
+            );
+
+        try {
+            $this->httpAdapter->sendRequests(array($internalRequest));
+            $this->fail();
+        } catch (MultiHttpAdapterException $e) {
+            $this->assertSame($e->getExceptions(), $exceptions);
+            $this->assertTrue($e->hasResponses(), array($response));
+        }
+    }
+
+    public function testSendRequestsWithInvalidRequests()
+    {
+        try {
+            $this->httpAdapter->sendRequests(array(true));
+            $this->fail();
+        } catch (MultiHttpAdapterException $e) {
+            $this->assertFalse($e->hasResponses());
+
+            $exceptions = $e->getExceptions();
+
+            $this->assertCount(1, $exceptions);
+            $this->assertArrayHasKey(0, $exceptions);
+            $this->assertInstanceOf('Ivory\HttpAdapter\HttpAdapterException', $exceptions[0]);
+
+            $this->assertSame(
+                'The request must be a string, an array or implement "Psr\Http\Message\OutgoingRequestInterface" ("boolean" given).',
+                $exceptions[0]->getMessage()
+            );
+
+            $this->assertFalse($exceptions[0]->hasRequest());
+            $this->assertFalse($exceptions[0]->hasResponse());
         }
     }
 
@@ -532,5 +855,44 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
     private function createExceptionMock()
     {
         return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+    }
+
+    /**
+     * Creates a multi exception mock.
+     *
+     * @param array $exceptions The exceptions.
+     * @param array $responses  The responses.
+     *
+     * @return \Ivory\HttpAdapter\MultiHttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The multi exception mock.
+     */
+    private function createMultiExceptionMock(array $exceptions = array(), array $responses = array())
+    {
+        $exception = $this->getMock('Ivory\HttpAdapter\MultiHttpAdapterException');
+
+        if (empty($exceptions)) {
+            $exceptions[] = $this->createExceptionMock();
+        }
+
+        $exception
+            ->expects($this->any())
+            ->method('hasExceptions')
+            ->will($this->returnValue(true));
+
+        $exception
+            ->expects($this->any())
+            ->method('getExceptions')
+            ->will($this->returnValue($exceptions));
+
+        $exception
+            ->expects($this->any())
+            ->method('hasResponses')
+            ->will($this->returnValue(!empty($responses)));
+
+        $exception
+            ->expects($this->any())
+            ->method('getResponses')
+            ->will($this->returnValue($responses));
+
+        return $exception;
     }
 }

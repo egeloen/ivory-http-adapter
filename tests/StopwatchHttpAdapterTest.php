@@ -169,7 +169,8 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
             array('delete'),
             array('options'),
             array('send', array('url', RequestInterface::METHOD_GET)),
-            array('sendRequest', array($this->getMock('Psr\Http\Message\OutgoingRequestInterface')), 'sendRequest'),
+            array('sendRequest', array($this->createRequestMock()), 'sendRequest'),
+            array('sendRequests', array(array($this->createRequestMock())), 'sendRequests'),
         );
     }
 
@@ -201,5 +202,15 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
     private function createStopwatchMock()
     {
         return $this->getMock('Symfony\Component\Stopwatch\Stopwatch');
+    }
+
+    /**
+     * Creates a request mock.
+     *
+     * @return \Psr\Http\Message\OutgoingRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     */
+    private function createRequestMock()
+    {
+        return $this->getMock('Psr\Http\Message\OutgoingRequestInterface');
     }
 }

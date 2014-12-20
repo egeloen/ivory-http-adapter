@@ -6,12 +6,16 @@ can hook into them pretty easily.
 
 ## Available events
 
-All available events are described by the constants wrapped in the `Ivory\HttpAdapter\Event\Events` class.
+All available events are described by the constants wrapped in the `Ivory\HttpAdapter\Event\Events` class. There are
+two types of events:
+
+ * Serial events
+ * Parallel events
 
 ### Pre send
 
-The `Ivory\HttpAdapter\Event\Events::PRE_SEND` describes the event trigger just before a request is sent. It is
-represented by the `Ivory\HttpAdapter\Event\PreSendEvent` and wraps the http adapter and the internal request.
+The `Ivory\HttpAdapter\Event\Events::PRE_SEND` describes the event trigger just before a request is sent serially. It
+is represented by the `Ivory\HttpAdapter\Event\PreSendEvent` and wraps the http adapter and the internal request.
 To get/set them, you can use:
 
 ``` php
@@ -28,8 +32,8 @@ $preSendEvent->setRequest($request);
 
 ### Post send
 
-The `Ivory\HttpAdapter\Event\Events::POST_SEND` describes the event trigger just after the request is sent. It is
-described by the `Ivory\HttpAdapter\Event\PostSendEvent` and wraps the http adapter, the internal request and the
+The `Ivory\HttpAdapter\Event\Events::POST_SEND` describes the event trigger just after the request is sent serially. It
+is described by the `Ivory\HttpAdapter\Event\PostSendEvent` and wraps the http adapter, the internal request and the
 response. To get/set them, you can use:
 
 ``` php
@@ -49,9 +53,9 @@ $postSendEvent->setResponse($response);
 
 ### Exception
 
-The `Ivory\HttpAdapter\Event\Events::EXCEPTION` describes the event trigger if an error occurred. It is represented by
-the `Ivory\HttpAdapter\Event\ExceptionEvent` and wraps the http adapter and the exception. To get/set them, you can
-use:
+The `Ivory\HttpAdapter\Event\Events::EXCEPTION` describes the event trigger if an error occurred in a serial request
+context. It is represented by the `Ivory\HttpAdapter\Event\ExceptionEvent` and wraps the http adapter and the
+exception. To get/set them, you can use:
 
 ``` php
 use Ivory\HttpAdapter\Event\ExceptionEvent;
@@ -76,6 +80,86 @@ is available:
 $hasResponse = $exceptionEvent->hasResponse();
 $response = $exceptionEvent->getResponse();
 $exceptionEvent->setResponse($response);
+```
+
+### Multi pre send
+
+The `Ivory\HttpAdapter\Event\Events::MULTI_PRE_SEND` describes the event trigger just before multiple requests are sent
+in parallel. It is represented by the `Ivory\HttpAdapter\Event\MultiPreSendEvent` and wraps the http adapter and
+the internal requests. To get/set them, you can use:
+
+``` php
+use Ivory\HttpAdapter\Event\MultiPreSendEvent;
+
+$multiPreSendEvent = new MultiPreSendEvent($httpAdapter, $requests);
+
+$httpAdapter = $multiPreSendEvent->getHttpAdapter();
+$multiPreSendEvent->setHttpAdapter($httpAdapter);
+
+$requests = $multiPreSendEvent->getRequests();
+$multiPreSendEvent->setRequests($requests);
+```
+
+### Multi post send
+
+The `Ivory\HttpAdapter\Event\Events::MULTI_POST_SEND` describes the event trigger just after multiple requests are sent
+**fully successfully** in parallel. To be even more precise, if only one request is errored, this event is not
+triggered. It is described by the `Ivory\HttpAdapter\Event\MultiPostSendEvent` and wraps the http adapter and the
+responses. To get/set them, you can use:
+
+``` php
+use Ivory\HttpAdapter\Event\MultiPostSendEvent;
+
+$multiPostSendEvent = new MultiPostSendEvent($httpAdapter, $responses);
+
+$httpAdapter = $multiPostSendEvent->getHttpAdapter();
+$multiPostSendEvent->setHttpAdapter($httpAdapter);
+
+$responses = $multiPostSendEvent->getResponses();
+$multiPostSendEvent->setResponses($responses);
+```
+
+All responses wrap the linked request as parameter:
+
+``` php
+foreach ($responses as $response) {
+    $request = $response->getParameter('request');
+}
+```
+
+### Multi exception
+
+The `Ivory\HttpAdapter\Event\Events::MULTI_EXCEPTION` describes the event trigger if an error occurred in a parallel
+requests context. It is represented by the `Ivory\HttpAdapter\Event\MultiExceptionEvent` and wraps the http adapter
+and the multi exception. To get/set them, you can use:
+
+``` php
+use Ivory\HttpAdapter\Event\ExceptionEvent;
+
+$multiExceptionEvent = new MultiExceptionEvent($httpAdapter, $multiException);
+
+$httpAdapter = $multiExceptionEvent->getHttpAdapter();
+$multiExceptionEvent->setHttpAdapter($httpAdapter);
+
+$multiException = $multiExceptionEvent->getException();
+$multiExceptionEvent->setException($multiException);
+```
+
+The multi exception is an instance of `Ivory\HttpAdapter\MultiHttpAdapterException` which wraps the responses and
+the exceptions. To get/set them, you can use:
+
+``` php
+foreach ($mutliException->getResponses() as $response) {
+    $request = $response->getParameter('request');
+}
+
+foreach ($mutliException->getExceptions() as $exception) {
+    $request = $exception->getRequest();
+
+    if ($exception->hasResponses()) {
+        $responses = $exception->getResponse();
+    }
+}
 ```
 
 ## Available subscribers
@@ -751,17 +835,16 @@ wraps in the header:
 namespace My\Own\Namespace;
 
 use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface;
-use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 class MyOwnRetryStrategy implements RetryStrategyInterface
 {
-    public function verify(InternalRequestInterface $request, HttpAdapterException $exception)
+    public function verify(InternalRequestInterface $request)
     {
         return $request->getHeader('X-Can-Retry') === 'true';
     }
 
-    public function delay(InternalRequestInterface $request, HttpAdapterException $exception)
+    public function delay(InternalRequestInterface $request)
     {
         return (float) $request->getHeader('X-Retry-Delay');
     }

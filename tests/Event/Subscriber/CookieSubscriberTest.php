@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Cookie subscriber test.
@@ -71,6 +72,18 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
         $this->assertSame(array('onPostSend', 300), $events[Events::POST_SEND]);
+
+        $this->assertArrayHasKey(Events::EXCEPTION, $events);
+        $this->assertSame(array('onException', 300), $events[Events::EXCEPTION]);
+
+        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
+        $this->assertSame(array('onMultiPreSend', 300), $events[Events::MULTI_PRE_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
+        $this->assertSame(array('onMultiPostSend', 300), $events[Events::MULTI_POST_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_EXCEPTION, $events);
+        $this->assertSame(array('onMultiException', 300), $events[Events::MULTI_EXCEPTION]);
     }
 
     public function testPreSendEvent()
@@ -98,6 +111,106 @@ class CookieSubscriberTest extends AbstractSubscriberTest
             );
 
         $this->cookieSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+    }
+
+    public function testExceptionEvent()
+    {
+        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
+
+        $cookieJar
+            ->expects($this->once())
+            ->method('extract')
+            ->with(
+                $this->identicalTo($request = $this->createRequestMock()),
+                $this->identicalTo($response = $this->createResponseMock())
+            );
+
+        $this->cookieSubscriber->onException($this->createExceptionEvent(
+            null,
+            $this->createExceptionMock($request, $response)
+        ));
+    }
+
+    public function testMultiPreSendEvent()
+    {
+        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
+
+        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
+
+        $cookieJar
+            ->expects($this->exactly(count($requests)))
+            ->method('populate')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->cookieSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+    }
+
+    public function testMultiPostSendEvent()
+    {
+        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
+
+        $request1 = $this->createRequestMock();
+        $request2 = $this->createRequestMock();
+
+        $responses = array(
+            $response1 = $this->createResponseMock($request1),
+            $response2 = $this->createResponseMock($request2),
+        );
+
+        $cookieJar
+            ->expects($this->exactly(count($responses)))
+            ->method('extract')
+            ->withConsecutive(array($request1, $response1), array($request2, $response2));
+
+        $this->cookieSubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+    }
+
+    public function testMultiExceptionEvent()
+    {
+        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
+
+        $responses = array(
+            $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
+            $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
+        );
+
+        $exceptions = array(
+            $this->createExceptionMock(
+                $request3 = $this->createRequestMock(),
+                $response3 = $this->createResponseMock($request3)
+            ),
+            $this->createExceptionMock(
+                $request4 = $this->createRequestMock(),
+                $response4 = $this->createResponseMock($request4)
+            ),
+        );
+
+        $cookieJar
+            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->method('extract')
+            ->withConsecutive(
+                array($request1, $response1),
+                array($request2, $response2),
+                array($request3, $response3),
+                array($request4, $response4)
+            );
+
+        $this->cookieSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions, $responses));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResponseMock(InternalRequestInterface $internalRequest = null)
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($internalRequest));
+
+        return $response;
     }
 
     /**

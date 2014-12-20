@@ -12,11 +12,16 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\MultiExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiPostSendEvent;
+use Ivory\HttpAdapter\Event\MultiPreSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\History\Journal;
 use Ivory\HttpAdapter\Event\History\JournalInterface;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
  * History subscriber.
@@ -78,8 +83,43 @@ class HistorySubscriber extends AbstractTimerSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $this->getTimer()->stop($event->getRequest());
-        $this->journal->record($event->getRequest(), $event->getResponse());
+        $this->record($event->getRequest(), $event->getResponse());
+    }
+
+    /**
+     * On multi pre send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     */
+    public function onMultiPreSend(MultiPreSendEvent $event)
+    {
+        foreach ($event->getRequests() as $request) {
+            $this->getTimer()->start($request);
+        }
+    }
+
+    /**
+     * On multi post send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     */
+    public function onMultiPostSend(MultiPostSendEvent $event)
+    {
+        foreach ($event->getResponses() as $response) {
+            $this->record($response->getParameter('request'), $response);
+        }
+    }
+
+    /**
+     * On multi exception event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
+     */
+    public function onMultiException(MultiExceptionEvent $event)
+    {
+        foreach ($event->getException()->getResponses() as $response) {
+            $this->record($response->getParameter('request'), $response);
+        }
     }
 
     /**
@@ -88,8 +128,23 @@ class HistorySubscriber extends AbstractTimerSubscriber
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND  => array('onPreSend', 100),
-            Events::POST_SEND => array('onPostSend', 100),
+            Events::PRE_SEND        => array('onPreSend', 100),
+            Events::POST_SEND       => array('onPostSend', 100),
+            Events::MULTI_PRE_SEND  => array('onMultiPreSend', 100),
+            Events::MULTI_POST_SEND => array('onMultiPostSend', 100),
+            Events::MULTI_EXCEPTION => array('onMultiException', 100),
         );
+    }
+
+    /**
+     * Records a journal entry.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param \Zend\Stdlib\ResponseInterface                      $response        The response.
+     */
+    private function record(InternalRequestInterface $internalRequest, ResponseInterface $response)
+    {
+        $this->getTimer()->stop($internalRequest);
+        $this->journal->record($internalRequest, $response);
     }
 }

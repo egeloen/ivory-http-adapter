@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\StopwatchSubscriber;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Stopwatch subscriber test.
@@ -70,6 +71,15 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
 
         $this->assertArrayHasKey(Events::EXCEPTION, $events);
         $this->assertSame(array('onException', 10000), $events[Events::EXCEPTION]);
+
+        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
+        $this->assertSame(array('onMultiPreSend', 10000), $events[Events::MULTI_PRE_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
+        $this->assertSame(array('onMultiPostSend', 10000), $events[Events::MULTI_POST_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_EXCEPTION, $events);
+        $this->assertSame(array('onMultiException', 10000), $events[Events::MULTI_EXCEPTION]);
     }
 
     public function testPreSendEvent()
@@ -102,6 +112,60 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->stopwatchSubscriber->onException($this->createExceptionEvent());
     }
 
+    public function testMultiPreSendEvent()
+    {
+        $requests = array($this->createRequestMock(), $this->createRequestMock());
+
+        $this->stopwatch
+            ->expects($this->exactly(count($requests)))
+            ->method('start')
+            ->withConsecutive(
+                array('ivory.http_adapter.http_adapter (url)'),
+                array('ivory.http_adapter.http_adapter (url)')
+            );
+
+        $this->stopwatchSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+    }
+
+    public function testMultiPostSendEvent()
+    {
+        $responses = array(
+            $this->createResponseMock($this->createRequestMock()),
+            $this->createResponseMock($this->createRequestMock()),
+        );
+
+        $this->stopwatch
+            ->expects($this->exactly(count($responses)))
+            ->method('stop')
+            ->withConsecutive(
+                array('ivory.http_adapter.http_adapter (url)'),
+                array('ivory.http_adapter.http_adapter (url)')
+            );
+
+        $this->stopwatchSubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+    }
+
+    public function testMultiExceptionEvent()
+    {
+        $exceptions = array($this->createExceptionMock(), $this->createExceptionMock());
+        $responses = array(
+            $this->createResponseMock($this->createRequestMock()),
+            $this->createResponseMock($this->createRequestMock()),
+        );
+
+        $this->stopwatch
+            ->expects($this->exactly(count(array_merge($exceptions, $responses))))
+            ->method('stop')
+            ->withConsecutive(
+                array('ivory.http_adapter.http_adapter (url)'),
+                array('ivory.http_adapter.http_adapter (url)'),
+                array('ivory.http_adapter.http_adapter (url)'),
+                array('ivory.http_adapter.http_adapter (url)')
+            );
+
+        $this->stopwatchSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions, $responses));
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -109,7 +173,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
     {
         $httpAdapter = parent::createHttpAdapterMock();
         $httpAdapter
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('getName')
             ->will($this->returnValue('name'));
 
@@ -128,5 +192,20 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
             ->will($this->returnValue('url'));
 
         return $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResponseMock(InternalRequestInterface $internalRequest = null)
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($internalRequest));
+
+        return $response;
     }
 }
