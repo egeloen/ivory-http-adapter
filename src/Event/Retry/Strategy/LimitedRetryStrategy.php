@@ -9,10 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
-use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -28,8 +27,8 @@ class LimitedRetryStrategy extends AbstractRetryStrategyChain
     /**
      * Creates a limited retry strategy.
      *
-     * @param integer                                                         $limit The limit.
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null $next  The next retry strategy chain.
+     * @param integer                                                                  $limit The limit.
+     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next  The next retry strategy chain.
      */
     public function __construct($limit = 3, RetryStrategyChainInterface $next = null)
     {
@@ -61,8 +60,8 @@ class LimitedRetryStrategy extends AbstractRetryStrategyChain
     /**
      * {@inheritdoc}
      */
-    protected function doVerify(InternalRequestInterface $request, HttpAdapterException $exception)
+    protected function doVerify(InternalRequestInterface $request)
     {
-        return $request->getParameter(RetrySubscriber::RETRY_COUNT) < $this->limit;
+        return $request->getParameter(RetryInterface::RETRY_COUNT) < $this->limit;
     }
 }

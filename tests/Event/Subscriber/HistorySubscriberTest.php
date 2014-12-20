@@ -24,12 +24,21 @@ class HistorySubscriberTest extends AbstractSubscriberTest
     /** @var \Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber */
     private $historySubscriber;
 
+    /** @var \Ivory\HttpAdapter\Event\History\JournalInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $journal;
+
+    /** @var \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $timer;
+
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->historySubscriber = new HistorySubscriber();
+        $this->historySubscriber = new HistorySubscriber(
+            $this->journal = $this->createJournalMock(),
+            $this->timer = $this->createTimerMock()
+        );
     }
 
     /**
@@ -37,19 +46,24 @@ class HistorySubscriberTest extends AbstractSubscriberTest
      */
     protected function tearDown()
     {
+        unset($this->timer);
+        unset($this->journal);
         unset($this->historySubscriber);
     }
 
     public function testDefaultState()
     {
+        $this->historySubscriber = new HistorySubscriber();
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber', $this->historySubscriber);
         $this->assertInstanceOf('Ivory\HttpAdapter\Event\History\Journal', $this->historySubscriber->getJournal());
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Timer\Timer', $this->historySubscriber->getTimer());
     }
 
     public function testInitialState()
     {
-        $this->historySubscriber = new HistorySubscriber($journal = $this->createJournalMock());
-
-        $this->assertSame($journal, $this->historySubscriber->getJournal());
+        $this->assertSame($this->journal, $this->historySubscriber->getJournal());
+        $this->assertSame($this->timer, $this->historySubscriber->getTimer());
     }
 
     public function testSetJournal()
@@ -72,15 +86,22 @@ class HistorySubscriberTest extends AbstractSubscriberTest
 
     public function testPostSendEvent()
     {
-        $this->historySubscriber->setJournal($journal = $this->createJournalMock());
+        $this->timer
+            ->expects($this->once())
+            ->method('start')
+            ->with($this->identicalTo($request = $this->createRequestMock()));
 
-        $journal
+        $this->timer
+            ->expects($this->once())
+            ->method('stop')
+            ->with($this->identicalTo($request));
+
+        $this->journal
             ->expects($this->once())
             ->method('record')
             ->with(
-                $this->identicalTo($request = $this->createRequestMock()),
-                $this->identicalTo($response = $this->createResponseMock()),
-                $this->isType('float')
+                $this->identicalTo($request),
+                $this->identicalTo($response = $this->createResponseMock())
             );
 
         $this->historySubscriber->onPreSend($this->createPreSendEvent(null, $request));
@@ -95,5 +116,15 @@ class HistorySubscriberTest extends AbstractSubscriberTest
     private function createJournalMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Event\History\JournalInterface');
+    }
+
+    /**
+     * Creates a timer mock.
+     *
+     * @return \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject The timer mock.
+     */
+    private function createTimerMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
     }
 }

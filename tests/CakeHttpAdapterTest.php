@@ -52,13 +52,6 @@ class CakeHttpAdapterTest extends AbstractHttpAdapterTest
         $this->assertSame('cake', $this->httpAdapter->getName());
     }
 
-    public function testSendWithProtocolVersion10()
-    {
-        // CakePHP does not allow to control protocol version
-        // https://github.com/cakephp/cakephp/issues/5234
-        $this->markTestSkipped();
-    }
-
     /**
      * {@inheritdoc}
      */

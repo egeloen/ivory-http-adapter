@@ -24,12 +24,15 @@ class RetrySubscriberTest extends AbstractSubscriberTest
     /** @var \Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber */
     private $retrySubscriber;
 
+    /** @var \Ivory\HttpAdapter\Event\Retry\RetryInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $retry;
+
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->retrySubscriber = new RetrySubscriber();
+        $this->retrySubscriber = new RetrySubscriber($this->retry = $this->createRetryMock());
     }
 
     /**
@@ -37,38 +40,27 @@ class RetrySubscriberTest extends AbstractSubscriberTest
      */
     protected function tearDown()
     {
-        unset($this->retryStrategy);
+        unset($this->retry);
         unset($this->retrySubscriber);
     }
 
     public function testDefaultState()
     {
-        $this->assertInstanceOf(
-            'Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy',
-            $limitedStrategy = $this->retrySubscriber->getStrategy()
-        );
+        $this->retrySubscriber = new RetrySubscriber();
 
-        $this->assertTrue($limitedStrategy->hasNext());
-        $this->assertInstanceOf(
-            'Ivory\HttpAdapter\Event\Retry\ExponentialDelayedRetryStrategy',
-            $exponentialDelayedStrategy = $limitedStrategy->getNext()
-        );
-
-        $this->assertFalse($exponentialDelayedStrategy->hasNext());
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Retry\Retry', $this->retrySubscriber->getRetry());
     }
 
     public function testInitialState()
     {
-        $this->retrySubscriber = new RetrySubscriber($strategy = $this->createRetryStrategyMock());
-
-        $this->assertSame($strategy, $this->retrySubscriber->getStrategy());
+        $this->assertSame($this->retry, $this->retrySubscriber->getRetry());
     }
 
-    public function testSetStrategy()
+    public function testSetRetry()
     {
-        $this->retrySubscriber->setStrategy($strategy = $this->createRetryStrategyMock());
+        $this->retrySubscriber->setRetry($retry = $this->createRetryMock());
 
-        $this->assertSame($strategy, $this->retrySubscriber->getStrategy());
+        $this->assertSame($retry, $this->retrySubscriber->getRetry());
     }
 
     public function testSubscribedEvents()
@@ -79,133 +71,79 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         $this->assertSame(array('onException', 0), $events[Events::EXCEPTION]);
     }
 
-    public function testExceptionEventWithStrategyNotVerified()
+    public function testExceptionEventRetried()
     {
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $this->retrySubscriber->setStrategy($strategy = $this->createRetryStrategyMock());
-
-        $strategy
+        $this->retry
             ->expects($this->once())
-            ->method('verify')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
+            ->method('retry')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(true));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->returnValue($retryResponse = $this->createResponseMock()));
+
+        $this->retrySubscriber->onException(
+            $event = $this->createExceptionEvent($httpAdapter, $this->createExceptionMock($request))
+        );
+
+        $this->assertSame($retryResponse, $event->getResponse());
+    }
+
+    public function testExceptionEventRetriedThrowException()
+    {
+        $this->retry
+            ->expects($this->once())
+            ->method('retry')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue(true));
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->retrySubscriber->onException(
+            $event = $this->createExceptionEvent($httpAdapter, $this->createExceptionMock($request))
+        );
+
+        $this->assertFalse($event->hasResponse());
+        $this->assertSame($exception, $event->getException());
+    }
+
+    public function testExceptionEventNotRetried()
+    {
+        $this->retry
+            ->expects($this->once())
+            ->method('retry')
+            ->with($this->identicalTo($request = $this->createRequestMock()))
             ->will($this->returnValue(false));
 
-        $request
-            ->expects($this->any())
-            ->method('getParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT))
-            ->will($this->returnValue($retryCount = null));
-
-        $request
-            ->expects($this->once())
-            ->method('setParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT), $this->identicalTo((int) $retryCount));
-
-        $this->retrySubscriber->onException($this->createExceptionEvent(null, $request, $exception));
-    }
-
-    public function testExceptionEventWithStrategyVerified()
-    {
         $httpAdapter = $this->createHttpAdapterMock();
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $this->retrySubscriber->setStrategy($strategy = $this->createRetryStrategyMock());
-
-        $strategy
-            ->expects($this->once())
-            ->method('verify')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
-            ->will($this->returnValue(true));
-
-        $request
-            ->expects($this->any())
-            ->method('getParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT))
-            ->will($this->returnValue($retryCount = null));
-
-        $request
-            ->expects($this->once())
-            ->method('setParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT), $this->identicalTo(++$retryCount));
-
         $httpAdapter
-            ->expects($this->once())
-            ->method('sendRequest')
-            ->with($this->identicalTo($request))
-            ->will($this->returnValue($response = $this->createResponseMock()));
+            ->expects($this->never())
+            ->method('sendRequest');
 
-        $exceptionEvent = $this->createExceptionEvent($httpAdapter, $request, $exception);
+        $this->retrySubscriber->onException($event = $this->createExceptionEvent(
+            $httpAdapter,
+            $this->createExceptionMock($request)
+        ));
 
-        $before = microtime(true);
-        $this->retrySubscriber->onException($exceptionEvent);
-        $after = microtime(true);
-
-        $this->assertLessThanOrEqual(0.1, $after - $before);
-
-        $this->assertTrue($exceptionEvent->hasResponse());
-        $this->assertSame($response, $exceptionEvent->getResponse());
-    }
-
-    public function testExceptionEventWithStrategyDelayed()
-    {
-        $httpAdapter = $this->createHttpAdapterMock();
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-
-        $this->retrySubscriber->setStrategy($strategy = $this->createRetryStrategyMock());
-
-        $strategy
-            ->expects($this->once())
-            ->method('verify')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
-            ->will($this->returnValue(true));
-
-        $strategy
-            ->expects($this->once())
-            ->method('delay')
-            ->with($this->identicalTo($request), $this->identicalTo($exception))
-            ->will($this->returnValue($delay = 0.5));
-
-        $request
-            ->expects($this->any())
-            ->method('getParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT))
-            ->will($this->returnValue($retryCount = 1));
-
-        $request
-            ->expects($this->once())
-            ->method('setParameter')
-            ->with($this->identicalTo(RetrySubscriber::RETRY_COUNT), $this->identicalTo(++$retryCount));
-
-        $httpAdapter
-            ->expects($this->once())
-            ->method('sendRequest')
-            ->with($this->identicalTo($request))
-            ->will($this->returnValue($response = $this->createResponseMock()));
-
-        $exceptionEvent = $this->createExceptionEvent($httpAdapter, $request, $exception);
-
-        $before = microtime(true);
-        $this->retrySubscriber->onException($exceptionEvent);
-        $after = microtime(true);
-
-        $this->assertGreaterThanOrEqual($delay, $after - $before);
-        $this->assertLessThanOrEqual($delay + 0.1, $after - $before);
-
-        $this->assertTrue($exceptionEvent->hasResponse());
-        $this->assertSame($response, $exceptionEvent->getResponse());
+        $this->assertNull($event->getResponse());
     }
 
     /**
-     * Creates a retry strategy mock.
+     * Creates a retry mock.
      *
-     * @return \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface|\PHPUnit_Framework_MockObject_MockObject The retry strategy mock.
+     * @return \Ivory\HttpAdapter\Event\Retry\RetryInterface|\PHPUnit_Framework_MockObject_MockObject The retry mock.
      */
-    private function createRetryStrategyMock()
+    private function createRetryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface');
+        return $this->getMock('Ivory\HttpAdapter\Event\Retry\RetryInterface');
     }
 }

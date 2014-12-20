@@ -44,20 +44,27 @@ interface ConfigurationInterface
     public function setMessageFactory(MessageFactoryInterface $messageFactory);
 
     /**
+     * Checks if there is an event dispatcher.
+     *
+     * @return boolean TRUE if there is an event dispatcher else FALSE.
+     */
+    public function hasEventDispatcher();
+
+    /**
      * Gets the event dispatcher.
      *
-     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface The event dispatcher.
+     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface|null The event dispatcher.
      */
     public function getEventDispatcher();
 
     /**
      * Sets the event dispatcher.
      *
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher The event dispatcher.
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface|null $eventDispatcher The event dispatcher.
      *
      * @return void No return value.
      */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher);
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null);
 
     /**
      * Gets the protocol version.

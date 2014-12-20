@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
 /**
  * Abstract delayed retry strategy.
@@ -24,8 +24,8 @@ abstract class AbstractDelayedRetryStrategy extends AbstractRetryStrategyChain
     /**
      * Creates a delayed retry strategy.
      *
-     * @param float                                                           $delay The delay.
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null $next  The next retry strategy chain.
+     * @param float                                                                    $delay The delay.
+     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next  The next retry strategy chain.
      */
     public function __construct($delay = 5, RetryStrategyChainInterface $next = null)
     {

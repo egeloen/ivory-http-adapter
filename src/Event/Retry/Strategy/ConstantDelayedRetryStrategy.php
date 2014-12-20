@@ -9,9 +9,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -24,7 +23,7 @@ class ConstantDelayedRetryStrategy extends AbstractDelayedRetryStrategy
     /**
      * {@inheritdoc}
      */
-    protected function doDelay(InternalRequestInterface $request, HttpAdapterException $exception)
+    protected function doDelay(InternalRequestInterface $request)
     {
         return $this->getDelay();
     }

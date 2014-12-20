@@ -11,11 +11,12 @@
 
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
-use Ivory\HttpAdapter\Event\AbstractEvent;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -66,7 +67,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->stopwatch->start($this->getStopwatchName($event));
+        $this->stopwatch->start($this->getStopwatchName($event->getHttpAdapter(), $event->getRequest()));
     }
 
     /**
@@ -76,7 +77,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $this->stopwatch->stop($this->getStopwatchName($event));
+        $this->stopwatch->stop($this->getStopwatchName($event->getHttpAdapter(), $event->getRequest()));
     }
 
     /**
@@ -86,7 +87,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function onException(ExceptionEvent $event)
     {
-        $this->stopwatch->stop($this->getStopwatchName($event));
+        $this->stopwatch->stop($this->getStopwatchName($event->getHttpAdapter(), $event->getException()->getRequest()));
     }
 
     /**
@@ -104,16 +105,13 @@ class StopwatchSubscriber implements EventSubscriberInterface
     /**
      * Gets the stopwatch name.
      *
-     * @param \Ivory\HttpAdapter\Event\AbstractEvent $event The event.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
      * @return string The stopwatch name.
      */
-    private function getStopwatchName(AbstractEvent $event)
+    private function getStopwatchName(HttpAdapterInterface $httpAdapter, InternalRequestInterface $internalRequest)
     {
-        return sprintf(
-            'ivory.http_adapter.%s (%s)',
-            $event->getHttpAdapter()->getName(),
-            (string) $event->getRequest()->getUrl()
-        );
+        return sprintf('ivory.http_adapter.%s (%s)', $httpAdapter->getName(), (string) $internalRequest->getUrl());
     }
 }

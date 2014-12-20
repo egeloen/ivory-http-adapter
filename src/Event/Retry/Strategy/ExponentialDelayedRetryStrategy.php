@@ -9,10 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
-use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -25,8 +24,8 @@ class ExponentialDelayedRetryStrategy extends AbstractRetryStrategyChain
     /**
      * {@inheritdoc}
      */
-    protected function doDelay(InternalRequestInterface $request, HttpAdapterException $exception)
+    protected function doDelay(InternalRequestInterface $request)
     {
-        return pow(2, $request->getParameter(RetrySubscriber::RETRY_COUNT));
+        return pow(2, $request->getParameter(RetryInterface::RETRY_COUNT));
     }
 }

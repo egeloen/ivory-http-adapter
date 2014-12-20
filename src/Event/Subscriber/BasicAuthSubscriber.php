@@ -11,9 +11,9 @@
 
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
+use Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PreSendEvent;
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -23,97 +23,37 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class BasicAuthSubscriber implements EventSubscriberInterface
 {
-    /** @var string */
-    private $username;
-
-    /** @var string */
-    private $password;
-
-    /** @var string|callable|null */
-    private $matcher;
+    /** @var \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface */
+    private $basicAuth;
 
     /**
      * Creates a basic auth subscriber.
      *
-     * @param string               $username The username.
-     * @param string               $password The password.
-     * @param string|callable|null $matcher  The matcher.
+     * @param \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface $basicAuth The basic auth.
      */
-    public function __construct($username, $password, $matcher = null)
+    public function __construct(BasicAuthInterface $basicAuth)
     {
-        $this->setUsername($username);
-        $this->setPassword($password);
-        $this->setMatcher($matcher);
+        $this->setBasicAuth($basicAuth);
     }
 
     /**
-     * Gets the username.
+     * Gets the basic auth.
      *
-     * @return string The username.
+     * @return \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface The basic auth.
      */
-    public function getUsername()
+    public function getBasicAuth()
     {
-        return $this->username;
+        return $this->basicAuth;
     }
 
     /**
-     * Sets the username.
+     * Sets the basic auth.
      *
-     * @param string $username The username.
+     * @param \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface $basicAuth The basic auth.
      */
-    public function setUsername($username)
+    public function setBasicAuth(BasicAuthInterface $basicAuth)
     {
-        $this->username = $username;
-    }
-
-    /**
-     * Gets the password.
-     *
-     * @return string The password.
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Sets the password.
-     *
-     * @param string $password The password.
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
-
-    /**
-     * Checks if there is a matcher.
-     *
-     * @return boolean TRUE if there is a matcher else FALSE.
-     */
-    public function hasMatcher()
-    {
-        return $this->matcher !== null;
-    }
-
-    /**
-     * Gets the matcher.
-     *
-     * @return string|callable|null The matcher.
-     */
-    public function getMatcher()
-    {
-        return $this->matcher;
-    }
-
-    /**
-     * Sets the matcher.
-     *
-     * @param string|callable|null $matcher The matcher.
-     */
-    public function setMatcher($matcher)
-    {
-        $this->matcher = $matcher;
+        $this->basicAuth = $basicAuth;
     }
 
     /**
@@ -123,12 +63,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
      */
     public function onPreSend(PreSendEvent $event)
     {
-        if ($this->match($event->getRequest())) {
-            $event->getRequest()->addHeader(
-                'Authorization',
-                'Basic '.base64_encode($this->username.':'.$this->password)
-            );
-        }
+        $this->basicAuth->authenticate($event->getRequest());
     }
 
     /**
@@ -137,29 +72,5 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(Events::PRE_SEND => array('onPreSend', 300));
-    }
-
-    /**
-     * Checks if the request matches the matcher.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return boolean TRUE if the request matches the matcher else FALSE.
-     */
-    private function match(InternalRequestInterface $request)
-    {
-        if (!$this->hasMatcher()) {
-            return true;
-        }
-
-        if (is_string($this->matcher) && preg_match($this->matcher, (string) $request->getUrl())) {
-            return true;
-        }
-
-        if (is_callable($this->matcher)) {
-            return call_user_func($this->matcher, $request);
-        }
-
-        return false;
     }
 }

@@ -9,9 +9,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -24,20 +23,18 @@ interface RetryStrategyInterface
     /**
      * Verifies if it should retry to send the request.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request   The request.
-     * @param \Ivory\HttpAdapter\HttpAdapterException             $exception The exception.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
      *
      * @return boolean TRUE if it should retry to send the request else FALSE.
      */
-    public function verify(InternalRequestInterface $request, HttpAdapterException $exception);
+    public function verify(InternalRequestInterface $request);
 
     /**
      * Gets the delay before retrying to send the request.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request   The request.
-     * @param \Ivory\HttpAdapter\HttpAdapterException             $exception The exception.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
      *
      * @return float The delay before retrying to send the request.
      */
-    public function delay(InternalRequestInterface $request, HttpAdapterException $exception);
+    public function delay(InternalRequestInterface $request);
 }

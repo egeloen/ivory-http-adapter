@@ -63,9 +63,9 @@ class Journal implements JournalInterface
     /**
      * {@inheritdoc}
      */
-    public function record(InternalRequestInterface $request, ResponseInterface $response, $time)
+    public function record(InternalRequestInterface $request, ResponseInterface $response)
     {
-        $this->addEntry($this->journalEntryFactory->create($request, $response, $time));
+        $this->addEntry($this->journalEntryFactory->create($request, $response));
     }
 
     /**

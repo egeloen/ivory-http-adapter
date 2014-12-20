@@ -16,6 +16,7 @@ use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Event\History\Journal;
 use Ivory\HttpAdapter\Event\History\JournalInterface;
+use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 
 /**
  * History subscriber.
@@ -30,10 +31,13 @@ class HistorySubscriber extends AbstractTimerSubscriber
     /**
      * Creates an history subscriber.
      *
-     * @param \Ivory\HttpAdapter\Event\History\JournalInterface $journal
+     * @param \Ivory\HttpAdapter\Event\History\JournalInterface|null $journal The journal
+     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface|null     $timer   The timer.
      */
-    public function __construct(JournalInterface $journal = null)
+    public function __construct(JournalInterface $journal = null, TimerInterface $timer = null)
     {
+        parent::__construct($timer);
+
         $this->setJournal($journal ?: new Journal());
     }
 
@@ -64,7 +68,7 @@ class HistorySubscriber extends AbstractTimerSubscriber
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->startTimer($event->getRequest());
+        $this->getTimer()->start($event->getRequest());
     }
 
     /**
@@ -74,7 +78,8 @@ class HistorySubscriber extends AbstractTimerSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $this->journal->record($event->getRequest(), $event->getResponse(), $this->stopTimer($event->getRequest()));
+        $this->getTimer()->stop($event->getRequest());
+        $this->journal->record($event->getRequest(), $event->getResponse());
     }
 
     /**

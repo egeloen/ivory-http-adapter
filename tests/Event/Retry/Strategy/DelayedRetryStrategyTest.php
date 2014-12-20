@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\Tests\HttpAdapter\Event\Retry;
+namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
 /**
  * Delayed retry strategy test.
@@ -18,7 +18,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Retry;
  */
 class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\AbstractDelayedRetryStrategy */
+    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\AbstractDelayedRetryStrategy */
     private $delayedRetryStrategy;
 
     /**
@@ -40,7 +40,7 @@ class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
     public function testDefaultState()
     {
         $this->assertInstanceOf(
-            'Ivory\HttpAdapter\Event\Retry\AbstractRetryStrategyChain',
+            'Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain',
             $this->delayedRetryStrategy
         );
 
@@ -76,6 +76,6 @@ class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
      */
     private function createDelayedRetryStrategyMockBuilder()
     {
-        return $this->getMockBuilder('Ivory\HttpAdapter\Event\Retry\AbstractDelayedRetryStrategy');
+        return $this->getMockBuilder('Ivory\HttpAdapter\Event\Retry\Strategy\AbstractDelayedRetryStrategy');
     }
 }

@@ -52,20 +52,4 @@ interface JournalEntryInterface
      * @return void No return value.
      */
     public function setResponse(ResponseInterface $response);
-
-    /**
-     * Gets the time.
-     *
-     * @return float The time.
-     */
-    public function getTime();
-
-    /**
-     * Sets the time.
-     *
-     * @param float $time The time.
-     *
-     * @return void No return value.
-     */
-    public function setTime($time);
 }

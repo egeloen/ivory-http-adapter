@@ -13,9 +13,9 @@ env:
     global:
         - TEST_SERVER=http://127.0.0.1:10000/server.php
         - PHP_FCGI_CHILDREN=10
-        - ENABLE_CURL=true
         - SYMFONY_VERSION=2.3.*
-        - GUZZLE_HTTP_VERSION=5.*
+        - COMPOSER_PREFER_LOWEST=false
+        - ENABLE_CURL=true
 
 cache:
     apt: true
@@ -40,12 +40,13 @@ install:
     - if [[ "$TRAVIS_PHP_VERSION" = hhvm* ]]; then hhvm --mode server -vServer.Type=fastcgi -vServer.Port=9000 -vServer.FixPathInfo=true & fi
     - composer self-update
     - composer require --no-update symfony/event-dispatcher:${SYMFONY_VERSION}
-    - composer require --no-update --dev guzzlehttp/guzzle:${GUZZLE_HTTP_VERSION}
     - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove guzzlehttp/guzzle --dev --no-update; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove guzzlehttp/streams --dev --no-update; fi
     - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove react/http-client --dev --no-update; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove react/dns --dev --no-update; fi
     - if [[ "$TRAVIS_PHP_VERSION" = "5.3.3" ]]; then composer remove zendframework/zendframework --dev --no-update; fi
     - if [[ "$SYMFONY_VERSION" = *dev* ]]; then sed -i "s/\"MIT\"/\"MIT\",\"minimum-stability\":\"dev\"/g" composer.json; fi
-    - composer install --prefer-source
+    - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST = true ]]; then echo "--prefer-lowest --prefer-stable"; fi`
 
 script: bin/phpunit --coverage-clover clover.xml
 
@@ -56,9 +57,9 @@ after_script:
 matrix:
     include:
         - php: 5.6
-          env: ENABLE_CURL=false
+          env: COMPOSER_PREFER_LOWEST=true
         - php: 5.6
-          env: GUZZLE_HTTP_VERSION=4.*
+          env: ENABLE_CURL=false
         - php: 5.6
           env: SYMFONY_VERSION=2.1.*
         - php: 5.6

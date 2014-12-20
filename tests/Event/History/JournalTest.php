@@ -151,11 +151,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
     public function testRecord()
     {
-        $this->journal->record(
-            $request = $this->createRequestMock(),
-            $response = $this->createResponseMock(),
-            $time = 1.234
-        );
+        $this->journal->record($request = $this->createRequestMock(), $response = $this->createResponseMock());
 
         $this->assertTrue($this->journal->hasEntries());
 
@@ -166,7 +162,6 @@ class JournalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($entries[0]->getRequest(), $request);
         $this->assertSame($entries[0]->getResponse(), $response);
-        $this->assertSame($entries[0]->getTime(), $time);
 
         $this->assertCount(1, $this->journal);
         $this->assertNotEmpty(iterator_to_array($this->journal));

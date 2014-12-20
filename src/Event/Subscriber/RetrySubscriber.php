@@ -13,9 +13,9 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\Retry\ExponentialDelayedRetryStrategy;
-use Ivory\HttpAdapter\Event\Retry\LimitedRetryStrategy;
-use Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface;
+use Ivory\HttpAdapter\Event\Retry\Retry;
+use Ivory\HttpAdapter\Event\Retry\RetryInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -25,40 +25,37 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class RetrySubscriber implements EventSubscriberInterface
 {
-    /** @const string */
-    const RETRY_COUNT = 'retry_count';
-
-    /** @var \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface */
-    private $strategy;
+    /** @var \Ivory\HttpAdapter\Event\Retry\RetryInterface */
+    private $retry;
 
     /**
      * Creates a retry subscriber.
      *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface|null $strategy The strategy.
+     * @param \Ivory\HttpAdapter\Event\Retry\RetryInterface|null $retry The retry.
      */
-    public function __construct(RetryStrategyInterface $strategy = null)
+    public function __construct(RetryInterface $retry = null)
     {
-        $this->setStrategy($strategy ?: new LimitedRetryStrategy(3, new ExponentialDelayedRetryStrategy()));
+        $this->setRetry($retry ?: new Retry());
     }
 
     /**
-     * Gets the strategy.
+     * Gets the retry.
      *
-     * @return \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface The strategy.
+     * @return \Ivory\HttpAdapter\Event\Retry\RetryInterface The retry.
      */
-    public function getStrategy()
+    public function getRetry()
     {
-        return $this->strategy;
+        return $this->retry;
     }
 
     /**
-     * Sets the strategy.
+     * Sets the retry.
      *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyInterface $strategy The strategy.
+     * @param \Ivory\HttpAdapter\Event\Retry\RetryInterface $retry The retry.
      */
-    public function setStrategy(RetryStrategyInterface $strategy)
+    public function setRetry(RetryInterface $retry)
     {
-        $this->strategy = $strategy;
+        $this->retry = $retry;
     }
 
     /**
@@ -66,19 +63,15 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public function onException(ExceptionEvent $event)
     {
-        $request = $event->getRequest();
-        $exception = $event->getException();
-
-        if (!$this->strategy->verify($request, $exception)) {
-            return $request->setParameter(self::RETRY_COUNT, (int) $request->getParameter(self::RETRY_COUNT));
+        if (!$this->retry->retry($event->getException()->getRequest())) {
+            return;
         }
 
-        if (($delay = $this->strategy->delay($request, $exception)) > 0) {
-            usleep($delay * 1000000);
+        try {
+            $event->setResponse($event->getHttpAdapter()->sendRequest($event->getException()->getRequest()));
+        } catch (HttpAdapterException $e) {
+            $event->setException($e);
         }
-
-        $request->setParameter(self::RETRY_COUNT, $request->getParameter(self::RETRY_COUNT) + 1);
-        $event->setResponse($event->getHttpAdapter()->sendRequest($request));
     }
 
     /**

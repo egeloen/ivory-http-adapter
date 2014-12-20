@@ -14,16 +14,20 @@ namespace Ivory\HttpAdapter\Event;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
  * Post send event.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PostSendEvent extends AbstractEvent
+class PostSendEvent extends PreSendEvent
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface */
     private $response;
+
+    /** @var \Ivory\HttpAdapter\HttpAdapterException|null */
+    private $exception;
 
     /**
      * Creates a post send event.
@@ -60,5 +64,35 @@ class PostSendEvent extends AbstractEvent
     public function setResponse(ResponseInterface $response)
     {
         $this->response = $response;
+    }
+
+    /**
+     * Checks if there is an exception.
+     *
+     * @return boolean TRUE if there is an exception.
+     */
+    public function hasException()
+    {
+        return $this->exception !== null;
+    }
+
+    /**
+     * Gets the exception.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException|null The exception.
+     */
+    public function getException()
+    {
+        return $this->exception;
+    }
+
+    /**
+     * Sets the exception.
+     *
+     * @param \Ivory\HttpAdapter\HttpAdapterException|null $exception The exception.
+     */
+    public function setException(HttpAdapterException $exception = null)
+    {
+        $this->exception = $exception;
     }
 }

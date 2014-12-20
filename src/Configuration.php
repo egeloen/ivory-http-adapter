@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
     /** @var \Ivory\HttpAdapter\Message\MessageFactoryInterface */
     private $messageFactory;
 
-    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface */
+    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|null */
     private $eventDispatcher;
 
     /** @var string */
@@ -58,8 +58,12 @@ class Configuration implements ConfigurationInterface
         MessageFactoryInterface $messageFactory = null,
         EventDispatcherInterface $eventDispatcher = null
     ) {
+        if (!$eventDispatcher && class_exists('Symfony\Component\EventDispatcher\EventDispatcher')) {
+            $eventDispatcher = new EventDispatcher();
+        }
+
         $this->setMessageFactory($messageFactory ?: new MessageFactory());
-        $this->setEventDispatcher($eventDispatcher ?: new EventDispatcher());
+        $this->setEventDispatcher($eventDispatcher);
         $this->setBoundary(sha1(microtime()));
         $this->setUserAgent('Ivory Http Adapter '.HttpAdapterInterface::VERSION);
     }
@@ -83,6 +87,14 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
+    public function hasEventDispatcher()
+    {
+        return $this->eventDispatcher !== null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getEventDispatcher()
     {
         return $this->eventDispatcher;
@@ -91,7 +103,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
     {
         $this->eventDispatcher = $eventDispatcher;
     }

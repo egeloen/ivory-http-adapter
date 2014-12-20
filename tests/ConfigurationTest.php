@@ -45,6 +45,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\MessageFactory', $this->configuration->getMessageFactory());
 
+        $this->assertTrue($this->configuration->hasEventDispatcher());
         $this->assertInstanceOf(
             'Symfony\Component\EventDispatcher\EventDispatcher',
             $this->configuration->getEventDispatcher()
@@ -80,7 +81,16 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $this->configuration->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
 
+        $this->assertTrue($this->configuration->hasEventDispatcher());
         $this->assertSame($eventDispatcher, $this->configuration->getEventDispatcher());
+    }
+
+    public function testResetEventDispatcher()
+    {
+        $this->configuration->setEventDispatcher(null);
+
+        $this->assertFalse($this->configuration->hasEventDispatcher());
+        $this->assertNull($this->configuration->getEventDispatcher());
     }
 
     public function testSetProtocolVersion()

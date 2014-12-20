@@ -9,9 +9,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Ivory\HttpAdapter\Event\Retry;
+namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
-use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
@@ -21,13 +20,13 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
  */
 abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface */
+    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface */
     private $next;
 
     /**
      * Creates a chained retry strategy.
      *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryStrategyChainInterface|null $next The next chained retry strategy.
+     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next The next chained retry strategy.
      */
     public function __construct(RetryStrategyChainInterface $next = null)
     {
@@ -61,12 +60,12 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
     /**
      * {@inheritdoc}
      */
-    public function verify(InternalRequestInterface $request, HttpAdapterException $exception)
+    public function verify(InternalRequestInterface $request)
     {
-        $verify = $this->doVerify($request, $exception);
+        $verify = $this->doVerify($request);
 
         if ($verify && $this->hasNext()) {
-            return $this->next->verify($request, $exception);
+            return $this->next->verify($request);
         }
 
         return $verify;
@@ -75,11 +74,11 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
     /**
      * {@inheritdoc}
      */
-    public function delay(InternalRequestInterface $request, HttpAdapterException $exception)
+    public function delay(InternalRequestInterface $request)
     {
-        $delay = $this->doDelay($request, $exception);
+        $delay = $this->doDelay($request);
 
-        if ($this->hasNext() && (($nextDelay = $this->next->delay($request, $exception)) > $delay)) {
+        if ($this->hasNext() && (($nextDelay = $this->next->delay($request)) > $delay)) {
             return $nextDelay;
         }
 
@@ -89,12 +88,11 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
     /**
      * Does the retry verification.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request   The request.
-     * @param \Ivory\HttpAdapter\HttpAdapterException             $exception The exception.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
      *
      * @return boolean TRUE if it should retry to send the request else FALSE.
      */
-    protected function doVerify(InternalRequestInterface $request, HttpAdapterException $exception)
+    protected function doVerify(InternalRequestInterface $request)
     {
         return true;
     }
@@ -102,12 +100,11 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
     /**
      * Does the retry delay.
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request   The request.
-     * @param \Ivory\HttpAdapter\HttpAdapterException             $exception The exception.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
      *
      * @return integer The delay before retrying to send the request.
      */
-    protected function doDelay(InternalRequestInterface $request, HttpAdapterException $exception)
+    protected function doDelay(InternalRequestInterface $request)
     {
         return 0;
     }

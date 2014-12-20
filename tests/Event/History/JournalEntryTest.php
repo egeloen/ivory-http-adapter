@@ -29,9 +29,6 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $response;
 
-    /** @var float */
-    private $time;
-
     /**
      * {@inheritdoc}
      */
@@ -39,8 +36,7 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
     {
         $this->journalEntry = new JournalEntry(
             $this->request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface'),
-            $this->response = $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface'),
-            $this->time = 1.234
+            $this->response = $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface')
         );
     }
 
@@ -52,14 +48,12 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
         unset($this->journalEntry);
         unset($this->request);
         unset($this->response);
-        unset($this->time);
     }
 
     public function testDefaultState()
     {
         $this->assertSame($this->request, $this->journalEntry->getRequest());
         $this->assertSame($this->response, $this->journalEntry->getResponse());
-        $this->assertSame($this->time, $this->journalEntry->getTime());
     }
 
     public function testSetRequest()
@@ -74,13 +68,6 @@ class JournalEntryTest extends \PHPUnit_Framework_TestCase
         $this->journalEntry->setResponse($response = $this->createResponseMock());
 
         $this->assertSame($response, $this->journalEntry->getResponse());
-    }
-
-    public function testSetTime()
-    {
-        $this->journalEntry->setTime($time = 2.345);
-
-        $this->assertSame($time, $this->journalEntry->getTime());
     }
 
     /**

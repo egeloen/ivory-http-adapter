@@ -68,20 +68,17 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates an exception event.
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface|null             $httpAdapter The http adapter.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request     The request.
-     * @param \Ivory\HttpAdapter\HttpAdapterException|null             $exception   The exception.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface|null $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\HttpAdapterException|null $exception   The exception.
      *
      * @return \Ivory\HttpAdapter\Event\ExceptionEvent The exception event.
      */
     protected function createExceptionEvent(
         HttpAdapterInterface $httpAdapter = null,
-        InternalRequestInterface $request = null,
         HttpAdapterException $exception = null
     ) {
         return new ExceptionEvent(
             $httpAdapter ?: $this->createHttpAdapterMock(),
-            $request ?: $this->createRequestMock(),
             $exception ?: $this->createExceptionMock()
         );
     }
@@ -94,6 +91,11 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     protected function createHttpAdapterMock()
     {
         $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        $httpAdapter
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue('http_adapter'));
+
         $httpAdapter
             ->expects($this->any())
             ->method('getConfiguration')
@@ -135,10 +137,43 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates an exception mock.
      *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $internalRequest The internal request.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null        $response        The response.
+     *
      * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
      */
-    protected function createExceptionMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+    protected function createExceptionMock(
+        InternalRequestInterface $internalRequest = null,
+        ResponseInterface $response = null
+    ) {
+        $exception = $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+
+        if ($internalRequest === null) {
+            $internalRequest = $this->createRequestMock();
+        }
+
+        $exception
+            ->expects($this->any())
+            ->method('hasRequest')
+            ->will($this->returnValue(true));
+
+        $exception
+            ->expects($this->any())
+            ->method('getRequest')
+            ->will($this->returnValue($internalRequest));
+
+        if ($response !== null) {
+            $exception
+                ->expects($this->any())
+                ->method('hasResponse')
+                ->will($this->returnValue(true));
+
+            $exception
+                ->expects($this->any())
+                ->method('getResponse')
+                ->will($this->returnValue($response));
+        }
+
+        return $exception;
     }
 }

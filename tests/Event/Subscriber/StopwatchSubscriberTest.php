@@ -77,7 +77,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->stopwatch
             ->expects($this->once())
             ->method('start')
-            ->with($this->identicalTo('ivory.http_adapter.name (url)'));
+            ->with($this->identicalTo('ivory.http_adapter.http_adapter (url)'));
 
         $this->stopwatchSubscriber->onPreSend($this->createPreSendEvent());
     }
@@ -87,7 +87,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->stopwatch
             ->expects($this->once())
             ->method('stop')
-            ->with($this->identicalTo('ivory.http_adapter.name (url)'));
+            ->with($this->identicalTo('ivory.http_adapter.http_adapter (url)'));
 
         $this->stopwatchSubscriber->onPostSend($this->createPostSendEvent());
     }
@@ -97,7 +97,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->stopwatch
             ->expects($this->once())
             ->method('stop')
-            ->with($this->identicalTo('ivory.http_adapter.name (url)'));
+            ->with($this->identicalTo('ivory.http_adapter.http_adapter (url)'));
 
         $this->stopwatchSubscriber->onException($this->createExceptionEvent());
     }

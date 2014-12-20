@@ -13,7 +13,12 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
+use Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -23,6 +28,39 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class StatusCodeSubscriber implements EventSubscriberInterface
 {
+    /** @var \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface */
+    private $statusCode;
+
+    /**
+     * Creates a status code subscriber.
+     *
+     * @param \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface|null $statusCode The status code.
+     */
+    public function __construct(StatusCodeInterface $statusCode = null)
+    {
+        $this->setStatusCode($statusCode ?: new StatusCode());
+    }
+
+    /**
+     * Gets the status code.
+     *
+     * @return \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface The status code.
+     */
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
+
+    /**
+     * Sets the status code.
+     *
+     * @param \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface $statusCode The status code.
+     */
+    public function setStatusCode(StatusCodeInterface $statusCode)
+    {
+        $this->statusCode = $statusCode;
+    }
+
     /**
      * On post send event.
      *
@@ -32,14 +70,12 @@ class StatusCodeSubscriber implements EventSubscriberInterface
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $statusCode = (string) $event->getResponse()->getStatusCode();
-
-        if ($statusCode[0] === '4' || $statusCode[0] === '5') {
-            throw HttpAdapterException::cannotFetchUrl(
-                (string) $event->getRequest()->getUrl(),
-                $event->getHttpAdapter()->getName(),
-                sprintf('Status code: %d', $statusCode)
-            );
+        if (!$this->statusCode->validate($event->getResponse())) {
+            $event->setException($this->createStatusCodeException(
+                $event->getResponse(),
+                $event->getRequest(),
+                $event->getHttpAdapter()
+            ));
         }
     }
 
@@ -49,5 +85,26 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(Events::POST_SEND => array('onPostSend', 200));
+    }
+
+    /**
+     * Creates a status code exception.
+     *
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The status code exception.
+     */
+    private function createStatusCodeException(
+        ResponseInterface $response,
+        InternalRequestInterface $internalRequest,
+        HttpAdapterInterface $httpAdapter
+    ) {
+        return HttpAdapterException::cannotFetchUrl(
+            (string) $internalRequest->getUrl(),
+            $httpAdapter->getName(),
+            sprintf('Status code: %d', $response->getStatusCode())
+        );
     }
 }

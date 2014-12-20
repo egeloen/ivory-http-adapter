@@ -83,20 +83,20 @@ class HttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates a request mock.
      *
-     * @return \Psr\Http\Message\OutgoingRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
     private function createRequestMock()
     {
-        return $this->getMock('Psr\Http\Message\OutgoingRequestInterface');
+        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
      * Creates a response mock.
      *
-     * @return \Psr\Http\Message\IncomingResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
      */
     private function createResponseMock()
     {
-        return $this->getMock('Psr\Http\Message\IncomingResponseInterface');
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 }

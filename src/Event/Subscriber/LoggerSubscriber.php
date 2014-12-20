@@ -13,8 +13,14 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\Timer\TimerInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,7 +28,7 @@ use Psr\Log\LoggerInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class LoggerSubscriber extends AbstractDebuggerSubscriber
+class LoggerSubscriber extends AbstractFormatterSubscriber
 {
     /** @var \Psr\Log\LoggerInterface */
     private $logger;
@@ -30,10 +36,17 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
     /**
      * Creates a logger subscriber.
      *
-     * @param \Psr\Log\LoggerInterface $logger The logger.
+     * @param \Psr\Log\LoggerInterface                                   $logger    The logger.
+     * @param \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|null $formatter The formatter.
+     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface|null         $timer     The timer.
      */
-    public function __construct(LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        FormatterInterface $formatter = null,
+        TimerInterface $timer = null
+    ) {
+        parent::__construct($formatter, $timer);
+
         $this->setLogger($logger);
     }
 
@@ -64,7 +77,7 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->startTimer($event->getRequest());
+        $this->getTimer()->start($event->getRequest());
     }
 
     /**
@@ -74,17 +87,8 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $datas = $this->formatPostSendEvent($event);
-
-        $this->logger->debug(
-            sprintf(
-                'Send "%s %s" in %.2f ms.',
-                $event->getRequest()->getMethod(),
-                (string) $event->getRequest()->getUrl(),
-                $datas['time']
-            ),
-            $datas
-        );
+        $this->getTimer()->stop($event->getRequest());
+        $this->debug($event->getHttpAdapter(), $event->getRequest(), $event->getResponse());
     }
 
     /**
@@ -94,14 +98,8 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
      */
     public function onException(ExceptionEvent $event)
     {
-        $this->logger->error(
-            sprintf(
-                'Unable to send "%s %s".',
-                $event->getRequest()->getMethod(),
-                (string) $event->getRequest()->getUrl()
-            ),
-            $this->formatExceptionEvent($event)
-        );
+        $this->getTimer()->stop($event->getException()->getRequest());
+        $this->error($event->getHttpAdapter(), $event->getException());
     }
 
     /**
@@ -113,6 +111,58 @@ class LoggerSubscriber extends AbstractDebuggerSubscriber
             Events::PRE_SEND  => array('onPreSend', 100),
             Events::POST_SEND => array('onPostSend', 100),
             Events::EXCEPTION => array('onException', 100),
+        );
+    }
+
+    /**
+     * Logs debug.
+     *
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response    The response.
+     */
+    private function debug(
+        HttpAdapterInterface $httpAdapter,
+        InternalRequestInterface $request,
+        ResponseInterface $response
+    ) {
+        $this->logger->debug(
+            sprintf(
+                'Send "%s %s" in %.2f ms.',
+                $request->getMethod(),
+                (string) $request->getUrl(),
+                $request->getParameter(TimerInterface::TIME)
+            ),
+            array(
+                'adapter'  => $httpAdapter->getName(),
+                'request'  => $this->getFormatter()->formatRequest($request),
+                'response' => $this->getFormatter()->formatResponse($response),
+            )
+        );
+    }
+
+    /**
+     * Logs error.
+     *
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\HttpAdapterException $exception   The exception.
+     */
+    private function error(HttpAdapterInterface $httpAdapter, HttpAdapterException $exception)
+    {
+        $this->logger->error(
+            sprintf(
+                'Unable to send "%s %s".',
+                $exception->getRequest()->getMethod(),
+                (string) $exception->getRequest()->getUrl()
+            ),
+            array(
+                'adapter'   => $httpAdapter->getName(),
+                'exception' => $this->getFormatter()->formatException($exception),
+                'request'   => $this->getFormatter()->formatRequest($exception->getRequest()),
+                'response'  => $exception->hasResponse()
+                    ? $this->getFormatter()->formatResponse($exception->getResponse())
+                    : null,
+            )
         );
     }
 }

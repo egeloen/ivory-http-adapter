@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
+use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 
 /**
  * Logger subscriber test.
@@ -27,13 +28,22 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
     /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $logger;
 
+    /** @var \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $formatter;
+
+    /** @var \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $timer;
+
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->logger = $this->createLoggerMock();
-        $this->loggerSubscriber = new LoggerSubscriber($this->logger);
+        $this->loggerSubscriber = new LoggerSubscriber(
+            $this->logger = $this->createLoggerMock(),
+            $this->formatter = $this->createFormatterMock(),
+            $this->timer = $this->createTimerMock()
+        );
     }
 
     /**
@@ -41,13 +51,36 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
      */
     protected function tearDown()
     {
+        unset($this->timer);
+        unset($this->formatter);
         unset($this->logger);
         unset($this->loggerSubscriber);
     }
 
     public function testDefaultState()
     {
+        $this->loggerSubscriber = new LoggerSubscriber($this->logger);
+
+        $this->assertInstanceOf(
+            'Ivory\HttpAdapter\Event\Subscriber\AbstractFormatterSubscriber',
+            $this->loggerSubscriber
+        );
+
         $this->assertSame($this->logger, $this->loggerSubscriber->getLogger());
+
+        $this->assertInstanceOf(
+            'Ivory\HttpAdapter\Event\Formatter\Formatter',
+            $this->loggerSubscriber->getFormatter()
+        );
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\Timer\Timer', $this->loggerSubscriber->getTimer());
+    }
+
+    public function testInitialState()
+    {
+        $this->assertSame($this->logger, $this->loggerSubscriber->getLogger());
+        $this->assertSame($this->formatter, $this->loggerSubscriber->getFormatter());
+        $this->assertSame($this->timer, $this->loggerSubscriber->getTimer());
     }
 
     public function testSetLogger()
@@ -73,126 +106,89 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
     public function testPostSendEvent()
     {
-        $httpAdapter = $this->createHttpAdapterMock();
-        $request = $this->createRequestMock();
-        $response = $this->createResponseMock();
-        $timer = null;
-
-        $request
+        $this->timer
             ->expects($this->once())
-            ->method('setParameter')
-            ->with(
-                $this->identicalTo(LoggerSubscriber::TIMER),
-                $this->callback(function ($parameter) use (&$timer) {
-                    $timer = $parameter;
+            ->method('start')
+            ->with($this->identicalTo($request = $this->createRequestMock()));
 
-                    return true;
-                })
-            );
-
-        $request
+        $this->timer
             ->expects($this->once())
-            ->method('getParameter')
-            ->with($this->identicalTo(LoggerSubscriber::TIMER))
-            ->will($this->returnCallback(function () use (&$timer) {
-                return $timer;
-            }));
+            ->method('stop')
+            ->with($this->identicalTo($request));
+
+        $this->formatter
+            ->expects($this->once())
+            ->method('formatRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->returnValue($formattedRequest = 'request'));
+
+        $this->formatter
+            ->expects($this->once())
+            ->method('formatResponse')
+            ->with($this->identicalTo($response = $this->createResponseMock()))
+            ->will($this->returnValue($formattedResponse = 'response'));
 
         $this->logger
             ->expects($this->once())
             ->method('debug')
             ->with(
                 $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
-                $this->callback(function ($context) use ($httpAdapter, $request, $response) {
-                    return $context['time'] > 0 && $context['time'] < 1
-                        && $context['adapter'] === $httpAdapter->getName()
-                        && $context['request']['protocol_version'] === $request->getProtocolVersion()
-                        && $context['request']['url'] === $request->getUrl()
-                        && $context['request']['method'] === $request->getMethod()
-                        && $context['request']['headers'] === $request->getHeaders()
-                        && $context['request']['raw_datas'] === $request->getRawDatas()
-                        && $context['request']['datas'] === $request->getDatas()
-                        && $context['request']['files'] === $request->getFiles()
-                        && $context['request']['parameters'] === $request->getParameters()
-                        && $context['response']['protocol_version'] === $response->getProtocolVersion()
-                        && $context['response']['status_code'] === $response->getStatusCode()
-                        && $context['response']['reason_phrase'] === $response->getReasonPhrase()
-                        && $context['response']['headers'] === $response->getHeaders()
-                        && $context['response']['body'] === (string) $response->getBody()
-                        && $context['response']['parameters'] === $response->getParameters();
-                })
+                $this->identicalTo(array(
+                    'adapter'  => 'http_adapter',
+                    'request'  => $formattedRequest,
+                    'response' => $formattedResponse,
+                ))
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
-        $this->loggerSubscriber->onPostSend($this->createPostSendEvent($httpAdapter, $request, $response));
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->loggerSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
     }
 
     public function testExceptionEvent()
     {
-        $httpAdapter = $this->createHttpAdapterMock();
-        $request = $this->createRequestMock();
-        $exception = $this->createExceptionMock();
-        $timer = null;
-
-        $request
+        $this->timer
             ->expects($this->once())
-            ->method('setParameter')
-            ->with(
-                $this->identicalTo(LoggerSubscriber::TIMER),
-                $this->callback(function ($parameter) use (&$timer) {
-                    $timer = $parameter;
+            ->method('start')
+            ->with($this->identicalTo($request = $this->createRequestMock()));
 
-                    return true;
-                })
-            );
-
-        $request
+        $this->timer
             ->expects($this->once())
-            ->method('getParameter')
-            ->with($this->identicalTo(LoggerSubscriber::TIMER))
-            ->will($this->returnCallback(function () use (&$timer) {
-                return $timer;
-            }));
+            ->method('stop')
+            ->with($this->identicalTo($request));
+
+        $this->formatter
+            ->expects($this->once())
+            ->method('formatRequest')
+            ->with($this->identicalTo($request))
+            ->will($this->returnValue($formattedRequest = 'request'));
+
+        $this->formatter
+            ->expects($this->once())
+            ->method('formatResponse')
+            ->with($this->identicalTo($response = $this->createResponseMock()))
+            ->will($this->returnValue($formattedResponse = 'response'));
+
+        $this->formatter
+            ->expects($this->once())
+            ->method('formatException')
+            ->with($this->identicalTo($exception = $this->createExceptionMock($request, $response)))
+            ->will($this->returnValue($formattedException = 'exception'));
 
         $this->logger
             ->expects($this->once())
             ->method('error')
             ->with(
                 $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
-                $this->callback(function ($context) use ($httpAdapter, $request, $exception) {
-                    return $context['time'] > 0 && $context['time'] < 1
-                        && $context['adapter'] === $httpAdapter->getName()
-                        && $context['request']['protocol_version'] === $request->getProtocolVersion()
-                        && $context['request']['url'] === $request->getUrl()
-                        && $context['request']['method'] === $request->getMethod()
-                        && $context['request']['headers'] === $request->getHeaders()
-                        && $context['request']['raw_datas'] === $request->getRawDatas()
-                        && $context['request']['datas'] === $request->getDatas()
-                        && $context['request']['files'] === $request->getFiles()
-                        && $context['request']['parameters'] === $request->getParameters()
-                        && $context['exception']['code'] === $exception->getCode()
-                        && $context['exception']['message'] === $exception->getMessage()
-                        && $context['exception']['line'] === $exception->getLine()
-                        && $context['exception']['file'] === $exception->getFile();
-                })
+                $this->identicalTo(array(
+                    'adapter'   => 'http_adapter',
+                    'exception' => $formattedException,
+                    'request'   => $formattedRequest,
+                    'response'  => $formattedResponse,
+                ))
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent($httpAdapter, $request));
-        $this->loggerSubscriber->onException($this->createExceptionEvent($httpAdapter, $request, $exception));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createHttpAdapterMock()
-    {
-        $httpAdapter = parent::createHttpAdapterMock();
-        $httpAdapter
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('name'));
-
-        return $httpAdapter;
+        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->loggerSubscriber->onException($this->createExceptionEvent(null, $exception));
     }
 
     /**
@@ -201,10 +197,6 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
     protected function createRequestMock()
     {
         $request = parent::createRequestMock();
-        $request
-            ->expects($this->any())
-            ->method('getProtocolVersion')
-            ->will($this->returnValue('1.1'));
 
         $request
             ->expects($this->any())
@@ -218,98 +210,11 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
         $request
             ->expects($this->any())
-            ->method('getHeaders')
-            ->will($this->returnValue(array('foo' => 'bar')));
-
-        $request
-            ->expects($this->any())
-            ->method('getRawDatas')
-            ->will($this->returnValue('foo=bar'));
-
-        $request
-            ->expects($this->any())
-            ->method('getDatas')
-            ->will($this->returnValue(array('baz' => 'bat')));
-
-        $request
-            ->expects($this->any())
-            ->method('getFiles')
-            ->will($this->returnValue(array('bit' => __FILE__)));
-
-        $request
-            ->expects($this->any())
-            ->method('getParameters')
-            ->will($this->returnValue(array('ban' => 'bor')));
-
-        return $request;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createResponseMock()
-    {
-        $response = parent::createResponseMock();
-        $response
-            ->expects($this->any())
-            ->method('getProtocolVersion')
-            ->will($this->returnValue('1.1'));
-
-        $response
-            ->expects($this->any())
-            ->method('getStatusCode')
-            ->will($this->returnValue(200));
-
-        $response
-            ->expects($this->any())
-            ->method('getReasonPhrase')
-            ->will($this->returnValue('OK'));
-
-        $response
-            ->expects($this->any())
-            ->method('getHeaders')
-            ->will($this->returnValue(array('bal' => 'bol')));
-
-        $response
-            ->expects($this->any())
-            ->method('getBody')
-            ->will($this->returnValue('body'));
-
-        $response
-            ->expects($this->any())
-            ->method('getParameters')
-            ->will($this->returnValue(array('bil' => 'bob')));
-
-        return $response;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createExceptionMock()
-    {
-        $exception = parent::createExceptionMock();
-        $exception
-            ->expects($this->any())
-            ->method('getCode')
+            ->method('getParameter')
+            ->with($this->identicalTo(TimerInterface::TIME))
             ->will($this->returnValue(123));
 
-        $exception
-            ->expects($this->any())
-            ->method('getMessage')
-            ->will($this->returnValue('message'));
-
-        $exception
-            ->expects($this->any())
-            ->method('getLine')
-            ->will($this->returnValue(234));
-
-        $exception
-            ->expects($this->any())
-            ->method('getFile')
-            ->will($this->returnValue(__FILE__));
-
-        return $exception;
+        return $request;
     }
 
     /**
@@ -320,5 +225,25 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
     private function createLoggerMock()
     {
         return $this->getMock('Psr\Log\LoggerInterface');
+    }
+
+    /**
+     * Creates a formatter mock.
+     *
+     * @return \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject The formatter mock.
+     */
+    private function createFormatterMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Event\Formatter\FormatterInterface');
+    }
+
+    /**
+     * Creates a timer mock.
+     *
+     * @return \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject The timer mock.
+     */
+    private function createTimerMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
     }
 }
