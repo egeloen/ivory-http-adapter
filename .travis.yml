@@ -46,7 +46,7 @@ install:
     - if [[ "$TRAVIS_PHP_VERSION" = 5.3* ]]; then composer remove react/dns --dev --no-update; fi
     - if [[ "$TRAVIS_PHP_VERSION" = "5.3.3" ]]; then composer remove zendframework/zendframework --dev --no-update; fi
     - if [[ "$SYMFONY_VERSION" = *dev* ]]; then sed -i "s/\"MIT\"/\"MIT\",\"minimum-stability\":\"dev\"/g" composer.json; fi
-    - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST ]]; then echo "--prefer-lowest --prefer-stable"; fi`
+    - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST = true ]]; then echo "--prefer-lowest --prefer-stable"; fi`
 
 script: bin/phpunit --coverage-clover clover.xml
 
