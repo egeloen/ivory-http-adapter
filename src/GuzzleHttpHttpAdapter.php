@@ -51,6 +51,20 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
+    public function send($url, $method, array $headers = array(), $datas = array(), array $files = array())
+    {
+        $baseUrl = $this->client->getBaseUrl();
+
+        if (!empty($baseUrl) && false === stripos($url, $baseUrl)) {
+            $url = $baseUrl . $url;
+        }
+
+        return parent::send($url, $method, $headers, $datas, $files);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $request = $this->client->createRequest(
