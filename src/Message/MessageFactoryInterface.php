@@ -109,4 +109,29 @@ interface MessageFactoryInterface
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The cloned response.
      */
     public function cloneResponse(ResponseInterface $response);
+
+    /**
+     * Checks if there is a base url.
+     *
+     * @return boolean TRUE if there is a base url else FALSE.
+     */
+    public function hasBaseUrl();
+
+    /**
+     * Sets the base url.
+     *
+     * @param string $baseUrl The base url.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If the base url is invalid.
+     *
+     * @return void No return value.
+     */
+    public function setBaseUrl($baseUrl);
+
+    /**
+     * Gets the base url.
+     *
+     * @return string The base url.
+     */
+    public function getBaseUrl();
 }

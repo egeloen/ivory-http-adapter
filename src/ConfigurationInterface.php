@@ -99,7 +99,7 @@ interface ConfigurationInterface
     public function setKeepAlive($keepAlive);
 
     /**
-     * Checks if there is an encocing type.
+     * Checks if there is an encoding type.
      *
      * @return boolean TRUE if there is an encoding type else FALSE.
      */
@@ -168,4 +168,27 @@ interface ConfigurationInterface
      * @return void No return value.
      */
     public function setUserAgent($userAgent);
+
+    /**
+     * Checks if there is a base url.
+     *
+     * @return boolean TRUE if there is a base url else FALSE.
+     */
+    public function hasBaseUrl();
+
+    /**
+     * Sets the base url.
+     *
+     * @param string $baseUrl The base url.
+     *
+     * @return void No return value.
+     */
+    public function setBaseUrl($baseUrl);
+
+    /**
+     * Gets the base url.
+     *
+     * @return string The base url.
+     */
+    public function getBaseUrl();
 }

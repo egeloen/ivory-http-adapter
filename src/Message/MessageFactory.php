@@ -13,6 +13,7 @@ namespace Ivory\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\Stream\ResourceStream;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
+use Ivory\HttpAdapter\Normalizer\UrlNormalizer;
 
 /**
  * Message factory.
@@ -21,6 +22,9 @@ use Ivory\HttpAdapter\Message\Stream\StringStream;
  */
 class MessageFactory implements MessageFactoryInterface
 {
+    /** @var string */
+    private $baseUrl;
+
     /**
      * {@inheritdoc}
      */
@@ -32,7 +36,14 @@ class MessageFactory implements MessageFactoryInterface
         $body = null,
         array $parameters = array()
     ) {
-        return new Request($url, $method, $protocolVersion, $headers, $this->createStream($body), $parameters);
+        return new Request(
+            $this->prepareUrl($url),
+            $method,
+            $protocolVersion,
+            $headers,
+            $this->createStream($body),
+            $parameters
+        );
     }
 
     /**
@@ -55,7 +66,15 @@ class MessageFactory implements MessageFactoryInterface
         array $files = array(),
         array $parameters = array()
     ) {
-        return new InternalRequest($url, $method, $protocolVersion, $headers, $datas, $files, $parameters);
+        return new InternalRequest(
+            $this->prepareUrl($url),
+            $method,
+            $protocolVersion,
+            $headers,
+            $datas,
+            $files,
+            $parameters
+        );
     }
 
     /**
@@ -64,6 +83,45 @@ class MessageFactory implements MessageFactoryInterface
     public function cloneInternalRequest(InternalRequestInterface $internalRequest)
     {
         return clone $internalRequest;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasBaseUrl()
+    {
+        return $this->baseUrl !== null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setBaseUrl($baseUrl)
+    {
+        $this->baseUrl = UrlNormalizer::normalize($baseUrl);
+    }
+
+    /**
+     * Prepares an url.
+     *
+     * @param string $url The url.
+     * @return string The prepared url.
+     */
+    private function prepareUrl($url)
+    {
+        if ($this->hasBaseUrl() && false === stripos($url, $baseUrl = $this->getBaseUrl())) {
+            $url = $baseUrl.$url;
+        }
+
+        return $url;
     }
 
     /**

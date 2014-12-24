@@ -40,6 +40,11 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         unset($this->messageFactory);
     }
 
+    public function testInitialState()
+    {
+        $this->assertFalse($this->messageFactory->hasBaseUrl());
+    }
+
     public function testInheritance()
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\MessageFactoryInterface', $this->messageFactory);
@@ -214,5 +219,32 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\Response', $responseClone);
         $this->assertNotSame($responseClone, $response);
+    }
+
+    public function testSetBaseUrl()
+    {
+        $this->messageFactory->setBaseUrl($baseUrl = 'http://egeloen.fr/');
+
+        $this->assertTrue($this->messageFactory->hasBaseUrl());
+        $this->assertSame($baseUrl, $this->messageFactory->getBaseUrl());
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @expectedExceptionMessage The url "foo" is not valid.
+     */
+    public function testSetInvalidBaseUrl()
+    {
+        $this->messageFactory->setBaseUrl('foo');
+    }
+
+    public function testCreateRequestWithBaseUrl()
+    {
+        $this->messageFactory->setBaseUrl($baseUrl = 'http://egeloen.fr/');
+
+        $request = $this->messageFactory->createRequest($url = 'test');
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $request);
+        $this->assertSame($baseUrl.$url, $request->getUrl());
     }
 }
