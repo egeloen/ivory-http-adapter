@@ -57,6 +57,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('string', $this->configuration->getBoundary());
         $this->assertSame(10, $this->configuration->getTimeout());
         $this->assertSame('Ivory Http Adapter '.HttpAdapterInterface::VERSION, $this->configuration->getUserAgent());
+        $this->assertFalse($this->configuration->hasBaseUrl());
     }
 
     public function testInitialState()
@@ -133,6 +134,23 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->configuration->setUserAgent($userAgent = 'foo');
 
         $this->assertSame($userAgent, $this->configuration->getUserAgent());
+    }
+
+    public function testSetBaseUrl()
+    {
+        $this->configuration->setBaseUrl($baseUrl = 'http://egeloen.fr/');
+
+        $this->assertTrue($this->configuration->hasBaseUrl());
+        $this->assertSame($baseUrl, $this->configuration->getBaseUrl());
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @expectedExceptionMessage The url "foo" is not valid.
+     */
+    public function testSetInvalidBaseUrl()
+    {
+        $this->configuration->setBaseUrl('foo');
     }
 
     /**

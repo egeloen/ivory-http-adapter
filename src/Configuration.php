@@ -211,4 +211,28 @@ class Configuration implements ConfigurationInterface
     {
         $this->userAgent = $userAgent;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasBaseUrl()
+    {
+        return $this->messageFactory->hasBaseUrl();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setBaseUrl($baseUrl)
+    {
+        $this->messageFactory->setBaseUrl($baseUrl);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBaseUrl()
+    {
+        return $this->messageFactory->getBaseUrl();
+    }
 }

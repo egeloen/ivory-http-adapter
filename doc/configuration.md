@@ -119,3 +119,17 @@ change it, you can use:
 $userAgent = $configuration->getUserAgent();
 $configuration->setUserAgent('My user agent');
 ```
+
+## Base url
+
+If set, requests created using a relative url are combined with the configured base url. Requests created using an absolute url are not affected by this setting.
+
+``` php
+$hasBaseUrl = $configuration->haseBaseUrl();
+$baseUrl = $configuration->getBaseUrl();
+
+$configuration->setBaseUrl('http://api.example.com');
+
+// Example
+$response = $http->get('/path/to/resource');
+```
