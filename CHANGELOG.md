@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * c0fcdfd - Add base url support
  * 77173c4 - Make http_buil_query independant of arg_separator.output ini setting
  * bbcf51a - Introduce Version
  * 1b15d7b - [Event] Make timer subscriber stateless
