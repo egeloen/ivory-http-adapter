@@ -225,6 +225,21 @@ class HttpAdapterException extends \Exception
     }
 
     /**
+     * Gets the "REQUEST IS NOT VALID" exception.
+     *
+     * @param mixed $request The request.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "REQUEST IS NOT VALID" exception.
+     */
+    public static function requestIsNotValid($request)
+    {
+        return new self(sprintf(
+            'The request must be a string, an array or implement "Psr\Http\Message\OutgoingRequestInterface" ("%s" given).',
+            is_object($request) ? get_class($request) : gettype($request)
+        ));
+    }
+
+    /**
      * Gets the "STREAM IS NOT VALID" exception.
      *
      * @param mixed  $stream   The stream.

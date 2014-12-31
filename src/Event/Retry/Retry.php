@@ -27,7 +27,7 @@ class Retry implements RetryInterface
     private $strategy;
 
     /**
-     * Creates a retry subscriber.
+     * Creates a retry.
      *
      * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface|null $strategy The strategy.
      */
@@ -55,7 +55,7 @@ class Retry implements RetryInterface
     /**
      * {@inheritdoc}
      */
-    public function retry(InternalRequestInterface $internalRequest)
+    public function retry(InternalRequestInterface $internalRequest, $wait = true)
     {
         if (!$this->strategy->verify($internalRequest)) {
             $internalRequest->setParameter(
@@ -66,7 +66,7 @@ class Retry implements RetryInterface
             return false;
         }
 
-        if (($delay = $this->strategy->delay($internalRequest)) > 0) {
+        if ($wait && ($delay = $this->strategy->delay($internalRequest)) > 0) {
             usleep($delay * 1000000);
         }
 

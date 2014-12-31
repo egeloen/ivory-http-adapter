@@ -176,6 +176,19 @@ interface HttpAdapterInterface
     public function sendRequest(OutgoingRequestInterface $request);
 
     /**
+     * Sends requests.
+     *
+     * @param array         $requests The requests.
+     * @param callable|null $success  The success callable.
+     * @param callable|null $error    The error callable.
+     *
+     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occured when you don't provide the error callable.
+     *
+     * @return array $responses The responses.
+     */
+    public function sendRequests(array $requests, $success = null, $error = null);
+
+    /**
      * Gets the name.
      *
      * @return string The name.

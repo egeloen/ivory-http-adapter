@@ -79,4 +79,57 @@ $response = $httpAdapter->sendRequest(new InternalRequest($url, $method));
 
 If you want to learn more about the `Ivory\HttpAdapter\Message\Request`, your can read this [doc](/doc/request.md) or
 if you want to learn more about the `Ivory\HttpAdapter\Message\InternalRequest`, your can read this
-[doc](/doc/internal_request.md)..
+[doc](/doc/internal_request.md).
+
+## Send multiple requests
+
+``` php
+use Ivory\HttpAdapter\Message\InternalRequest;
+use Ivory\HttpAdapter\Message\Request;
+use Ivory\HttpAdapter\MultiHttpAdapterException;
+
+$requests = array(
+    // An url (GET 1.1)
+    'http://egeloen.fr',
+
+    // An array representing the parameters of the `MessageFactoryInterface::createInternalRequest`
+    array('http://egeloen.fr', 'GET', 1.1, array('Content-Type' => 'json', '{"foo":"bar"}')),
+
+    // A PSR-7 request
+    new Request('http://egeloen.fr', 'GET'),
+
+    // An internal request
+    new InternalRequest('http://egeloen.fr', 'GET'),
+);
+
+try {
+    $responses = $httpAdapter->sendRequests($requests);
+} catch (MultiHttpAdapterException $e) {
+    $responses = $e->getResponses();
+    $exceptions = $e->getExceptions();
+}
+```
+
+You can additionaly pass two callables which will be triggered as soon as a request is completed:
+
+``` php
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\ResponseInterface;
+use Ivory\HttpAdapter\MultiHttpAdapterException;
+
+$success = function (ResponseInterface $response) {
+    $request = response->getParameter('request');
+};
+
+$error = function (HttpAdapterException $exception) {
+    $request = $exception->getRequest();
+
+    if ($exception->hasResponse()) {
+        $response = $exception->getResponse();
+    }
+};
+
+$responses = $httpAdapter->sendRequests($requests, $success, $error);
+```
+
+The method will not throw an exception if you pass the `error` callable.

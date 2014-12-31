@@ -13,6 +13,9 @@ namespace Ivory\HttpAdapter;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Event\CompleteEvent;
+use GuzzleHttp\Event\ErrorEvent;
+use GuzzleHttp\Pool;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
@@ -53,24 +56,14 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $request = $this->client->createRequest(
-            $internalRequest->getMethod(),
-            $url = (string) $internalRequest->getUrl(),
-            array(
-                'exceptions'      => false,
-                'allow_redirects' => false,
-                'timeout'         => $this->getConfiguration()->getTimeout(),
-                'connect_timeout' => $this->getConfiguration()->getTimeout(),
-                'version'         => $internalRequest->getProtocolVersion(),
-                'headers'         => $this->prepareHeaders($internalRequest),
-                'body'            => $this->prepareContent($internalRequest),
-            )
-        );
-
         try {
-            $response = $this->client->send($request);
+            $response = $this->client->send($this->createRequest($internalRequest));
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUrl(
+                $e->getRequest()->getUrl(),
+                $this->getName(),
+                $e->getMessage()
+            );
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
@@ -90,8 +83,93 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
+    protected function doSendInternalRequests(array $internalRequests, $success, $error)
+    {
+        $requests = array();
+        foreach ($internalRequests as $internalRequest) {
+            $requests[] = $this->createRequest($internalRequest, $success, $error);
+        }
+
+        class_exists('GuzzleHttp\Pool')
+            ? Pool::batch($this->client, $requests)
+            : \GuzzleHttp\batch($this->client, $requests);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function createFile($file)
     {
         return fopen($file, 'r');
+    }
+
+    /**
+     * Creates a request.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param callable|null                                       $success         The success callable.
+     * @param callable|null                                       $error           The error callable.
+     *
+     * @return \GuzzleHttp\Message\RequestInterface The request.
+     */
+    private function createRequest(InternalRequestInterface $internalRequest, $success = null, $error = null)
+    {
+        $request = $this->client->createRequest(
+            $internalRequest->getMethod(),
+            (string) $internalRequest->getUrl(),
+            array(
+                'exceptions'      => false,
+                'allow_redirects' => false,
+                'timeout'         => $this->getConfiguration()->getTimeout(),
+                'connect_timeout' => $this->getConfiguration()->getTimeout(),
+                'version'         => $internalRequest->getProtocolVersion(),
+                'headers'         => $this->prepareHeaders($internalRequest),
+                'body'            => $this->prepareContent($internalRequest),
+            )
+        );
+
+        if (is_callable($success)) {
+            $messageFactory = $this->getConfiguration()->getMessageFactory();
+
+            $request->getEmitter()->on(
+                'complete',
+                function (CompleteEvent $event) use ($success, $internalRequest, $messageFactory) {
+                    $response = $messageFactory->createResponse(
+                        (integer) $event->getResponse()->getStatusCode(),
+                        $event->getResponse()->getReasonPhrase(),
+                        $event->getResponse()->getProtocolVersion(),
+                        $event->getResponse()->getHeaders(),
+                        BodyNormalizer::normalize(
+                            function () use ($event) {
+                                return new GuzzleHttpStream($event->getResponse()->getBody());
+                            },
+                            $internalRequest->getMethod()
+                        )
+                    );
+
+                    $response->setParameter('request', $internalRequest);
+                    call_user_func($success, $response);
+                }
+            );
+        }
+
+        if (is_callable($error)) {
+            $httpAdapterName = $this->getName();
+
+            $request->getEmitter()->on(
+                'error',
+                function (ErrorEvent $event) use ($error, $internalRequest, $httpAdapterName) {
+                    $exception = HttpAdapterException::cannotFetchUrl(
+                        $event->getException()->getRequest()->getUrl(),
+                        $httpAdapterName,
+                        $event->getException()->getMessage()
+                    );
+                    $exception->setRequest($internalRequest);
+                    call_user_func($error, $exception);
+                }
+            );
+        }
+
+        return $request;
     }
 }

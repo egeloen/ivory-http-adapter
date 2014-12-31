@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * History subscriber test.
@@ -82,6 +83,12 @@ class HistorySubscriberTest extends AbstractSubscriberTest
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
         $this->assertSame(array('onPostSend', 100), $events[Events::POST_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
+        $this->assertSame(array('onMultiPreSend', 100), $events[Events::MULTI_PRE_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
+        $this->assertSame(array('onMultiPostSend', 100), $events[Events::MULTI_POST_SEND]);
     }
 
     public function testPostSendEvent()
@@ -106,6 +113,77 @@ class HistorySubscriberTest extends AbstractSubscriberTest
 
         $this->historySubscriber->onPreSend($this->createPreSendEvent(null, $request));
         $this->historySubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+    }
+
+    public function testMultiPostSendEvent()
+    {
+        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
+
+        $responses = array(
+            $response1 = $this->createResponseMock($request1),
+            $response2 = $this->createResponseMock($request2),
+        );
+
+        $this->timer
+            ->expects($this->exactly(count($responses)))
+            ->method('start')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->timer
+            ->expects($this->exactly(count($responses)))
+            ->method('stop')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->journal
+            ->expects($this->exactly(count($responses)))
+            ->method('record')
+            ->withConsecutive(array($request1, $response1), array($request2, $response2));
+
+        $this->historySubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $this->historySubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+    }
+
+    public function testMultiExceptionEvent()
+    {
+        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
+
+        $responses = array(
+            $response1 = $this->createResponseMock($request1),
+            $response2 = $this->createResponseMock($request2),
+        );
+
+        $this->timer
+            ->expects($this->exactly(count($responses)))
+            ->method('start')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->timer
+            ->expects($this->exactly(count($responses)))
+            ->method('stop')
+            ->withConsecutive(array($request1), array($request2));
+
+        $this->journal
+            ->expects($this->exactly(count($responses)))
+            ->method('record')
+            ->withConsecutive(array($request1, $response1), array($request2, $response2));
+
+        $this->historySubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $this->historySubscriber->onMultiException($this->createMultiExceptionEvent(null, array(), $responses));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResponseMock(InternalRequestInterface $internalRequest = null)
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($internalRequest));
+
+        return $response;
     }
 
     /**

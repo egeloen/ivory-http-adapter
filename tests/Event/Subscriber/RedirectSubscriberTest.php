@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Redirect subscriber test.
@@ -64,6 +65,9 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $this->assertArrayHasKey(Events::POST_SEND, $events);
         $this->assertSame(array('onPostSend', 0), $events[Events::POST_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
+        $this->assertSame(array('onMultiPostSend', 0), $events[Events::MULTI_POST_SEND]);
     }
 
     public function testPostSendEventWithRedirectResponse()
@@ -150,6 +154,143 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirectSubscriber->onPostSend($event = $this->createPostSendEvent($httpAdapter, $request, $response));
 
         $this->assertSame($exception, $event->getException());
+    }
+
+    public function testMultiPostSendEventWithRedirectResponse()
+    {
+        $responses = array(
+            $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
+            $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
+        );
+
+        $redirectRequests = array(
+            $redirectRequest1 = $this->createRequestMock(),
+            $redirectRequest2 = $this->createRequestMock(),
+        );
+
+        $redirectResponses = array($this->createResponseMock(), $this->createResponseMock());
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequests')
+            ->with($this->identicalTo($redirectRequests))
+            ->will($this->returnValue($redirectResponses));
+
+        $this->redirect
+            ->expects($this->exactly(count($responses)))
+            ->method('createRedirectRequest')
+            ->will($this->returnValueMap(array(
+                array($response1, $request1, $httpAdapter, $redirectRequest1),
+                array($response2, $request2, $httpAdapter, $redirectRequest2),
+            )));
+
+        $this->redirectSubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent($httpAdapter, $responses));
+
+        $this->assertSame($redirectResponses, $event->getResponses());
+        $this->assertFalse($event->hasExceptions());
+    }
+
+    public function testMultiPostSendEventWithRedirectResponseThrowException()
+    {
+        $responses = array(
+            $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
+            $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
+        );
+
+        $redirectRequests = array(
+            $redirectRequest1 = $this->createRequestMock(),
+            $redirectRequest2 = $this->createRequestMock(),
+        );
+
+        $exceptions = array($this->createExceptionMock(), $this->createExceptionMock());
+
+        $httpAdapter = $this->createHttpAdapterMock();
+        $httpAdapter
+            ->expects($this->once())
+            ->method('sendRequests')
+            ->with($this->identicalTo($redirectRequests))
+            ->will($this->throwException($exception = $this->createMultiExceptionMock($exceptions)));
+
+        $this->redirect
+            ->expects($this->exactly(count($responses)))
+            ->method('createRedirectRequest')
+            ->will($this->returnValueMap(array(
+                array($response1, $request1, $httpAdapter, $redirectRequest1),
+                array($response2, $request2, $httpAdapter, $redirectRequest2),
+            )));
+
+        $this->redirectSubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent($httpAdapter, $responses));
+
+        $this->assertFalse($event->hasResponses());
+        $this->assertTrue($event->hasExceptions());
+        $this->assertSame($exceptions, $event->getExceptions());
+    }
+
+    public function testMultiPostSendEventWithoutRedirectResponse()
+    {
+        $httpAdapter = $this->createHttpAdapterMock();
+        $responses = array(
+            $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
+            $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
+        );
+
+        $this->redirect
+            ->expects($this->exactly(count($responses)))
+            ->method('createRedirectRequest')
+            ->will($this->returnValueMap(array(
+                array($response1, $request1, $httpAdapter, false),
+                array($response2, $request2, $httpAdapter, false),
+            )));
+
+        $this->redirect
+            ->expects($this->exactly(count($responses)))
+            ->method('prepareResponse')
+            ->withConsecutive(
+                array($response1, $request1),
+                array($response2, $request2)
+            );
+
+        $this->redirectSubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent($httpAdapter, $responses));
+
+        $this->assertFalse($event->hasExceptions());
+        $this->assertTrue($event->hasResponses());
+        $this->assertSame($responses, $event->getResponses());
+    }
+
+    public function testMultiPostSendEventWithMaxRedirectReachedThrowException()
+    {
+        $httpAdapter = $this->createHttpAdapterMock();
+        $responses = array(
+            $this->createResponseMock($request1 = $this->createRequestMock()),
+            $this->createResponseMock($request2 = $this->createRequestMock()),
+        );
+
+        $this->redirect
+            ->expects($this->exactly(count($responses)))
+            ->method('createRedirectRequest')
+            ->will($this->throwException($exception = $this->createExceptionMock()));
+
+        $this->redirectSubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent($httpAdapter, $responses));
+
+        $this->assertFalse($event->hasResponses());
+        $this->assertTrue($event->hasExceptions());
+        $this->assertSame(array($exception, $exception), $event->getExceptions());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createResponseMock(InternalRequestInterface $internalRequest = null)
+    {
+        $response = parent::createResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($internalRequest));
+
+        return $response;
     }
 
     /**

@@ -14,6 +14,10 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface;
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiPostSendEvent;
+use Ivory\HttpAdapter\Event\MultiPreSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
 use Ivory\HttpAdapter\Event\PreSendEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -79,13 +83,71 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * On exception event.
+     *
+     * @param \Ivory\HttpAdapter\Event\ExceptionEvent $event The exception event.
+     */
+    public function onException(ExceptionEvent $event)
+    {
+        if ($event->getException()->hasResponse()) {
+            $this->cookieJar->extract($event->getException()->getRequest(), $event->getException()->getResponse());
+        }
+    }
+
+    /**
+     * On multi pre send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     */
+    public function onMultiPreSend(MultiPreSendEvent $event)
+    {
+        foreach ($event->getRequests() as $request) {
+            $this->cookieJar->populate($request);
+        }
+    }
+
+    /**
+     * On multi post send event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     */
+    public function onMultiPostSend(MultiPostSendEvent $event)
+    {
+        foreach ($event->getResponses() as $response) {
+            $this->cookieJar->extract($response->getParameter('request'), $response);
+        }
+    }
+
+    /**
+     * On multi exception event.
+     *
+     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
+     */
+    public function onMultiException(MultiExceptionEvent $event)
+    {
+        foreach ($event->getException()->getResponses() as $response) {
+            $this->cookieJar->extract($response->getParameter('request'), $response);
+        }
+
+        foreach ($event->getException()->getExceptions() as $exception) {
+            if ($exception->hasResponse()) {
+                $this->cookieJar->extract($exception->getRequest(), $exception->getResponse());
+            }
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND  => array('onPreSend', 300),
-            Events::POST_SEND => array('onPostSend', 300),
+            Events::PRE_SEND        => array('onPreSend', 300),
+            Events::POST_SEND       => array('onPostSend', 300),
+            Events::EXCEPTION       => array('onException', 300),
+            Events::MULTI_PRE_SEND  => array('onMultiPreSend', 300),
+            Events::MULTI_POST_SEND => array('onMultiPostSend', 300),
+            Events::MULTI_EXCEPTION => array('onMultiException', 300),
         );
     }
 }

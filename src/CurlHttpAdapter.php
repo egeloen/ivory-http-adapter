@@ -49,9 +49,76 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
+        $curl = $this->createCurl($internalRequest);
+
+        try {
+            $response = $this->createResponse($curl, curl_exec($curl), $internalRequest);
+        } catch (HttpAdapterException $e) {
+            curl_close($curl);
+
+            throw $e;
+        }
+
+        curl_close($curl);
+
+        return $response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doSendInternalRequests(array $internalRequests, $success, $error)
+    {
+        $curlMulti = curl_multi_init();
+
+        $contexts = array();
+        foreach ($internalRequests as $internalRequest) {
+            $contexts[] = array(
+                'curl'    => $curl = $this->createCurl($internalRequest),
+                'request' => $internalRequest,
+            );
+
+            curl_multi_add_handle($curlMulti, $curl);
+        }
+
+        do {
+            do {
+                $exec = curl_multi_exec($curlMulti, $running);
+            } while ($exec === CURLM_CALL_MULTI_PERFORM);
+
+            while ($done = curl_multi_info_read($curlMulti)) {
+                $curl = $done['handle'];
+                $internalRequest = $this->resolveInternalRequest($curl, $contexts);
+
+                try {
+                    $response = $this->createResponse($curl, curl_multi_getcontent($curl), $internalRequest);
+                    $response->setParameter('request', $internalRequest);
+                    call_user_func($success, $response);
+                } catch (HttpAdapterException $e) {
+                    $e->setRequest($internalRequest);
+                    call_user_func($error, $e);
+                }
+
+                curl_multi_remove_handle($curlMulti, $curl);
+                curl_close($curl);
+            }
+        } while ($running);
+
+        curl_multi_close($curlMulti);
+    }
+
+    /**
+     * Creates a curl resource.
+     *
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @return resource The curl resource.
+     */
+    private function createCurl(InternalRequestInterface $internalRequest)
+    {
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, $url = (string) $internalRequest->getUrl());
+        curl_setopt($curl, CURLOPT_URL, (string) $internalRequest->getUrl());
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest));
         curl_setopt($curl, CURLOPT_HEADER, true);
@@ -89,26 +156,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
                 break;
         }
 
-        if (($response = curl_exec($curl)) === false) {
-            $error = curl_error($curl);
-            curl_close($curl);
-
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error);
-        }
-
-        $headersSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-
-        curl_close($curl);
-
-        $headers = substr($response, 0, $headersSize);
-
-        return $this->getConfiguration()->getMessageFactory()->createResponse(
-            StatusCodeExtractor::extract($headers),
-            ReasonPhraseExtractor::extract($headers),
-            ProtocolVersionExtractor::extract($headers),
-            HeadersNormalizer::normalize($headers),
-            BodyNormalizer::normalize(substr($response, $headersSize), $internalRequest->getMethod())
-        );
+        return $curl;
     }
 
     /**
@@ -124,5 +172,56 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         } else { // @codeCoverageIgnoreStart
             curl_setopt($curl, constant($type), $this->getConfiguration()->getTimeout());
         } // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * Creates a response.
+     *
+     * @param resource                                            $curl            The curl resource.
+     * @param string|boolean|null                                 $data            The data.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occured.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     */
+    private function createResponse($curl, $data, InternalRequestInterface $internalRequest)
+    {
+        if (empty($data)) {
+            throw HttpAdapterException::cannotFetchUrl(
+                (string) $internalRequest->getUrl(),
+                $this->getName(),
+                curl_error($curl)
+            );
+        }
+
+        $headers = substr($data, 0, $headersSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE));
+
+        return $this->getConfiguration()->getMessageFactory()->createResponse(
+            StatusCodeExtractor::extract($headers),
+            ReasonPhraseExtractor::extract($headers),
+            ProtocolVersionExtractor::extract($headers),
+            HeadersNormalizer::normalize($headers),
+            BodyNormalizer::normalize(substr($data, $headersSize), $internalRequest->getMethod())
+        );
+    }
+
+    /**
+     * Resolves the internal request.
+     *
+     * @param resource $curl     The curl resource.
+     * @param array    $contexts The contexts.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The internal request.
+     */
+    private function resolveInternalRequest($curl, array $contexts)
+    {
+        foreach ($contexts as $context) {
+            if ($context['curl'] === $curl) {
+                break;
+            }
+        }
+
+        return $context['request'];
     }
 }

@@ -28,4 +28,13 @@ class Events extends AbstractUninstantiableAsset
 
     /** @const string The exception event. */
     const EXCEPTION = 'ivory.http_adapter.exception';
+
+    /** @const string The pre send event. */
+    const MULTI_PRE_SEND = 'ivory.http_adapter.multi_pre_send';
+
+    /** @const string The post send event. */
+    const MULTI_POST_SEND = 'ivory.http_adapter.multi_post_send';
+
+    /** @const string The exception event. */
+    const MULTI_EXCEPTION = 'ivory.http_adapter.multi_exception';
 }

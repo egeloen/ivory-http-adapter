@@ -16,6 +16,7 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\Message\Stream\StringStream;
+use Ivory\HttpAdapter\MultiHttpAdapterException;
 use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
 /**
@@ -236,6 +237,71 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @dataProvider requestsProvider
+     */
+    public function testSendRequests(array $requests)
+    {
+        $responses = array();
+        $exceptions = array();
+
+        $success = function ($response) use (&$responses) {
+            $responses[] = $response;
+        };
+
+        $error = function ($exception) use (&$exceptions) {
+            $exceptions[] = $exception;
+        };
+
+        $this->assertMultiResponses($this->httpAdapter->sendRequests($requests, $success, $error), $requests);
+        $this->assertMultiResponses($responses, $requests);
+        $this->assertEmpty($exceptions);
+    }
+
+    /**
+     * @dataProvider erroredRequestsProvider
+     */
+    public function testSendErroredRequestsWithErrorCallable(array $requests, array $erroredRequests)
+    {
+        $responses = array();
+        $exceptions = array();
+
+        $success = function ($response) use (&$responses) {
+            $responses[] = $response;
+        };
+
+        $error = function ($exception) use (&$exceptions) {
+            $exceptions[] = $exception;
+        };
+
+        $result = $this->httpAdapter->sendRequests(array_merge($requests, $erroredRequests), $success, $error);
+
+        $this->assertSame($responses, $result);
+        $this->assertMultiResponses($responses, $requests);
+        $this->assertMultiExceptions($exceptions, $erroredRequests);
+    }
+
+    /**
+     * @dataProvider erroredRequestsProvider
+     */
+    public function testSendErroredRequestsWithoutErrorCallable(array $requests, array $erroredRequests)
+    {
+        $responses = array();
+
+        $success = function ($response) use (&$responses) {
+            $responses[] = $response;
+        };
+
+        try {
+            $this->httpAdapter->sendRequests(array_merge($requests, $erroredRequests), $success);
+            $this->fail();
+        } catch (MultiHttpAdapterException $e) {
+            $this->assertSame($e->getResponses(), $responses);
+            $this->assertMultiResponses($e->getResponses(), $requests);
+            $this->assertMultiExceptions($e->getExceptions(), $erroredRequests);
+        }
+    }
+
     public function testSendWithCustomArgSeparatorOutput()
     {
         $argSeparatorOutput = ini_get('arg_separator.output');
@@ -311,7 +377,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendWithInvalidUrl()
     {
-        $this->httpAdapter->send('http://invalid.egeloen.fr', Request::METHOD_GET);
+        $this->httpAdapter->send($this->getInvalidUrl(), Request::METHOD_GET);
     }
 
     /**
@@ -453,6 +519,65 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Gets the requests provider.
+     *
+     * @return array The requests provider.
+     */
+    public function requestsProvider()
+    {
+        $requests = array($this->getUrl());
+
+        foreach ($this->requestProvider() as $request) {
+            $requests[] = array(
+                $request[0],
+                $request[1],
+                InternalRequest::PROTOCOL_VERSION_1_1,
+                isset($request[2]) ? $request[2] : array(),
+                isset($request[3]) ? $request[3] : array(),
+                isset($request[4]) ? $request[4] : array(),
+            );
+        }
+
+        foreach ($this->requestProvider() as $request) {
+            $requests[] = new Request(
+                $request[0],
+                $request[1],
+                Request::PROTOCOL_VERSION_1_1,
+                isset($request[2]) ? $request[2] : array(),
+                isset($request[3]) ? new StringStream(http_build_query($request[3])) : null
+            );
+        }
+
+        foreach ($this->requestProvider() as $request) {
+            $requests[] = new InternalRequest(
+                $request[0],
+                $request[1],
+                InternalRequest::PROTOCOL_VERSION_1_1,
+                isset($request[2]) ? $request[2] : array(),
+                isset($request[3]) ? $request[3] : array(),
+                isset($request[4]) ? $request[4] : array()
+            );
+        }
+
+        return array(array($requests));
+    }
+
+    /**
+     * Gets the errored requests provider.
+     *
+     * @return array The errored requests provider.
+     */
+    public function erroredRequestsProvider()
+    {
+        $requestsProvider = $this->requestsProvider();
+
+        return array(array(
+            $requestsProvider[0][0],
+            array($this->getInvalidUrl()),
+        ));
+    }
+
+    /**
      * Gets the timeout provider.
      *
      * @return array The timeout provider.
@@ -588,6 +713,16 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     private function getUrl(array $query = array())
     {
         return !empty($query) ? PHPUnitUtility::getUrl().'?'.http_build_query($query, null, '&') : PHPUnitUtility::getUrl();
+    }
+
+    /**
+     * Gets the invalid url.
+     *
+     * @return string The invalid url.
+     */
+    private function getInvalidUrl()
+    {
+        return 'http://invalid.egeloen.fr';
     }
 
     /**
@@ -815,6 +950,44 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $pattern = '/Content-Disposition: form-data'.$subPattern.'.*'.preg_quote(file_get_contents($file)).'/sm';
 
             $this->assertRegExp($pattern, $request['INPUT']);
+        }
+    }
+
+    /**
+     * Asserts the multi responses.
+     *
+     * @param array $responses The responses.
+     * @param array $requests  The requests.
+     */
+    private function assertMultiResponses(array $responses, array $requests)
+    {
+        $this->assertCount(count($requests), $responses);
+
+        foreach ($responses as $response) {
+            $this->assertTrue($response->hasParameter('request'));
+            $this->assertInstanceOf(
+                'Ivory\HttpAdapter\Message\InternalRequestInterface',
+                $response->getParameter('request')
+            );
+        }
+    }
+
+    /**
+     * Asserts the multi exceptions.
+     *
+     * @param array $exceptions The exceptions.
+     * @param array $requests   The requests.
+     */
+    private function assertMultiExceptions(array $exceptions, array $requests)
+    {
+        $this->assertCount(count($requests), $exceptions);
+
+        foreach ($exceptions as $exception) {
+            $this->assertTrue($exception->hasRequest());
+            $this->assertInstanceOf(
+                'Ivory\HttpAdapter\Message\InternalRequestInterface',
+                $exception->getRequest()
+            );
         }
     }
 
