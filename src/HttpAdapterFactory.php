@@ -47,6 +47,20 @@ class HttpAdapterFactory
         self::ZEND2             => 'Ivory\HttpAdapter\Zend2HttpAdapter',
     );
 
+    private static $guessMap = array(
+        self::GUZZLE_HTTP => '\GuzzleHttp\Client',
+        self::GUZZLE      => '\Guzzle\Http\Client',
+        self::BUZZ        => '\Buzz\Browser',
+        self::ZEND2       => '\Zend\Http\Client',
+        self::ZEND1       => '\Zend_Http_Client',
+        self::CAKE        => '\HttpSocket',
+        self::HTTPFUL     => '\Httpful\Request',
+        self::REACT       => '\React\HttpClient\Request',
+        self::CURL        => 'curl_exec',
+        self::SOCKET      => 'stream_socket_client',
+        self::FOPEN       => 'allow_url_fopen',
+    );
+
     /**
      * Creates an http adapter.
      *
@@ -80,5 +94,31 @@ class HttpAdapterFactory
         }
 
         self::$classes[$name] = $class;
+    }
+
+    /**
+     * guesses the best matching adapter
+     *
+     * @param  string               $preferred
+     * @return HttpAdapterInterface
+     * @throws HttpAdapterException
+     */
+    public static function guess($preferred = self::GUZZLE_HTTP)
+    {
+        $adapter = null;
+        foreach (self::$guessMap as $name => $clientClass) {
+            if (class_exists($clientClass) || function_exists($clientClass) || ini_get($clientClass)) {
+                $adapter = null === $adapter ? self::create($name) : $adapter;
+                if ($name === $preferred) {
+                    return $adapter;
+                }
+            }
+        }
+
+        if (null === $adapter) {
+            throw new HttpAdapterException('no suitable HTTP adapter found');
+        }
+
+        return $adapter;
     }
 }
