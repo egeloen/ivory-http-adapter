@@ -56,12 +56,15 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
         HttpAdapterFactory::register('foo', 'stdClass');
     }
 
-    public function testGuess()
+    /**
+     * @dataProvider httpAdapterProvider
+     */
+    public function testGuess($name, $class)
     {
-        $adapter = HttpAdapterFactory::guess(array(HttpAdapterFactory::SOCKET));
+        $adapter = HttpAdapterFactory::guess(array($name));
 
         $this->assertInstanceOf('Ivory\HttpAdapter\HttpAdapterInterface', $adapter);
-        $this->assertInstanceOf('Ivory\HttpAdapter\SocketHttpAdapter', $adapter);
+        $this->assertInstanceOf($class, $adapter);
     }
 
     /**

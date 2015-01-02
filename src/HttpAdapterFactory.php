@@ -56,7 +56,7 @@ class HttpAdapterFactory
         self::CAKE        => '\HttpSocket',
         self::HTTPFUL     => '\Httpful\Request',
         self::REACT       => '\React\HttpClient\Request',
-        self::CURL        => 'curl_exec',
+        self::CURL        => 'curl_init',
         self::SOCKET      => 'stream_socket_client',
         self::FOPEN       => 'allow_url_fopen',
     );
@@ -103,24 +103,31 @@ class HttpAdapterFactory
      * @return HttpAdapterInterface
      * @throws HttpAdapterException
      */
-    public static function guess($preferred = array())
+    public static function guess(array $preferred = array())
     {
-        $available = function ($class) {
-            return class_exists($class) || function_exists($class) || ini_get($class);
-        };
-
         foreach ($preferred as $preference) {
-            if (isset(self::$guessMap[$preference]) && true === $available(self::$guessMap[$preference])) {
+            if (self::capable($preference)) {
                 return self::create($preference);
             }
         }
 
         foreach (self::$guessMap as $name => $clientClass) {
-            if (true === $available($clientClass)) {
+            if (self::capable($name)) {
                 return self::create($name);
             }
         }
 
         throw new HttpAdapterException('no suitable HTTP adapter found');
+    }
+
+    /**
+     * checks if its possible to create a specified adapter
+     *
+     * @param string $name
+     * @return bool
+     */
+    public static function capable($name)
+    {
+        return isset(self::$guessMap[$name]) && (class_exists(self::$guessMap[$name]) || function_exists(self::$guessMap[$name]) || ini_get(self::$guessMap[$name]));
     }
 }
