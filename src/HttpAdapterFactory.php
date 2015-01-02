@@ -99,18 +99,20 @@ class HttpAdapterFactory
     /**
      * guesses the best matching adapter
      *
-     * @param  string               $preferred
+     * @param  array                $preferred
      * @return HttpAdapterInterface
      * @throws HttpAdapterException
      */
-    public static function guess($preferred = self::GUZZLE_HTTP)
+    public static function guess($preferred = array())
     {
         $available = function ($class) {
             return class_exists($class) || function_exists($class) || ini_get($class);
         };
 
-        if (isset(self::$guessMap[$preferred]) && true === $available(self::$guessMap[$preferred])) {
-            return self::create($preferred);
+        foreach ($preferred as $preference) {
+            if (isset(self::$guessMap[$preference]) && true === $available(self::$guessMap[$preference])) {
+                return self::create($preference);
+            }
         }
 
         foreach (self::$guessMap as $name => $clientClass) {

@@ -161,8 +161,8 @@ use Ivory\HttpAdapter\HttpAdapterFactory;
 
 $httpAdapter = HttpAdapterFactory::guess();
 
-//or with a preference
-$httpAdapter = HttpAdapterFactory::guess('buzz');
+//or with a preference (tries to prefer in this order)
+$httpAdapter = HttpAdapterFactory::guess(array('buzz', 'guzzle'));
 ```
 
 You can additionally register your own http adapters:

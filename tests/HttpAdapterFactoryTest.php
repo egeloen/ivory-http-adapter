@@ -58,7 +58,7 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testGuess()
     {
-        $adapter = HttpAdapterFactory::guess(HttpAdapterFactory::SOCKET);
+        $adapter = HttpAdapterFactory::guess(array(HttpAdapterFactory::SOCKET));
 
         $this->assertInstanceOf('Ivory\HttpAdapter\HttpAdapterInterface', $adapter);
         $this->assertInstanceOf('Ivory\HttpAdapter\SocketHttpAdapter', $adapter);
