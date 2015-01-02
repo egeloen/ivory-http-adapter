@@ -11,7 +11,6 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Httpful\Http;
 use Ivory\HttpAdapter\HttpAdapterFactory;
 
 /**
@@ -59,10 +58,10 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testGuess()
     {
-        $adapter = HttpAdapterFactory::guess(HttpAdapterFactory::REACT);
+        $adapter = HttpAdapterFactory::guess(HttpAdapterFactory::SOCKET);
 
         $this->assertInstanceOf('Ivory\HttpAdapter\HttpAdapterInterface', $adapter);
-        $this->assertInstanceOf('Ivory\HttpAdapter\ReactHttpAdapter', $adapter);
+        $this->assertInstanceOf('Ivory\HttpAdapter\SocketHttpAdapter', $adapter);
     }
 
     /**

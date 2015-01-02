@@ -105,20 +105,20 @@ class HttpAdapterFactory
      */
     public static function guess($preferred = self::GUZZLE_HTTP)
     {
-        $adapter = null;
+        $available = function ($class) {
+            return class_exists($class) || function_exists($class) || ini_get($class);
+        };
+
+        if (isset(self::$guessMap[$preferred]) && true === $available(self::$guessMap[$preferred])) {
+            return self::create($preferred);
+        }
+
         foreach (self::$guessMap as $name => $clientClass) {
-            if (class_exists($clientClass) || function_exists($clientClass) || ini_get($clientClass)) {
-                $adapter = null === $adapter ? self::create($name) : $adapter;
-                if ($name === $preferred) {
-                    return $adapter;
-                }
+            if (true === $available($clientClass)) {
+                return self::create($name);
             }
         }
 
-        if (null === $adapter) {
-            throw new HttpAdapterException('no suitable HTTP adapter found');
-        }
-
-        return $adapter;
+        throw new HttpAdapterException('no suitable HTTP adapter found');
     }
 }
