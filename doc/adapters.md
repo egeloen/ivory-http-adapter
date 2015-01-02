@@ -154,6 +154,31 @@ $httpAdapter = HttpAdapterFactory::create('curl');
 The available adapters are: `buzz`, `cake`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`,
 `react`, `socket`, `zend1` or `zend2`.
 
+If you want to know if an adapter is available on your system, you can use:
+
+``` php
+use Ivory\HttpAdapter\HttpAdapterFactory;
+
+$httpAdapter = HttpAdapterFactory::capable(HttpAdapterFactory::BUZZ);
+```
+
+If you are not aware of the available adapters and just want to pick one, you can use:
+
+``` php
+use Ivory\HttpAdapter\HttpAdapterFactory;
+
+$httpAdapter = HttpAdapterFactory::guess();
+
+// or with a specific preference
+$httpAdapter = HttpAdapterFactory::guess(HttpAdapterFactory::BUZZ);
+
+// or with multiple preferences
+$httpAdapter = HttpAdapterFactory::guess(array(
+    HttpAdapterFactory::BUZZ,
+    HttpAdapterFactory::HTTPFUL,
+));
+```
+
 You can additionally register your own http adapters:
 
 ``` php
@@ -162,3 +187,7 @@ use Ivory\HttpAdapter\HttpAdapterFactory;
 HttpAdapterFactory::register('my_http_adapter', 'My\Own\HttpAdapter');
 $httpAdapter = HttpAdapterFactory::create('my_http_adapter');
 ```
+
+The `register` method takes a third optional parameters which represents the client used. It is used internally in
+order to determine if the adapters is available. It can be either a class name, a function name or an ini option. If
+you don't provide it, we consider your adapter as available.

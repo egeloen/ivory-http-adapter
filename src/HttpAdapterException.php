@@ -143,6 +143,28 @@ class HttpAdapterException extends \Exception
     }
 
     /**
+     * Gets the "HTTP ADAPTER IS NOT USABLE" exception.
+     *
+     * @param string $name The name.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "HTTP ADAPTER IS NOT USABLE" exception.
+     */
+    public static function httpAdapterIsNotUsable($name)
+    {
+        return new self(sprintf('The http adapter "%s" is not usable.', $name));
+    }
+
+    /**
+     * Gets the "HTTP ADAPTERS ARE NOT USABLE" exception.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "HTTP ADAPTERS ARE NOT USABLE" exception.
+     */
+    public static function httpAdaptersAreNotUsable()
+    {
+        return new self('No http adapters are usable.');
+    }
+
+    /**
      * Gets the "HTTP ADAPTER MUST IMPLEMENT INTERFACE" exception.
      *
      * @param string $class The class.

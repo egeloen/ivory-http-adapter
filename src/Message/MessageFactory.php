@@ -112,7 +112,7 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * Prepares an url.
      *
-     * @param string $url The url.
+     * @param  string $url The url.
      * @return string The prepared url.
      */
     private function prepareUrl($url)

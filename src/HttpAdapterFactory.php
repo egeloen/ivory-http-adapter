@@ -32,53 +32,158 @@ class HttpAdapterFactory
     const ZEND2 = 'zend2';
 
     /** @var array */
-    private static $classes = array(
-        self::BUZZ              => 'Ivory\HttpAdapter\BuzzHttpAdapter',
-        self::CAKE              => 'Ivory\HttpAdapter\CakeHttpAdapter',
-        self::CURL              => 'Ivory\HttpAdapter\CurlHttpAdapter',
-        self::FILE_GET_CONTENTS => 'Ivory\HttpAdapter\FileGetContentsHttpAdapter',
-        self::FOPEN             => 'Ivory\HttpAdapter\FopenHttpAdapter',
-        self::GUZZLE            => 'Ivory\HttpAdapter\GuzzleHttpAdapter',
-        self::GUZZLE_HTTP       => 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter',
-        self::HTTPFUL           => 'Ivory\HttpAdapter\HttpfulHttpAdapter',
-        self::REACT             => 'Ivory\HttpAdapter\ReactHttpAdapter',
-        self::SOCKET            => 'Ivory\HttpAdapter\SocketHttpAdapter',
-        self::ZEND1             => 'Ivory\HttpAdapter\Zend1HttpAdapter',
-        self::ZEND2             => 'Ivory\HttpAdapter\Zend2HttpAdapter',
+    private static $adapters = array(
+        self::GUZZLE_HTTP => array(
+            'adapter' => 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter',
+            'client'  => 'GuzzleHttp\Client',
+        ),
+        self::GUZZLE => array(
+            'adapter' => 'Ivory\HttpAdapter\GuzzleHttpAdapter',
+            'client'  => 'Guzzle\Http\Client',
+        ),
+        self::ZEND2 => array(
+            'adapter' => 'Ivory\HttpAdapter\Zend2HttpAdapter',
+            'client'  => 'Zend\Http\Client',
+        ),
+        self::ZEND1 => array(
+            'adapter' => 'Ivory\HttpAdapter\Zend1HttpAdapter',
+            'client'  => 'Zend_Http_Client',
+        ),
+        self::BUZZ => array(
+            'adapter' => 'Ivory\HttpAdapter\BuzzHttpAdapter',
+            'client'  => 'Buzz\Browser',
+        ),
+        self::REACT => array(
+            'adapter' => 'Ivory\HttpAdapter\ReactHttpAdapter',
+            'client'  => 'React\HttpClient\Request',
+        ),
+        self::HTTPFUL => array(
+            'adapter' => 'Ivory\HttpAdapter\HttpfulHttpAdapter',
+            'client'  => 'Httpful\Request',
+        ),
+        self::CAKE => array(
+            'adapter' => 'Ivory\HttpAdapter\CakeHttpAdapter',
+            'client'  => '\HttpSocket',
+        ),
+        self::CURL => array(
+            'adapter' => 'Ivory\HttpAdapter\CurlHttpAdapter',
+            'client'  => 'curl_init',
+        ),
+        self::FOPEN => array(
+            'adapter' => 'Ivory\HttpAdapter\FopenHttpAdapter',
+            'client'  => 'allow_url_fopen',
+        ),
+        self::FILE_GET_CONTENTS => array(
+            'adapter' => 'Ivory\HttpAdapter\FileGetContentsHttpAdapter',
+            'client'  => 'allow_url_fopen',
+        ),
+        self::SOCKET => array(
+            'adapter' => 'Ivory\HttpAdapter\SocketHttpAdapter',
+            'client'  => 'stream_socket_client',
+        ),
     );
+
+    /**
+     * Registers an http adapter.
+     *
+     * @param string      $name   The name.
+     * @param string      $class  The class.
+     * @param string|null $client The client.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If the class does not implement the http adapter interface.
+     */
+    public static function register($name, $class, $client = null)
+    {
+        if (!in_array('Ivory\HttpAdapter\HttpAdapterInterface', class_implements($class), true)) {
+            throw HttpAdapterException::httpAdapterMustImplementInterface($class);
+        }
+
+        $adapter = array('adapter' => $class);
+
+        if ($client !== null) {
+            $adapter['client'] = $client;
+        }
+
+        self::unregister($name);
+        self::$adapters = array_merge(array($name => $adapter), self::$adapters);
+    }
+
+    /**
+     * Unregisters an adapter.
+     *
+     * @param string $name The name.
+     */
+    public static function unregister($name)
+    {
+        unset(self::$adapters[$name]);
+    }
+
+    /**
+     * Checks if its possible to create an adapter.
+     *
+     * @param string $name The name.
+     *
+     * @return boolean TRUE if its possible to create the adapter else FALSE.
+     */
+    public static function capable($name)
+    {
+        return isset(self::$adapters[$name])
+            && (!isset(self::$adapters[$name]['client'])
+            || (isset(self::$adapters[$name]['client'])
+            && (class_exists(self::$adapters[$name]['client'])
+            || function_exists(self::$adapters[$name]['client'])
+            || ini_get(self::$adapters[$name]['client']))));
+    }
 
     /**
      * Creates an http adapter.
      *
      * @param string $name The name.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the http adapter does not exist.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If the http adapter does not exist or is not usable.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterInterface The http adapter.
      */
     public static function create($name)
     {
-        if (!isset(self::$classes[$name])) {
+        if (!isset(self::$adapters[$name])) {
             throw HttpAdapterException::httpAdapterDoesNotExist($name);
         }
 
-        return new self::$classes[$name]();
+        if (!self::capable($name)) {
+            throw HttpAdapterException::httpAdapterIsNotUsable($name);
+        }
+
+        return new self::$adapters[$name]['adapter']();
     }
 
     /**
-     * Registers an http adapter.
+     * Guesses the best matching adapter.
      *
-     * @param string $name  The name.
-     * @param string $class The class.
+     * @param string|array $preferred The preferred adapters.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the class is not an http adapter.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If no adapters can be guessed.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterInterface The guessed adapter.
      */
-    public static function register($name, $class)
+    public static function guess($preferred = array())
     {
-        if (!in_array('Ivory\HttpAdapter\HttpAdapterInterface', class_implements($class), true)) {
-            throw HttpAdapterException::httpAdapterMustImplementInterface($class);
+        $adapters = self::$adapters;
+
+        foreach ((array) $preferred as $preference) {
+            if (self::capable($preference)) {
+                return self::create($preference);
+            }
+
+            unset($adapters[$preference]);
         }
 
-        self::$classes[$name] = $class;
+        foreach (array_keys($adapters) as $name) {
+            if (self::capable($name)) {
+                return self::create($name);
+            }
+        }
+
+        throw HttpAdapterException::httpAdaptersAreNotUsable();
     }
 }

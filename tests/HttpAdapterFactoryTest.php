@@ -12,6 +12,7 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\HttpAdapterFactory;
+use Ivory\Tests\HttpAdapter\Utility\CakeUtility;
 
 /**
  * Http adapter factory test.
@@ -20,6 +21,27 @@ use Ivory\HttpAdapter\HttpAdapterFactory;
  */
 class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    public static function setUpBeforeClass()
+    {
+        CakeUtility::setUp();
+    }
+
+    /**
+     * @dataProvider httpAdapterProvider
+     */
+    public function testCapable($name)
+    {
+        $this->assertTrue(HttpAdapterFactory::capable($name));
+    }
+
+    public function testCapableWithInvalidName()
+    {
+        $this->assertFalse(HttpAdapterFactory::capable('foo'));
+    }
+
     /**
      * @dataProvider httpAdapterProvider
      */
@@ -44,7 +66,36 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
             $class = $this->getMockClass('Ivory\HttpAdapter\HttpAdapterInterface')
         );
 
+        $this->assertTrue(HttpAdapterFactory::capable($name));
         $this->assertInstanceOf($class, HttpAdapterFactory::create($name));
+    }
+
+    public function testRegisterWithClient()
+    {
+        HttpAdapterFactory::register(
+            $name = 'foo',
+            $class = $this->getMockClass('Ivory\HttpAdapter\HttpAdapterInterface'),
+            'stdClass'
+        );
+
+        $this->assertTrue(HttpAdapterFactory::capable($name));
+        $this->assertInstanceOf($class, HttpAdapterFactory::create($name));
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @expectedExceptionMessage The http adapter "foo" is not usable.
+     */
+    public function testRegisterWithInvalidClient()
+    {
+        HttpAdapterFactory::register(
+            $name = 'foo',
+            $this->getMockClass('Ivory\HttpAdapter\HttpAdapterInterface'),
+            'bar'
+        );
+
+        $this->assertFalse(HttpAdapterFactory::capable($name));
+        HttpAdapterFactory::create($name);
     }
 
     /**
@@ -56,6 +107,39 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
         HttpAdapterFactory::register('foo', 'stdClass');
     }
 
+    public function testUnregister()
+    {
+        HttpAdapterFactory::register(
+            $name = 'foo',
+            $this->getMockClass('Ivory\HttpAdapter\HttpAdapterInterface')
+        );
+
+        HttpAdapterFactory::unregister($name);
+
+        $this->assertFalse(HttpAdapterFactory::capable($name));
+    }
+
+    /**
+     * @dataProvider guessProvider
+     */
+    public function testGuess($preferred, $class)
+    {
+        $this->assertInstanceOf($class, HttpAdapterFactory::guess($preferred));
+    }
+
+    /**
+     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @expectedExceptionMessage No http adapters are usable.
+     */
+    public function testGuessWithoutAdapters()
+    {
+        foreach ($this->httpAdapterProvider() as $provider) {
+            HttpAdapterFactory::unregister($provider[0]);
+        }
+
+        HttpAdapterFactory::guess();
+    }
+
     /**
      * Gets the http adapter provider.
      *
@@ -64,32 +148,49 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
     public function httpAdapterProvider()
     {
         $adapters = array(
-            array('buzz', 'Ivory\HttpAdapter\BuzzHttpAdapter'),
-            array('cake', 'Ivory\HttpAdapter\CakeHttpAdapter'),
-            array('file_get_contents', 'Ivory\HttpAdapter\FileGetContentsHttpAdapter'),
-            array('fopen', 'Ivory\HttpAdapter\FopenHttpAdapter'),
-            array('socket', 'Ivory\HttpAdapter\SocketHttpAdapter'),
-            array('zend1', 'Ivory\HttpAdapter\Zend1HttpAdapter'),
+            array(HttpAdapterFactory::BUZZ, 'Ivory\HttpAdapter\BuzzHttpAdapter'),
+            array(HttpAdapterFactory::CAKE, 'Ivory\HttpAdapter\CakeHttpAdapter'),
+            array(HttpAdapterFactory::FILE_GET_CONTENTS, 'Ivory\HttpAdapter\FileGetContentsHttpAdapter'),
+            array(HttpAdapterFactory::FOPEN, 'Ivory\HttpAdapter\FopenHttpAdapter'),
+            array(HttpAdapterFactory::SOCKET, 'Ivory\HttpAdapter\SocketHttpAdapter'),
+            array(HttpAdapterFactory::ZEND1, 'Ivory\HttpAdapter\Zend1HttpAdapter'),
         );
 
         if (function_exists('curl_init')) {
-            $adapters[] = array('curl', 'Ivory\HttpAdapter\CurlHttpAdapter');
-            $adapters[] = array('guzzle', 'Ivory\HttpAdapter\GuzzleHttpAdapter');
-            $adapters[] = array('httpful', 'Ivory\HttpAdapter\HttpfulHttpAdapter');
+            $adapters[] = array(HttpAdapterFactory::CURL, 'Ivory\HttpAdapter\CurlHttpAdapter');
+            $adapters[] = array(HttpAdapterFactory::GUZZLE, 'Ivory\HttpAdapter\GuzzleHttpAdapter');
+            $adapters[] = array(HttpAdapterFactory::HTTPFUL, 'Ivory\HttpAdapter\HttpfulHttpAdapter');
         }
 
         if (class_exists('GuzzleHttp\Client')) {
-            $adapters[] = array('guzzle_http', 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter');
+            $adapters[] = array(HttpAdapterFactory::GUZZLE_HTTP, 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter');
         }
 
         if (class_exists('React\HttpClient\Factory')) {
-            $adapters[] = array('react', 'Ivory\HttpAdapter\ReactHttpAdapter');
+            $adapters[] = array(HttpAdapterFactory::REACT, 'Ivory\HttpAdapter\ReactHttpAdapter');
         }
 
         if (class_exists('Zend\Http\Client')) {
-            $adapters[] = array('zend2', 'Ivory\HttpAdapter\Zend2HttpAdapter');
+            $adapters[] = array(HttpAdapterFactory::ZEND2, 'Ivory\HttpAdapter\Zend2HttpAdapter');
         }
 
         return $adapters;
+    }
+
+    /**
+     * Gets the guess provider.
+     *
+     * @return array The guess provider.
+     */
+    public function guessProvider()
+    {
+        return array_merge(
+            $this->httpAdapterProvider(),
+            array(
+                array(array(), 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter'),
+                array('foo', 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter'),
+                array(array('foo', HttpAdapterFactory::BUZZ), 'Ivory\HttpAdapter\BuzzHttpAdapter'),
+            )
+        );
     }
 }

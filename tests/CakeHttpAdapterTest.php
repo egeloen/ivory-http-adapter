@@ -12,6 +12,7 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\CakeHttpAdapter;
+use Ivory\Tests\HttpAdapter\Utility\CakeUtility;
 
 /**
  * Cake http adapter test.
@@ -21,30 +22,13 @@ use Ivory\HttpAdapter\CakeHttpAdapter;
 class CakeHttpAdapterTest extends AbstractHttpAdapterTest
 {
     /**
-     * {@inheritdoc
+     * {@inheritdoc}
      */
-    protected function setUp()
+    public static function setUpBeforeClass()
     {
-        if (!defined('APP_DIR')) {
-            define('APP_DIR', 'app');
-        }
+        CakeUtility::setUp();
 
-        if (!defined('DS')) {
-            define('DS', DIRECTORY_SEPARATOR);
-        }
-
-        if (!defined('ROOT')) {
-            define('ROOT', realpath(__DIR__.'/../vendor/cakephp/cakephp'));
-        }
-
-        if (!defined('WWW_ROOT')) {
-            define('WWW_ROOT', ROOT.DS.APP_DIR.DS.'webroot'.DS);
-        }
-
-        require_once __DIR__.'/../vendor/cakephp/cakephp/lib/Cake/bootstrap.php';
-        \App::uses('HttpSocket', 'Network/Http');
-
-        parent::setUp();
+        parent::setUpBeforeClass();
     }
 
     public function testGetName()
