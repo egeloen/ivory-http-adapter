@@ -184,12 +184,22 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function guessProvider()
     {
+        if (class_exists('GuzzleHttp\Client')) {
+            $httpAdapter = 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter';
+        } elseif (function_exists('curl_init')) {
+            $httpAdapter = 'Ivory\HttpAdapter\GuzzleHttpAdapter';
+        } elseif (class_exists('Zend\Http\Client')) {
+            $httpAdapter = 'Ivory\HttpAdapter\Zend2HttpAdapter';
+        } else {
+            $httpAdapter = 'Ivory\HttpAdapter\Zend1HttpAdapter';
+        }
+
         return array_merge(
             $this->httpAdapterProvider(),
             array(
-                array(array(), 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter'),
-                array('foo', 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter'),
-                array(array('foo', HttpAdapterFactory::BUZZ), 'Ivory\HttpAdapter\BuzzHttpAdapter'),
+                array(array(), $httpAdapter),
+                array('foo', $httpAdapter),
+                array(array('foo', HttpAdapterFactory::SOCKET), 'Ivory\HttpAdapter\SocketHttpAdapter'),
             )
         );
     }
