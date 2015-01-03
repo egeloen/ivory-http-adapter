@@ -143,34 +143,6 @@ class HistorySubscriberTest extends AbstractSubscriberTest
         $this->historySubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
     }
 
-    public function testMultiExceptionEvent()
-    {
-        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
-
-        $responses = array(
-            $response1 = $this->createResponseMock($request1),
-            $response2 = $this->createResponseMock($request2),
-        );
-
-        $this->timer
-            ->expects($this->exactly(count($responses)))
-            ->method('start')
-            ->withConsecutive(array($request1), array($request2));
-
-        $this->timer
-            ->expects($this->exactly(count($responses)))
-            ->method('stop')
-            ->withConsecutive(array($request1), array($request2));
-
-        $this->journal
-            ->expects($this->exactly(count($responses)))
-            ->method('record')
-            ->withConsecutive(array($request1, $response1), array($request2, $response2));
-
-        $this->historySubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
-        $this->historySubscriber->onMultiException($this->createMultiExceptionEvent(null, array(), $responses));
-    }
-
     /**
      * {@inheritdoc}
      */

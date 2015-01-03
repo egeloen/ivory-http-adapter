@@ -44,6 +44,7 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
 
     public function testDefaultState()
     {
+        $this->assertInstanceOf('Ivory\HttpAdapter\Event\AbstractEvent', $this->event);
         $this->assertSame($this->httpAdapter, $this->event->getHttpAdapter());
     }
 

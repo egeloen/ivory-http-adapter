@@ -126,13 +126,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function onMultiException(MultiExceptionEvent $event)
     {
-        foreach ($event->getException()->getResponses() as $response) {
-            $this->stopwatch->stop(
-                $this->getStopwatchName($event->getHttpAdapter(), $response->getParameter('request'))
-            );
-        }
-
-        foreach ($event->getException()->getExceptions() as $exception) {
+        foreach ($event->getExceptions() as $exception) {
             $this->stopwatch->stop(
                 $this->getStopwatchName($event->getHttpAdapter(), $exception->getRequest())
             );

@@ -117,19 +117,14 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface|null $httpAdapter The http adapter.
      * @param array                                        $exceptions  The exceptions.
-     * @param array                                        $responses   The responses.
      *
      * @return \Ivory\HttpAdapter\Event\MultiExceptionEvent The multi exception event.
      */
     protected function createMultiExceptionEvent(
         HttpAdapterInterface $httpAdapter = null,
-        array $exceptions = array(),
-        array $responses = array()
+        array $exceptions = array()
     ) {
-        return new MultiExceptionEvent(
-            $httpAdapter ?: $this->createHttpAdapterMock(),
-            $this->createMultiExceptionMock($exceptions, $responses)
-        );
+        return new MultiExceptionEvent($httpAdapter ?: $this->createHttpAdapterMock(), $exceptions);
     }
 
     /**

@@ -45,10 +45,9 @@ class MultiPreSendEventTest extends AbstractEventTest
 
     public function testDefaultState()
     {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Event\AbstractEvent', $this->event);
-        $this->assertSame($this->httpAdapter, $this->event->getHttpAdapter());
-        $this->assertTrue($this->event->hasRequests());
-        $this->assertSame($this->requests, $this->event->getRequests());
+        parent::testDefaultState();
+
+        $this->assertRequests($this->requests);
     }
 
     public function testInitialState()

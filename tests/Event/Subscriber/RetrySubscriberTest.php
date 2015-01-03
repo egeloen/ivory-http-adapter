@@ -154,8 +154,8 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         );
 
         $exceptions = array(
-            $exception1 = $this->createExceptionMock($request1, $response1),
-            $exception2 = $this->createExceptionMock($request2, $response2),
+            $this->createExceptionMock($request1, $response1),
+            $this->createExceptionMock($request2, $response2),
         );
 
         $retryResponses = array($this->createResponseMock(), $this->createResponseMock());
@@ -175,18 +175,10 @@ class RetrySubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($requests))
             ->will($this->returnValue($retryResponses));
 
-        $event = $this->createMultiExceptionEvent($httpAdapter, $exceptions);
-        $event->getException()
-            ->expects($this->exactly(count($exceptions)))
-            ->method('removeException')
-            ->withConsecutive(array($exception1), array($exception2));
+        $this->retrySubscriber->onMultiException($event = $this->createMultiExceptionEvent($httpAdapter, $exceptions));
 
-        $event->getException()
-            ->expects($this->once())
-            ->method('addResponses')
-            ->with($this->identicalTo($retryResponses));
-
-        $this->retrySubscriber->onMultiException($event);
+        $this->assertFalse($event->hasExceptions());
+        $this->assertSame($retryResponses, $event->getResponses());
     }
 
     public function testMultiExceptionEventRetriedThrowException()
@@ -197,8 +189,8 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         );
 
         $exceptions = array(
-            $exception1 = $this->createExceptionMock($request1, $response1 = $this->createResponseMock($request1)),
-            $exception2 = $this->createExceptionMock($request2, $response2 = $this->createResponseMock($request2)),
+            $this->createExceptionMock($request1, $response1 = $this->createResponseMock($request1)),
+            $this->createExceptionMock($request2, $response2 = $this->createResponseMock($request2)),
         );
 
         $this->retry
@@ -216,23 +208,10 @@ class RetrySubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($requests))
             ->will($this->throwException($exception = $this->createMultiExceptionMock($exceptions)));
 
-        $event = $this->createMultiExceptionEvent($httpAdapter, $exceptions);
-        $event->getException()
-            ->expects($this->exactly(count($exceptions)))
-            ->method('removeException')
-            ->withConsecutive(array($exception1), array($exception2));
+        $this->retrySubscriber->onMultiException($event = $this->createMultiExceptionEvent($httpAdapter, $exceptions));
 
-        $event->getException()
-            ->expects($this->once())
-            ->method('addExceptions')
-            ->with($this->identicalTo($exceptions));
-
-        $event->getException()
-            ->expects($this->once())
-            ->method('addResponses')
-            ->with($this->identicalTo(array()));
-
-        $this->retrySubscriber->onMultiException($event);
+        $this->assertSame($exceptions, $event->getExceptions());
+        $this->assertFalse($event->hasResponses());
     }
 
     public function testMultiExceptionEventNotRetried()

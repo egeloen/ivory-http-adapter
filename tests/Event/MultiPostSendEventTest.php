@@ -45,20 +45,10 @@ class MultiPostSendEventTest extends AbstractEventTest
 
     public function testDefaultState()
     {
-        $this->assertInstanceOf('Ivory\HttpAdapter\Event\AbstractEvent', $this->event);
-        $this->assertSame($this->httpAdapter, $this->event->getHttpAdapter());
-        $this->assertTrue($this->event->hasResponses());
-        $this->assertSame($this->responses, $this->event->getResponses());
-        $this->assertFalse($this->event->hasExceptions());
-        $this->assertEmpty($this->event->getExceptions());
-    }
+        parent::testDefaultState();
 
-    public function testInitialState()
-    {
-        $this->event = new MultiPostSendEvent($this->httpAdapter, $responses = array());
-
-        $this->assertFalse($this->event->hasResponses());
-        $this->assertSame($responses, $this->event->getResponses());
+        $this->assertResponses($this->responses);
+        $this->assertNoExceptions();
     }
 
     public function testSetResponses()
