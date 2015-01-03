@@ -143,6 +143,18 @@ class HttpAdapterException extends \Exception
     }
 
     /**
+     * Gets the "HTTP ADAPTER NOT USABLE" exception.
+     *
+     * @param string $name The name.
+     *
+     * @return HttpAdapterException The "HTTP ADAPTER NOT USABLE" exception.
+     */
+    public static function httpAdapterNotUsable($name)
+    {
+        return new self(sprintf('The http adapter "%s" not usable.', $name));
+    }
+
+    /**
      * Gets the "HTTP ADAPTER MUST IMPLEMENT INTERFACE" exception.
      *
      * @param string $class The class.
