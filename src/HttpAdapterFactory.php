@@ -129,10 +129,9 @@ class HttpAdapterFactory
     {
         return isset(self::$adapters[$name])
             && (!isset(self::$adapters[$name]['client'])
-            || (isset(self::$adapters[$name]['client'])
-            && (class_exists(self::$adapters[$name]['client'])
+            || (class_exists(self::$adapters[$name]['client'])
             || function_exists(self::$adapters[$name]['client'])
-            || ini_get(self::$adapters[$name]['client']))));
+            || ini_get(self::$adapters[$name]['client'])));
     }
 
     /**

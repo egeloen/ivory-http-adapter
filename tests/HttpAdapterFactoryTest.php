@@ -133,7 +133,16 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testGuessWithoutAdapters()
     {
-        foreach ($this->httpAdapterProvider() as $provider) {
+        $providers = array_merge(
+            $this->httpAdapterProvider(),
+            array(
+                array(HttpAdapterFactory::CURL),
+                array(HttpAdapterFactory::GUZZLE),
+                array(HttpAdapterFactory::HTTPFUL),
+            )
+        );
+
+        foreach ($providers as $provider) {
             HttpAdapterFactory::unregister($provider[0]);
         }
 
