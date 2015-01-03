@@ -23,7 +23,7 @@ interface StatusCodeInterface
     /**
      * Validates a status code.
      *
-     * @param \Ivory\HttpAdapter\Event\StatusCode\ResponseInterface $response The response.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
      *
      * @return boolean TRUE if the status code is valid else FALSE.
      */
