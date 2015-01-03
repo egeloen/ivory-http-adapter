@@ -154,6 +154,17 @@ $httpAdapter = HttpAdapterFactory::create('curl');
 The available adapters are: `buzz`, `cake`, `curl`, `file_get_contents`, `fopen`, `guzzle`, `guzzle_http`, `httpful`,
 `react`, `socket`, `zend1` or `zend2`.
 
+If you are not aware of the used adapter and want to just pick an available one, you can use `guess`:
+
+``` php
+use Ivory\HttpAdapter\HttpAdapterFactory;
+
+$httpAdapter = HttpAdapterFactory::guess();
+
+//or with a preference (tries to prefer in this order)
+$httpAdapter = HttpAdapterFactory::guess(array('buzz', 'guzzle'));
+```
+
 You can additionally register your own http adapters:
 
 ``` php

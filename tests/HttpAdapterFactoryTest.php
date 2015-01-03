@@ -57,6 +57,17 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider httpAdapterProvider
+     */
+    public function testGuess($name, $class)
+    {
+        $adapter = HttpAdapterFactory::guess(array($name));
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\HttpAdapterInterface', $adapter);
+        $this->assertInstanceOf($class, $adapter);
+    }
+
+    /**
      * Gets the http adapter provider.
      *
      * @return array The http adapter provider.
