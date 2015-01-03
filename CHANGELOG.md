@@ -2,6 +2,7 @@
 
 ### 0.6.0 (????-??-??)
 
+ * cd7e18b - [HttpAdapterFactory] Added a guess and capable methods
  * 21055c2 - Add parallel requests support
  * c0fcdfd - Add base url support
  * 77173c4 - Make http_buil_query independant of arg_separator.output ini setting
