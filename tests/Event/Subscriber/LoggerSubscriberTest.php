@@ -103,6 +103,15 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
         $this->assertArrayHasKey(Events::EXCEPTION, $events);
         $this->assertSame(array('onException', 100), $events[Events::EXCEPTION]);
+
+        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
+        $this->assertSame(array('onMultiPreSend', 100), $events[Events::MULTI_PRE_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
+        $this->assertSame(array('onMultiPostSend', 100), $events[Events::MULTI_POST_SEND]);
+
+        $this->assertArrayHasKey(Events::MULTI_EXCEPTION, $events);
+        $this->assertSame(array('onMultiException', 100), $events[Events::MULTI_EXCEPTION]);
     }
 
     public function testPostSendEvent()
@@ -258,48 +267,37 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $requests = array(
             $request1 = $this->createRequestMock(),
             $request2 = $this->createRequestMock(),
-            $request3 = $this->createRequestMock(),
-            $request4 = $this->createRequestMock(),
-        );
-
-        $responses = array(
-            $response1 = $this->createResponseMock($request1),
-            $response2 = $this->createResponseMock($request2),
         );
 
         $exceptions = array(
-            $exception1 = $this->createExceptionMock($request3, $response3 = $this->createResponseMock($request3)),
-            $exception2 = $this->createExceptionMock($request4, $response4 = $this->createResponseMock($request4)),
+            $exception1 = $this->createExceptionMock($request1, $response1 = $this->createResponseMock($request1)),
+            $exception2 = $this->createExceptionMock($request2, $response2 = $this->createResponseMock($request2)),
         );
 
         $this->timer
-            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->expects($this->exactly(count($exceptions)))
             ->method('start')
-            ->withConsecutive(array($request1), array($request2), array($request3), array($request4));
+            ->withConsecutive(array($request1), array($request2));
 
         $this->timer
-            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->expects($this->exactly(count($exceptions)))
             ->method('stop')
-            ->withConsecutive(array($request1), array($request2), array($request3), array($request4));
+            ->withConsecutive(array($request1), array($request2));
 
         $this->formatter
-            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->expects($this->exactly(count($exceptions)))
             ->method('formatRequest')
             ->will($this->returnValueMap(array(
                 array($request1, $formattedRequest1 = 'request1'),
                 array($request2, $formattedRequest2 = 'request2'),
-                array($request3, $formattedRequest3 = 'request3'),
-                array($request4, $formattedRequest4 = 'request4'),
             )));
 
         $this->formatter
-            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->expects($this->exactly(count($exceptions)))
             ->method('formatResponse')
             ->will($this->returnValueMap(array(
                 array($response1, $formattedResponse1 = 'response1'),
                 array($response2, $formattedResponse2 = 'response2'),
-                array($response3, $formattedResponse3 = 'response3'),
-                array($response4, $formattedResponse4 = 'response4'),
             )));
 
         $this->formatter
@@ -311,28 +309,6 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             )));
 
         $this->logger
-            ->expects($this->exactly(count($responses)))
-            ->method('debug')
-            ->withConsecutive(
-                array(
-                    $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
-                    array(
-                        'adapter'  => 'http_adapter',
-                        'request'  => $formattedRequest1,
-                        'response' => $formattedResponse1,
-                    ),
-                ),
-                array(
-                    $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
-                    array(
-                        'adapter'  => 'http_adapter',
-                        'request'  => $formattedRequest2,
-                        'response' => $formattedResponse2,
-                    ),
-                )
-            );
-
-        $this->logger
             ->expects($this->exactly(count($exceptions)))
             ->method('error')
             ->withConsecutive(
@@ -341,8 +317,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                     $this->identicalTo(array(
                         'adapter'   => 'http_adapter',
                         'exception' => $formattedException1,
-                        'request'   => $formattedRequest3,
-                        'response'  => $formattedResponse3,
+                        'request'   => $formattedRequest1,
+                        'response'  => $formattedResponse1,
                     )),
                 ),
                 array(
@@ -350,14 +326,14 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                     $this->identicalTo(array(
                         'adapter'   => 'http_adapter',
                         'exception' => $formattedException2,
-                        'request'   => $formattedRequest4,
-                        'response'  => $formattedResponse4,
+                        'request'   => $formattedRequest2,
+                        'response'  => $formattedResponse2,
                     )),
                 )
             );
 
         $this->loggerSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
-        $this->loggerSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions, $responses));
+        $this->loggerSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
     }
 
     /**

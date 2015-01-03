@@ -148,22 +148,16 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
     public function testMultiExceptionEvent()
     {
         $exceptions = array($this->createExceptionMock(), $this->createExceptionMock());
-        $responses = array(
-            $this->createResponseMock($this->createRequestMock()),
-            $this->createResponseMock($this->createRequestMock()),
-        );
 
         $this->stopwatch
-            ->expects($this->exactly(count(array_merge($exceptions, $responses))))
+            ->expects($this->exactly(count($exceptions)))
             ->method('stop')
             ->withConsecutive(
-                array('ivory.http_adapter.http_adapter (url)'),
-                array('ivory.http_adapter.http_adapter (url)'),
                 array('ivory.http_adapter.http_adapter (url)'),
                 array('ivory.http_adapter.http_adapter (url)')
             );
 
-        $this->stopwatchSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions, $responses));
+        $this->stopwatchSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
     }
 
     /**

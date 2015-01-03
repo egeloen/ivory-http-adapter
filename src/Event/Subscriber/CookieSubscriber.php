@@ -125,11 +125,7 @@ class CookieSubscriber implements EventSubscriberInterface
      */
     public function onMultiException(MultiExceptionEvent $event)
     {
-        foreach ($event->getException()->getResponses() as $response) {
-            $this->cookieJar->extract($response->getParameter('request'), $response);
-        }
-
-        foreach ($event->getException()->getExceptions() as $exception) {
+        foreach ($event->getExceptions() as $exception) {
             if ($exception->hasResponse()) {
                 $this->cookieJar->extract($exception->getRequest(), $exception->getResponse());
             }

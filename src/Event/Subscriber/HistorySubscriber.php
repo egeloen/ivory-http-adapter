@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
 use Ivory\HttpAdapter\Event\MultiPostSendEvent;
 use Ivory\HttpAdapter\Event\MultiPreSendEvent;
 use Ivory\HttpAdapter\Event\PostSendEvent;
@@ -111,18 +110,6 @@ class HistorySubscriber extends AbstractTimerSubscriber
     }
 
     /**
-     * On multi exception event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
-     */
-    public function onMultiException(MultiExceptionEvent $event)
-    {
-        foreach ($event->getException()->getResponses() as $response) {
-            $this->record($response->getParameter('request'), $response);
-        }
-    }
-
-    /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
@@ -132,7 +119,6 @@ class HistorySubscriber extends AbstractTimerSubscriber
             Events::POST_SEND       => array('onPostSend', 100),
             Events::MULTI_PRE_SEND  => array('onMultiPreSend', 100),
             Events::MULTI_POST_SEND => array('onMultiPostSend', 100),
-            Events::MULTI_EXCEPTION => array('onMultiException', 100),
         );
     }
 

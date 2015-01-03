@@ -131,7 +131,7 @@ foreach ($responses as $response) {
 
 The `Ivory\HttpAdapter\Event\Events::MULTI_EXCEPTION` describes the event trigger if an error occurred in a parallel
 requests context. It is represented by the `Ivory\HttpAdapter\Event\MultiExceptionEvent` and wraps the http adapter
-and the multi exception. To get/set them, you can use:
+exceptions. To get/set them, you can use:
 
 ``` php
 use Ivory\HttpAdapter\Event\ExceptionEvent;
@@ -141,19 +141,15 @@ $multiExceptionEvent = new MultiExceptionEvent($httpAdapter, $multiException);
 $httpAdapter = $multiExceptionEvent->getHttpAdapter();
 $multiExceptionEvent->setHttpAdapter($httpAdapter);
 
-$multiException = $multiExceptionEvent->getException();
-$multiExceptionEvent->setException($multiException);
+$exceptions = $multiExceptionEvent->getExceptions();
+$multiExceptionEvent->setExceptions($exceptions);
 ```
 
-The multi exception is an instance of `Ivory\HttpAdapter\MultiHttpAdapterException` which wraps the responses and
-the exceptions. To get/set them, you can use:
+The exception is an instance of `Ivory\HttpAdapter\HttpAdapterException` which wraps the request and the responses if
+available. To get/set them, you can use:
 
 ``` php
-foreach ($mutliException->getResponses() as $response) {
-    $request = $response->getParameter('request');
-}
-
-foreach ($mutliException->getExceptions() as $exception) {
+foreach ($mutliExceptionEvent->getExceptions() as $exception) {
     $request = $exception->getRequest();
 
     if ($exception->hasResponses()) {

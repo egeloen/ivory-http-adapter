@@ -339,71 +339,60 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      */
     private function sendInternalRequests(array $internalRequests, $success = null, $error = null)
     {
-        try {
+        if (!empty($internalRequests) && $this->configuration->hasEventDispatcher()) {
+            $this->configuration->getEventDispatcher()->dispatch(
+                Events::MULTI_PRE_SEND,
+                $multiPreSendEvent = new MultiPreSendEvent($this, $internalRequests)
+            );
+
+            $internalRequests = $multiPreSendEvent->getRequests();
+        }
+
+        $responses = array();
+        $exceptions = array();
+
+        $successHandler = function (ResponseInterface $response) use (&$responses, $success) {
+            $responses[] = $response;
+
+            if (is_callable($success)) {
+                call_user_func($success, $response);
+            }
+        };
+
+        $errorHandler = function (HttpAdapterException $exception) use (&$exceptions, $error) {
+            $exceptions[] = $exception;
+
+            if (is_callable($error)) {
+                call_user_func($error, $exception);
+            }
+        };
+
+        $this->doSendInternalRequests($internalRequests, $successHandler, $errorHandler);
+
+        if (!empty($responses) && $this->configuration->hasEventDispatcher()) {
+            $this->configuration->getEventDispatcher()->dispatch(
+                Events::MULTI_POST_SEND,
+                $postSendEvent = new MultiPostSendEvent($this, $responses)
+            );
+
+            $exceptions = array_merge($exceptions, $postSendEvent->getExceptions());
+            $responses = $postSendEvent->getResponses();
+        }
+
+        if (!empty($exceptions)) {
             if ($this->configuration->hasEventDispatcher()) {
                 $this->configuration->getEventDispatcher()->dispatch(
-                    Events::MULTI_PRE_SEND,
-                    $multiPreSendEvent = new MultiPreSendEvent($this, $internalRequests)
+                    Events::MULTI_EXCEPTION,
+                    $exceptionEvent = new MultiExceptionEvent($this, $exceptions)
                 );
 
-                $internalRequests = $multiPreSendEvent->getRequests();
+                $responses = array_merge($responses, $exceptionEvent->getResponses());
+                $exceptions = $exceptionEvent->getExceptions();
             }
-
-            $responses = array();
-            $exceptions = array();
-
-            $successHandler = function (ResponseInterface $response) use (&$responses, $success) {
-                $responses[] = $response;
-
-                if (is_callable($success)) {
-                    call_user_func($success, $response);
-                }
-            };
-
-            $errorHandler = function (HttpAdapterException $exception) use (&$exceptions, $error) {
-                $exceptions[] = $exception;
-
-                if (is_callable($error)) {
-                    call_user_func($error, $exception);
-                }
-            };
-
-            $this->doSendInternalRequests($internalRequests, $successHandler, $errorHandler);
 
             if (!empty($exceptions)) {
                 throw new MultiHttpAdapterException($exceptions, $responses);
             }
-
-            if ($this->configuration->hasEventDispatcher()) {
-                $this->configuration->getEventDispatcher()->dispatch(
-                    Events::MULTI_POST_SEND,
-                    $postSendEvent = new MultiPostSendEvent($this, $responses)
-                );
-
-                if ($postSendEvent->hasExceptions()) {
-                    throw new MultiHttpAdapterException(
-                        $postSendEvent->getExceptions(),
-                        $postSendEvent->getResponses()
-                    );
-                }
-
-                $responses = $postSendEvent->getResponses();
-            }
-        } catch (MultiHttpAdapterException $e) {
-            if ($this->configuration->hasEventDispatcher()) {
-                $this->configuration->getEventDispatcher()->dispatch(
-                    Events::MULTI_EXCEPTION,
-                    $exceptionEvent = new MultiExceptionEvent($this, $e)
-                );
-
-                if (!$exceptionEvent->getException()->hasExceptions()) {
-                    return $exceptionEvent->getException()->getResponses();
-                }
-
-                $e = $exceptionEvent->getException();
-            }
-
-            throw $e;
         }
 
         return $responses;

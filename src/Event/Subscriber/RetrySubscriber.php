@@ -85,10 +85,10 @@ class RetrySubscriber implements EventSubscriberInterface
     {
         $retryRequests = array();
 
-        foreach ($event->getException()->getExceptions() as $exception) {
+        foreach ($event->getExceptions() as $exception) {
             if ($this->retry->retry($exception->getRequest(), false)) {
                 $retryRequests[] = $exception->getRequest();
-                $event->getException()->removeException($exception);
+                $event->removeException($exception);
             }
         }
 
@@ -97,10 +97,10 @@ class RetrySubscriber implements EventSubscriberInterface
         }
 
         try {
-            $event->getException()->addResponses($event->getHttpAdapter()->sendRequests($retryRequests));
+            $event->addResponses($event->getHttpAdapter()->sendRequests($retryRequests));
         } catch (MultiHttpAdapterException $e) {
-            $event->getException()->addResponses($e->getResponses());
-            $event->getException()->addExceptions($e->getExceptions());
+            $event->addResponses($e->getResponses());
+            $event->addExceptions($e->getExceptions());
         }
     }
 

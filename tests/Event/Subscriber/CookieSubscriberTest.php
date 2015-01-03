@@ -169,33 +169,26 @@ class CookieSubscriberTest extends AbstractSubscriberTest
     {
         $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
 
-        $responses = array(
-            $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
-            $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
-        );
-
         $exceptions = array(
             $this->createExceptionMock(
-                $request3 = $this->createRequestMock(),
-                $response3 = $this->createResponseMock($request3)
+                $request1 = $this->createRequestMock(),
+                $response1 = $this->createResponseMock($request1)
             ),
             $this->createExceptionMock(
-                $request4 = $this->createRequestMock(),
-                $response4 = $this->createResponseMock($request4)
+                $request2 = $this->createRequestMock(),
+                $response2 = $this->createResponseMock($request2)
             ),
         );
 
         $cookieJar
-            ->expects($this->exactly(count(array_merge($responses, $exceptions))))
+            ->expects($this->exactly(count($exceptions)))
             ->method('extract')
             ->withConsecutive(
                 array($request1, $response1),
-                array($request2, $response2),
-                array($request3, $response3),
-                array($request4, $response4)
+                array($request2, $response2)
             );
 
-        $this->cookieSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions, $responses));
+        $this->cookieSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
     }
 
     /**

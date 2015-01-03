@@ -134,11 +134,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     public function onMultiException(MultiExceptionEvent $event)
     {
-        foreach ($event->getException()->getResponses() as $response) {
-            $this->debug($event->getHttpAdapter(), $response->getParameter('request'), $response);
-        }
-
-        foreach ($event->getException()->getExceptions() as $exception) {
+        foreach ($event->getExceptions() as $exception) {
             $this->error($event->getHttpAdapter(), $exception);
         }
     }
