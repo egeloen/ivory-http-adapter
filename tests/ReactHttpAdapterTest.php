@@ -48,6 +48,18 @@ class ReactHttpAdapterTest extends AbstractHttpAdapterTest
         $this->markTestSkipped();
     }
 
+    public function testSendWithSelfSignedSslCertificate()
+    {
+        // React does not allow to disable SSL verification
+        $this->markTestSkipped();
+    }
+
+    public function testSendWithInvalidSslCertificate()
+    {
+        // React does not allow to disable SSL verification
+        $this->markTestSkipped();
+    }
+
     /**
      * {@inheritdoc}
      */

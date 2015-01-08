@@ -67,6 +67,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
     {
         $this->browser->getClient()->setTimeout($this->getConfiguration()->getTimeout());
         $this->browser->getClient()->setMaxRedirects(0);
+        $this->browser->getClient()->setVerifyPeer($this->getConfiguration()->getSslVerifyPeer());
 
         $request = $this->browser->getMessageFactory()->createRequest(
             $internalRequest->getMethod(),

@@ -62,6 +62,20 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
             ->setHeaders($this->prepareHeaders($internalRequest))
             ->setRawData($this->prepareBody($internalRequest));
 
+        if ($this->client->getAdapter() instanceof \Zend_Http_Client_Adapter_Socket) {
+            $this->client->getAdapter()->setStreamContext(array(
+                'ssl' => array(
+                    'verify_peer'       => $this->getConfiguration()->getSslVerifyPeer(),
+                    'allow_self_signed' => !$this->getConfiguration()->getSslVerifyPeer(),
+                ),
+            ));
+        } elseif ($this->client->getAdapter() instanceof \Zend_Http_Client_Adapter_Curl) {
+            $this->client->getAdapter()->setCurlOption(
+                CURLOPT_SSL_VERIFYPEER,
+                $this->getConfiguration()->getSslVerifyPeer()
+            );
+        }
+
         try {
             $response = $this->client->request();
         } catch (\Exception $e) {

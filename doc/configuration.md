@@ -120,3 +120,13 @@ $configuration->setBaseUrl('http://api.example.com');
 // Example
 $response = $http->get('/path/to/resource');
 ```
+
+## SSL peer verification
+
+The SSL peer verification flag allows to define if a peer's SSL certificate should be checked for validity or 
+not (default: true). If you want to get/set it, you can use:
+
+``` php
+$sslVerifyPeer = $configuration->getSslVerifyPeer();
+$configuration->setSslVerifyPeer(false);
+```

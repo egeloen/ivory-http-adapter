@@ -29,6 +29,16 @@ class PHPUnitUtility
     }
 
     /**
+     * Gets the ssl uri.
+     *
+     * @return string|boolean The ssl uri or FALSE if there is none.
+     */
+    public static function getSslUri()
+    {
+        return isset($_SERVER['TEST_SSL_SERVER']) ? $_SERVER['TEST_SSL_SERVER'] : false;
+    }
+
+    /**
      * Gets the file.
      *
      * @param boolean     $tmp  TRUE if the file should be in the "/tmp" directory else FALSE.

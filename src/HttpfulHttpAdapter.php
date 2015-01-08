@@ -50,6 +50,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
         $request = Request::init($internalRequest->getMethod())
             ->whenError(function () {})
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
+            ->strictSSL($this->getConfiguration()->getSslVerifyPeer())
             ->timeout($this->getConfiguration()->getTimeout())
             ->uri($uri = (string) $internalRequest->getUri())
             ->addHeaders($this->prepareHeaders($internalRequest))

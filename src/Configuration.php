@@ -43,6 +43,9 @@ class Configuration implements ConfigurationInterface
     /** @var string */
     private $userAgent;
 
+    /** @var boolean */
+    private $sslVerifyPeer = true;
+
     /**
      * Creates an http adapter.
      *
@@ -197,5 +200,21 @@ class Configuration implements ConfigurationInterface
     public function setBaseUri($baseUri)
     {
         $this->messageFactory->setBaseUri($baseUri);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSslVerifyPeer($verify)
+    {
+        $this->sslVerifyPeer = $verify;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSslVerifyPeer()
+    {
+        return $this->sslVerifyPeer;
     }
 }

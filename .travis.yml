@@ -11,6 +11,7 @@ php:
 env:
     global:
         - TEST_SERVER=http://127.0.0.1:10000/server.php
+        - TEST_SSL_SERVER=https://127.0.0.1:11000/server.php
         - PHP_FCGI_CHILDREN=10
         - SYMFONY_VERSION=2.3.*
         - COMPOSER_PREFER_LOWEST=false
@@ -18,17 +19,18 @@ env:
 
 cache:
     apt: true
-    directories:
-        - vendor
-        - $HOME/.composer/cache
 
 install:
     - sudo apt-get update
     - sudo apt-get install apache2 libapache2-mod-fastcgi
     - sudo a2enmod actions fastcgi alias
     - if [[ "$TRAVIS_PHP_VERSION" != hhvm* ]]; then sudo cp -f tests/Fixtures/etc/apache-php.conf /etc/apache2/sites-available/default; fi
+    - if [[ "$TRAVIS_PHP_VERSION" != hhvm* ]]; then sudo cp -f tests/Fixtures/etc/apache-php-ssl.conf /etc/apache2/sites-available/ssl; fi
     - if [[ "$TRAVIS_PHP_VERSION" = hhvm* ]]; then sudo cp -f tests/Fixtures/etc/apache-hhvm.conf /etc/apache2/sites-available/default; fi
     - sudo sed -i "s?%SERVER_DIR%?$(pwd)/tests/Fixtures?g" /etc/apache2/sites-available/default
+    - sudo sed -i "s?%SERVER_DIR%?$(pwd)/tests/Fixtures?g" /etc/apache2/sites-available/ssl
+    - sudo a2enmod ssl
+    - sudo a2ensite ssl
     - sudo service apache2 restart
     - if [[ "$TRAVIS_PHP_VERSION" != hhvm* ]]; then printf "\n" | pecl install propro; fi
     - if [[ "$TRAVIS_PHP_VERSION" != hhvm* ]]; then printf "\n" | pecl install raphf; fi

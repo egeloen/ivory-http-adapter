@@ -15,10 +15,11 @@
         "phly/http": "^0.12.0"
     },
     "require-dev": {
-        "cakephp/cakephp": "^3.0.3@dev",
+        "cakephp/cakephp": "dev-network-http-ssl",
         "ext-curl": "*",
         "guzzle/guzzle": "^3.9.2",
         "guzzlehttp/guzzle": "^4.1.4|^5.0",
+        "guzzlehttp/ringphp": "dev-stream-verify as 1.0.x-dev",
         "guzzlehttp/streams": "^1.5|^2.0|^3.0",
         "kriswallsmith/buzz": "^0.13",
         "nategood/httpful": "^0.2.17",
@@ -36,6 +37,14 @@
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/phpunit-mock-objects.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/egeloen/cakephp.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/egeloen/RingPHP.git"
         }
     ],
     "suggest": {

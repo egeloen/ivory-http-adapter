@@ -8,6 +8,7 @@
     </testsuites>
     <php>
         <!-- <server name="TEST_SERVER" value="http://127.0.0.1:10000/server.php" /> -->
+        <!-- <server name="TEST_SSL_SERVER" value="https://127.0.0.1:11000/server.php" /> -->
     </php>
     <filter>
         <whitelist>
