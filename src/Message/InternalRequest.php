@@ -52,10 +52,10 @@ class InternalRequest extends Request implements InternalRequestInterface
     ) {
         parent::__construct($url, $method, $protocolVersion, $headers, null, $parameters);
 
-        if (is_string($datas)) {
-            $this->setRawDatas($datas);
-        } else {
+        if (is_array($datas)) {
             $this->setDatas($datas);
+        } else {
+            $this->setRawDatas($datas);
         }
 
         $this->setFiles($files);
