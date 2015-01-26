@@ -48,14 +48,14 @@ interface JournalInterface extends \Countable, \IteratorAggregate
     /**
      * Gets the entries.
      *
-     * @return array The entries.
+     * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface[] The entries.
      */
     public function getEntries();
 
     /**
      * Sets the entries.
      *
-     * @param array $entries The entries.
+     * @param \Ivory\HttpAdapter\Event\History\JournalEntryInterface[] $entries The entries.
      *
      * @return void No return value.
      */
@@ -64,7 +64,7 @@ interface JournalInterface extends \Countable, \IteratorAggregate
     /**
      * Adds the entries.
      *
-     * @param array $entries The entries.
+     * @param \Ivory\HttpAdapter\Event\History\JournalEntryInterface[] $entries The entries.
      *
      * @return void No return value.
      */
@@ -73,7 +73,7 @@ interface JournalInterface extends \Countable, \IteratorAggregate
     /**
      * Removes the entries.
      *
-     * @param array $entries The entries.
+     * @param \Ivory\HttpAdapter\Event\History\JournalEntryInterface[] $entries The entries.
      *
      * @return void No return value.
      */
