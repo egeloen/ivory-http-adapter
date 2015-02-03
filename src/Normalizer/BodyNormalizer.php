@@ -32,7 +32,7 @@ class BodyNormalizer extends AbstractUninstantiableAsset
     public static function normalize($body, $method)
     {
         if ($method === RequestInterface::METHOD_HEAD || empty($body)) {
-            return;
+            return null;
         }
 
         if (is_callable($body)) {
