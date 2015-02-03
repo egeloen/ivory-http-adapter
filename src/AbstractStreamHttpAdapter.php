@@ -26,7 +26,7 @@ use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
 {
     /**
-     * {@inhertdoc}
+     * {@inheritdoc}
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {

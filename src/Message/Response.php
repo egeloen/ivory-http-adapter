@@ -29,12 +29,12 @@ class Response extends AbstractMessage implements ResponseInterface
     /**
      * Creates a response.
      *
-     * @param integer                                             $statusCode      The status code.
-     * @param string                                              $reasonPhrase    The reason phrase.
-     * @param float                                               $protocolVersion The protocol version.
-     * @param array                                               $headers         The headers.
-     * @param \Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
-     * @param array                                               $parameters      The parameters.
+     * @param integer                                    $statusCode      The status code.
+     * @param string                                     $reasonPhrase    The reason phrase.
+     * @param string                                     $protocolVersion The protocol version.
+     * @param array                                      $headers         The headers.
+     * @param \Psr\Http\Message\StreamableInterface|null $body            The body.
+     * @param array                                      $parameters      The parameters.
      */
     public function __construct(
         $statusCode = 200,

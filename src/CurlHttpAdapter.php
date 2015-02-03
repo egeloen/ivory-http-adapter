@@ -181,7 +181,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
      * @param string|boolean|null                                 $data            The data.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occured.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */

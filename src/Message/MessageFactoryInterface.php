@@ -21,12 +21,12 @@ interface MessageFactoryInterface
     /**
      * Creates a request.
      *
-     * @param string|object                                                       $url             The url.
-     * @param string                                                              $method          The method.
-     * @param float                                                               $protocolVersion The protocol version.
-     * @param array                                                               $headers         The headers.
-     * @param resource|string|\Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
-     * @param array                                                               $parameters      The parameters.
+     * @param string|object                                              $url             The url.
+     * @param string                                                     $method          The method.
+     * @param string                                                     $protocolVersion The protocol version.
+     * @param array                                                      $headers         The headers.
+     * @param resource|string|\Psr\Http\Message\StreamableInterface|null $body            The body.
+     * @param array                                                      $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
      */
@@ -53,7 +53,7 @@ interface MessageFactoryInterface
      *
      * @param string|object $url             The url.
      * @param string        $method          The method.
-     * @param float         $protocolVersion The protocol version.
+     * @param string        $protocolVersion The protocol version.
      * @param array         $headers         The headers.
      * @param array|string  $datas           The datas.
      * @param array         $files           The files.
@@ -83,12 +83,12 @@ interface MessageFactoryInterface
     /**
      * Creates a response.
      *
-     * @param integer                                                             $statusCode      The status code.
-     * @param string                                                              $reasonPhrase    The reason phrase.
-     * @param float                                                               $protocolVersion The protocol version.
-     * @param array                                                               $headers         The headers.
-     * @param resource|string|\Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
-     * @param array                                                               $parameters      The parameters.
+     * @param integer                                                    $statusCode      The status code.
+     * @param string                                                     $reasonPhrase    The reason phrase.
+     * @param string                                                     $protocolVersion The protocol version.
+     * @param array                                                      $headers         The headers.
+     * @param resource|string|\Psr\Http\Message\StreamableInterface|null $body            The body.
+     * @param array                                                      $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */

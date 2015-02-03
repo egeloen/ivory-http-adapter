@@ -273,7 +273,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occured.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
@@ -331,7 +331,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      *
      * @param array $internalRequests The internal requests.
      *
-     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occured.
+     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred.
      *
      * @return array The responses.
      */

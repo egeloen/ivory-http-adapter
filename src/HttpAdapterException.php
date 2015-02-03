@@ -30,7 +30,7 @@ class HttpAdapterException extends \Exception
     /**
      * Checks if there is a request.
      *
-     * @return boolean TRUE if there is a request ekse FALSE.
+     * @return boolean TRUE if there is a request else FALSE.
      */
     public function hasRequest()
     {

@@ -42,7 +42,7 @@ class MultiHttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
     public function testDefaultState()
     {
         $this->assertSame(
-            'An error occured when sending multiple requests.',
+            'An error occurred when sending multiple requests.',
             $this->multiHttpAdapterException->getMessage()
         );
 

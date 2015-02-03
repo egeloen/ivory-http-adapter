@@ -72,7 +72,7 @@ interface BasicAuthInterface
     /**
      * Authenticates a request.
      *
-     * @param \Ivory\HttpAdapter\Event\BasicAuth\InternalRequestInterface $internalRequest The internal request.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      */
     public function authenticate(InternalRequestInterface $internalRequest);
 }

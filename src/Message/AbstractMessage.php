@@ -38,10 +38,10 @@ abstract class AbstractMessage implements MessageInterface
     /**
      * Creates a message.
      *
-     * @param float                                               $protocolVersion The protocol version.
-     * @param array                                               $headers         The headers.
-     * @param \Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
-     * @param array                                               $parameters      The parameters.
+     * @param string                                     $protocolVersion The protocol version.
+     * @param array                                      $headers         The headers.
+     * @param \Psr\Http\Message\StreamableInterface|null $body            The body.
+     * @param array                                      $parameters      The parameters.
      */
     public function __construct(
         $protocolVersion = self::PROTOCOL_VERSION_1_1,
