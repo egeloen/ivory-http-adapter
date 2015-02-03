@@ -83,6 +83,9 @@ if you want to learn more about the `Ivory\HttpAdapter\Message\InternalRequest`,
 
 ## Send multiple requests
 
+The main purpose of this method is performance! Instead of sending requests serially, the library will send them in
+parallel if the sub adapter is able to do it otherwise, it will fallback on a serial implementation.
+
 ``` php
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
@@ -109,27 +112,3 @@ try {
     $exceptions = $e->getExceptions();
 }
 ```
-
-You can additionaly pass two callables which will be triggered as soon as a request is completed:
-
-``` php
-use Ivory\HttpAdapter\HttpAdapterException;
-use Ivory\HttpAdapter\Message\ResponseInterface;
-use Ivory\HttpAdapter\MultiHttpAdapterException;
-
-$success = function (ResponseInterface $response) {
-    $request = response->getParameter('request');
-};
-
-$error = function (HttpAdapterException $exception) {
-    $request = $exception->getRequest();
-
-    if ($exception->hasResponse()) {
-        $response = $exception->getResponse();
-    }
-};
-
-$responses = $httpAdapter->sendRequests($requests, $success, $error);
-```
-
-The method will not throw an exception if you pass the `error` callable.

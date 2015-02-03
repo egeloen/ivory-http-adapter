@@ -178,15 +178,13 @@ interface HttpAdapterInterface
     /**
      * Sends requests.
      *
-     * @param array         $requests The requests.
-     * @param callable|null $success  The success callable.
-     * @param callable|null $error    The error callable.
+     * @param array $requests The requests.
      *
      * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occured when you don't provide the error callable.
      *
      * @return array $responses The responses.
      */
-    public function sendRequests(array $requests, $success = null, $error = null);
+    public function sendRequests(array $requests);
 
     /**
      * Gets the name.

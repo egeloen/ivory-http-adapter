@@ -242,61 +242,18 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendRequests(array $requests)
     {
-        $responses = array();
-        $exceptions = array();
-
-        $success = function ($response) use (&$responses) {
-            $responses[] = $response;
-        };
-
-        $error = function ($exception) use (&$exceptions) {
-            $exceptions[] = $exception;
-        };
-
-        $this->assertMultiResponses($this->httpAdapter->sendRequests($requests, $success, $error), $requests);
-        $this->assertMultiResponses($responses, $requests);
-        $this->assertEmpty($exceptions);
+        $this->assertMultiResponses($this->httpAdapter->sendRequests($requests), $requests);
     }
 
     /**
      * @dataProvider erroredRequestsProvider
      */
-    public function testSendErroredRequestsWithErrorCallable(array $requests, array $erroredRequests)
+    public function testSendErroredRequests(array $requests, array $erroredRequests)
     {
-        $responses = array();
-        $exceptions = array();
-
-        $success = function ($response) use (&$responses) {
-            $responses[] = $response;
-        };
-
-        $error = function ($exception) use (&$exceptions) {
-            $exceptions[] = $exception;
-        };
-
-        $result = $this->httpAdapter->sendRequests(array_merge($requests, $erroredRequests), $success, $error);
-
-        $this->assertSame($responses, $result);
-        $this->assertMultiResponses($responses, $requests);
-        $this->assertMultiExceptions($exceptions, $erroredRequests);
-    }
-
-    /**
-     * @dataProvider erroredRequestsProvider
-     */
-    public function testSendErroredRequestsWithoutErrorCallable(array $requests, array $erroredRequests)
-    {
-        $responses = array();
-
-        $success = function ($response) use (&$responses) {
-            $responses[] = $response;
-        };
-
         try {
-            $this->httpAdapter->sendRequests(array_merge($requests, $erroredRequests), $success);
+            $this->httpAdapter->sendRequests(array_merge($requests, $erroredRequests));
             $this->fail();
         } catch (MultiHttpAdapterException $e) {
-            $this->assertSame($e->getResponses(), $responses);
             $this->assertMultiResponses($e->getResponses(), $requests);
             $this->assertMultiExceptions($e->getExceptions(), $erroredRequests);
         }

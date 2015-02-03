@@ -101,7 +101,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
-    public function sendRequests(array $requests, $success = null, $error = null)
+    public function sendRequests(array $requests)
     {
         $exceptions = array();
 
@@ -132,13 +132,13 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
         }
 
         try {
-            $responses = $this->sendInternalRequests($requests, $success, $error);
+            $responses = $this->sendInternalRequests($requests);
         } catch (MultiHttpAdapterException $e) {
             $exceptions = array_merge($exceptions, $e->getExceptions());
             $responses = $e->getResponses();
         }
 
-        if (!is_callable($error) && !empty($exceptions)) {
+        if (!empty($exceptions)) {
             throw new MultiHttpAdapterException($exceptions, $responses);
         }
 
@@ -329,15 +329,13 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * Sends internal requests.
      *
-     * @param array         $internalRequests The internal requests.
-     * @param callable|null $success          The success callable.
-     * @param callable|null $error            The error callable.
+     * @param array $internalRequests The internal requests.
      *
      * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occured.
      *
      * @return array The responses.
      */
-    private function sendInternalRequests(array $internalRequests, $success = null, $error = null)
+    private function sendInternalRequests(array $internalRequests)
     {
         if (!empty($internalRequests) && $this->configuration->hasEventDispatcher()) {
             $this->configuration->getEventDispatcher()->dispatch(
@@ -351,20 +349,12 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
         $responses = array();
         $exceptions = array();
 
-        $successHandler = function (ResponseInterface $response) use (&$responses, $success) {
+        $successHandler = function (ResponseInterface $response) use (&$responses) {
             $responses[] = $response;
-
-            if (is_callable($success)) {
-                call_user_func($success, $response);
-            }
         };
 
-        $errorHandler = function (HttpAdapterException $exception) use (&$exceptions, $error) {
+        $errorHandler = function (HttpAdapterException $exception) use (&$exceptions) {
             $exceptions[] = $exception;
-
-            if (is_callable($error)) {
-                call_user_func($error, $exception);
-            }
         };
 
         $this->doSendInternalRequests($internalRequests, $successHandler, $errorHandler);
