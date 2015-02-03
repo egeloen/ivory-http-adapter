@@ -67,14 +67,14 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
     /**
      * Gets the cookies.
      *
-     * @return array The cookies.
+     * @return \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] The cookies.
      */
     public function getCookies();
 
     /**
      * Sets the cookies.
      *
-     * @param array $cookies The cookies.
+     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] $cookies The cookies.
      *
      * @return void No return value.
      */
@@ -83,7 +83,7 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
     /**
      * Adds the cookies.
      *
-     * @param array $cookies The cookies.
+     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] $cookies The cookies.
      *
      * @return void No return value.
      */
@@ -92,7 +92,7 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
     /**
      * Removes the cookies.
      *
-     * @param array $cookies The cookies.
+     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] $cookies The cookies.
      *
      * @return void No return value.
      */

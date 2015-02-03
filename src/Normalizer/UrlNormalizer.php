@@ -26,6 +26,8 @@ class UrlNormalizer extends AbstractUninstantiableAsset
      *
      * @param string|object $url The url.
      *
+     * @throws HttpAdapterException If the url is not valid.
+     *
      * @return string The normalized url.
      */
     public static function normalize($url)

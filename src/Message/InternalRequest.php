@@ -35,7 +35,7 @@ class InternalRequest extends Request implements InternalRequestInterface
      *
      * @param string|object $url             The url.
      * @param string        $method          The method.
-     * @param float         $protocolVersion The protocol version.
+     * @param string        $protocolVersion The protocol version.
      * @param array         $headers         The headers.
      * @param array|string  $datas           The datas.
      * @param array         $files           The files.

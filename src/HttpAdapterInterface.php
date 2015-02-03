@@ -182,7 +182,7 @@ interface HttpAdapterInterface
      * @param callable|null $success  The success callable.
      * @param callable|null $error    The error callable.
      *
-     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occured when you don't provide the error callable.
+     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred when you don't provide the error callable.
      *
      * @return array $responses The responses.
      */

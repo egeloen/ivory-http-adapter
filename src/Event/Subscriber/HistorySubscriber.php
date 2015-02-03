@@ -126,7 +126,7 @@ class HistorySubscriber extends AbstractTimerSubscriber
      * Records a journal entry.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Zend\Stdlib\ResponseInterface                      $response        The response.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
      */
     private function record(InternalRequestInterface $internalRequest, ResponseInterface $response)
     {

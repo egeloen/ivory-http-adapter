@@ -22,17 +22,17 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
  */
 class MultiPostSendEvent extends AbstractEvent
 {
-    /** @var array */
+    /** @var \Ivory\HttpAdapter\Message\ResponseInterface[] */
     private $responses;
 
-    /** @var array */
+    /** @var \Ivory\HttpAdapter\HttpAdapterException[] */
     private $exceptions = array();
 
     /**
      * Creates a multi post send event.
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
-     * @param array                                   $responses   The responses.
+     * @param \Ivory\HttpAdapter\HttpAdapterInterface        $httpAdapter The http adapter.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses   The responses.
      */
     public function __construct(HttpAdapterInterface $httpAdapter, array $responses)
     {
@@ -62,7 +62,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Gets the responses.
      *
-     * @return array The responses.
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface[] The responses.
      */
     public function getResponses()
     {
@@ -72,7 +72,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Sets the responses.
      *
-     * @param array $responses The responses.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses The responses.
      */
     public function setResponses(array $responses)
     {
@@ -83,7 +83,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Adds the responses.
      *
-     * @param array $responses The responses.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses The responses.
      */
     public function addResponses(array $responses)
     {
@@ -95,7 +95,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Removes the responses.
      *
-     * @param array $responses The responses.
+     * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses The responses.
      */
     public function removeResponses(array $responses)
     {
@@ -158,7 +158,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Gets the exceptions.
      *
-     * @return array The exceptions.
+     * @return \Ivory\HttpAdapter\HttpAdapterException[] The exceptions.
      */
     public function getExceptions()
     {
@@ -168,7 +168,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Sets the exceptions.
      *
-     * @param array $exceptions The exceptions.
+     * @param \Ivory\HttpAdapter\HttpAdapterException[] $exceptions The exceptions.
      */
     public function setExceptions(array $exceptions)
     {
@@ -179,7 +179,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Adds the exceptions.
      *
-     * @param array $exceptions The exceptions.
+     * @param \Ivory\HttpAdapter\HttpAdapterException[] $exceptions The exceptions.
      */
     public function addExceptions(array $exceptions)
     {
@@ -191,7 +191,7 @@ class MultiPostSendEvent extends AbstractEvent
     /**
      * Removes the exceptions.
      *
-     * @param array $exceptions The exceptions.
+     * @param \Ivory\HttpAdapter\HttpAdapterException[] $exceptions The exceptions.
      */
     public function removeExceptions(array $exceptions)
     {

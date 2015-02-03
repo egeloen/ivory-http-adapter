@@ -27,7 +27,7 @@ class CookieJar implements CookieJarInterface
     /** @var \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface */
     private $cookieFactory;
 
-    /** @var array */
+    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface[] */
     private $cookies = array();
 
     /**
@@ -153,11 +153,13 @@ class CookieJar implements CookieJarInterface
         }
 
         if (!$cookie->hasValue()) {
-            return $this->clear(
+            $this->clear(
                 $cookie->getAttribute(CookieInterface::ATTR_DOMAIN),
                 $cookie->getAttribute(CookieInterface::ATTR_PATH),
                 $cookie->getName()
             );
+
+            return;
         }
 
         foreach ($this->cookies as $jarCookie) {

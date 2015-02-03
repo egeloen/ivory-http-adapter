@@ -34,7 +34,7 @@ class MultiHttpAdapterException extends \Exception
      */
     public function __construct(array $exceptions = array(), array $responses = array())
     {
-        parent::__construct('An error occured when sending multiple requests.');
+        parent::__construct('An error occurred when sending multiple requests.');
 
         $this->setExceptions($exceptions);
         $this->setResponses($responses);

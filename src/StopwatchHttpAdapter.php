@@ -133,6 +133,8 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
      * @param string $method The method.
      * @param array  $params The parameters.
      *
+     * @throws \Exception If an exception has been thrown during the HTTP adapter call.
+     *
      * @return mixed The result.
      */
     private function watch($method, array $params = array())

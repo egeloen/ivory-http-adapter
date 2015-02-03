@@ -236,7 +236,7 @@ abstract class AbstractStream implements StreamableInterface
      *
      * @param integer $length The length.
      *
-     * @return string|boolean The readed string or FALSE if an error occurred.
+     * @return string|boolean The read string or FALSE if an error occurred.
      */
     abstract protected function doRead($length);
 

@@ -31,12 +31,12 @@ class Request extends AbstractMessage implements RequestInterface
     /**
      * Creates a request.
      *
-     * @param string|object                                       $url             The url.
-     * @param string                                              $method          The method.
-     * @param float                                               $protocolVersion The protocol version.
-     * @param array                                               $headers         The headers.
-     * @param \Ivory\HttpAdapter\Message\StreamableInterface|null $body            The body.
-     * @param array                                               $parameters      The parameters.
+     * @param string|object                              $url             The url.
+     * @param string                                     $method          The method.
+     * @param string                                     $protocolVersion The protocol version.
+     * @param array                                      $headers         The headers.
+     * @param \Psr\Http\Message\StreamableInterface|null $body            The body.
+     * @param array                                      $parameters      The parameters.
      */
     public function __construct(
         $url,
