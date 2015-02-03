@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Ivory Http Adapter package.
  *
  * (c) Eric GELOEN <geloen.eric@gmail.com>
