@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.6.0 (????-??-??)
+### 0.6.0 (2015-02-10)
 
  * cd7e18b - [HttpAdapterFactory] Added a guess and capable methods
  * 21055c2 - Add parallel requests support
