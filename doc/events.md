@@ -171,6 +171,7 @@ propose to add them in the core. The built-in ones are:
  * [Retry](/doc/events.md#retry)
  * [Status](/doc/events.md#status-code)
  * [Stopwatch](/doc/events.md#stopwatch)
+ * [Tape Recorder](/doc/events.md#tape-recorder)
 
 ### Basic authentication
 
@@ -932,6 +933,91 @@ $stopwatch = $stopwatchSubscriber->getStopwatch();
 $stopwatchSubscriber->setStopwatch($stopwatch);
 ```
 
+### Tape Recorder
+
+The Tape Recorder subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\TapeRecorderSubscriber` and allows you to record HTTP interactions in your tests and replay them in future tests.
+
+The Tape Recorder does not work with parallel events, because it is not possible to create an explicit connection between the multiple sent requests and multiple received responses.
+
+You need the "symfony/yaml" library to use this subscriber.
+
+#### Usage
+
+```php
+use Ivory\HttpAdapter\Event\Subscriber\FixtureSubscriber;
+
+$recorder = new TapeRecorderSubscriber(__DIR__.'/fixtures');
+$httpAdapter->getConfiguration()->getEventDispatcher()
+    ->addSubscriber($recorder);
+
+$recorder->insertTape('my_tape');
+$recorder->startRecording();
+$httpAdapter->get(...); // This interaction will be stored as a track.
+$recorder->stopRecording;
+$httpAdapter->get(...); // This interaction will not be stored.
+$recorder->eject(); // Stores the tape to the file system
+```
+
+##### Recording modes
+
+```php
+use Ivory\HttpAdapter\Event\Subscriber\FixtureSubscriber;
+
+$recorder = new TapeRecorderSubscriber(__DIR__.'/fixtures');
+$httpAdapter->getConfiguration()->getEventDispatcher()
+    ->addSubscriber($recorder);
+
+$recorder->setRecordingMode(TapeRecorderSubscriber::RECORDING_MODE_OVERWRITE);
+$recorder->setRecordingMode(TapeRecorderSubscriber::RECORDING_MODE_NEVER);
+// Default
+$recorder->setRecordingMode(TapeRecorderSubscriber::RECORDING_MODE_ONCE);
+```
+
+The following recording modes can be set when using the Tape Recorder:
+
+| Mode                     | Description |
+| ------------------------ | ----------- |
+| RECORDING_MODE_ONCE      | (default) Performs a real request and stores it to a fixture, unless a fixture already exists. |
+| RECORDING_MODE_OVERWRITE | Always performs a real request and overwrites the fixture. | 
+| RECORDING_MODE_NEVER     | Always performs a real request and does not write a fixture. |
+
+##### Usage example in Unit Tests
+
+```php
+
+namespace My\Application\Tests;
+
+use Ivory\HttpAdapter\Event\Subscriber\TapeRecorderSubscriber;
+
+class MyTest extends extends \PHPUnit_Framework_TestCase
+{
+    protected $http;
+    protected $recorder;
+
+    protected function setUp()
+    {
+        $this->http = new CurlHttpAdapter();
+        $this->recorder = new TapeRecorderSubscriber(__DIR__ . '/fixtures');
+        $this->http->getConfiguration()->getEventDispatcher()
+            ->addSubscriber($this->recorder);
+    }
+
+    protected function tearDown()
+    {
+        $this->recorder->eject();
+    }
+
+    protected function testRequest()
+    {
+        // This will result in the file 'fixtures/testRequest.yml'
+        $this->recorder->insertTape(__FUNCTION__);
+        $this->recorder->startRecording();
+        $this->http->get(...);
+    }
+}
+```
+
+
 ## Event Subscriber Priorities
 
 All event subscribers can work together (thanks to the event priorities). Here, the summary:
@@ -939,6 +1025,7 @@ All event subscribers can work together (thanks to the event priorities). Here, 
 | Event Subscriber | Pre Send Event | Post Send Event | Exception Event |
 | ---------------- | :------------: | :-------------: | :-------------: |
 | Stopwatch        | 10000          | 10000           | 10000           |
+| Tape Recorder    | 400            | 400             | 400             |
 | Basic Auth       | 300            | -               | -               |
 | Cookie           | 300            | 300             | -               |
 | Status Code      | -              | 200             | -               |
