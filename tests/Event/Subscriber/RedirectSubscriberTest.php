@@ -134,9 +134,12 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirect
             ->expects($this->once())
             ->method('prepareResponse')
-            ->with($this->identicalTo($response), $this->identicalTo($request));
+            ->with($this->identicalTo($response), $this->identicalTo($request))
+            ->will($this->returnValue($preparedResponse = $this->createResponseMock()));
 
-        $this->redirectSubscriber->onPostSend($this->createPostSendEvent($httpAdapter, $request, $response));
+        $this->redirectSubscriber->onPostSend($event = $this->createPostSendEvent($httpAdapter, $request, $response));
+
+        $this->assertSame($preparedResponse, $event->getResponse());
     }
 
     public function testPostSendEventWithMaxRedirectReachedThrowException()
@@ -246,16 +249,16 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirect
             ->expects($this->exactly(count($responses)))
             ->method('prepareResponse')
-            ->withConsecutive(
-                array($response1, $request1),
-                array($response2, $request2)
-            );
+            ->will($this->returnValueMap(array(
+                array($response1, $request1, $preparedResponse1 = $this->createResponseMock()),
+                array($response2, $request2, $preparedResponse2 = $this->createResponseMock()),
+            )));
 
         $this->redirectSubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent($httpAdapter, $responses));
 
         $this->assertFalse($event->hasExceptions());
         $this->assertTrue($event->hasResponses());
-        $this->assertSame($responses, $event->getResponses());
+        $this->assertSame(array($preparedResponse1, $preparedResponse2), $event->getResponses());
     }
 
     public function testMultiPostSendEventWithMaxRedirectReachedThrowException()

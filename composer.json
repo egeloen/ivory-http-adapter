@@ -11,8 +11,8 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "psr/http-message": "~0.5.0"
+        "php": ">=5.4.8",
+        "phly/http": "dev-header-case-sensitivity as 0.11.x-dev"
     },
     "require-dev": {
         "cakephp/cakephp": "^2.5.7",
@@ -20,19 +20,23 @@
         "guzzle/guzzle": "^3.9.2",
         "guzzlehttp/guzzle": ">=4.1.4,<6.0.0",
         "guzzlehttp/streams": ">=1.5.0,<4.0.0",
-        "kriswallsmith/buzz": "~0.13",
+        "kriswallsmith/buzz": "^0.13",
         "nategood/httpful": "^0.2.17",
-        "phpunit/phpunit": "~4.0",
+        "phpunit/phpunit": "^4.0",
         "phpunit/phpunit-mock-objects": "dev-matcher-verify as 2.3.x-dev",
-        "psr/log": "~1.0",
-        "react/http-client": "~0.4",
+        "psr/log": "^1.0",
+        "react/http-client": "^0.4",
         "react/dns": "^0.4.1",
-        "satooshi/php-coveralls": "~0.6",
-        "symfony/event-dispatcher": "~2.0",
+        "satooshi/php-coveralls": "^0.6",
+        "symfony/event-dispatcher": "^2.0",
         "zendframework/zendframework1": "^1.12.9",
         "zendframework/zend-http": "^2.3.4"
     },
     "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/egeloen/http.git"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/phpunit-mock-objects.git"

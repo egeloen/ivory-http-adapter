@@ -215,24 +215,24 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function hasBaseUrl()
+    public function hasBaseUri()
     {
-        return $this->messageFactory->hasBaseUrl();
+        return $this->messageFactory->hasBaseUri();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setBaseUrl($baseUrl)
+    public function getBaseUri()
     {
-        $this->messageFactory->setBaseUrl($baseUrl);
+        return $this->messageFactory->getBaseUri();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBaseUrl()
+    public function setBaseUri($baseUri)
     {
-        return $this->messageFactory->getBaseUrl();
+        $this->messageFactory->setBaseUri($baseUri);
     }
 }

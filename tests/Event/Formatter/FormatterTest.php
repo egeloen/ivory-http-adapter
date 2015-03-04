@@ -44,10 +44,10 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
             array(
                 'protocol_version' => '1.1',
-                'url'              => 'http://egeloen.fr',
+                'uri'              => 'http://egeloen.fr',
                 'method'           => 'GET',
                 'headers'          => array('foo' => 'bar'),
-                'raw_datas'        => 'foo=bar',
+                'body'             => 'foo=bar',
                 'datas'            => array('baz' => 'bat'),
                 'files'            => array('bit' => __FILE__),
                 'parameters'       => array('ban' => 'bor'),
@@ -99,7 +99,7 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
 
         $request
             ->expects($this->any())
-            ->method('getUrl')
+            ->method('getUri')
             ->will($this->returnValue('http://egeloen.fr'));
 
         $request
@@ -114,7 +114,7 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
 
         $request
             ->expects($this->any())
-            ->method('getRawDatas')
+            ->method('getBody')
             ->will($this->returnValue('foo=bar'));
 
         $request

@@ -59,7 +59,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
         try {
             $response = $this->client->send($this->createRequest($internalRequest));
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl(
+            throw HttpAdapterException::cannotFetchUri(
                 $e->getRequest()->getUrl(),
                 $this->getName(),
                 $e->getMessage()
@@ -68,7 +68,6 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             (integer) $response->getStatusCode(),
-            $response->getReasonPhrase(),
             $response->getProtocolVersion(),
             $response->getHeaders(),
             BodyNormalizer::normalize(
@@ -116,7 +115,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
     {
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
-            (string) $internalRequest->getUrl(),
+            (string) $internalRequest->getUri(),
             array(
                 'exceptions'      => false,
                 'allow_redirects' => false,
@@ -136,7 +135,6 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
                 function (CompleteEvent $event) use ($success, $internalRequest, $messageFactory) {
                     $response = $messageFactory->createResponse(
                         (integer) $event->getResponse()->getStatusCode(),
-                        $event->getResponse()->getReasonPhrase(),
                         $event->getResponse()->getProtocolVersion(),
                         $event->getResponse()->getHeaders(),
                         BodyNormalizer::normalize(
@@ -147,7 +145,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
                         )
                     );
 
-                    $response->setParameter('request', $internalRequest);
+                    $response = $response->withParameter('request', $internalRequest);
                     call_user_func($success, $response);
                 }
             );
@@ -159,7 +157,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
             $request->getEmitter()->on(
                 'error',
                 function (ErrorEvent $event) use ($error, $internalRequest, $httpAdapterName) {
-                    $exception = HttpAdapterException::cannotFetchUrl(
+                    $exception = HttpAdapterException::cannotFetchUri(
                         $event->getException()->getRequest()->getUrl(),
                         $httpAdapterName,
                         $event->getException()->getMessage()

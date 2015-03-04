@@ -236,11 +236,9 @@ class Cookie implements CookieInterface
      */
     public function match(InternalRequestInterface $request)
     {
-        $parts = parse_url((string) $request->getUrl());
-
-        return $this->matchDomain(isset($parts['host']) ? $parts['host'] : null)
-            && $this->matchPath(isset($parts['path']) ? $parts['path'] : null)
-            && $this->matchScheme(isset($parts['scheme']) ? $parts['scheme'] : null);
+        return $this->matchDomain($request->getUri()->getHost())
+            && $this->matchPath($request->getUri()->getPath())
+            && $this->matchScheme($request->getUri()->getScheme());
     }
 
     /**

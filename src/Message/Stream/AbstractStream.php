@@ -104,6 +104,14 @@ abstract class AbstractStream implements StreamableInterface
     /**
      * {@inheritdoc}
      */
+    public function rewind()
+    {
+        return $this->isSeekable() ? $this->doRewind() : false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isReadable()
     {
         return $this->hasValue() && $this->doIsReadable();
@@ -223,6 +231,13 @@ abstract class AbstractStream implements StreamableInterface
      * @return boolean TRUE if it is done else FALSE.
      */
     abstract protected function doSeek($offset, $whence);
+
+    /**
+     * Does the rewind.
+     *
+     * @return boolean TRUE if it is done else FALSE.
+     */
+    abstract protected function doRewind();
 
     /**
      * Does the is readable.

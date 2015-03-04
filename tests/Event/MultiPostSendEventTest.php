@@ -162,7 +162,7 @@ class MultiPostSendEventTest extends AbstractEventTest
     }
 
     /**
-     * Creates an exception mock;
+     * Creates an exception mock.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
      */

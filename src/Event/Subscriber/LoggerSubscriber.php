@@ -80,7 +80,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->getTimer()->start($event->getRequest());
+        $event->setRequest($this->getTimer()->start($event->getRequest()));
     }
 
     /**
@@ -90,7 +90,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $this->debug($event->getHttpAdapter(), $event->getRequest(), $event->getResponse());
+        $event->setRequest($this->debug($event->getHttpAdapter(), $event->getRequest(), $event->getResponse()));
     }
 
     /**
@@ -100,7 +100,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     public function onException(ExceptionEvent $event)
     {
-        $this->error($event->getHttpAdapter(), $event->getException());
+        $event->getException()->setRequest($this->error($event->getHttpAdapter(), $event->getException()));
     }
 
     /**
@@ -111,7 +111,8 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     public function onMultiPreSend(MultiPreSendEvent $event)
     {
         foreach ($event->getRequests() as $request) {
-            $this->getTimer()->start($request);
+            $event->removeRequest($request);
+            $event->addRequest($this->getTimer()->start($request));
         }
     }
 
@@ -123,7 +124,10 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     public function onMultiPostSend(MultiPostSendEvent $event)
     {
         foreach ($event->getResponses() as $response) {
-            $this->debug($event->getHttpAdapter(), $response->getParameter('request'), $response);
+            $request = $this->debug($event->getHttpAdapter(), $response->getParameter('request'), $response);
+
+            $event->removeResponse($response);
+            $event->addResponse($response->withParameter('request', $request));
         }
     }
 
@@ -135,7 +139,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     public function onMultiException(MultiExceptionEvent $event)
     {
         foreach ($event->getExceptions() as $exception) {
-            $this->error($event->getHttpAdapter(), $exception);
+            $exception->setRequest($this->error($event->getHttpAdapter(), $exception));
         }
     }
 
@@ -160,19 +164,21 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response    The response.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The logged request.
      */
     private function debug(
         HttpAdapterInterface $httpAdapter,
         InternalRequestInterface $request,
         ResponseInterface $response
     ) {
-        $this->getTimer()->stop($request);
+        $request = $this->getTimer()->stop($request);
 
         $this->logger->debug(
             sprintf(
                 'Send "%s %s" in %.2f ms.',
                 $request->getMethod(),
-                (string) $request->getUrl(),
+                (string) $request->getUri(),
                 $request->getParameter(TimerInterface::TIME)
             ),
             array(
@@ -181,6 +187,8 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
                 'response' => $this->getFormatter()->formatResponse($response),
             )
         );
+
+        return $request;
     }
 
     /**
@@ -188,25 +196,29 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\HttpAdapterException $exception   The exception.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The logged request.
      */
     private function error(HttpAdapterInterface $httpAdapter, HttpAdapterException $exception)
     {
-        $this->getTimer()->stop($exception->getRequest());
+        $request = $this->getTimer()->stop($exception->getRequest());
 
         $this->logger->error(
             sprintf(
                 'Unable to send "%s %s".',
                 $exception->getRequest()->getMethod(),
-                (string) $exception->getRequest()->getUrl()
+                (string) $exception->getRequest()->getUri()
             ),
             array(
                 'adapter'   => $httpAdapter->getName(),
                 'exception' => $this->getFormatter()->formatException($exception),
-                'request'   => $this->getFormatter()->formatRequest($exception->getRequest()),
+                'request'   => $this->getFormatter()->formatRequest($request),
                 'response'  => $exception->hasResponse()
                     ? $this->getFormatter()->formatResponse($exception->getResponse())
                     : null,
             )
         );
+
+        return $request;
     }
 }

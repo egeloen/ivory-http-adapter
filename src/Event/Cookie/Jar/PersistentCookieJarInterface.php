@@ -22,8 +22,6 @@ interface PersistentCookieJarInterface extends CookieJarInterface, \Serializable
      * Loads the cookie jar.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return void No return value.
      */
     public function load();
 
@@ -31,8 +29,6 @@ interface PersistentCookieJarInterface extends CookieJarInterface, \Serializable
      * Saves the cookie jar.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return void No return value.
      */
     public function save();
 }

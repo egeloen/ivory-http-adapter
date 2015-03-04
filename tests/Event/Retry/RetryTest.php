@@ -87,9 +87,8 @@ class RetryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($retryCount = null));
 
         $request
-            ->expects($this->once())
-            ->method('setParameter')
-            ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo((int) $retryCount));
+            ->expects($this->never())
+            ->method('withParameter');
 
         $this->assertFalse($this->retry->retry($request));
     }
@@ -110,15 +109,16 @@ class RetryTest extends \PHPUnit_Framework_TestCase
 
         $request
             ->expects($this->once())
-            ->method('setParameter')
-            ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo(++$retryCount));
+            ->method('withParameter')
+            ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo(++$retryCount))
+            ->will($this->returnValue($request));
 
         $before = microtime(true);
         $result = $this->retry->retry($request);
         $after = microtime(true);
 
         $this->assertLessThanOrEqual(0.1, $after - $before);
-        $this->assertTrue($result);
+        $this->assertSame($request, $result);
     }
 
     public function testRetryWithStrategyDelayed()
@@ -143,8 +143,9 @@ class RetryTest extends \PHPUnit_Framework_TestCase
 
         $request
             ->expects($this->once())
-            ->method('setParameter')
-            ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo(++$retryCount));
+            ->method('withParameter')
+            ->with($this->identicalTo(Retry::RETRY_COUNT), $this->identicalTo(++$retryCount))
+            ->will($this->returnValue($request));
 
         $before = microtime(true);
         $result = $this->retry->retry($request);
@@ -152,7 +153,7 @@ class RetryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertGreaterThanOrEqual($delay, $after - $before);
         $this->assertLessThanOrEqual($delay + 0.1, $after - $before);
-        $this->assertTrue($result);
+        $this->assertSame($request, $result);
     }
 
     /**

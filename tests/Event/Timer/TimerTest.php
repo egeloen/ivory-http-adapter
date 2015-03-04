@@ -46,12 +46,13 @@ class TimerTest extends \PHPUnit_Framework_TestCase
         $request = $this->createRequestMock();
         $request
             ->expects($this->once())
-            ->method('removeParameter')
-            ->with($this->identicalTo(Timer::TIME));
+            ->method('withoutParameter')
+            ->with($this->identicalTo(Timer::TIME))
+            ->will($this->returnValue($request));
 
         $request
             ->expects($this->once())
-            ->method('setParameter')
+            ->method('withParameter')
             ->with(
                 $this->identicalTo(Timer::START_TIME),
                 $this->callback(function ($parameter) use (&$start) {
@@ -59,14 +60,16 @@ class TimerTest extends \PHPUnit_Framework_TestCase
 
                     return true;
                 })
-            );
+            )
+            ->will($this->returnValue($request));
 
         $before = microtime(true);
-        $this->timer->start($request);
+        $result = $this->timer->start($request);
         $after = microtime(true);
 
         $this->assertGreaterThanOrEqual($before, $start);
         $this->assertLessThanOrEqual($after, $start);
+        $this->assertSame($request, $result);
     }
 
     public function testStop()
@@ -91,7 +94,7 @@ class TimerTest extends \PHPUnit_Framework_TestCase
 
         $request
             ->expects($this->once())
-            ->method('setParameter')
+            ->method('withParameter')
             ->with(
                 $this->identicalTo(Timer::TIME),
                 $this->callback(function ($parameter) use (&$time) {
@@ -99,13 +102,35 @@ class TimerTest extends \PHPUnit_Framework_TestCase
 
                     return true;
                 })
-            );
+            )
+            ->will($this->returnValue($request));
 
-        $this->timer->stop($request);
+        $result = $this->timer->stop($request);
         $after = microtime(true);
 
         $this->assertGreaterThanOrEqual($before - $start, $time);
         $this->assertLessThanOrEqual($after - $start, $time);
+        $this->assertSame($request, $result);
+    }
+
+    public function testStopAgain()
+    {
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('hasParameter')
+            ->will($this->returnValueMap(array(
+                array(Timer::START_TIME, true),
+                array(Timer::TIME, true),
+            )));
+
+        $request
+            ->expects($this->never())
+            ->method('withParameter');
+
+        $result = $this->timer->stop($request);
+
+        $this->assertSame($request, $result);
     }
 
     /**

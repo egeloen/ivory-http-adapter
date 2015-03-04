@@ -268,6 +268,20 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->stream->seek(10));
     }
 
+    public function testRewind()
+    {
+        $this->stream->seek(10);
+        $this->assertTrue($this->stream->rewind());
+        $this->assertSame(0, $this->stream->tell());
+    }
+
+    public function testRewindWithoutSeek()
+    {
+        $this->stream = $this->createStream($this->string, self::MODE_SEEK_DISABLED);
+
+        $this->assertFalse($this->stream->rewind());
+    }
+
     public function testReadWithoutSeek()
     {
         $length = 10;

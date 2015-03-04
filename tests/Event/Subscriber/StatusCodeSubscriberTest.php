@@ -96,7 +96,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
 
         $this->assertTrue($event->hasException());
         $this->assertSame(
-            'An error occurred when fetching the URL "http://egeloen.fr" with the adapter "http_adapter" ("Status code: 500").',
+            'An error occurred when fetching the URI "http://egeloen.fr" with the adapter "http_adapter" ("Status code: 500").',
             $event->getException()->getMessage()
         );
     }
@@ -163,7 +163,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
         $request = parent::createRequestMock();
         $request
             ->expects($this->any())
-            ->method('getUrl')
+            ->method('getUri')
             ->will($this->returnValue('http://egeloen.fr'));
 
         return $request;

@@ -96,51 +96,75 @@ class HistorySubscriberTest extends AbstractSubscriberTest
         $this->timer
             ->expects($this->once())
             ->method('start')
-            ->with($this->identicalTo($request = $this->createRequestMock()));
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue($startedRequest = $this->createRequestMock()));
 
         $this->timer
             ->expects($this->once())
             ->method('stop')
-            ->with($this->identicalTo($request));
+            ->with($this->identicalTo($startedRequest))
+            ->will($this->returnValue($stoppedRequest = $this->createRequestMock()));
 
         $this->journal
             ->expects($this->once())
             ->method('record')
             ->with(
-                $this->identicalTo($request),
+                $this->identicalTo($stoppedRequest),
                 $this->identicalTo($response = $this->createResponseMock())
             );
 
         $this->historySubscriber->onPreSend($this->createPreSendEvent(null, $request));
-        $this->historySubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+        $this->historySubscriber->onPostSend($event = $this->createPostSendEvent(null, $startedRequest, $response));
+
+        $this->assertSame($stoppedRequest, $event->getRequest());
     }
 
     public function testMultiPostSendEvent()
     {
         $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
 
+        $this->timer
+            ->expects($this->exactly(count($requests)))
+            ->method('start')
+            ->will($this->returnValueMap(array(
+                array($request1, $startedRequest1 = $this->createRequestMock()),
+                array($request2, $startedRequest2 = $this->createRequestMock()),
+            )));
+
         $responses = array(
-            $response1 = $this->createResponseMock($request1),
-            $response2 = $this->createResponseMock($request2),
+            $response1 = $this->createResponseMock($startedRequest1),
+            $response2 = $this->createResponseMock($startedRequest2),
         );
 
         $this->timer
             ->expects($this->exactly(count($responses)))
-            ->method('start')
-            ->withConsecutive(array($request1), array($request2));
-
-        $this->timer
-            ->expects($this->exactly(count($responses)))
             ->method('stop')
-            ->withConsecutive(array($request1), array($request2));
+            ->will($this->returnValueMap(array(
+                array($startedRequest1, $stoppedRequest1 = $this->createRequestMock()),
+                array($startedRequest2, $stoppedRequest2 = $this->createRequestMock()),
+            )));
 
         $this->journal
             ->expects($this->exactly(count($responses)))
             ->method('record')
-            ->withConsecutive(array($request1, $response1), array($request2, $response2));
+            ->withConsecutive(array($stoppedRequest1, $response1), array($stoppedRequest2, $response2));
+
+        $response1
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($stoppedRequest1))
+            ->will($this->returnValue($stoppedResponse1 = $this->createResponseMock($stoppedRequest1)));
+
+        $response2
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($stoppedRequest2))
+            ->will($this->returnValue($stoppedResponse2 = $this->createResponseMock($stoppedRequest2)));
 
         $this->historySubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
-        $this->historySubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+        $this->historySubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent(null, $responses));
+
+        $this->assertSame(array($stoppedResponse1, $stoppedResponse2), $event->getResponses());
     }
 
     /**

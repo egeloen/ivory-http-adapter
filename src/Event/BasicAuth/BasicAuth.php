@@ -104,9 +104,14 @@ class BasicAuth implements BasicAuthInterface
      */
     public function authenticate(InternalRequestInterface $internalRequest)
     {
-        if ($this->match($internalRequest)) {
-            $internalRequest->setHeader('Authorization', 'Basic '.base64_encode($this->username.':'.$this->password));
+        if (!$this->match($internalRequest)) {
+            return $internalRequest;
         }
+
+        return $internalRequest->withHeader(
+            'Authorization',
+            'Basic '.base64_encode($this->username.':'.$this->password)
+        );
     }
 
     /**
@@ -119,7 +124,7 @@ class BasicAuth implements BasicAuthInterface
     private function match(InternalRequestInterface $request)
     {
         return !$this->hasMatcher()
-            || (is_string($this->matcher) && preg_match($this->matcher, (string) $request->getUrl()))
+            || (is_string($this->matcher) && preg_match($this->matcher, (string) $request->getUri()))
             || (is_callable($this->matcher) && call_user_func($this->matcher, $request));
     }
 }

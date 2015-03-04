@@ -28,8 +28,8 @@ interface RedirectInterface
     /** @const string The redirect count parameter.  */
     const REDIRECT_COUNT = 'redirect_count';
 
-    /** @const string The effective url parameter. */
-    const EFFECTIVE_URL = 'effective_url';
+    /** @const string The effective uri parameter. */
+    const EFFECTIVE_URI = 'effective_uri';
 
     /**
      * Gets the maximum number of redirects.
@@ -97,6 +97,8 @@ interface RedirectInterface
      *
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The prepared response.
      */
     public function prepareResponse(ResponseInterface $response, InternalRequestInterface $internalRequest);
 }

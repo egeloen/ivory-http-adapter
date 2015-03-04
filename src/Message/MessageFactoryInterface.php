@@ -19,9 +19,32 @@ namespace Ivory\HttpAdapter\Message;
 interface MessageFactoryInterface
 {
     /**
+     * Checks if there is a base uri.
+     *
+     * @return boolean TRUE if there is a base uri else FALSE.
+     */
+    public function hasBaseUri();
+
+    /**
+     * Gets the base uri.
+     *
+     * @return null|\Psr\Http\Message\UriInterface The base uri.
+     */
+    public function getBaseUri();
+
+    /**
+     * Sets the base uri.
+     *
+     * @param null|string|\Psr\Http\Message\UriInterface $baseUri The base uri.
+     *
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If the base uri is invalid.
+     */
+    public function setBaseUri($baseUri);
+
+    /**
      * Creates a request.
      *
-     * @param string|object                                              $url             The url.
+     * @param string|object                                              $uri             The uri.
      * @param string                                                     $method          The method.
      * @param string                                                     $protocolVersion The protocol version.
      * @param array                                                      $headers         The headers.
@@ -31,7 +54,7 @@ interface MessageFactoryInterface
      * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
      */
     public function createRequest(
-        $url,
+        $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
         array $headers = array(),
@@ -51,7 +74,7 @@ interface MessageFactoryInterface
     /**
      * Creates an internal request.
      *
-     * @param string|object $url             The url.
+     * @param string|object $uri             The uri.
      * @param string        $method          The method.
      * @param string        $protocolVersion The protocol version.
      * @param array         $headers         The headers.
@@ -62,7 +85,7 @@ interface MessageFactoryInterface
      * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The internal request.
      */
     public function createInternalRequest(
-        $url,
+        $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
         array $headers = array(),
@@ -84,7 +107,6 @@ interface MessageFactoryInterface
      * Creates a response.
      *
      * @param integer                                                    $statusCode      The status code.
-     * @param string                                                     $reasonPhrase    The reason phrase.
      * @param string                                                     $protocolVersion The protocol version.
      * @param array                                                      $headers         The headers.
      * @param resource|string|\Psr\Http\Message\StreamableInterface|null $body            The body.
@@ -94,7 +116,6 @@ interface MessageFactoryInterface
      */
     public function createResponse(
         $statusCode = 200,
-        $reasonPhrase = 'OK',
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
         array $headers = array(),
         $body = null,
@@ -109,29 +130,4 @@ interface MessageFactoryInterface
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The cloned response.
      */
     public function cloneResponse(ResponseInterface $response);
-
-    /**
-     * Checks if there is a base url.
-     *
-     * @return boolean TRUE if there is a base url else FALSE.
-     */
-    public function hasBaseUrl();
-
-    /**
-     * Sets the base url.
-     *
-     * @param string $baseUrl The base url.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the base url is invalid.
-     *
-     * @return void No return value.
-     */
-    public function setBaseUrl($baseUrl);
-
-    /**
-     * Gets the base url.
-     *
-     * @return string The base url.
-     */
-    public function getBaseUrl();
 }

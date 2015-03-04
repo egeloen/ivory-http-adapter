@@ -111,7 +111,7 @@ class Redirect implements RedirectInterface
         if ($internalRequest->getParameter(self::REDIRECT_COUNT) >= $this->max) {
             if ($this->throwException) {
                 throw HttpAdapterException::maxRedirectsExceeded(
-                    (string) $this->getRootRequest($internalRequest)->getUrl(),
+                    (string) $this->getRootRequest($internalRequest)->getUri(),
                     $this->max,
                     $httpAdapter->getName()
                 );
@@ -120,21 +120,27 @@ class Redirect implements RedirectInterface
             return false;
         }
 
-        $redirect = $httpAdapter->getConfiguration()->getMessageFactory()->cloneInternalRequest($internalRequest);
+        $strict = $response->getStatusCode() === 303 || (!$this->strict && $response->getStatusCode() <= 302);
 
-        if ($response->getStatusCode() === 303 || (!$this->strict && $response->getStatusCode() <= 302)) {
-            $redirect->setMethod(InternalRequestInterface::METHOD_GET);
-            $redirect->removeHeaders(array('Content-Type', 'Content-Length'));
-            $redirect->clearRawDatas();
-            $redirect->clearDatas();
-            $redirect->clearFiles();
+        $redirect = $httpAdapter->getConfiguration()->getMessageFactory()->createInternalRequest(
+            $response->getHeader('Location'),
+            $strict ? InternalRequestInterface::METHOD_GET : $internalRequest->getMethod(),
+            $internalRequest->getProtocolVersion(),
+            $internalRequest->getHeaders(),
+            $strict ? array() : $internalRequest->getDatas(),
+            $strict ? array() : $internalRequest->getFiles(),
+            $internalRequest->getParameters()
+        );
+
+        if ($strict) {
+            $redirect = $redirect->withoutHeader('Content-Type')->withoutHeader('Content-Length');
+        } else {
+            $redirect = $redirect->withBody($internalRequest->getBody());
         }
 
-        $redirect->setUrl($response->getHeader('Location'));
-        $redirect->setParameter(self::PARENT_REQUEST, $internalRequest);
-        $redirect->setParameter(self::REDIRECT_COUNT, $internalRequest->getParameter(self::REDIRECT_COUNT) + 1);
-
-        return $redirect;
+        return $redirect
+            ->withParameter(self::PARENT_REQUEST, $internalRequest)
+            ->withParameter(self::REDIRECT_COUNT, $internalRequest->getParameter(self::REDIRECT_COUNT) + 1);
     }
 
     /**
@@ -142,8 +148,9 @@ class Redirect implements RedirectInterface
      */
     public function prepareResponse(ResponseInterface $response, InternalRequestInterface $internalRequest)
     {
-        $response->setParameter(self::REDIRECT_COUNT, (int) $internalRequest->getParameter(self::REDIRECT_COUNT));
-        $response->setParameter(self::EFFECTIVE_URL, (string) $internalRequest->getUrl());
+        return $response
+            ->withParameter(self::REDIRECT_COUNT, (int) $internalRequest->getParameter(self::REDIRECT_COUNT))
+            ->withParameter(self::EFFECTIVE_URI, (string) $internalRequest->getUri());
     }
 
     /**

@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
-use Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor;
 use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
@@ -92,7 +91,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
 
                 try {
                     $response = $this->createResponse($curl, curl_multi_getcontent($curl), $internalRequest);
-                    $response->setParameter('request', $internalRequest);
+                    $response = $response->withParameter('request', $internalRequest);
                     call_user_func($success, $response);
                 } catch (HttpAdapterException $e) {
                     $e->setRequest($internalRequest);
@@ -118,7 +117,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     {
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, (string) $internalRequest->getUrl());
+        curl_setopt($curl, CURLOPT_URL, (string) $internalRequest->getUri());
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest));
         curl_setopt($curl, CURLOPT_HEADER, true);
@@ -128,7 +127,9 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
         $this->configureTimeout($curl, 'CURLOPT_TIMEOUT');
         $this->configureTimeout($curl, 'CURLOPT_CONNECTTIMEOUT');
 
-        if ($internalRequest->hasFiles() && $this->isSafeUpload()) {
+        $files = $internalRequest->getFiles();
+
+        if (!empty($files) && $this->isSafeUpload()) {
             curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
         }
 
@@ -188,8 +189,8 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     private function createResponse($curl, $data, InternalRequestInterface $internalRequest)
     {
         if (empty($data)) {
-            throw HttpAdapterException::cannotFetchUrl(
-                (string) $internalRequest->getUrl(),
+            throw HttpAdapterException::cannotFetchUri(
+                (string) $internalRequest->getUri(),
                 $this->getName(),
                 curl_error($curl)
             );
@@ -199,7 +200,6 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             StatusCodeExtractor::extract($headers),
-            ReasonPhraseExtractor::extract($headers),
             ProtocolVersionExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
             BodyNormalizer::normalize(substr($data, $headersSize), $internalRequest->getMethod())

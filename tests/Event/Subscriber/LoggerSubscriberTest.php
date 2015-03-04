@@ -119,17 +119,19 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->timer
             ->expects($this->once())
             ->method('start')
-            ->with($this->identicalTo($request = $this->createRequestMock()));
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue($startedRequest = $this->createRequestMock()));
 
         $this->timer
             ->expects($this->once())
             ->method('stop')
-            ->with($this->identicalTo($request));
+            ->with($this->identicalTo($startedRequest))
+            ->will($this->returnValue($stoppedRequest = $this->createRequestMock()));
 
         $this->formatter
             ->expects($this->once())
             ->method('formatRequest')
-            ->with($this->identicalTo($request))
+            ->with($this->identicalTo($stoppedRequest))
             ->will($this->returnValue($formattedRequest = 'request'));
 
         $this->formatter
@@ -150,8 +152,11 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 ))
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
-        $this->loggerSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+        $this->loggerSubscriber->onPreSend($preSendEvent = $this->createPreSendEvent(null, $request));
+        $this->loggerSubscriber->onPostSend($postSendEvent = $this->createPostSendEvent(null, $startedRequest, $response));
+
+        $this->assertSame($startedRequest, $preSendEvent->getRequest());
+        $this->assertSame($stoppedRequest, $postSendEvent->getRequest());
     }
 
     public function testExceptionEvent()
@@ -159,17 +164,19 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->timer
             ->expects($this->once())
             ->method('start')
-            ->with($this->identicalTo($request = $this->createRequestMock()));
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue($startedRequest = $this->createRequestMock()));
 
         $this->timer
             ->expects($this->once())
             ->method('stop')
-            ->with($this->identicalTo($request));
+            ->with($this->identicalTo($startedRequest))
+            ->will($this->returnValue($stoppedRequest = $this->createRequestMock()));
 
         $this->formatter
             ->expects($this->once())
             ->method('formatRequest')
-            ->with($this->identicalTo($request))
+            ->with($this->identicalTo($stoppedRequest))
             ->will($this->returnValue($formattedRequest = 'request'));
 
         $this->formatter
@@ -181,8 +188,13 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->formatter
             ->expects($this->once())
             ->method('formatException')
-            ->with($this->identicalTo($exception = $this->createExceptionMock($request, $response)))
+            ->with($this->identicalTo($exception = $this->createExceptionMock($startedRequest, $response)))
             ->will($this->returnValue($formattedException = 'exception'));
+
+        $exception
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($stoppedRequest));
 
         $this->logger
             ->expects($this->once())
@@ -197,35 +209,43 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 ))
             );
 
-        $this->loggerSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->loggerSubscriber->onPreSend($event = $this->createPreSendEvent(null, $request));
         $this->loggerSubscriber->onException($this->createExceptionEvent(null, $exception));
+
+        $this->assertSame($startedRequest, $event->getRequest());
     }
 
     public function testMultiPostSendEvent()
     {
         $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
 
+        $this->timer
+            ->expects($this->exactly(count($requests)))
+            ->method('start')
+            ->will($this->returnValueMap(array(
+                array($request1, $startedRequest1 = $this->createRequestMock()),
+                array($request2, $startedRequest2 = $this->createRequestMock()),
+            )));
+
         $responses = array(
-            $response1 = $this->createResponseMock($request1),
-            $response2 = $this->createResponseMock($request2),
+            $response1 = $this->createResponseMock($startedRequest1),
+            $response2 = $this->createResponseMock($startedRequest2),
         );
 
         $this->timer
             ->expects($this->exactly(count($responses)))
-            ->method('start')
-            ->withConsecutive(array($request1), array($request2));
-
-        $this->timer
-            ->expects($this->exactly(count($responses)))
             ->method('stop')
-            ->withConsecutive(array($request1), array($request2));
+            ->will($this->returnValueMap(array(
+                array($startedRequest1, $stoppedRequest1 = $this->createRequestMock()),
+                array($startedRequest2, $stoppedRequest2 = $this->createRequestMock()),
+            )));
 
         $this->formatter
             ->expects($this->exactly(count($responses)))
             ->method('formatRequest')
             ->will($this->returnValueMap(array(
-                array($request1, $formattedRequest1 = 'request1'),
-                array($request2, $formattedRequest2 = 'request2'),
+                array($stoppedRequest1, $formattedRequest1 = 'request1'),
+                array($stoppedRequest2, $formattedRequest2 = 'request2'),
             )));
 
         $this->formatter
@@ -258,8 +278,23 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 )
             );
 
-        $this->loggerSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
-        $this->loggerSubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+        $response1
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($stoppedRequest1))
+            ->will($this->returnValue($stoppedResponse1 = $this->createResponseMock($stoppedRequest1)));
+
+        $response2
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($stoppedRequest2))
+            ->will($this->returnValue($stoppedResponse2 = $this->createResponseMock($stoppedRequest2)));
+
+        $this->loggerSubscriber->onMultiPreSend($preSendEvent = $this->createMultiPreSendEvent(null, $requests));
+        $this->loggerSubscriber->onMultiPostSend($postSendEvent = $this->createMultiPostSendEvent(null, $responses));
+
+        $this->assertSame(array($startedRequest1, $startedRequest2), $preSendEvent->getRequests());
+        $this->assertSame(array($stoppedResponse1, $stoppedResponse2), $postSendEvent->getResponses());
     }
 
     public function testMultiExceptionEvent()
@@ -269,27 +304,39 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             $request2 = $this->createRequestMock(),
         );
 
+        $this->timer
+            ->expects($this->exactly(count($requests)))
+            ->method('start')
+            ->will($this->returnValueMap(array(
+                array($request1, $startedRequest1 = $this->createRequestMock()),
+                array($request2, $startedRequest2 = $this->createRequestMock()),
+            )));
+
         $exceptions = array(
-            $exception1 = $this->createExceptionMock($request1, $response1 = $this->createResponseMock($request1)),
-            $exception2 = $this->createExceptionMock($request2, $response2 = $this->createResponseMock($request2)),
+            $exception1 = $this->createExceptionMock(
+                $startedRequest1,
+                $response1 = $this->createResponseMock($request1)
+            ),
+            $exception2 = $this->createExceptionMock(
+                $startedRequest2,
+                $response2 = $this->createResponseMock($request2)
+            ),
         );
 
         $this->timer
             ->expects($this->exactly(count($exceptions)))
-            ->method('start')
-            ->withConsecutive(array($request1), array($request2));
-
-        $this->timer
-            ->expects($this->exactly(count($exceptions)))
             ->method('stop')
-            ->withConsecutive(array($request1), array($request2));
+            ->will($this->returnValueMap(array(
+                array($startedRequest1, $stoppedRequest1 = $this->createRequestMock()),
+                array($startedRequest2, $stoppedRequest2 = $this->createRequestMock()),
+            )));
 
         $this->formatter
             ->expects($this->exactly(count($exceptions)))
             ->method('formatRequest')
             ->will($this->returnValueMap(array(
-                array($request1, $formattedRequest1 = 'request1'),
-                array($request2, $formattedRequest2 = 'request2'),
+                array($stoppedRequest1, $formattedRequest1 = 'request1'),
+                array($stoppedRequest2, $formattedRequest2 = 'request2'),
             )));
 
         $this->formatter
@@ -332,8 +379,20 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 )
             );
 
-        $this->loggerSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $exception1
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($stoppedRequest1));
+
+        $exception2
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($stoppedRequest2));
+
+        $this->loggerSubscriber->onMultiPreSend($event = $this->createMultiPreSendEvent(null, $requests));
         $this->loggerSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
+
+        $this->assertSame(array($startedRequest1, $startedRequest2), $event->getRequests());
     }
 
     /**
@@ -345,7 +404,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
         $request
             ->expects($this->any())
-            ->method('getUrl')
+            ->method('getUri')
             ->will($this->returnValue('http://egeloen.fr'));
 
         $request

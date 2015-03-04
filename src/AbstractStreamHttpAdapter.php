@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
-use Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor;
 use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
@@ -43,16 +42,15 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             ),
         ));
 
-        list($body, $headers) = $this->process($url = (string) $internalRequest->getUrl(), $context);
+        list($body, $headers) = $this->process($uri = (string) $internalRequest->getUri(), $context);
 
         if ($body === false) {
             $error = error_get_last();
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error['message']);
+            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $error['message']);
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             StatusCodeExtractor::extract($headers),
-            ReasonPhraseExtractor::extract($headers),
             ProtocolVersionExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
             BodyNormalizer::normalize($body, $internalRequest->getMethod())
@@ -60,12 +58,12 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Processes the url/context.
+     * Processes the uri/context.
      *
-     * @param string   $url     The url.
+     * @param string   $uri     The uri.
      * @param resource $context The context.
      *
-     * @return array The processed url/context (0 => body, 1 => headers).
+     * @return array The processed uri/context (0 => body, 1 => headers).
      */
-    abstract protected function process($url, $context);
+    abstract protected function process($uri, $context);
 }

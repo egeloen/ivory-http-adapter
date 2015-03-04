@@ -81,18 +81,22 @@ class RetrySubscriberTest extends AbstractSubscriberTest
             ->expects($this->once())
             ->method('retry')
             ->with($this->identicalTo($request = $this->createRequestMock()))
-            ->will($this->returnValue(true));
+            ->will($this->returnValue($retryRequest = $this->createRequestMock()));
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
             ->expects($this->once())
             ->method('sendRequest')
-            ->with($this->identicalTo($request))
+            ->with($this->identicalTo($retryRequest))
             ->will($this->returnValue($retryResponse = $this->createResponseMock()));
 
-        $this->retrySubscriber->onException(
-            $event = $this->createExceptionEvent($httpAdapter, $this->createExceptionMock($request))
-        );
+        $exception = $this->createExceptionMock($request);
+        $exception
+            ->expects($this->once())
+            ->method('setRequest')
+            ->with($this->identicalTo($retryRequest));
+
+        $this->retrySubscriber->onException($event = $this->createExceptionEvent($httpAdapter, $exception));
 
         $this->assertSame($retryResponse, $event->getResponse());
     }
@@ -103,13 +107,13 @@ class RetrySubscriberTest extends AbstractSubscriberTest
             ->expects($this->once())
             ->method('retry')
             ->with($this->identicalTo($request = $this->createRequestMock()))
-            ->will($this->returnValue(true));
+            ->will($this->returnValue($retryRequest = $this->createRequestMock()));
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
             ->expects($this->once())
             ->method('sendRequest')
-            ->with($this->identicalTo($request))
+            ->with($this->identicalTo($retryRequest))
             ->will($this->throwException($exception = $this->createExceptionMock()));
 
         $this->retrySubscriber->onException(
@@ -164,15 +168,15 @@ class RetrySubscriberTest extends AbstractSubscriberTest
             ->expects($this->exactly(count($responses)))
             ->method('retry')
             ->will($this->returnValueMap(array(
-                array($request1, false, true),
-                array($request2, false, true),
+                array($request1, false, $retryRequest1 = $this->createRequestMock()),
+                array($request2, false, $retryRequest2 = $this->createRequestMock()),
             )));
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($requests))
+            ->with($this->identicalTo(array($retryRequest1, $retryRequest2)))
             ->will($this->returnValue($retryResponses));
 
         $this->retrySubscriber->onMultiException($event = $this->createMultiExceptionEvent($httpAdapter, $exceptions));
@@ -197,15 +201,15 @@ class RetrySubscriberTest extends AbstractSubscriberTest
             ->expects($this->exactly(count($requests)))
             ->method('retry')
             ->will($this->returnValueMap(array(
-                array($request1, false, true),
-                array($request2, false, true),
+                array($request1, false, $retryRequest1 = $this->createRequestMock()),
+                array($request2, false, $retryRequest2 = $this->createRequestMock()),
             )));
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($requests))
+            ->with($this->identicalTo(array($retryRequest1, $retryRequest2)))
             ->will($this->throwException($exception = $this->createMultiExceptionMock($exceptions)));
 
         $this->retrySubscriber->onMultiException($event = $this->createMultiExceptionEvent($httpAdapter, $exceptions));

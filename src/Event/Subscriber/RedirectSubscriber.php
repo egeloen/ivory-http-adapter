@@ -80,7 +80,7 @@ class RedirectSubscriber implements EventSubscriberInterface
         }
 
         if ($redirectRequest === false) {
-            $this->redirect->prepareResponse($event->getResponse(), $event->getRequest());
+            $event->setResponse($this->redirect->prepareResponse($event->getResponse(), $event->getRequest()));
 
             return;
         }
@@ -115,7 +115,8 @@ class RedirectSubscriber implements EventSubscriberInterface
             }
 
             if ($redirectRequest === false) {
-                $this->redirect->prepareResponse($response, $response->getParameter('request'));
+                $event->removeResponse($response);
+                $event->addResponse($this->redirect->prepareResponse($response, $response->getParameter('request')));
             } else {
                 $redirectRequests[] = $redirectRequest;
                 $event->removeResponse($response);

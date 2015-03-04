@@ -72,9 +72,12 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         $this->basicAuth
             ->expects($this->once())
             ->method('authenticate')
-            ->with($this->identicalTo($request = $this->createRequestMock()));
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue($authenticatedRequest = $this->createRequestMock()));
 
-        $this->basicAuthSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->basicAuthSubscriber->onPreSend($event = $this->createPreSendEvent(null, $request));
+
+        $this->assertSame($authenticatedRequest, $event->getRequest());
     }
 
     public function testMultiPreSendEvent()
@@ -84,9 +87,14 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         $this->basicAuth
             ->expects($this->exactly(count($requests)))
             ->method('authenticate')
-            ->withConsecutive(array($request1), array($request2));
+            ->will($this->returnValueMap(array(
+                array($request1, $authenticatedRequest1 = $this->createRequestMock()),
+                array($request2, $authenticatedRequest2 = $this->createRequestMock()),
+            )));
 
-        $this->basicAuthSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $this->basicAuthSubscriber->onMultiPreSend($event = $this->createMultiPreSendEvent(null, $requests));
+
+        $this->assertSame(array($authenticatedRequest1, $authenticatedRequest2), $event->getRequests());
     }
 
     /**

@@ -29,10 +29,10 @@ class Formatter implements FormatterInterface
     {
         return array(
             'protocol_version' => $request->getProtocolVersion(),
-            'url'              => (string) $request->getUrl(),
+            'uri'              => (string) $request->getUri(),
             'method'           => $request->getMethod(),
             'headers'          => $request->getHeaders(),
-            'raw_datas'        => $request->getRawDatas(),
+            'body'             => (string) $request->getBody(),
             'datas'            => $request->getDatas(),
             'files'            => $request->getFiles(),
             'parameters'       => $request->getParameters(),

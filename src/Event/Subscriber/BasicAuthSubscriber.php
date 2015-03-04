@@ -64,7 +64,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->basicAuth->authenticate($event->getRequest());
+        $event->setRequest($this->basicAuth->authenticate($event->getRequest()));
     }
 
     /**
@@ -75,7 +75,8 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     public function onMultiPreSend(MultiPreSendEvent $event)
     {
         foreach ($event->getRequests() as $request) {
-            $this->basicAuth->authenticate($request);
+            $event->removeRequest($request);
+            $event->addRequest($this->basicAuth->authenticate($request));
         }
     }
 

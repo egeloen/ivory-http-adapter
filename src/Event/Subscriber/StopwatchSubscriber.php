@@ -158,6 +158,6 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     private function getStopwatchName(HttpAdapterInterface $httpAdapter, InternalRequestInterface $internalRequest)
     {
-        return sprintf('ivory.http_adapter.%s (%s)', $httpAdapter->getName(), (string) $internalRequest->getUrl());
+        return sprintf('ivory.http_adapter.%s (%s)', $httpAdapter->getName(), (string) $internalRequest->getUri());
     }
 }

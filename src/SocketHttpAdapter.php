@@ -12,11 +12,11 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
-use Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor;
 use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Socket http adapter.
@@ -38,28 +38,28 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        list($protocol, $host, $port, $path) = $this->parseUrl($url = (string) $internalRequest->getUrl());
+        $uri = $internalRequest->getUri();
 
         $socket = @stream_socket_client(
-            $protocol.'://'.$host.':'.$port,
+            ($uri->getScheme() === 'https' ? 'ssl' : 'tcp').'://'.$uri->getHost().':'.($uri->getPort() ?: 80),
             $errno,
             $errstr,
             $this->getConfiguration()->getTimeout()
         );
 
         if ($socket === false) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $errstr);
+            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $errstr);
         }
 
         stream_set_timeout($socket, $this->getConfiguration()->getTimeout());
-        fwrite($socket, $this->prepareRequest($internalRequest, $path, $host, $port));
+        fwrite($socket, $this->prepareRequest($internalRequest));
         list($responseHeaders, $body) = $this->parseResponse($socket);
         $hasTimeout = $this->detectTimeout($socket);
         fclose($socket);
 
         if ($hasTimeout) {
             throw HttpAdapterException::timeoutExceeded(
-                $url,
+                $uri,
                 $this->getConfiguration()->getTimeout(),
                 $this->getName()
             );
@@ -67,7 +67,6 @@ class SocketHttpAdapter extends AbstractHttpAdapter
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             StatusCodeExtractor::extract($responseHeaders),
-            ReasonPhraseExtractor::extract($responseHeaders),
             ProtocolVersionExtractor::extract($responseHeaders),
             $responseHeaders = HeadersNormalizer::normalize($responseHeaders),
             BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod())
@@ -78,16 +77,16 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      * Prepares the request.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param string                                              $path            The path.
-     * @param string                                              $host            The host.
-     * @param integer                                             $port            The port.
      *
      * @return string The prepared request.
      */
-    private function prepareRequest(InternalRequestInterface $internalRequest, $path, $host, $port)
+    private function prepareRequest(InternalRequestInterface $internalRequest)
     {
+        $uri = $internalRequest->getUri();
+        $path = $uri->getPath().($uri->getQuery() ? '?'.$uri->getQuery() : '');
+
         $request = $internalRequest->getMethod().' '.$path.' HTTP/'.$internalRequest->getProtocolVersion()."\r\n";
-        $request .= 'Host: '.$host.($port !== 80 ? ':'.$port : '')."\r\n";
+        $request .= 'Host: '.$uri->getHost().($uri->getPort() !== null ? ':'.$uri->getPort() : '')."\r\n";
         $request .= implode("\r\n", $this->prepareHeaders($internalRequest, false, true, true))."\r\n\r\n";
         $request .= $this->prepareBody($internalRequest)."\r\n";
 
@@ -146,29 +145,6 @@ class SocketHttpAdapter extends AbstractHttpAdapter
         }
 
         return $body;
-    }
-
-    /**
-     * Parses the url.
-     *
-     * @param string $url The url.
-     *
-     * @return array The parsed url (0 => protocol, 1 => host, 2 => port, 3 => path).
-     */
-    private function parseUrl($url)
-    {
-        $info = parse_url($url);
-
-        return array(
-            isset($info['scheme']) ? ($info['scheme'] === 'http' ? 'tcp' : 'ssl') : 'tcp',
-            $info['host'],
-            isset($info['port']) ? $info['port'] : 80,
-            sprintf(
-                '%s%s',
-                isset($info['path']) ? $info['path'] : '/',
-                isset($info['query']) ? '?'.$info['query'] : ''
-            ),
-        );
     }
 
     /**

@@ -104,7 +104,7 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider watchProvider
      */
-    public function testWatch($method, array $params = array('url'), $wrappedMethod = 'send')
+    public function testWatch($method, array $params = array('uri'), $wrappedMethod = 'send')
     {
         $this->stopwatch
             ->expects($this->once())
@@ -127,7 +127,7 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider watchProvider
      */
-    public function testWatchException($method, array $params = array('url'), $wrappedMethod = 'send')
+    public function testWatchException($method, array $params = array('uri'), $wrappedMethod = 'send')
     {
         $this->stopwatch
             ->expects($this->once())
@@ -168,7 +168,7 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
             array('patch'),
             array('delete'),
             array('options'),
-            array('send', array('url', RequestInterface::METHOD_GET)),
+            array('send', array('uri', RequestInterface::METHOD_GET)),
             array('sendRequest', array($this->createRequestMock()), 'sendRequest'),
             array('sendRequests', array(array($this->createRequestMock())), 'sendRequests'),
         );
@@ -207,10 +207,10 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates a request mock.
      *
-     * @return \Psr\Http\Message\OutgoingRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return \Psr\Http\Message\RequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
     private function createRequestMock()
     {
-        return $this->getMock('Psr\Http\Message\OutgoingRequestInterface');
+        return $this->getMock('Psr\Http\Message\RequestInterface');
     }
 }

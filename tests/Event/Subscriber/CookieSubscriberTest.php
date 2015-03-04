@@ -93,9 +93,12 @@ class CookieSubscriberTest extends AbstractSubscriberTest
         $cookieJar
             ->expects($this->once())
             ->method('populate')
-            ->with($this->identicalTo($request = $this->createRequestMock()));
+            ->with($this->identicalTo($request = $this->createRequestMock()))
+            ->will($this->returnValue($populatedRequest = $this->createRequestMock()));
 
-        $this->cookieSubscriber->onPreSend($this->createPreSendEvent(null, $request));
+        $this->cookieSubscriber->onPreSend($event = $this->createPreSendEvent(null, $request));
+
+        $this->assertSame($populatedRequest, $event->getRequest());
     }
 
     public function testPostSendEvent()
@@ -140,9 +143,14 @@ class CookieSubscriberTest extends AbstractSubscriberTest
         $cookieJar
             ->expects($this->exactly(count($requests)))
             ->method('populate')
-            ->withConsecutive(array($request1), array($request2));
+            ->will($this->returnValueMap(array(
+                array($request1, $populatedRequest1 = $this->createRequestMock()),
+                array($request2, $populatedRequest2 = $this->createRequestMock()),
+            )));
 
-        $this->cookieSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $this->cookieSubscriber->onMultiPreSend($event = $this->createMultiPreSendEvent(null, $requests));
+
+        $this->assertSame(array($populatedRequest1, $populatedRequest2), $event->getRequests());
     }
 
     public function testMultiPostSendEvent()

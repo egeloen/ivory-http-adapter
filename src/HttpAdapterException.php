@@ -88,19 +88,19 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "CANNOT FETCH URL" exception.
+     * Gets the "CANNOT FETCH URI" exception.
      *
-     * @param string $url     The URL.
+     * @param string $uri     The uri.
      * @param string $adapter The adapter name.
      * @param string $error   The error.
      *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT FETCH URL" exception.
+     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT FETCH URI" exception.
      */
-    public static function cannotFetchUrl($url, $adapter, $error)
+    public static function cannotFetchUri($uri, $adapter, $error)
     {
         return new self(sprintf(
-            'An error occurred when fetching the URL "%s" with the adapter "%s" ("%s").',
-            $url,
+            'An error occurred when fetching the URI "%s" with the adapter "%s" ("%s").',
+            $uri,
             $adapter,
             $error
         ));
@@ -177,36 +177,6 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "DOES NOT SUPPORT BODY" exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT BODY" exception.
-     */
-    public static function doesNotSupportBody()
-    {
-        return new self('The internal request does not support body, you should rely on datas/files instead.');
-    }
-
-    /**
-     * Gets the "DOES NOT SUPPORT RAW DATAS AND DATAS" exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT RAW DATAS AND DATAS" exception.
-     */
-    public static function doesNotSupportRawDatasAndDatas()
-    {
-        return new self('The internal request does not support raw datas and datas.');
-    }
-
-    /**
-     * Gets the "DOES NOT SUPPORT RAW DATAS AND FILES" exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT RAW DATAS AND FILES" exception.
-     */
-    public static function doesNotSupportRawDatasAndFiles()
-    {
-        return new self('The internal request does not support raw datas and files.');
-    }
-
-    /**
      * Gets the "DOES NOT SUPPORT SUB ADAPTER" exception.
      *
      * @param string $adapter    The adapter name.
@@ -235,15 +205,15 @@ class HttpAdapterException extends \Exception
     /**
      * Gets the "MAX REDIRECTS EXCEEDED" exception.
      *
-     * @param string  $url          The url.
+     * @param string  $uri          The uri.
      * @param integer $maxRedirects The max redirects.
      * @param string  $adapter      The adapter name.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException The "MAX REDIRECTS EXCEEDED" exception.
      */
-    public static function maxRedirectsExceeded($url, $maxRedirects, $adapter)
+    public static function maxRedirectsExceeded($uri, $maxRedirects, $adapter)
     {
-        return self::cannotFetchUrl($url, $adapter, sprintf('Max redirects exceeded (%d)', $maxRedirects));
+        return self::cannotFetchUri($uri, $adapter, sprintf('Max redirects exceeded (%d)', $maxRedirects));
     }
 
     /**
@@ -256,7 +226,7 @@ class HttpAdapterException extends \Exception
     public static function requestIsNotValid($request)
     {
         return new self(sprintf(
-            'The request must be a string, an array or implement "Psr\Http\Message\OutgoingRequestInterface" ("%s" given).',
+            'The request must be a string, an array or implement "Psr\Http\Message\RequestInterface" ("%s" given).',
             is_object($request) ? get_class($request) : gettype($request)
         ));
     }
@@ -283,26 +253,14 @@ class HttpAdapterException extends \Exception
     /**
      * Gets the "TIMEOUT EXCEEDED" exception.
      *
-     * @param string $url     The url.
+     * @param string $uri     The uri.
      * @param float  $timeout The timeout.
      * @param string $adapter The adapter name.
      *
      * @return \Ivory\HttpAdapter\HttpAdapterException The "TIMEOUT EXCEEDED" exception.
      */
-    public static function timeoutExceeded($url, $timeout, $adapter)
+    public static function timeoutExceeded($uri, $timeout, $adapter)
     {
-        return self::cannotFetchUrl($url, $adapter, sprintf('Timeout exceeded (%.2f)', $timeout));
-    }
-
-    /**
-     * Gets the "URL IS NOT VALID" exception.
-     *
-     * @param string $url The url.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "URL IS NOT VALID" exception.
-     */
-    public static function urlIsNotValid($url)
-    {
-        return new self(sprintf('The url "%s" is not valid.', $url));
+        return self::cannotFetchUri($uri, $adapter, sprintf('Timeout exceeded (%.2f)', $timeout));
     }
 }

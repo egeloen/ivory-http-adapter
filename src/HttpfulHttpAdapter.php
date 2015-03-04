@@ -14,7 +14,6 @@ namespace Ivory\HttpAdapter;
 use Httpful\Mime;
 use Httpful\Request;
 use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
-use Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
@@ -52,7 +51,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             ->whenError(function () {})
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
             ->timeout($this->getConfiguration()->getTimeout())
-            ->uri($url = (string) $internalRequest->getUrl())
+            ->uri($uri = (string) $internalRequest->getUri())
             ->addHeaders($this->prepareHeaders($internalRequest))
             ->body($this->prepareContent($internalRequest));
 
@@ -62,19 +61,20 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             $request->addOnCurlOption(CURLOPT_CONNECTTIMEOUT, $this->getConfiguration()->getTimeout());
         } // @codeCoverageIgnoreEnd
 
-        if ($internalRequest->hasFiles()) {
+        $files = $internalRequest->getFiles();
+
+        if (!empty($files)) {
             $request->mime(Mime::UPLOAD);
         }
 
         try {
             $response = $request->send();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             $response->code,
-            ReasonPhraseExtractor::extract($response->raw_headers),
             ProtocolVersionExtractor::extract($response->raw_headers),
             $response->headers->toArray(),
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod())

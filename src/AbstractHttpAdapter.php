@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Psr\Http\Message\OutgoingRequestInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Abstract http adapter.
@@ -62,10 +62,10 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
-    public function send($url, $method, array $headers = array(), $datas = array(), array $files = array())
+    public function send($uri, $method, array $headers = array(), $datas = array(), array $files = array())
     {
         return $this->sendInternalRequest($this->configuration->getMessageFactory()->createInternalRequest(
-            $url,
+            $uri,
             $method,
             $this->configuration->getProtocolVersion(),
             $headers,
@@ -77,7 +77,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
-    public function sendRequest(OutgoingRequestInterface $request)
+    public function sendRequest(RequestInterface $request)
     {
         if ($request instanceof InternalRequestInterface) {
             return $this->sendInternalRequest($request);
@@ -87,10 +87,10 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
         $this->configuration->setProtocolVersion($request->getProtocolVersion());
 
         $response = $this->send(
-            $request->getUrl(),
+            $request->getUri(),
             $request->getMethod(),
             $request->getHeaders(),
-            (string) $request->getBody()
+            $request->getBody()
         );
 
         $this->configuration->setProtocolVersion($protocolVersion);
@@ -117,16 +117,16 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
                 );
             }
 
-            if (!$request instanceof OutgoingRequestInterface) {
+            if (!$request instanceof RequestInterface) {
                 $exceptions[] = HttpAdapterException::requestIsNotValid($request);
                 unset($requests[$index]);
             } elseif (!$request instanceof InternalRequestInterface) {
                 $request = $this->configuration->getMessageFactory()->createInternalRequest(
-                    $request->getUrl(),
+                    $request->getUri(),
                     $request->getMethod(),
                     $request->getProtocolVersion(),
                     $request->getHeaders(),
-                    (string) $request->getBody()
+                    $request->getBody()
                 );
             }
         }
@@ -168,7 +168,7 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
         foreach ($internalRequests as $internalRequest) {
             try {
                 $response = $this->doSendInternalRequest($internalRequest);
-                $response->setParameter('request', $internalRequest);
+                $response = $response->withParameter('request', $internalRequest);
                 call_user_func($success, $response);
             } catch (HttpAdapterException $e) {
                 $e->setRequest($internalRequest);
@@ -189,35 +189,47 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      * @return array The prepared headers.
      */
     protected function prepareHeaders(
-        InternalRequestInterface $internalRequest,
+        InternalRequestInterface &$internalRequest,
         $associative = true,
         $contentType = true,
         $contentLength = false
     ) {
         if (!$internalRequest->hasHeader('Connection')) {
-            $internalRequest->setHeader('Connection', $this->configuration->getKeepAlive() ? 'keep-alive' : 'close');
+            $internalRequest = $internalRequest->withHeader(
+                'Connection',
+                $this->configuration->getKeepAlive() ? 'keep-alive' : 'close'
+            );
         }
 
         if (!$internalRequest->hasHeader('Content-Type')) {
+            $datas = $internalRequest->getDatas();
+            $files = $internalRequest->getFiles();
+
             if ($this->configuration->hasEncodingType()) {
-                $internalRequest->setHeader('Content-Type', $this->configuration->getEncodingType());
-            } elseif ($contentType && $internalRequest->hasFiles()) {
-                $internalRequest->setHeader(
+                $internalRequest = $internalRequest->withHeader(
+                    'Content-Type',
+                    $this->configuration->getEncodingType()
+                );
+            } elseif ($contentType && !empty($files)) {
+                $internalRequest = $internalRequest->withHeader(
                     'Content-Type',
                     ConfigurationInterface::ENCODING_TYPE_FORMDATA.'; boundary='.$this->configuration->getBoundary()
                 );
-            } elseif ($contentType && $internalRequest->hasDatas()) {
-                $internalRequest->setHeader('Content-Type', ConfigurationInterface::ENCODING_TYPE_URLENCODED);
+            } elseif ($contentType && !empty($datas)) {
+                $internalRequest = $internalRequest->withHeader(
+                    'Content-Type',
+                    ConfigurationInterface::ENCODING_TYPE_URLENCODED
+                );
             }
         }
 
         if ($contentLength && !$internalRequest->hasHeader('Content-Length')
             && ($length = strlen($this->prepareBody($internalRequest))) > 0) {
-            $internalRequest->setHeader('Content-Length', $length);
+            $internalRequest = $internalRequest->withHeader('Content-Length', (string) $length);
         }
 
         if (!$internalRequest->hasHeader('User-Agent')) {
-            $internalRequest->setHeader('User-Agent', $this->configuration->getUserAgent());
+            $internalRequest = $internalRequest->withHeader('User-Agent', $this->configuration->getUserAgent());
         }
 
         return HeadersNormalizer::normalize($internalRequest->getHeaders(), $associative);
@@ -232,11 +244,15 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
      */
     protected function prepareBody(InternalRequestInterface $internalRequest)
     {
-        if ($internalRequest->hasRawDatas()) {
-            return $internalRequest->getRawDatas();
+        $body = (string) $internalRequest->getBody();
+
+        if (!empty($body)) {
+            return $body;
         }
 
-        if (!$internalRequest->hasFiles()) {
+        $files = $internalRequest->getFiles();
+
+        if (empty($files)) {
             return http_build_query($internalRequest->getDatas(), null, '&');
         }
 

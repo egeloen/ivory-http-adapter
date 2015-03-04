@@ -92,13 +92,14 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
         $request = $this->createRequestMock();
         $request
             ->expects($this->once())
-            ->method('setHeader')
+            ->method('withHeader')
             ->with(
                 $this->identicalTo('Authorization'),
                 $this->identicalTo('Basic dXNlcm5hbWU6cGFzc3dvcmQ=')
-            );
+            )
+            ->will($this->returnValue($authenticatedRequest = $this->createRequestMock()));
 
-        $this->basicAuth->authenticate($request);
+        $this->assertSame($authenticatedRequest, $this->basicAuth->authenticate($request));
     }
 
     /**
@@ -111,13 +112,14 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
         $request = $this->createRequestMock();
         $request
             ->expects($this->once())
-            ->method('setHeader')
+            ->method('withHeader')
             ->with(
                 $this->identicalTo('Authorization'),
                 $this->identicalTo('Basic dXNlcm5hbWU6cGFzc3dvcmQ=')
-            );
+            )
+            ->will($this->returnValue($authenticatedRequest = $this->createRequestMock()));
 
-        $this->basicAuth->authenticate($request);
+        $this->assertSame($authenticatedRequest, $this->basicAuth->authenticate($request));
     }
 
     /**
@@ -130,9 +132,9 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
         $request = $this->createRequestMock();
         $request
             ->expects($this->never())
-            ->method('setHeader');
+            ->method('withHeader');
 
-        $this->basicAuth->authenticate($request);
+        $this->assertSame($request, $this->basicAuth->authenticate($request));
     }
 
     /**
@@ -147,7 +149,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
             array('/^http:\/\/egeloen\.fr$/'),
             array(
                 function (InternalRequestInterface $request) {
-                    return $request->getUrl() === 'http://egeloen.fr';
+                    return $request->getUri() === 'http://egeloen.fr';
                 },
             ),
         );
@@ -164,7 +166,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
             array('/^foo$/'),
             array(
                 function (InternalRequestInterface $request) {
-                    return $request->getUrl() === 'foo';
+                    return $request->getUri() === 'foo';
                 },
             ),
         );
@@ -180,7 +182,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
         $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
         $request
             ->expects($this->any())
-            ->method('getUrl')
+            ->method('getUri')
             ->will($this->returnValue('http://egeloen.fr'));
 
         return $request;
