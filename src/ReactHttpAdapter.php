@@ -48,7 +48,7 @@ class ReactHttpAdapter extends AbstractHttpAdapter
 
         $request = $httpClientFactory->create($loop, $dnsResolverFactory->createCached('8.8.8.8', $loop))->request(
             $internalRequest->getMethod(),
-            $url = (string) $internalRequest->getUrl(),
+            $uri = (string) $internalRequest->getUri(),
             $this->prepareHeaders($internalRequest, true, true, true)
         );
 
@@ -68,12 +68,11 @@ class ReactHttpAdapter extends AbstractHttpAdapter
         $loop->run();
 
         if ($error !== null) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error->getMessage());
+            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $error->getMessage());
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             (integer) $response->getCode(),
-            $response->getReasonPhrase(),
             $response->getVersion(),
             $response->getHeaders(),
             BodyNormalizer::normalize($body, $internalRequest->getMethod())

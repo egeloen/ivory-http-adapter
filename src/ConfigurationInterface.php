@@ -38,8 +38,6 @@ interface ConfigurationInterface
      * Sets the message factory.
      *
      * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
-     *
-     * @return void No return value.
      */
     public function setMessageFactory(MessageFactoryInterface $messageFactory);
 
@@ -61,8 +59,6 @@ interface ConfigurationInterface
      * Sets the event dispatcher.
      *
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface|null $eventDispatcher The event dispatcher.
-     *
-     * @return void No return value.
      */
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null);
 
@@ -77,8 +73,6 @@ interface ConfigurationInterface
      * Sets the protocol version.
      *
      * @param string $protocolVersion The protocol version.
-     *
-     * @return void No return value.
      */
     public function setProtocolVersion($protocolVersion);
 
@@ -93,8 +87,6 @@ interface ConfigurationInterface
      * Sets if it is kept alive.
      *
      * @param boolean $keepAlive TRUE if it is kept alive else FALSE.
-     *
-     * @return void No return value.
      */
     public function setKeepAlive($keepAlive);
 
@@ -116,8 +108,6 @@ interface ConfigurationInterface
      * Sets the encoding type.
      *
      * @param string|null $encodingType The encoding type.
-     *
-     * @return void No return value.
      */
     public function setEncodingType($encodingType);
 
@@ -132,8 +122,6 @@ interface ConfigurationInterface
      * Sets the boundary.
      *
      * @param string $boundary The boundary.
-     *
-     * @return void No return value.
      */
     public function setBoundary($boundary);
 
@@ -148,8 +136,6 @@ interface ConfigurationInterface
      * Sets the timeout (in seconds).
      *
      * @param float $timeout The timeout.
-     *
-     * @return void No return value.
      */
     public function setTimeout($timeout);
 
@@ -164,31 +150,27 @@ interface ConfigurationInterface
      * Sets the user agent.
      *
      * @param string $userAgent The user agent.
-     *
-     * @return void No return value.
      */
     public function setUserAgent($userAgent);
 
     /**
-     * Checks if there is a base url.
+     * Checks if there is a base uri.
      *
-     * @return boolean TRUE if there is a base url else FALSE.
+     * @return boolean TRUE if there is a base uri else FALSE.
      */
-    public function hasBaseUrl();
+    public function hasBaseUri();
 
     /**
-     * Sets the base url.
+     * Gets the base uri.
      *
-     * @param string $baseUrl The base url.
-     *
-     * @return void No return value.
+     * @return string The base uri.
      */
-    public function setBaseUrl($baseUrl);
+    public function getBaseUri();
 
     /**
-     * Gets the base url.
+     * Sets the base uri.
      *
-     * @return string The base url.
+     * @param string $baseUri The base uri.
      */
-    public function getBaseUrl();
+    public function setBaseUri($baseUri);
 }

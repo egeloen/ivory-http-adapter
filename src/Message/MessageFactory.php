@@ -11,9 +11,10 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Ivory\HttpAdapter\Message\Stream\ResourceStream;
-use Ivory\HttpAdapter\Message\Stream\StringStream;
-use Ivory\HttpAdapter\Normalizer\UrlNormalizer;
+use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Phly\Http\Stream;
+use Phly\Http\Uri;
+use Psr\Http\Message\StreamableInterface;
 
 /**
  * Message factory.
@@ -22,28 +23,63 @@ use Ivory\HttpAdapter\Normalizer\UrlNormalizer;
  */
 class MessageFactory implements MessageFactoryInterface
 {
-    /** @var string */
-    private $baseUrl;
+    /** @var null|\Phly\Http\Uri */
+    private $baseUri;
+
+    /**
+     * @param string $baseUri The base uri.
+     */
+    public function __construct($baseUri = null)
+    {
+        $this->setBaseUri($baseUri);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasBaseUri()
+    {
+        return $this->baseUri !== null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBaseUri()
+    {
+        return $this->baseUri;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setBaseUri($baseUri = null)
+    {
+        if (is_string($baseUri)) {
+            $baseUri = new Uri($baseUri);
+        }
+
+        $this->baseUri = $baseUri;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function createRequest(
-        $url,
+        $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
         array $headers = array(),
         $body = null,
         array $parameters = array()
     ) {
-        return new Request(
-            $this->prepareUrl($url),
+        return (new Request(
+            $this->createUri($uri),
             $method,
-            $protocolVersion,
-            $headers,
             $this->createStream($body),
+            HeadersNormalizer::normalize($headers),
             $parameters
-        );
+        ))->withProtocolVersion($protocolVersion);
     }
 
     /**
@@ -58,7 +94,7 @@ class MessageFactory implements MessageFactoryInterface
      * {@inheritdoc}
      */
     public function createInternalRequest(
-        $url,
+        $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
         array $headers = array(),
@@ -66,15 +102,22 @@ class MessageFactory implements MessageFactoryInterface
         array $files = array(),
         array $parameters = array()
     ) {
-        return new InternalRequest(
-            $this->prepareUrl($url),
+        $body = null;
+
+        if (!is_array($datas)) {
+            $body = $this->createStream($datas);
+            $datas = $files = array();
+        }
+
+        return (new InternalRequest(
+            $this->createUri($uri),
             $method,
-            $protocolVersion,
-            $headers,
+            $body !== null ? $body : 'php://memory',
             $datas,
             $files,
+            HeadersNormalizer::normalize($headers),
             $parameters
-        );
+        ))->withProtocolVersion($protocolVersion);
     }
 
     /**
@@ -88,61 +131,19 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function hasBaseUrl()
-    {
-        return $this->baseUrl !== null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setBaseUrl($baseUrl)
-    {
-        $this->baseUrl = UrlNormalizer::normalize($baseUrl);
-    }
-
-    /**
-     * Prepares an url.
-     *
-     * @param  string $url The url.
-     * @return string The prepared url.
-     */
-    private function prepareUrl($url)
-    {
-        if ($this->hasBaseUrl() && false === stripos($url, $baseUrl = $this->getBaseUrl())) {
-            $url = $baseUrl.$url;
-        }
-
-        return $url;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createResponse(
         $statusCode = 200,
-        $reasonPhrase = 'OK',
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
         array $headers = array(),
         $body = null,
         array $parameters = array()
     ) {
-        return new Response(
-            $statusCode,
-            $reasonPhrase,
-            $protocolVersion,
-            $headers,
+        return (new Response(
             $this->createStream($body),
+            $statusCode,
+            HeadersNormalizer::normalize($headers),
             $parameters
-        );
+        ))->withProtocolVersion($protocolVersion);
     }
 
     /**
@@ -154,22 +155,46 @@ class MessageFactory implements MessageFactoryInterface
     }
 
     /**
+     * Creates an uri.
+     *
+     * @param string $uri The uri.
+     *
+     * @return string The created uri.
+     */
+    private function createUri($uri)
+    {
+        if ($this->hasBaseUri() && (stripos($uri, $baseUri = (string) $this->getBaseUri()) === false)) {
+            return $baseUri.$uri;
+        }
+
+        return $uri;
+    }
+
+    /**
      * Creates a stream.
      *
-     * @param resource|string|\Psr\Http\Message\StreamableInterface|null $body The body.
+     * @param null|resource|string|\Psr\Http\Message\StreamableInterface|null $body The body.
      *
-     * @return \Psr\Http\Message\StreamableInterface|null The stream.
+     * @return \Psr\Http\Message\StreamableInterface The stream.
      */
     private function createStream($body)
     {
+        if ($body instanceof StreamableInterface) {
+            return $body;
+        }
+
         if (is_resource($body)) {
-            return new ResourceStream($body);
+            return new Stream($body);
         }
 
-        if (is_string($body)) {
-            return new StringStream($body, StringStream::MODE_SEEK | StringStream::MODE_READ);
+        $stream = new Stream('php://memory', 'rw');
+
+        if ($body === null) {
+            return $stream;
         }
 
-        return $body;
+        $stream->write((string) $body);
+
+        return $stream;
     }
 }

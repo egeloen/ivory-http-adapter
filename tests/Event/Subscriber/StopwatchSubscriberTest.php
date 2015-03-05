@@ -87,7 +87,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->stopwatch
             ->expects($this->once())
             ->method('start')
-            ->with($this->identicalTo('ivory.http_adapter.http_adapter (url)'));
+            ->with($this->identicalTo('ivory.http_adapter.http_adapter (uri)'));
 
         $this->stopwatchSubscriber->onPreSend($this->createPreSendEvent());
     }
@@ -97,7 +97,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->stopwatch
             ->expects($this->once())
             ->method('stop')
-            ->with($this->identicalTo('ivory.http_adapter.http_adapter (url)'));
+            ->with($this->identicalTo('ivory.http_adapter.http_adapter (uri)'));
 
         $this->stopwatchSubscriber->onPostSend($this->createPostSendEvent());
     }
@@ -107,7 +107,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->stopwatch
             ->expects($this->once())
             ->method('stop')
-            ->with($this->identicalTo('ivory.http_adapter.http_adapter (url)'));
+            ->with($this->identicalTo('ivory.http_adapter.http_adapter (uri)'));
 
         $this->stopwatchSubscriber->onException($this->createExceptionEvent());
     }
@@ -120,8 +120,8 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
             ->expects($this->exactly(count($requests)))
             ->method('start')
             ->withConsecutive(
-                array('ivory.http_adapter.http_adapter (url)'),
-                array('ivory.http_adapter.http_adapter (url)')
+                array('ivory.http_adapter.http_adapter (uri)'),
+                array('ivory.http_adapter.http_adapter (uri)')
             );
 
         $this->stopwatchSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
@@ -138,8 +138,8 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
             ->expects($this->exactly(count($responses)))
             ->method('stop')
             ->withConsecutive(
-                array('ivory.http_adapter.http_adapter (url)'),
-                array('ivory.http_adapter.http_adapter (url)')
+                array('ivory.http_adapter.http_adapter (uri)'),
+                array('ivory.http_adapter.http_adapter (uri)')
             );
 
         $this->stopwatchSubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
@@ -153,8 +153,8 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
             ->expects($this->exactly(count($exceptions)))
             ->method('stop')
             ->withConsecutive(
-                array('ivory.http_adapter.http_adapter (url)'),
-                array('ivory.http_adapter.http_adapter (url)')
+                array('ivory.http_adapter.http_adapter (uri)'),
+                array('ivory.http_adapter.http_adapter (uri)')
             );
 
         $this->stopwatchSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
@@ -182,8 +182,8 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $request = parent::createRequestMock();
         $request
             ->expects($this->once())
-            ->method('getUrl')
-            ->will($this->returnValue('url'));
+            ->method('getUri')
+            ->will($this->returnValue('uri'));
 
         return $request;
     }

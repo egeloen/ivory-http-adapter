@@ -58,11 +58,6 @@ class Retry implements RetryInterface
     public function retry(InternalRequestInterface $internalRequest, $wait = true)
     {
         if (!$this->strategy->verify($internalRequest)) {
-            $internalRequest->setParameter(
-                self::RETRY_COUNT,
-                (int) $internalRequest->getParameter(self::RETRY_COUNT)
-            );
-
             return false;
         }
 
@@ -70,8 +65,9 @@ class Retry implements RetryInterface
             usleep($delay * 1000000);
         }
 
-        $internalRequest->setParameter(self::RETRY_COUNT, $internalRequest->getParameter(self::RETRY_COUNT) + 1);
-
-        return true;
+        return $internalRequest->withParameter(
+            self::RETRY_COUNT,
+            $internalRequest->getParameter(self::RETRY_COUNT) + 1
+        );
     }
 }

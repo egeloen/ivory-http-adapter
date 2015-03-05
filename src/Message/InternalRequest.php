@@ -11,9 +11,6 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Ivory\HttpAdapter\HttpAdapterException;
-use Psr\Http\Message\StreamableInterface;
-
 /**
  * Internal request.
  *
@@ -21,9 +18,6 @@ use Psr\Http\Message\StreamableInterface;
  */
 class InternalRequest extends Request implements InternalRequestInterface
 {
-    /** @var string */
-    private $rawDatas = '';
-
     /** @var array */
     private $datas = array();
 
@@ -31,124 +25,27 @@ class InternalRequest extends Request implements InternalRequestInterface
     private $files = array();
 
     /**
-     * Creates an internal request.
-     *
-     * @param string|object $url             The url.
-     * @param string        $method          The method.
-     * @param string        $protocolVersion The protocol version.
-     * @param array         $headers         The headers.
-     * @param array|string  $datas           The datas.
-     * @param array         $files           The files.
-     * @param array         $parameters      The parameters.
+     * @param null|string|\Psr\Http\Message\UriInterface            $uri        The internal request uri.
+     * @param null|string                                           $method     The internal request method.
+     * @param string|resource|\Psr\Http\Message\StreamableInterface $body       The internal request body.
+     * @param array                                                 $datas      The internal request datas.
+     * @param array                                                 $files      The internal request files.
+     * @param array                                                 $headers    The internal request headers.
+     * @param array                                                 $parameters The internal request parameters.
      */
     public function __construct(
-        $url,
-        $method = self::METHOD_GET,
-        $protocolVersion = self::PROTOCOL_VERSION_1_1,
-        array $headers = array(),
-        $datas = array(),
+        $uri = null,
+        $method = null,
+        $body = 'php://memory',
+        array $datas = array(),
         array $files = array(),
+        array $headers = array(),
         array $parameters = array()
     ) {
-        parent::__construct($url, $method, $protocolVersion, $headers, null, $parameters);
+        parent::__construct($uri, $method, $body, $headers, $parameters);
 
-        if (is_array($datas)) {
-            $this->setDatas($datas);
-        } else {
-            $this->setRawDatas($datas);
-        }
-
-        $this->setFiles($files);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to data/files instead.
-     */
-    public function hasBody()
-    {
-        throw HttpAdapterException::doesNotSupportBody();
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to datas/files instead.
-     */
-    public function getBody()
-    {
-        throw HttpAdapterException::doesNotSupportBody();
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException The method is not supported, you should rely to datas/files instead.
-     */
-    public function setBody(StreamableInterface $body = null)
-    {
-        if ($body !== null) {
-            throw HttpAdapterException::doesNotSupportBody();
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clearRawDatas()
-    {
-        $this->rawDatas = '';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasRawDatas()
-    {
-        return !empty($this->rawDatas);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRawDatas()
-    {
-        return $this->rawDatas;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setRawDatas($rawDatas)
-    {
-        if (!empty($rawDatas)) {
-            if ($this->hasDatas()) {
-                throw HttpAdapterException::doesNotSupportRawDatasAndDatas();
-            }
-
-            if ($this->hasFiles()) {
-                throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
-            }
-        }
-
-        $this->rawDatas = $rawDatas;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clearDatas()
-    {
-        $this->datas = array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasDatas()
-    {
-        return !empty($this->datas);
+        $this->datas = $datas;
+        $this->files = $files;
     }
 
     /**
@@ -157,39 +54,6 @@ class InternalRequest extends Request implements InternalRequestInterface
     public function getDatas()
     {
         return $this->datas;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setDatas(array $datas)
-    {
-        if ($this->hasRawDatas()) {
-            throw HttpAdapterException::doesNotSupportRawDatasAndDatas();
-        }
-
-        $this->clearDatas();
-        $this->addDatas($datas);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addDatas(array $datas)
-    {
-        foreach ($datas as $name => $value) {
-            $this->addData($name, $value);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeDatas(array $names)
-    {
-        foreach ($names as $name) {
-            $this->removeData($name);
-        }
     }
 
     /**
@@ -211,52 +75,36 @@ class InternalRequest extends Request implements InternalRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function setData($name, $value)
+    public function withData($name, $value)
     {
-        if ($this->hasRawDatas()) {
-            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
-        }
+        $new = clone $this;
+        $new->datas[$name] = $value;
 
-        $this->removeData($name);
-        $this->addData($name, $value);
+        return $new;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function addData($name, $value)
+    public function withAddedData($name, $value)
     {
-        if ($this->hasRawDatas()) {
-            throw HttpAdapterException::doesNotSupportRawDatasAndDatas();
-        }
-
-        $this->datas[$name] = $this->hasData($name)
-            ? array_merge((array) $this->datas[$name], (array) $value)
+        $new = clone $this;
+        $new->datas[$name] = $new->hasData($name)
+            ? array_merge((array) $new->datas[$name], (array) $value)
             : $value;
+
+        return $new;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function removeData($name)
+    public function withoutData($name)
     {
-        unset($this->datas[$name]);
-    }
+        $new = clone $this;
+        unset($new->datas[$name]);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function clearFiles()
-    {
-        $this->files = array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasFiles()
-    {
-        return !empty($this->files);
+        return $new;
     }
 
     /**
@@ -265,39 +113,6 @@ class InternalRequest extends Request implements InternalRequestInterface
     public function getFiles()
     {
         return $this->files;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setFiles(array $files)
-    {
-        if ($this->hasRawDatas() && !empty($files)) {
-            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
-        }
-
-        $this->clearFiles();
-        $this->addFiles($files);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addFiles(array $files)
-    {
-        foreach ($files as $name => $file) {
-            $this->addFile($name, $file);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeFiles(array $names)
-    {
-        foreach ($names as $name) {
-            $this->removeFile($name);
-        }
     }
 
     /**
@@ -319,35 +134,35 @@ class InternalRequest extends Request implements InternalRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function setFile($name, $file)
+    public function withFile($name, $file)
     {
-        if ($this->hasRawDatas()) {
-            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
-        }
+        $new = clone $this;
+        $new->files[$name] = $file;
 
-        $this->removeFile($name);
-        $this->addFile($name, $file);
+        return $new;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function addFile($name, $file)
+    public function withAddedFile($name, $file)
     {
-        if ($this->hasRawDatas()) {
-            throw HttpAdapterException::doesNotSupportRawDatasAndFiles();
-        }
-
-        $this->files[$name] = $this->hasFile($name)
-            ? array_merge((array) $this->files[$name], (array) $file)
+        $new = clone $this;
+        $new->files[$name] = $new->hasFile($name)
+            ? array_merge((array) $new->files[$name], (array) $file)
             : $file;
+
+        return $new;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function removeFile($name)
+    public function withoutFile($name)
     {
-        unset($this->files[$name]);
+        $new = clone $this;
+        unset($new->files[$name]);
+
+        return $new;
     }
 }

@@ -199,9 +199,11 @@ class CookieJar implements CookieJarInterface
     {
         foreach ($this->cookies as $cookie) {
             if (!$cookie->isExpired() && $cookie->match($request)) {
-                $request->addHeader('Cookie', (string) $cookie);
+                $request = $request->withAddedHeader('Cookie', (string) $cookie);
             }
         }
+
+        return $request;
     }
 
     /**
@@ -209,14 +211,11 @@ class CookieJar implements CookieJarInterface
      */
     public function extract(InternalRequestInterface $request, ResponseInterface $response)
     {
-        foreach ($response->getHeaderAsArray('Set-Cookie') as $header) {
+        foreach ($response->getHeader('Set-Cookie') as $header) {
             $cookie = $this->cookieFactory->parse($header);
 
             if (!$cookie->hasAttribute(CookieInterface::ATTR_DOMAIN)) {
-                $cookie->setAttribute(
-                    CookieInterface::ATTR_DOMAIN,
-                    parse_url((string) $request->getUrl(), PHP_URL_HOST)
-                );
+                $cookie->setAttribute(CookieInterface::ATTR_DOMAIN, $request->getUri()->getHost());
             }
 
             $this->addCookie($cookie);

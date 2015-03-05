@@ -370,6 +370,12 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
             ->will($this->returnValue($response = $this->createResponseMock()));
 
+        $response
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($internalRequest))
+            ->will($this->returnValue($response));
+
         $this->httpAdapter->getConfiguration()->setEventDispatcher(null);
 
         $this->assertSame(array($response), $this->httpAdapter->sendRequests(array($internalRequest)));
@@ -407,6 +413,12 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequestOverride = $this->createInternalRequestMock()))
             ->will($this->returnValue($response = $this->createResponseMock()));
 
+        $response
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($internalRequestOverride))
+            ->will($this->returnValue($response));
+
         $this->httpAdapter->getConfiguration()->setEventDispatcher(
             $eventDispatcher = $this->createEventDispatcherMock()
         );
@@ -440,6 +452,12 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('doSendInternalRequest')
             ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
             ->will($this->returnValue($response = $this->createResponseMock()));
+
+        $response
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($internalRequest))
+            ->will($this->returnValue($response));
 
         $this->httpAdapter->getConfiguration()->setEventDispatcher(
             $eventDispatcher = $this->createEventDispatcherMock()
@@ -553,6 +571,12 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($internalRequest = $this->createInternalRequestMock()))
             ->will($this->returnValue($response = $this->createResponseMock()));
 
+        $response
+            ->expects($this->once())
+            ->method('withParameter')
+            ->with($this->identicalTo('request'), $this->identicalTo($internalRequest))
+            ->will($this->returnValue($response));
+
         $this->httpAdapter->getConfiguration()->setEventDispatcher(
             $eventDispatcher = $this->createEventDispatcherMock()
         );
@@ -605,7 +629,7 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Ivory\HttpAdapter\HttpAdapterException', $exceptions[0]);
 
             $this->assertSame(
-                'The request must be a string, an array or implement "Psr\Http\Message\OutgoingRequestInterface" ("boolean" given).',
+                'The request must be a string, an array or implement "Psr\Http\Message\RequestInterface" ("boolean" given).',
                 $exceptions[0]->getMessage()
             );
 

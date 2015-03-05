@@ -139,7 +139,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider maxRedirectReachedProvider
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     * @expectedExceptionMessage An error occurred when fetching the URL "http://egeloen.fr" with the adapter "http_adapter" ("Max redirects exceeded (5)")
+     * @expectedExceptionMessage An error occurred when fetching the URI "http://egeloen.fr" with the adapter "http_adapter" ("Max redirects exceeded (5)")
      */
     public function testCreateRedirectRequestWithMaxRedirectReachedThrowException($redirectCount, $max)
     {
@@ -181,13 +181,6 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateRedirectRequestWithRedirectResponse($statusCode, $strict = false, $clear = true)
     {
-        $messageFactory = $this->createMessageFactoryMock();
-        $messageFactory
-            ->expects($this->once())
-            ->method('cloneInternalRequest')
-            ->with($this->identicalTo($request = $this->createRequestMock()))
-            ->will($this->returnValue($redirectRequest = $this->createRequestMock()));
-
         $response = $this->createResponseMock();
         $response
             ->expects($this->any())
@@ -204,42 +197,82 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getHeader')
             ->with($this->identicalTo('Location'))
-            ->will($this->returnValue($location = 'http://egeloen.fr'));
+            ->will($this->returnValue($location = 'http://egeloen.fr/'));
 
-        $redirectRequest
-            ->expects($clear ? $this->once() : $this->never())
-            ->method('setMethod')
-            ->with($this->identicalTo(InternalRequestInterface::METHOD_GET));
+        $request = $this->createRequestMock();
+        $request
+            ->expects($this->any())
+            ->method('getMethod')
+            ->will($this->returnValue($method = InternalRequestInterface::METHOD_POST));
 
-        $redirectRequest
-            ->expects($clear ? $this->once() : $this->never())
-            ->method('removeHeaders')
-            ->with($this->identicalTo(array('Content-Type', 'Content-Length')));
+        $request
+            ->expects($this->any())
+            ->method('getProtocolVersion')
+            ->will($this->returnValue($protocolVersion = InternalRequestInterface::PROTOCOL_VERSION_1_0));
 
-        $redirectRequest
-            ->expects($clear ? $this->once() : $this->never())
-            ->method('clearRawDatas');
+        $request
+            ->expects($this->any())
+            ->method('getHeaders')
+            ->will($this->returnValue($headers = array('header' => array('foo'))));
 
-        $redirectRequest
-            ->expects($clear ? $this->once() : $this->never())
-            ->method('clearDatas');
+        $request
+            ->expects($this->any())
+            ->method('getBody')
+            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamableInterface')));
 
-        $redirectRequest
-            ->expects($clear ? $this->once() : $this->never())
-            ->method('clearFiles');
+        $request
+            ->expects($this->any())
+            ->method('getDatas')
+            ->will($this->returnValue($datas = array('data' => 'foo')));
 
-        $redirectRequest
+        $request
+            ->expects($this->any())
+            ->method('getFiles')
+            ->will($this->returnValue($files = array('file' => 'foo')));
+
+        $request
+            ->expects($this->any())
+            ->method('getParameters')
+            ->will($this->returnValue($parameters = array('parameter' => 'foo')));
+
+        $messageFactory = $this->createMessageFactoryMock();
+        $messageFactory
             ->expects($this->once())
-            ->method('setUrl')
-            ->with($this->identicalTo($location));
+            ->method('createInternalRequest')
+            ->with(
+                $this->identicalTo($location),
+                $this->identicalTo($clear ? InternalRequestInterface::METHOD_GET : $method),
+                $this->identicalTo($protocolVersion),
+                $this->identicalTo($headers),
+                $this->identicalTo($clear ? array() : $datas),
+                $this->identicalTo($clear ? array() : $files),
+                $this->identicalTo($parameters)
+            )
+            ->will($this->returnValue($redirectRequest = $this->createRequestMock()));
+
+        if ($clear) {
+            $redirectRequest
+                ->expects($this->exactly(2))
+                ->method('withoutHeader')
+                ->will($this->returnValueMap(array(
+                    array('Content-Type', $redirectRequest),
+                    array('Content-Length', $redirectRequest),
+                )));
+        } else {
+            $redirectRequest
+                ->expects($this->once())
+                ->method('withBody')
+                ->with($this->identicalTo($body))
+                ->will($this->returnValue($redirectRequest));
+        }
 
         $redirectRequest
             ->expects($this->exactly(2))
-            ->method('setParameter')
-            ->withConsecutive(
-                array($this->identicalTo(Redirect::PARENT_REQUEST), $this->identicalTo($request)),
-                array($this->identicalTo(Redirect::REDIRECT_COUNT), $this->identicalTo(1))
-            );
+            ->method('withParameter')
+            ->will($this->returnValueMap(array(
+                array(Redirect::PARENT_REQUEST, $request, $redirectRequest),
+                array(Redirect::REDIRECT_COUNT, 1, $redirectRequest),
+            )));
 
         $this->redirect->setStrict($strict);
 
@@ -261,17 +294,17 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
 
         $request
             ->expects($this->any())
-            ->method('getUrl')
-            ->will($this->returnValue($url = 'http://egeloen.fr'));
+            ->method('getUri')
+            ->will($this->returnValue($uri = 'http://egeloen.fr/'));
 
         $response = $this->createResponseMock();
         $response
             ->expects($this->exactly(2))
-            ->method('setParameter')
-            ->withConsecutive(
-                array($this->identicalTo(Redirect::REDIRECT_COUNT), $this->identicalTo($redirectCount)),
-                array($this->identicalTo(Redirect::EFFECTIVE_URL), $this->identicalTo($url))
-            );
+            ->method('withParameter')
+            ->will($this->returnValueMap(array(
+                array(Redirect::REDIRECT_COUNT, $redirectCount, $response),
+                array(Redirect::EFFECTIVE_URI, $uri, $response),
+            )));
 
         $this->redirect->prepareResponse($response, $request);
     }
@@ -340,7 +373,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
         $request
             ->expects($this->any())
-            ->method('getUrl')
+            ->method('getUri')
             ->will($this->returnValue('http://egeloen.fr'));
 
         if ($parent !== null) {

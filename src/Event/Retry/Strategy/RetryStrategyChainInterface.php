@@ -36,8 +36,6 @@ interface RetryStrategyChainInterface extends RetryStrategyInterface
      * Sets the next chained retry strategy.
      *
      * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next The next retry strategy chain.
-     *
-     * @return void No return value.
      */
     public function setNext(RetryStrategyChainInterface $next = null);
 }

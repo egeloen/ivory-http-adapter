@@ -16,7 +16,7 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
- * Formatter
+ * Formatter.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */

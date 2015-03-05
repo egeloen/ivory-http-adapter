@@ -42,7 +42,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testInitialState()
     {
-        $this->assertFalse($this->messageFactory->hasBaseUrl());
+        $this->assertFalse($this->messageFactory->hasBaseUri());
     }
 
     public function testInheritance()
@@ -52,26 +52,20 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateRequest()
     {
-        $request = $this->messageFactory->createRequest($url = 'http://egeloen.fr/');
+        $request = $this->messageFactory->createRequest($uri = 'http://egeloen.fr/');
 
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $request);
-        $this->assertSame($url, $request->getUrl());
+        $this->assertSame($uri, (string) $request->getUri());
         $this->assertSame(RequestInterface::METHOD_GET, $request->getMethod());
-
-        $this->assertFalse($request->hasHeaders());
         $this->assertEmpty($request->getHeaders());
-
-        $this->assertFalse($request->hasBody());
-        $this->assertNull($request->getBody());
-
-        $this->assertFalse($request->hasParameters());
+        $this->assertEmpty((string) $request->getBody());
         $this->assertEmpty($request->getParameters());
     }
 
     public function testCreateRequestWithFullInformations()
     {
         $request = $this->messageFactory->createRequest(
-            $url = 'http://egeloen.fr/',
+            $uri = 'http://egeloen.fr/',
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
             $headers = array('foo' => array('bar')),
@@ -79,17 +73,11 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $parameters = array('baz' => 'bat')
         );
 
-        $this->assertSame($url, $request->getUrl());
+        $this->assertSame($uri, (string) $request->getUri());
         $this->assertSame($method, $request->getMethod());
         $this->assertSame($protocolVersion, $request->getProtocolVersion());
-
-        $this->assertTrue($request->hasHeaders());
         $this->assertSame($headers, $request->getHeaders());
-
-        $this->assertTrue($request->hasBody());
         $this->assertSame($body, $request->getBody());
-
-        $this->assertTrue($request->hasParameters());
         $this->assertSame($parameters, $request->getParameters());
     }
 
@@ -104,33 +92,23 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateInternalRequest()
     {
-        $internalRequest = $this->messageFactory->createInternalRequest($url = 'http://egeloen.fr/');
+        $internalRequest = $this->messageFactory->createInternalRequest($uri = 'http://egeloen.fr/');
 
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\InternalRequest', $internalRequest);
-        $this->assertSame($url, $internalRequest->getUrl());
+        $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame(RequestInterface::METHOD_GET, $internalRequest->getMethod());
         $this->assertSame(RequestInterface::PROTOCOL_VERSION_1_1, $internalRequest->getProtocolVersion());
-
-        $this->assertFalse($internalRequest->hasHeaders());
         $this->assertEmpty($internalRequest->getHeaders());
-
-        $this->assertFalse($internalRequest->hasRawDatas());
-        $this->assertSame('', $internalRequest->getRawDatas());
-
-        $this->assertFalse($internalRequest->hasDatas());
+        $this->assertEmpty((string) $internalRequest->getBody());
         $this->assertEmpty($internalRequest->getDatas());
-
-        $this->assertFalse($internalRequest->hasFiles());
         $this->assertEmpty($internalRequest->getFiles());
-
-        $this->assertFalse($internalRequest->hasParameters());
         $this->assertEmpty($internalRequest->getParameters());
     }
 
-    public function testCreateInternalRequestWithFullInformations()
+    public function testCreateInternalRequestWithArrayDatas()
     {
         $internalRequest = $this->messageFactory->createInternalRequest(
-            $url = 'http://egeloen.fr/',
+            $uri = 'http://egeloen.fr/',
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
             $headers = array('foo' => array('bar')),
@@ -139,23 +117,60 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $parameters = array('bip' => 'pog')
         );
 
-        $this->assertSame($url, $internalRequest->getUrl());
+        $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame($method, $internalRequest->getMethod());
         $this->assertSame($protocolVersion, $internalRequest->getProtocolVersion());
-
-        $this->assertTrue($internalRequest->hasHeaders());
         $this->assertSame($headers, $internalRequest->getHeaders());
-
-        $this->assertFalse($internalRequest->hasRawDatas());
-        $this->assertSame('', $internalRequest->getRawDatas());
-
-        $this->assertTrue($internalRequest->hasDatas());
+        $this->assertEmpty((string) $internalRequest->getBody());
         $this->assertSame($datas, $internalRequest->getDatas());
-
-        $this->assertTrue($internalRequest->hasFiles());
         $this->assertSame($files, $internalRequest->getFiles());
+        $this->assertSame($parameters, $internalRequest->getParameters());
+    }
 
-        $this->assertTrue($internalRequest->hasParameters());
+    public function testCreateInternalRequestWithStringDatas()
+    {
+        $internalRequest = $this->messageFactory->createInternalRequest(
+            $uri = 'http://egeloen.fr/',
+            $method = RequestInterface::METHOD_POST,
+            $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
+            $headers = array('foo' => array('bar')),
+            $datas = 'baz=bat',
+            array(),
+            $parameters = array('bip' => 'pog')
+        );
+
+        $this->assertSame($uri, (string) $internalRequest->getUri());
+        $this->assertSame($method, $internalRequest->getMethod());
+        $this->assertSame($protocolVersion, $internalRequest->getProtocolVersion());
+        $this->assertSame($headers, $internalRequest->getHeaders());
+        $this->assertSame($datas, (string) $internalRequest->getBody());
+        $this->assertEmpty($internalRequest->getDatas());
+        $this->assertEmpty($internalRequest->getFiles());
+        $this->assertSame($parameters, $internalRequest->getParameters());
+    }
+
+    public function testCreateInternalRequestWithResourceDatas()
+    {
+        $resource = fopen('php://memory', 'rw');
+        fwrite($resource, $datas = 'baz=bat');
+
+        $internalRequest = $this->messageFactory->createInternalRequest(
+            $uri = 'http://egeloen.fr/',
+            $method = RequestInterface::METHOD_POST,
+            $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
+            $headers = array('foo' => array('bar')),
+            $resource,
+            array(),
+            $parameters = array('bip' => 'pog')
+        );
+
+        $this->assertSame($uri, (string) $internalRequest->getUri());
+        $this->assertSame($method, $internalRequest->getMethod());
+        $this->assertSame($protocolVersion, $internalRequest->getProtocolVersion());
+        $this->assertSame($headers, $internalRequest->getHeaders());
+        $this->assertSame($datas, (string) $internalRequest->getBody());
+        $this->assertEmpty($internalRequest->getDatas());
+        $this->assertEmpty($internalRequest->getFiles());
         $this->assertSame($parameters, $internalRequest->getParameters());
     }
 
@@ -176,14 +191,8 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('OK', $response->getReasonPhrase());
-
-        $this->assertFalse($response->hasHeaders());
         $this->assertEmpty($response->getHeaders());
-
-        $this->assertFalse($response->hasBody());
-        $this->assertNull($response->getBody());
-
-        $this->assertFalse($response->hasParameters());
+        $this->assertEmpty((string) $response->getBody());
         $this->assertEmpty($response->getParameters());
     }
 
@@ -191,7 +200,6 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->messageFactory->createResponse(
             $statusCode = 404,
-            $reasonPhrase = 'Not Found',
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
             $headers = array('foo' => array('bar')),
             $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
@@ -200,15 +208,8 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($protocolVersion, $response->getProtocolVersion());
         $this->assertSame($statusCode, $response->getStatusCode());
-        $this->assertSame($reasonPhrase, $response->getReasonPhrase());
-
-        $this->assertTrue($response->hasHeaders());
         $this->assertSame($headers, $response->getHeaders());
-
-        $this->assertTrue($response->hasBody());
         $this->assertSame($body, $response->getBody());
-
-        $this->assertTrue($response->hasParameters());
         $this->assertSame($parameters, $response->getParameters());
     }
 
@@ -221,30 +222,31 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertNotSame($responseClone, $response);
     }
 
-    public function testSetBaseUrl()
+    public function testSetBaseUri()
     {
-        $this->messageFactory->setBaseUrl($baseUrl = 'http://egeloen.fr/');
+        $this->messageFactory->setBaseUri($baseUri = 'http://egeloen.fr/');
 
-        $this->assertTrue($this->messageFactory->hasBaseUrl());
-        $this->assertSame($baseUrl, $this->messageFactory->getBaseUrl());
+        $this->assertTrue($this->messageFactory->hasBaseUri());
+        $this->assertSame($baseUri, (string) $this->messageFactory->getBaseUri());
     }
 
-    /**
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     * @expectedExceptionMessage The url "foo" is not valid.
-     */
-    public function testSetInvalidBaseUrl()
+    public function testCreateRequestWithBaseUri()
     {
-        $this->messageFactory->setBaseUrl('foo');
-    }
+        $this->messageFactory->setBaseUri($baseUri = 'http://egeloen.fr/');
 
-    public function testCreateRequestWithBaseUrl()
-    {
-        $this->messageFactory->setBaseUrl($baseUrl = 'http://egeloen.fr/');
-
-        $request = $this->messageFactory->createRequest($url = 'test');
+        $request = $this->messageFactory->createRequest($uri = 'test');
 
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $request);
-        $this->assertSame($baseUrl.$url, $request->getUrl());
+        $this->assertSame($baseUri.$uri, (string) $request->getUri());
+    }
+
+    public function testCreateInternalRequestWithBaseUri()
+    {
+        $this->messageFactory->setBaseUri($baseUri = 'http://egeloen.fr/');
+
+        $request = $this->messageFactory->createInternalRequest($uri = 'test');
+
+        $this->assertInstanceOf('Ivory\HttpAdapter\Message\InternalRequest', $request);
+        $this->assertSame($baseUri.$uri, (string) $request->getUri());
     }
 }

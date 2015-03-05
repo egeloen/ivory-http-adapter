@@ -15,7 +15,6 @@ use Ivory\HttpAdapter\ConfigurationInterface;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
-use Ivory\HttpAdapter\Message\Stream\StringStream;
 use Ivory\HttpAdapter\MultiHttpAdapterException;
 use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
@@ -55,7 +54,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        if (!$this->getUrl()) {
+        if (!$this->getUri()) {
             $this->markTestSkipped();
         }
 
@@ -80,27 +79,27 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider simpleProvider
      */
-    public function testGet($url, array $headers = array())
+    public function testGet($uri, array $headers = array())
     {
-        $this->assertResponse($this->httpAdapter->get($url, $headers));
+        $this->assertResponse($this->httpAdapter->get($uri, $headers));
         $this->assertRequest(Request::METHOD_GET, $headers);
     }
 
     /**
      * @dataProvider simpleProvider
      */
-    public function testHead($url, array $headers = array())
+    public function testHead($uri, array $headers = array())
     {
-        $this->assertResponse($this->httpAdapter->head($url, $headers), array('body' => null));
+        $this->assertResponse($this->httpAdapter->head($uri, $headers), array('body' => null));
         $this->assertRequest(Request::METHOD_HEAD, $headers);
     }
 
     /**
      * @dataProvider simpleProvider
      */
-    public function testTrace($url, array $headers = array())
+    public function testTrace($uri, array $headers = array())
     {
-        $response = $this->httpAdapter->trace($url, $headers);
+        $response = $this->httpAdapter->trace($uri, $headers);
 
         if ($response->getStatusCode() === 405) {
             $this->markTestIncomplete();
@@ -117,62 +116,62 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider fullProvider
      */
-    public function testPost($url, array $headers = array(), array $data = array(), array $files = array())
+    public function testPost($uri, array $headers = array(), array $data = array(), array $files = array())
     {
-        $this->assertResponse($this->httpAdapter->post($url, $headers, $data, $files));
+        $this->assertResponse($this->httpAdapter->post($uri, $headers, $data, $files));
         $this->assertRequest(Request::METHOD_POST, $headers, $data, $files);
     }
 
     /**
      * @dataProvider fullProvider
      */
-    public function testPut($url, array $headers = array(), array $data = array(), array $files = array())
+    public function testPut($uri, array $headers = array(), array $data = array(), array $files = array())
     {
-        $this->assertResponse($this->httpAdapter->put($url, $headers, $data, $files));
+        $this->assertResponse($this->httpAdapter->put($uri, $headers, $data, $files));
         $this->assertRequest(Request::METHOD_PUT, $headers, $data, $files);
     }
 
     /**
      * @dataProvider fullProvider
      */
-    public function testPatch($url, array $headers = array(), array $data = array(), array $files = array())
+    public function testPatch($uri, array $headers = array(), array $data = array(), array $files = array())
     {
-        $this->assertResponse($this->httpAdapter->patch($url, $headers, $data, $files));
+        $this->assertResponse($this->httpAdapter->patch($uri, $headers, $data, $files));
         $this->assertRequest(Request::METHOD_PATCH, $headers, $data, $files);
     }
 
     /**
      * @dataProvider fullProvider
      */
-    public function testDelete($url, array $headers = array(), array $data = array(), array $files = array())
+    public function testDelete($uri, array $headers = array(), array $data = array(), array $files = array())
     {
-        $this->assertResponse($this->httpAdapter->delete($url, $headers, $data, $files));
+        $this->assertResponse($this->httpAdapter->delete($uri, $headers, $data, $files));
         $this->assertRequest(Request::METHOD_DELETE, $headers, $data, $files);
     }
 
     /**
      * @dataProvider fullProvider
      */
-    public function testOptions($url, array $headers = array(), array $data = array(), array $files = array())
+    public function testOptions($uri, array $headers = array(), array $data = array(), array $files = array())
     {
-        $this->assertResponse($this->httpAdapter->options($url, $headers, $data, $files));
+        $this->assertResponse($this->httpAdapter->options($uri, $headers, $data, $files));
         $this->assertRequest(Request::METHOD_OPTIONS, $headers, $data, $files);
     }
 
     /**
      * @dataProvider requestProvider
      */
-    public function testSendRequest($url, $method, array $headers = array(), array $data = array())
+    public function testSendRequest($uri, $method, array $headers = array(), array $data = array())
     {
-        $request = new Request(
-            $url,
+        $request = $this->httpAdapter->getConfiguration()->getMessageFactory()->createRequest(
+            $uri,
             $method,
             Request::PROTOCOL_VERSION_1_1,
             $headers,
-            new StringStream(http_build_query($data, null, '&'))
+            http_build_query($data, null, '&')
         );
 
-        if ($request->hasBody()) {
+        if (!empty($data)) {
             $this->httpAdapter->getConfiguration()->setEncodingType(ConfigurationInterface::ENCODING_TYPE_URLENCODED);
         }
 
@@ -201,18 +200,18 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      * @dataProvider internalRequestProvider
      */
     public function testSendInternalRequest(
-        $url,
+        $uri,
         $method,
         array $headers = array(),
-        array $data = array(),
+        array $datas = array(),
         array $files = array()
     ) {
-        $request = new InternalRequest(
-            $url,
+        $request = $this->httpAdapter->getConfiguration()->getMessageFactory()->createInternalRequest(
+            $uri,
             $method,
             Request::PROTOCOL_VERSION_1_1,
             $headers,
-            $data,
+            $datas,
             $files
         );
 
@@ -233,23 +232,19 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertResponse($response, $options);
 
         if ($method !== Request::METHOD_TRACE) {
-            $this->assertRequest($method, $headers, $data, $files);
+            $this->assertRequest($method, $headers, $datas, $files);
         }
     }
 
-    /**
-     * @dataProvider requestsProvider
-     */
-    public function testSendRequests(array $requests)
+    public function testSendRequests()
     {
-        $this->assertMultiResponses($this->httpAdapter->sendRequests($requests), $requests);
+        $this->assertMultiResponses($this->httpAdapter->sendRequests($requests = $this->requestsProvider()), $requests);
     }
 
-    /**
-     * @dataProvider erroredRequestsProvider
-     */
-    public function testSendErroredRequests(array $requests, array $erroredRequests)
+    public function testSendErroredRequests()
     {
+        list($requests, $erroredRequests) = $this->erroredRequestsProvider();
+
         try {
             $this->httpAdapter->sendRequests(array_merge($requests, $erroredRequests));
             $this->fail();
@@ -265,7 +260,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         ini_set('arg_separator.output', '&amp;');
 
         $this->assertResponse(
-            $this->httpAdapter->post($this->getUrl(), $headers = $this->getHeaders(), $data = $this->getData())
+            $this->httpAdapter->post($this->getUri(), $headers = $this->getHeaders(), $data = $this->getData())
         );
 
         $this->assertRequest(Request::METHOD_POST, $headers, $data);
@@ -277,7 +272,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $this->httpAdapter->getConfiguration()->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_1_0);
 
-        $this->assertResponse($this->httpAdapter->send($this->getUrl(), $method = Request::METHOD_GET));
+        $this->assertResponse($this->httpAdapter->send($this->getUri(), $method = Request::METHOD_GET));
         $this->assertRequest($method, array(), array(), array(), $protocolVersion);
     }
 
@@ -285,14 +280,14 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $this->httpAdapter->getConfiguration()->setUserAgent($userAgent = 'foo');
 
-        $this->assertResponse($this->httpAdapter->send($this->getUrl(), $method = Request::METHOD_GET));
+        $this->assertResponse($this->httpAdapter->send($this->getUri(), $method = Request::METHOD_GET));
         $this->assertRequest($method, array('User-Agent' => $userAgent));
     }
 
     public function testSendWithClientError()
     {
         $this->assertResponse(
-            $this->httpAdapter->send($url = $this->getClientErrorUrl(), $method = Request::METHOD_GET),
+            $this->httpAdapter->send($uri = $this->getClientErrorUri(), $method = Request::METHOD_GET),
             array(
                 'status_code'   => 400,
                 'reason_phrase' => 'Bad Request',
@@ -305,7 +300,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function testSendWithServerError()
     {
         $this->assertResponse(
-            $this->httpAdapter->send($url = $this->getServerErrorUrl(), $method = Request::METHOD_GET),
+            $this->httpAdapter->send($uri = $this->getServerErrorUri(), $method = Request::METHOD_GET),
             array(
                 'status_code'   => 500,
                 'reason_phrase' => 'Internal Server Error',
@@ -318,10 +313,10 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function testSendWithRedirect()
     {
         $this->assertResponse(
-            $this->httpAdapter->send($url = $this->getRedirectUrl(), $method = Request::METHOD_GET),
+            $this->httpAdapter->send($uri = $this->getRedirectUri(), $method = Request::METHOD_GET),
             array(
                 'status_code'   => 302,
-                'reason_phrase' => 'Moved Temporarily',
+                'reason_phrase' => 'Found',
                 'body'          => 'Redirect',
             )
         );
@@ -332,9 +327,9 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
      */
-    public function testSendWithInvalidUrl()
+    public function testSendWithInvalidUri()
     {
-        $this->httpAdapter->send($this->getInvalidUrl(), Request::METHOD_GET);
+        $this->httpAdapter->send($this->getInvalidUri(), Request::METHOD_GET);
     }
 
     /**
@@ -344,21 +339,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function testSendWithTimeoutExceeded($timeout)
     {
         $this->httpAdapter->getConfiguration()->setTimeout($timeout);
-        $this->httpAdapter->send($this->getDelayUrl($timeout), Request::METHOD_GET);
-    }
-
-    /**
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     */
-    public function testSendWithDataAsStringAndFiles()
-    {
-        $this->httpAdapter->send(
-            $this->getUrl(),
-            Request::METHOD_POST,
-            array(),
-            http_build_query($this->getData(), null, '&'),
-            $this->getFiles()
-        );
+        $this->httpAdapter->send($this->getDelayUri($timeout), Request::METHOD_GET);
     }
 
     /**
@@ -369,8 +350,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function simpleProvider()
     {
         return array(
-            array($this->getUrl()),
-            array($this->getUrl(), $this->getHeaders()),
+            array($this->getUri()),
+            array($this->getUri(), $this->getHeaders()),
         );
     }
 
@@ -384,8 +365,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         return array_merge(
             $this->simpleProvider(),
             array(
-                array($this->getUrl(), $this->getHeaders(), $this->getData()),
-                array($this->getUrl(), $this->getHeaders(), $this->getData(), $this->getFiles()),
+                array($this->getUri(), $this->getHeaders(), $this->getData()),
+                array($this->getUri(), $this->getHeaders(), $this->getData(), $this->getFiles()),
             )
         );
     }
@@ -416,57 +397,57 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function internalRequestProvider()
     {
         return array(
-            array($this->getUrl(), InternalRequest::METHOD_GET),
-            array($this->getUrl(), InternalRequest::METHOD_GET, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_HEAD),
-            array($this->getUrl(), InternalRequest::METHOD_HEAD, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_TRACE),
-            array($this->getUrl(), InternalRequest::METHOD_TRACE, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_POST),
-            array($this->getUrl(), InternalRequest::METHOD_POST, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_POST, $this->getHeaders(), $this->getData()),
+            array($this->getUri(), InternalRequest::METHOD_GET),
+            array($this->getUri(), InternalRequest::METHOD_GET, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_HEAD),
+            array($this->getUri(), InternalRequest::METHOD_HEAD, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_TRACE),
+            array($this->getUri(), InternalRequest::METHOD_TRACE, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_POST),
+            array($this->getUri(), InternalRequest::METHOD_POST, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_POST, $this->getHeaders(), $this->getData()),
             array(
-                $this->getUrl(),
+                $this->getUri(),
                 InternalRequest::METHOD_POST,
                 $this->getHeaders(),
                 $this->getData(),
                 $this->getFiles(),
             ),
-            array($this->getUrl(), InternalRequest::METHOD_PUT),
-            array($this->getUrl(), InternalRequest::METHOD_PUT, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_PUT, $this->getHeaders(), $this->getData()),
+            array($this->getUri(), InternalRequest::METHOD_PUT),
+            array($this->getUri(), InternalRequest::METHOD_PUT, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_PUT, $this->getHeaders(), $this->getData()),
             array(
-                $this->getUrl(),
+                $this->getUri(),
                 InternalRequest::METHOD_PUT,
                 $this->getHeaders(),
                 $this->getData(),
                 $this->getFiles(),
             ),
-            array($this->getUrl(), InternalRequest::METHOD_PATCH),
-            array($this->getUrl(), InternalRequest::METHOD_PATCH, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_PATCH, $this->getHeaders(), $this->getData()),
+            array($this->getUri(), InternalRequest::METHOD_PATCH),
+            array($this->getUri(), InternalRequest::METHOD_PATCH, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_PATCH, $this->getHeaders(), $this->getData()),
             array(
-                $this->getUrl(),
+                $this->getUri(),
                 InternalRequest::METHOD_PATCH,
                 $this->getHeaders(),
                 $this->getData(),
                 $this->getFiles(),
             ),
-            array($this->getUrl(), InternalRequest::METHOD_DELETE),
-            array($this->getUrl(), InternalRequest::METHOD_DELETE, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_DELETE, $this->getHeaders(), $this->getData()),
+            array($this->getUri(), InternalRequest::METHOD_DELETE),
+            array($this->getUri(), InternalRequest::METHOD_DELETE, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_DELETE, $this->getHeaders(), $this->getData()),
             array(
-                $this->getUrl(),
+                $this->getUri(),
                 InternalRequest::METHOD_DELETE,
                 $this->getHeaders(),
                 $this->getData(),
                 $this->getFiles(),
             ),
-            array($this->getUrl(), InternalRequest::METHOD_OPTIONS),
-            array($this->getUrl(), InternalRequest::METHOD_OPTIONS, $this->getHeaders()),
-            array($this->getUrl(), InternalRequest::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
+            array($this->getUri(), InternalRequest::METHOD_OPTIONS),
+            array($this->getUri(), InternalRequest::METHOD_OPTIONS, $this->getHeaders()),
+            array($this->getUri(), InternalRequest::METHOD_OPTIONS, $this->getHeaders(), $this->getData()),
             array(
-                $this->getUrl(),
+                $this->getUri(),
                 InternalRequest::METHOD_OPTIONS,
                 $this->getHeaders(),
                 $this->getData(),
@@ -482,7 +463,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function requestsProvider()
     {
-        $requests = array($this->getUrl());
+        $requests = array($this->getUri());
 
         foreach ($this->requestProvider() as $request) {
             $requests[] = array(
@@ -496,17 +477,17 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
 
         foreach ($this->requestProvider() as $request) {
-            $requests[] = new Request(
+            $requests[] = $this->httpAdapter->getConfiguration()->getMessageFactory()->createRequest(
                 $request[0],
                 $request[1],
-                Request::PROTOCOL_VERSION_1_1,
+                InternalRequest::PROTOCOL_VERSION_1_1,
                 isset($request[2]) ? $request[2] : array(),
-                isset($request[3]) ? new StringStream(http_build_query($request[3])) : null
+                http_build_query(isset($request[3]) ? $request[3] : array(), null, '&')
             );
         }
 
         foreach ($this->requestProvider() as $request) {
-            $requests[] = new InternalRequest(
+            $requests[] = $this->httpAdapter->getConfiguration()->getMessageFactory()->createInternalRequest(
                 $request[0],
                 $request[1],
                 InternalRequest::PROTOCOL_VERSION_1_1,
@@ -516,7 +497,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             );
         }
 
-        return array(array($requests));
+        return $requests;
     }
 
     /**
@@ -528,10 +509,10 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $requestsProvider = $this->requestsProvider();
 
-        return array(array(
-            $requestsProvider[0][0],
-            array($this->getInvalidUrl()),
-        ));
+        return array(
+            $requestsProvider,
+            array($this->getInvalidUri()),
+        );
     }
 
     /**
@@ -587,7 +568,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
 
         if ($options['body'] === null) {
-            $this->assertFalse($response->hasBody());
+            $this->assertEmpty((string) $response->getBody());
         } else {
             $this->assertContains($options['body'], (string) $response->getBody());
         }
@@ -598,8 +579,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $parameters['redirect_count'] = $options['redirect_count'];
         }
 
-        if (isset($options['effective_url'])) {
-            $parameters['effective_url'] = $options['effective_url'];
+        if (isset($options['effective_uri'])) {
+            $parameters['effective_uri'] = $options['effective_uri'];
         }
 
         $this->assertSame($parameters, $response->getParameters());
@@ -661,67 +642,67 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Gets the url.
+     * Gets the uri.
      *
      * @param array $query The query.
      *
-     * @return string|null The url.
+     * @return string|null The uri.
      */
-    private function getUrl(array $query = array())
+    private function getUri(array $query = array())
     {
-        return !empty($query) ? PHPUnitUtility::getUrl().'?'.http_build_query($query, null, '&') : PHPUnitUtility::getUrl();
+        return !empty($query) ? PHPUnitUtility::getUri().'?'.http_build_query($query, null, '&') : PHPUnitUtility::getUri();
     }
 
     /**
-     * Gets the invalid url.
+     * Gets the invalid uri.
      *
-     * @return string The invalid url.
+     * @return string The invalid uri.
      */
-    private function getInvalidUrl()
+    private function getInvalidUri()
     {
         return 'http://invalid.egeloen.fr';
     }
 
     /**
-     * Gets the client error url.
+     * Gets the client error uri.
      *
-     * @return string The client error url.
+     * @return string The client error uri.
      */
-    private function getClientErrorUrl()
+    private function getClientErrorUri()
     {
-        return $this->getUrl(array('client_error' => true));
+        return $this->getUri(array('client_error' => true));
     }
 
     /**
-     * Gets the server error url.
+     * Gets the server error uri.
      *
-     * @return string The server error url.
+     * @return string The server error uri.
      */
-    private function getServerErrorUrl()
+    private function getServerErrorUri()
     {
-        return $this->getUrl(array('server_error' => true));
+        return $this->getUri(array('server_error' => true));
     }
 
     /**
-     * Gets the delay url.
+     * Gets the delay uri.
      *
      * @param float $delay The delay.
      *
-     * @return string The delay url.
+     * @return string The delay uri.
      */
-    private function getDelayUrl($delay = 1)
+    private function getDelayUri($delay = 1)
     {
-        return $this->getUrl(array('delay' => $delay + 0.01));
+        return $this->getUri(array('delay' => $delay + 0.01));
     }
 
     /**
-     * Gets the redirect url.
+     * Gets the redirect uri.
      *
-     * @return string The redirect url.
+     * @return string The redirect uri.
      */
-    private function getRedirectUrl()
+    private function getRedirectUri()
     {
-        return $this->getUrl(array('redirect' => true));
+        return $this->getUri(array('redirect' => true));
     }
 
     /**

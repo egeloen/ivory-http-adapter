@@ -11,58 +11,31 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Psr\Http\Message\StreamableInterface;
+use Phly\Http\Response as PhlyResponse;
 
 /**
  * Response.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Response extends AbstractMessage implements ResponseInterface
+class Response extends PhlyResponse implements ResponseInterface
 {
-    /** @var integer */
-    private $statusCode;
-
-    /** @var string */
-    private $reasonPhrase;
+    use MessageTrait;
 
     /**
-     * Creates a response.
-     *
-     * @param integer                                    $statusCode      The status code.
-     * @param string                                     $reasonPhrase    The reason phrase.
-     * @param string                                     $protocolVersion The protocol version.
-     * @param array                                      $headers         The headers.
-     * @param \Psr\Http\Message\StreamableInterface|null $body            The body.
-     * @param array                                      $parameters      The parameters.
+     * @param string|resource|\Psr\Http\Message\StreamableInterface $body       The response body.
+     * @param integer                                               $status     The response status code.
+     * @param array                                                 $headers    The response headers.
+     * @param array                                                 $parameters The response parameters.
      */
     public function __construct(
-        $statusCode = 200,
-        $reasonPhrase = 'OK',
-        $protocolVersion = self::PROTOCOL_VERSION_1_1,
+        $body = 'php://memory',
+        $status = 200,
         array $headers = array(),
-        StreamableInterface $body = null,
         array $parameters = array()
     ) {
-        parent::__construct($protocolVersion, $headers, $body, $parameters);
+        parent::__construct($body, $status, $headers);
 
-        $this->statusCode = $statusCode;
-        $this->reasonPhrase = $reasonPhrase;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getReasonPhrase()
-    {
-        return $this->reasonPhrase;
+        $this->parameters = $parameters;
     }
 }

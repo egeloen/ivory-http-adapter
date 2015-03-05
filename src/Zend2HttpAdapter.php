@@ -59,7 +59,7 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
                 'timeout'      => $this->getConfiguration()->getTimeout(),
                 'maxredirects' => 0,
             ))
-            ->setUri($url = (string) $internalRequest->getUrl())
+            ->setUri($uri = (string) $internalRequest->getUri())
             ->setMethod($internalRequest->getMethod())
             ->setHeaders($this->prepareHeaders($internalRequest))
             ->setRawBody($this->prepareBody($internalRequest));
@@ -67,12 +67,11 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
         try {
             $response = $this->client->send();
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             $response->getStatusCode(),
-            $response->getReasonPhrase(),
             $response->getVersion(),
             $response->getHeaders()->toArray(),
             BodyNormalizer::normalize(

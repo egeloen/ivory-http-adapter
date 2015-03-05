@@ -60,7 +60,9 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
      */
     protected function prepareContent(InternalRequestInterface $internalRequest)
     {
-        if (!$internalRequest->hasFiles()) {
+        $files = $internalRequest->getFiles();
+
+        if (empty($files)) {
             return $this->prepareBody($internalRequest);
         }
 
@@ -70,7 +72,7 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
             $content = array_merge($content, $this->prepareRawContent($name, $data));
         }
 
-        foreach ($internalRequest->getFiles() as $name => $file) {
+        foreach ($files as $name => $file) {
             $content = array_merge($content, $this->prepareRawContent($name, $file, true));
         }
 

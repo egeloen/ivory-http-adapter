@@ -123,8 +123,8 @@ class StatusCodeSubscriber implements EventSubscriberInterface
         InternalRequestInterface $internalRequest,
         HttpAdapterInterface $httpAdapter
     ) {
-        $exception = HttpAdapterException::cannotFetchUrl(
-            (string) $internalRequest->getUrl(),
+        $exception = HttpAdapterException::cannotFetchUri(
+            (string) $internalRequest->getUri(),
             $httpAdapter->getName(),
             sprintf('Status code: %d', $response->getStatusCode())
         );

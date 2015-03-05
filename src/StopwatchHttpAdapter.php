@@ -11,7 +11,7 @@
 
 namespace Ivory\HttpAdapter;
 
-use Psr\Http\Message\OutgoingRequestInterface;
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
@@ -98,15 +98,15 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
-    public function send($url, $method, array $headers = array(), $datas = array(), array $files = array())
+    public function send($uri, $method, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->watch('send', array($url, $method, $headers, $datas, $files));
+        return $this->watch('send', array($uri, $method, $headers, $datas, $files));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sendRequest(OutgoingRequestInterface $request)
+    public function sendRequest(RequestInterface $request)
     {
         return $this->watch('sendRequest', array($request));
     }
@@ -114,9 +114,9 @@ class StopwatchHttpAdapter extends AbstractHttpAdapterTemplate
     /**
      * {@inheritdoc}
      */
-    public function sendRequests(array $requests, $success = null, $error = null)
+    public function sendRequests(array $requests)
     {
-        return $this->watch('sendRequests', array($requests, $success, $error));
+        return $this->watch('sendRequests', array($requests));
     }
 
     /**

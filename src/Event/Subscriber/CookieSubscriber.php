@@ -69,7 +69,7 @@ class CookieSubscriber implements EventSubscriberInterface
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->cookieJar->populate($event->getRequest());
+        $event->setRequest($this->cookieJar->populate($event->getRequest()));
     }
 
     /**
@@ -102,7 +102,8 @@ class CookieSubscriber implements EventSubscriberInterface
     public function onMultiPreSend(MultiPreSendEvent $event)
     {
         foreach ($event->getRequests() as $request) {
-            $this->cookieJar->populate($request);
+            $event->removeRequest($request);
+            $event->addRequest($this->cookieJar->populate($request));
         }
     }
 

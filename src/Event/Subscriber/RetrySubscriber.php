@@ -65,12 +65,14 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public function onException(ExceptionEvent $event)
     {
-        if (!$this->retry->retry($event->getException()->getRequest())) {
+        if (($request = $this->retry->retry($event->getException()->getRequest())) === false) {
             return;
         }
 
+        $event->getException()->setRequest($request);
+
         try {
-            $event->setResponse($event->getHttpAdapter()->sendRequest($event->getException()->getRequest()));
+            $event->setResponse($event->getHttpAdapter()->sendRequest($request));
         } catch (HttpAdapterException $e) {
             $event->setException($e);
         }
@@ -86,8 +88,8 @@ class RetrySubscriber implements EventSubscriberInterface
         $retryRequests = array();
 
         foreach ($event->getExceptions() as $exception) {
-            if ($this->retry->retry($exception->getRequest(), false)) {
-                $retryRequests[] = $exception->getRequest();
+            if (($request = $this->retry->retry($exception->getRequest(), false)) !== false) {
+                $retryRequests[] = $request;
                 $event->removeException($exception);
             }
         }

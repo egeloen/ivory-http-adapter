@@ -13,6 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
+use Phly\Http\Uri;
 
 /**
  * Cookie jar test.
@@ -425,7 +426,7 @@ class CookieJarTest extends AbstractCookieJarTest
 
         $request
             ->expects($this->once())
-            ->method('addHeader')
+            ->method('withAddedHeader')
             ->with(
                 $this->identicalTo('Cookie'),
                 $this->identicalTo('foo=bar')
@@ -439,7 +440,7 @@ class CookieJarTest extends AbstractCookieJarTest
         $response = $this->createResponseMock();
         $response
             ->expects($this->once())
-            ->method('getHeaderAsArray')
+            ->method('getHeader')
             ->with($this->identicalTo('Set-Cookie'))
             ->will($this->returnValue(array('foo', 'bar')));
 
@@ -473,8 +474,8 @@ class CookieJarTest extends AbstractCookieJarTest
         $request = $this->createRequestMock();
         $request
             ->expects($this->any())
-            ->method('getUrl')
-            ->will($this->returnValue('http://egeloen.fr/path'));
+            ->method('getUri')
+            ->will($this->returnValue(new Uri('http://egeloen.fr/path')));
 
         $this->cookieJar->extract($request, $response);
 

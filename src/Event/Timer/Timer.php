@@ -25,8 +25,9 @@ class Timer implements TimerInterface
      */
     public function start(InternalRequestInterface $internalRequest)
     {
-        $internalRequest->removeParameter(self::TIME);
-        $internalRequest->setParameter(self::START_TIME, $this->getTime());
+        return $internalRequest
+            ->withParameter(self::START_TIME, $this->getTime())
+            ->withoutParameter(self::TIME);
     }
 
     /**
@@ -35,11 +36,13 @@ class Timer implements TimerInterface
     public function stop(InternalRequestInterface $internalRequest)
     {
         if ($internalRequest->hasParameter(self::START_TIME) && !$internalRequest->hasParameter(self::TIME)) {
-            $internalRequest->setParameter(
+            return $internalRequest->withParameter(
                 self::TIME,
                 $this->getTime() - $internalRequest->getParameter(self::START_TIME)
             );
         }
+
+        return $internalRequest;
     }
 
     /**

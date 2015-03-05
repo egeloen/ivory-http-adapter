@@ -72,7 +72,7 @@ class HistorySubscriber extends AbstractTimerSubscriber
      */
     public function onPreSend(PreSendEvent $event)
     {
-        $this->getTimer()->start($event->getRequest());
+        $event->setRequest($this->getTimer()->start($event->getRequest()));
     }
 
     /**
@@ -82,7 +82,7 @@ class HistorySubscriber extends AbstractTimerSubscriber
      */
     public function onPostSend(PostSendEvent $event)
     {
-        $this->record($event->getRequest(), $event->getResponse());
+        $event->setRequest($this->record($event->getRequest(), $event->getResponse()));
     }
 
     /**
@@ -93,7 +93,8 @@ class HistorySubscriber extends AbstractTimerSubscriber
     public function onMultiPreSend(MultiPreSendEvent $event)
     {
         foreach ($event->getRequests() as $request) {
-            $this->getTimer()->start($request);
+            $event->removeRequest($request);
+            $event->addRequest($this->getTimer()->start($request));
         }
     }
 
@@ -105,7 +106,10 @@ class HistorySubscriber extends AbstractTimerSubscriber
     public function onMultiPostSend(MultiPostSendEvent $event)
     {
         foreach ($event->getResponses() as $response) {
-            $this->record($response->getParameter('request'), $response);
+            $request = $this->record($response->getParameter('request'), $response);
+
+            $event->removeResponse($response);
+            $event->addResponse($response->withParameter('request', $request));
         }
     }
 
@@ -127,10 +131,14 @@ class HistorySubscriber extends AbstractTimerSubscriber
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The recorded request.
      */
     private function record(InternalRequestInterface $internalRequest, ResponseInterface $response)
     {
-        $this->getTimer()->stop($internalRequest);
+        $internalRequest = $this->getTimer()->stop($internalRequest);
         $this->journal->record($internalRequest, $response);
+
+        return $internalRequest;
     }
 }

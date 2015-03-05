@@ -30,6 +30,8 @@ interface TimerInterface
      * Starts the timer.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The started internal request.
      */
     public function start(InternalRequestInterface $internalRequest);
 
@@ -37,6 +39,8 @@ interface TimerInterface
      * Stops the timer.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The stopped internal request.
      */
     public function stop(InternalRequestInterface $internalRequest);
 }

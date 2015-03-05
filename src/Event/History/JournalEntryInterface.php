@@ -32,8 +32,6 @@ interface JournalEntryInterface
      * Sets the request.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return void No return value.
      */
     public function setRequest(InternalRequestInterface $request);
 
@@ -48,8 +46,6 @@ interface JournalEntryInterface
      * Sets the response.
      *
      * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return void No return value.
      */
     public function setResponse(ResponseInterface $response);
 }

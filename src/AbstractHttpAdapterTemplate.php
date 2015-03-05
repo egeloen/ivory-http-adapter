@@ -23,64 +23,64 @@ abstract class AbstractHttpAdapterTemplate implements HttpAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function get($url, array $headers = array())
+    public function get($uri, array $headers = array())
     {
-        return $this->send($url, RequestInterface::METHOD_GET, $headers);
+        return $this->send($uri, RequestInterface::METHOD_GET, $headers);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function head($url, array $headers = array())
+    public function head($uri, array $headers = array())
     {
-        return $this->send($url, RequestInterface::METHOD_HEAD, $headers);
+        return $this->send($uri, RequestInterface::METHOD_HEAD, $headers);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function trace($url, array $headers = array())
+    public function trace($uri, array $headers = array())
     {
-        return $this->send($url, RequestInterface::METHOD_TRACE, $headers);
+        return $this->send($uri, RequestInterface::METHOD_TRACE, $headers);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function post($url, array $headers = array(), $datas = array(), array $files = array())
+    public function post($uri, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_POST, $headers, $datas, $files);
+        return $this->send($uri, RequestInterface::METHOD_POST, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function put($url, array $headers = array(), $datas = array(), array $files = array())
+    public function put($uri, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_PUT, $headers, $datas, $files);
+        return $this->send($uri, RequestInterface::METHOD_PUT, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function patch($url, array $headers = array(), $datas = array(), array $files = array())
+    public function patch($uri, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_PATCH, $headers, $datas, $files);
+        return $this->send($uri, RequestInterface::METHOD_PATCH, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($url, array $headers = array(), $datas = array(), array $files = array())
+    public function delete($uri, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_DELETE, $headers, $datas, $files);
+        return $this->send($uri, RequestInterface::METHOD_DELETE, $headers, $datas, $files);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function options($url, array $headers = array(), $datas = array(), array $files = array())
+    public function options($uri, array $headers = array(), $datas = array(), array $files = array())
     {
-        return $this->send($url, RequestInterface::METHOD_OPTIONS, $headers, $datas, $files);
+        return $this->send($uri, RequestInterface::METHOD_OPTIONS, $headers, $datas, $files);
     }
 }

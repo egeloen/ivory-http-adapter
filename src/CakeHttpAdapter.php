@@ -56,7 +56,7 @@ class CakeHttpAdapter extends AbstractHttpAdapter
         $request = array(
             'version'  => $this->getConfiguration()->getProtocolVersion(),
             'redirect' => false,
-            'uri'      => $url = (string) $internalRequest->getUrl(),
+            'uri'      => $uri = (string) $internalRequest->getUri(),
             'method'   => $internalRequest->getMethod(),
             'header'   => $this->prepareHeaders($internalRequest),
             'body'     => $this->prepareBody($internalRequest),
@@ -65,16 +65,15 @@ class CakeHttpAdapter extends AbstractHttpAdapter
         try {
             $response = $this->httpSocket->request($request);
         } catch (\Exception $e) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $e->getMessage());
+            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
 
         if (($error = $this->httpSocket->lastError()) !== null) {
-            throw HttpAdapterException::cannotFetchUrl($url, $this->getName(), $error);
+            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $error);
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             (integer) $response->code,
-            $response->reasonPhrase,
             ProtocolVersionExtractor::extract($response->httpVersion),
             $response->headers,
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod())

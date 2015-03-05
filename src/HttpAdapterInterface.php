@@ -11,7 +11,7 @@
 
 namespace Ivory\HttpAdapter;
 
-use Psr\Http\Message\OutgoingRequestInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Http adapter interface.
@@ -38,51 +38,49 @@ interface HttpAdapterInterface
      * Sets the configuration.
      *
      * @param \Ivory\HttpAdapter\ConfigurationInterface $configuration The configuration.
-     *
-     * @return void No return value.
      */
     public function setConfiguration(ConfigurationInterface $configuration);
 
     /**
      * Sends a GET request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function get($url, array $headers = array());
+    public function get($uri, array $headers = array());
 
     /**
      * Sends an HEAD request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function head($url, array $headers = array());
+    public function head($uri, array $headers = array());
 
     /**
      * Sends a TRACE request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function trace($url, array $headers = array());
+    public function trace($uri, array $headers = array());
 
     /**
      * Sends a POST request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      * @param array|string  $datas   The datas.
      * @param array         $files   The files.
@@ -91,12 +89,12 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function post($url, array $headers = array(), $datas = array(), array $files = array());
+    public function post($uri, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a PUT request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      * @param array|string  $datas   The datas.
      * @param array         $files   The files.
@@ -105,12 +103,12 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function put($url, array $headers = array(), $datas = array(), array $files = array());
+    public function put($uri, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a PATCH request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      * @param array|string  $datas   The datas.
      * @param array         $files   The files.
@@ -119,12 +117,12 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function patch($url, array $headers = array(), $datas = array(), array $files = array());
+    public function patch($uri, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a DELETE request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      * @param array|string  $datas   The datas.
      * @param array         $files   The files.
@@ -133,12 +131,12 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function delete($url, array $headers = array(), $datas = array(), array $files = array());
+    public function delete($uri, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends an OPTIONS request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param array         $headers The headers.
      * @param array|string  $datas   The datas.
      * @param array         $files   The files.
@@ -147,12 +145,12 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function options($url, array $headers = array(), $datas = array(), array $files = array());
+    public function options($uri, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a request.
      *
-     * @param string|object $url     The url.
+     * @param string|object $uri     The uri.
      * @param string        $method  The method.
      * @param array         $headers The headers.
      * @param array|string  $datas   The datas.
@@ -162,18 +160,18 @@ interface HttpAdapterInterface
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function send($url, $method, array $headers = array(), $datas = array(), array $files = array());
+    public function send($uri, $method, array $headers = array(), $datas = array(), array $files = array());
 
     /**
      * Sends a PSR request.
      *
-     * @param \Psr\Http\Message\OutgoingRequestInterface $request The request.
+     * @param \Psr\Http\Message\RequestInterface $request The request.
      *
      * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    public function sendRequest(OutgoingRequestInterface $request);
+    public function sendRequest(RequestInterface $request);
 
     /**
      * Sends requests.

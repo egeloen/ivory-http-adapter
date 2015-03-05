@@ -12,28 +12,23 @@
 namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\Request;
-use Ivory\Tests\HttpAdapter\Normalizer\AbstractUrlNormalizerTest;
-use Psr\Http\Message\StreamableInterface;
 
 /**
  * Request test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RequestTest extends AbstractUrlNormalizerTest
+class RequestTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Ivory\HttpAdapter\Message\Request */
     private $request;
-
-    /** @var string */
-    private $url;
 
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->request = new Request($this->url = 'http://egeloen.fr/');
+        $this->request = new Request();
     }
 
     /**
@@ -41,331 +36,42 @@ class RequestTest extends AbstractUrlNormalizerTest
      */
     protected function tearDown()
     {
-        unset($this->url);
         unset($this->request);
     }
 
     public function testInheritance()
     {
-        $this->assertInstanceOf('Psr\Http\Message\OutgoingRequestInterface', $this->request);
+        $this->assertInstanceOf('Psr\Http\Message\RequestInterface', $this->request);
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\RequestInterface', $this->request);
-        $this->assertInstanceOf('Ivory\HttpAdapter\Message\AbstractMessage', $this->request);
+        $this->assertTrue(in_array(
+            'Ivory\HttpAdapter\Message\MessageTrait',
+            class_uses('Ivory\HttpAdapter\Message\Request')
+        ));
     }
 
     public function testDefaultState()
     {
-        $this->assertSame($this->url, $this->request->getUrl());
-        $this->assertSame(Request::METHOD_GET, $this->request->getMethod());
-        $this->assertSame(Request::PROTOCOL_VERSION_1_1, $this->request->getProtocolVersion());
-        $this->assertNoHeaders();
-        $this->assertNoBody();
-        $this->assertNoParameters();
+        $this->assertEmpty((string) $this->request->getUri());
+        $this->assertNull($this->request->getMethod());
+        $this->assertEmpty($this->request->getHeaders());
+        $this->assertEmpty((string) $this->request->getBody());
+        $this->assertEmpty($this->request->getParameters());
     }
 
     public function testInitialState()
     {
         $this->request = new Request(
-            $this->url,
+            $uri = 'http://egeloen.fr/',
             $method = Request::METHOD_POST,
-            $protocolVersion = Request::PROTOCOL_VERSION_1_0,
-            $headers = array('foo' => array('bar')),
             $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
+            $headers = array('foo' => array('bar')),
             $parameters = array('baz' => 'bat')
         );
 
+        $this->assertSame($uri, (string) $this->request->getUri());
         $this->assertSame($method, $this->request->getMethod());
-        $this->assertSame($protocolVersion, $this->request->getProtocolVersion());
-        $this->assertHeaders($headers);
-        $this->assertBody($body);
-        $this->assertParameters($parameters);
-    }
-
-    /**
-     * @dataProvider validUrlProvider
-     */
-    public function testSetUrlWithValidUrl($url)
-    {
-        $this->request->setUrl($url);
-
-        $this->assertSame($url, $this->request->getUrl());
-    }
-
-    /**
-     * @dataProvider invalidUrlProvider
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     */
-    public function testSetUrlWithInvalidUrl($url)
-    {
-        $this->request->setUrl($url);
-    }
-
-    public function testSetMethod()
-    {
-        $this->request->setMethod($method = Request::METHOD_POST);
-
-        $this->assertSame($method, $this->request->getMethod());
-    }
-
-    public function testSetMethodLowercase()
-    {
-        $this->request->setMethod('post');
-
-        $this->assertSame(Request::METHOD_POST, $this->request->getMethod());
-    }
-
-    public function testSetProtocolVersion()
-    {
-        $this->request->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_1_1);
-
-        $this->assertSame($protocolVersion, $this->request->getProtocolVersion());
-    }
-
-    public function testSetBody()
-    {
-        $this->request->setBody($body = $this->getMock('Psr\Http\Message\StreamableInterface'));
-
-        $this->assertBody($body);
-    }
-
-    public function testSetHeadersAsString()
-    {
-        $this->request->setHeaders(array(
-            ' fOo '  => ' bar ,  baz ',
-            ' baT '  => ' ban ',
-            ' Date ' => ' Fri, 15 aug 2014 12:34:56 UTC ',
-        ));
-
-        $this->assertHeaders(array(
-            'fOo'  => array('bar', 'baz'),
-            'baT'  => array('ban'),
-            'Date' => array('Fri, 15 aug 2014 12:34:56 UTC'),
-        ));
-    }
-
-    public function testSetHeadersAsArray()
-    {
-        $this->request->setHeaders(array(
-            ' fOo '  => array(' bar ', ' baz '),
-            ' baT '  => array(' ban '),
-            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
-        ));
-
-        $this->assertHeaders(array(
-            'fOo'  => array('bar', 'baz'),
-            'baT'  => array('ban'),
-            'Date' => array('Fri, 15 aug 2014 12:34:56 UTC'),
-        ));
-    }
-
-    public function testSetHeadersWithExistingHeaders()
-    {
-        $this->request->setHeaders(array(' fOo ' => ' bar '));
-        $this->request->setHeaders(array(' foO ' => ' baz '));
-
-        $this->assertHeaders(array('foO' => array('baz')));
-    }
-
-    public function testAddHeadersAsString()
-    {
-        $this->request->setHeaders(array(
-            ' fOo '  => ' bar ,  baz ',
-            ' Date ' => ' Fri, 14 aug 2014 12:34:56 UTC ',
-        ));
-
-        $this->request->addHeaders(array(
-            ' foO '  => ' bat ,  ban',
-            ' Date ' => ' Fri, 15 aug 2014 12:34:56 UTC ',
-            ' Bon '  => ' bin ',
-        ));
-
-        $this->assertHeaders(array(
-            'foO'  => array('bar', 'baz', 'bat', 'ban'),
-            'Date' => array(
-                'Fri, 14 aug 2014 12:34:56 UTC',
-                'Fri, 15 aug 2014 12:34:56 UTC',
-            ),
-            'Bon'  => array('bin'),
-        ));
-    }
-
-    public function testAddHeadersAsArray()
-    {
-        $this->request->setHeaders(array(
-            ' fOo '  => array(' bar ', ' baz '),
-            ' Date ' => array(' Fri, 14 aug 2014 12:34:56 UTC '),
-        ));
-
-        $this->request->addHeaders(array(
-            ' foO '  => array(' bat ', ' ban '),
-            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
-            ' Bon '  => array(' bin '),
-        ));
-
-        $this->assertHeaders(array(
-            'foO' => array('bar', 'baz', 'bat', 'ban'),
-            'Date' => array(
-                'Fri, 14 aug 2014 12:34:56 UTC',
-                'Fri, 15 aug 2014 12:34:56 UTC',
-            ),
-            'Bon' => array('bin'),
-        ));
-    }
-
-    public function testRemoveHeaders()
-    {
-        $this->request->setHeaders($headers = array(' fOo ' => 'bar', ' bAz ' => 'bat'));
-        $this->request->removeHeaders(array_keys($headers));
-
-        $this->assertNoHeaders();
-    }
-
-    public function testSetHeaderAsString()
-    {
-        $this->request->setHeader(' fOo ', 'bar, baz');
-
-        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
-    }
-
-    public function testSetHeaderAsArray()
-    {
-        $this->request->setHeader(' fOo ', array('bar', 'baz'));
-
-        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
-    }
-
-    public function testSetHeaderWithExistingHeader()
-    {
-        $this->request->setHeader(' fOo ', 'bar');
-        $this->request->setHeader(' foO ', 'baz');
-
-        $this->assertHeaders(array('foO' => array('baz')));
-    }
-
-    public function testAddHeaderAsString()
-    {
-        $this->request->setHeader(' fOo ', 'bar, baz');
-        $this->request->addHeader(' foO ', 'bat, ban');
-
-        $this->assertHeaders(array('foO' => array('bar', 'baz', 'bat', 'ban')));
-    }
-
-    public function testAddHeaderAsArray()
-    {
-        $this->request->setHeader(' fOo ', array('bar', 'baz'));
-
-        $this->assertHeaders(array('fOo' => array('bar', 'baz')));
-    }
-
-    public function testRemoveHeader()
-    {
-        $this->request->setHeader($header = ' fOo ', 'bar, baz');
-        $this->request->removeHeader($header);
-
-        $this->assertNoHeader($header);
-    }
-
-    /**
-     * Asserts there are the headers.
-     *
-     * @param array $headers The headers.
-     */
-    private function assertHeaders(array $headers)
-    {
-        $this->assertTrue($this->request->hasHeaders());
         $this->assertSame($headers, $this->request->getHeaders());
-
-        foreach ($headers as $header => $value) {
-            $this->assertHeader($header, $value);
-        }
-    }
-
-    /**
-     * Asserts there are no headers.
-     */
-    private function assertNoHeaders()
-    {
-        $this->assertFalse($this->request->hasHeaders());
-        $this->assertEmpty($this->request->getHeaders());
-    }
-
-    /**
-     * Asserts there is the header.
-     *
-     * @param string $header The header.
-     * @param array  $value  The value.
-     */
-    private function assertHeader($header, array $value)
-    {
-        $this->assertTrue($this->request->hasHeader($header));
-        $this->assertSame($value, $this->request->getHeaderAsArray($header));
-        $this->assertSame(implode(', ', $value), $this->request->getHeader($header));
-    }
-
-    /**
-     * Asserts there is no header.
-     *
-     * @param string $header The header.
-     */
-    private function assertNoHeader($header)
-    {
-        $this->assertFalse($this->request->hasHeader($header));
-        $this->assertEmpty($this->request->getHeaderAsArray($header));
-        $this->assertSame('', $this->request->getHeader($header));
-    }
-
-    /**
-     * Asserts there is a body.
-     *
-     * @param \Ivory\Tests\HttpAdapter\Message\StreamableInterface $body The body.
-     */
-    private function assertBody(StreamableInterface $body)
-    {
-        $this->assertTrue($this->request->hasBody());
         $this->assertSame($body, $this->request->getBody());
-    }
-
-    /**
-     * Asserts there are no body.
-     */
-    private function assertNoBody()
-    {
-        $this->assertFalse($this->request->hasBody());
-        $this->assertNull($this->request->getBody());
-    }
-
-    /**
-     * Asserts there are the parameters.
-     *
-     * @param array $parameters The parameters.
-     */
-    private function assertParameters(array $parameters)
-    {
-        $this->assertTrue($this->request->hasParameters());
         $this->assertSame($parameters, $this->request->getParameters());
-
-        foreach ($parameters as $name => $value) {
-            $this->assertParameter($name, $value);
-        }
-    }
-
-    /**
-     * Asserts there are no parameters.
-     */
-    private function assertNoParameters()
-    {
-        $this->assertFalse($this->request->hasParameters());
-        $this->assertEmpty($this->request->getParameters());
-    }
-
-    /**
-     * Asserts there is the parameter.
-     *
-     * @param string $name  The parameter name.
-     * @param mixed  $value The parameter value.
-     */
-    private function assertParameter($name, $value)
-    {
-        $this->assertTrue($this->request->hasParameter($name));
-        $this->assertSame($value, $this->request->getParameter($name));
     }
 }

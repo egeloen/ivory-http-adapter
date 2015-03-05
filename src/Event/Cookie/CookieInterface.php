@@ -53,8 +53,6 @@ interface CookieInterface
      * Sets the name.
      *
      * @param string|null $name The name.
-     *
-     * @return void No return value.
      */
     public function setName($name);
 
@@ -76,15 +74,11 @@ interface CookieInterface
      * Sets the value.
      *
      * @param string|null $value The value.
-     *
-     * @return void No return value.
      */
     public function setValue($value);
 
     /**
      * Clears the attributes.
-     *
-     * @return void No return value.
      */
     public function clearAttributes();
 
@@ -106,8 +100,6 @@ interface CookieInterface
      * Sets the attributes.
      *
      * @param array $attributes The attributes.
-     *
-     * @return void No return value.
      */
     public function setAttributes(array $attributes);
 
@@ -115,8 +107,6 @@ interface CookieInterface
      * Adds the attributes.
      *
      * @param array $attributes The attributes.
-     *
-     * @return void No return value.
      */
     public function addAttributes(array $attributes);
 
@@ -124,8 +114,6 @@ interface CookieInterface
      * Removes the attributes.
      *
      * @param array $names The attribute names.
-     *
-     * @return void No return value.
      */
     public function removeAttributes(array $names);
 
@@ -152,8 +140,6 @@ interface CookieInterface
      *
      * @param string $name  The attribute name.
      * @param mixed  $value The attribute value.
-     *
-     * @return void No return value.
      */
     public function setAttribute($name, $value);
 
@@ -161,8 +147,6 @@ interface CookieInterface
      * Removes an attribute.
      *
      * @param string $name The attribute name.
-     *
-     * @return void No return value.
      */
     public function removeAttribute($name);
 
@@ -177,8 +161,6 @@ interface CookieInterface
      * Sets the creation date (unix timestamp).
      *
      * @param integer $createdAt The creation date (unix timestamp).
-     *
-     * @return void No return value.
      */
     public function setCreatedAt($createdAt);
 

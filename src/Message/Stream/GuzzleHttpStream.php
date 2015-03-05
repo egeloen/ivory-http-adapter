@@ -132,6 +132,14 @@ class GuzzleHttpStream extends AbstractStream
     /**
      * {@inheritdoc}
      */
+    protected function doRewind()
+    {
+        return $this->stream->seek(0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doIsReadable()
     {
         return $this->stream->isReadable();

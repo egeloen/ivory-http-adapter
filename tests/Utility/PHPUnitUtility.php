@@ -19,11 +19,11 @@ namespace Ivory\Tests\HttpAdapter\Utility;
 class PHPUnitUtility
 {
     /**
-     * Gets the url.
+     * Gets the uri.
      *
-     * @return string|boolean The url or FALSE if there is none.
+     * @return string|boolean The uri or FALSE if there is none.
      */
-    public static function getUrl()
+    public static function getUri()
     {
         return isset($_SERVER['TEST_SERVER']) ? $_SERVER['TEST_SERVER'] : false;
     }
