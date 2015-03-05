@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.7.0 (????-??-??)
+
+ * d49ad91 - Rely on 'phly/http' for PSR-7 implementation
+
 ### 0.6.0 (2015-02-10)
 
  * cd7e18b - [HttpAdapterFactory] Added a guess and capable methods
