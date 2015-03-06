@@ -63,7 +63,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $this->browser->getClient()->setTimeout($this->getConfiguration()->getTimeout());
         $this->browser->getClient()->setMaxRedirects(0);

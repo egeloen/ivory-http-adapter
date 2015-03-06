@@ -81,15 +81,6 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($parameters, $request->getParameters());
     }
 
-    public function testCloneRequest()
-    {
-        $request = $this->messageFactory->createRequest('http://egeloen.fr/');
-        $requestClone = $this->messageFactory->cloneRequest($request);
-
-        $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $requestClone);
-        $this->assertNotSame($requestClone, $request);
-    }
-
     public function testCreateInternalRequest()
     {
         $internalRequest = $this->messageFactory->createInternalRequest($uri = 'http://egeloen.fr/');
@@ -174,15 +165,6 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($parameters, $internalRequest->getParameters());
     }
 
-    public function testCloneInternalRequest()
-    {
-        $internalRequest = $this->messageFactory->createInternalRequest('http://egeloen.fr/');
-        $internalRequestClone = $this->messageFactory->cloneInternalRequest($internalRequest);
-
-        $this->assertInstanceOf('Ivory\HttpAdapter\Message\InternalRequest', $internalRequestClone);
-        $this->assertNotSame($internalRequestClone, $internalRequest);
-    }
-
     public function testCreateResponse()
     {
         $response = $this->messageFactory->createResponse();
@@ -211,15 +193,6 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($headers, $response->getHeaders());
         $this->assertSame($body, $response->getBody());
         $this->assertSame($parameters, $response->getParameters());
-    }
-
-    public function testCloneResponse()
-    {
-        $response = $this->messageFactory->createResponse();
-        $responseClone = $this->messageFactory->cloneResponse($response);
-
-        $this->assertInstanceOf('Ivory\HttpAdapter\Message\Response', $responseClone);
-        $this->assertNotSame($responseClone, $response);
     }
 
     public function testSetBaseUri()

@@ -11,7 +11,6 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\StopwatchHttpAdapter;
 
 /**
@@ -51,60 +50,15 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
         unset($this->stopwatchHttpAdapter);
     }
 
-    public function testDefaultState()
+    public function testInheritance()
     {
-        $this->assertSame($this->httpAdapter, $this->stopwatchHttpAdapter->getHttpAdapter());
-        $this->assertSame($this->stopwatch, $this->stopwatchHttpAdapter->getStopwatch());
-    }
-
-    public function testSetHttpAdapter()
-    {
-        $this->stopwatchHttpAdapter->setHttpAdapter($httpAdapter = $this->createHttpAdapterMock());
-
-        $this->assertSame($httpAdapter, $this->stopwatchHttpAdapter->getHttpAdapter());
-    }
-
-    public function testSetStopwatch()
-    {
-        $this->stopwatchHttpAdapter->setStopwatch($stopwatch = $this->createStopwatchMock());
-
-        $this->assertSame($stopwatch, $this->stopwatchHttpAdapter->getStopwatch());
-    }
-
-    public function testGetConfiguration()
-    {
-        $this->httpAdapter
-            ->expects($this->once())
-            ->method('getConfiguration')
-            ->will($this->returnValue($configuration = $this->createConfigurationMock()));
-
-        $this->assertSame($configuration, $this->stopwatchHttpAdapter->getConfiguration());
-    }
-
-    public function testSetConfiguration()
-    {
-        $this->httpAdapter
-            ->expects($this->once())
-            ->method('setConfiguration')
-            ->with($this->identicalTo($configuration = $this->createConfigurationMock()));
-
-        $this->stopwatchHttpAdapter->setConfiguration($configuration);
-    }
-
-    public function testGetName()
-    {
-        $this->httpAdapter
-            ->expects($this->once())
-            ->method('getName')
-            ->will($this->returnValue($name = 'name'));
-
-        $this->assertSame($name, $this->stopwatchHttpAdapter->getName());
+        $this->assertInstanceOf('Ivory\HttpAdapter\PsrHttpAdapterDecorator', $this->stopwatchHttpAdapter);
     }
 
     /**
      * @dataProvider watchProvider
      */
-    public function testWatch($method, array $params = array('uri'), $wrappedMethod = 'send')
+    public function testWatch($method, array $params, $result)
     {
         $this->stopwatch
             ->expects($this->once())
@@ -113,21 +67,21 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->httpAdapter
             ->expects($this->once())
-            ->method($wrappedMethod)
-            ->will($this->returnValue($return = 'foo'));
+            ->method($method)
+            ->will($this->returnValue($result));
 
         $this->stopwatch
             ->expects($this->once())
             ->method('stop')
             ->with($this->identicalTo('ivory.http_adapter'));
 
-        $this->assertSame($return, call_user_func_array(array($this->stopwatchHttpAdapter, $method), $params));
+        $this->assertSame($result, call_user_func_array(array($this->stopwatchHttpAdapter, $method), $params));
     }
 
     /**
      * @dataProvider watchProvider
      */
-    public function testWatchException($method, array $params = array('uri'), $wrappedMethod = 'send')
+    public function testWatchException($method, array $params)
     {
         $this->stopwatch
             ->expects($this->once())
@@ -136,7 +90,7 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->httpAdapter
             ->expects($this->once())
-            ->method($wrappedMethod)
+            ->method($method)
             ->will($this->throwException($exception = new \Exception()));
 
         $this->stopwatch
@@ -160,28 +114,9 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function watchProvider()
     {
         return array(
-            array('get'),
-            array('head'),
-            array('trace'),
-            array('post'),
-            array('put'),
-            array('patch'),
-            array('delete'),
-            array('options'),
-            array('send', array('uri', RequestInterface::METHOD_GET)),
-            array('sendRequest', array($this->createRequestMock()), 'sendRequest'),
-            array('sendRequests', array(array($this->createRequestMock())), 'sendRequests'),
+            array('sendRequest', array($this->createInternalRequestMock()), $this->createResponseMock()),
+            array('sendRequests', array(array($this->createInternalRequestMock())), array($this->createResponseMock())),
         );
-    }
-
-    /**
-     * Creates a configuration mock.
-     *
-     * @return \Ivory\HttpAdapter\ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject The configuration mock.
-     */
-    private function createConfigurationMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
     }
 
     /**
@@ -207,10 +142,20 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates a request mock.
      *
-     * @return \Psr\Http\Message\RequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
      */
-    private function createRequestMock()
+    private function createInternalRequestMock()
     {
-        return $this->getMock('Psr\Http\Message\RequestInterface');
+        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+    }
+
+    /**
+     * Creates a response mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     */
+    private function createResponseMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 }

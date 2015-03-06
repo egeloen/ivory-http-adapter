@@ -11,36 +11,13 @@
 
 namespace Ivory\HttpAdapter;
 
-use Psr\Http\Message\RequestInterface;
-
 /**
  * Http adapter interface.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-interface HttpAdapterInterface
+interface HttpAdapterInterface extends PsrHttpAdapterInterface
 {
-    const VERSION = '0.7.0-DEV';
-    const VERSION_ID = '00600';
-    const MAJOR_VERSION = '0';
-    const MINOR_VERSION = '7';
-    const PATCH_VERSION = '0';
-    const EXTRA_VERSION = 'DEV';
-
-    /**
-     * Gets the configuration.
-     *
-     * @return \Ivory\HttpAdapter\ConfigurationInterface The configuration.
-     */
-    public function getConfiguration();
-
-    /**
-     * Sets the configuration.
-     *
-     * @param \Ivory\HttpAdapter\ConfigurationInterface $configuration The configuration.
-     */
-    public function setConfiguration(ConfigurationInterface $configuration);
-
     /**
      * Sends a GET request.
      *
@@ -161,33 +138,4 @@ interface HttpAdapterInterface
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
     public function send($uri, $method, array $headers = array(), $datas = array(), array $files = array());
-
-    /**
-     * Sends a PSR request.
-     *
-     * @param \Psr\Http\Message\RequestInterface $request The request.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
-     */
-    public function sendRequest(RequestInterface $request);
-
-    /**
-     * Sends requests.
-     *
-     * @param array $requests The requests.
-     *
-     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred when you don't provide the error callable.
-     *
-     * @return array $responses The responses.
-     */
-    public function sendRequests(array $requests);
-
-    /**
-     * Gets the name.
-     *
-     * @return string The name.
-     */
-    public function getName();
 }

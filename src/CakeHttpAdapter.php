@@ -49,7 +49,7 @@ class CakeHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $this->httpSocket->config['timeout'] = $this->getConfiguration()->getTimeout();
 

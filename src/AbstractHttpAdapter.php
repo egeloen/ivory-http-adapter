@@ -11,25 +11,18 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Psr\Http\Message\RequestInterface;
 
 /**
  * Abstract http adapter.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
+abstract class AbstractHttpAdapter implements HttpAdapterInterface
 {
+    use HttpAdapterTrait;
+
     /** @var \Ivory\HttpAdapter\ConfigurationInterface */
     private $configuration;
 
@@ -57,125 +50,6 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     public function setConfiguration(ConfigurationInterface $configuration)
     {
         $this->configuration = $configuration;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function send($uri, $method, array $headers = array(), $datas = array(), array $files = array())
-    {
-        return $this->sendInternalRequest($this->configuration->getMessageFactory()->createInternalRequest(
-            $uri,
-            $method,
-            $this->configuration->getProtocolVersion(),
-            $headers,
-            $datas,
-            $files
-        ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function sendRequest(RequestInterface $request)
-    {
-        if ($request instanceof InternalRequestInterface) {
-            return $this->sendInternalRequest($request);
-        }
-
-        $protocolVersion = $this->configuration->getProtocolVersion();
-        $this->configuration->setProtocolVersion($request->getProtocolVersion());
-
-        $response = $this->send(
-            $request->getUri(),
-            $request->getMethod(),
-            $request->getHeaders(),
-            $request->getBody()
-        );
-
-        $this->configuration->setProtocolVersion($protocolVersion);
-
-        return $response;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function sendRequests(array $requests)
-    {
-        $exceptions = array();
-
-        foreach ($requests as $index => &$request) {
-            if (is_string($request)) {
-                $request = array($request);
-            }
-
-            if (is_array($request)) {
-                $request = call_user_func_array(
-                    array($this->configuration->getMessageFactory(), 'createInternalRequest'),
-                    $request
-                );
-            }
-
-            if (!$request instanceof RequestInterface) {
-                $exceptions[] = HttpAdapterException::requestIsNotValid($request);
-                unset($requests[$index]);
-            } elseif (!$request instanceof InternalRequestInterface) {
-                $request = $this->configuration->getMessageFactory()->createInternalRequest(
-                    $request->getUri(),
-                    $request->getMethod(),
-                    $request->getProtocolVersion(),
-                    $request->getHeaders(),
-                    $request->getBody()
-                );
-            }
-        }
-
-        try {
-            $responses = $this->sendInternalRequests($requests);
-        } catch (MultiHttpAdapterException $e) {
-            $exceptions = array_merge($exceptions, $e->getExceptions());
-            $responses = $e->getResponses();
-        }
-
-        if (!empty($exceptions)) {
-            throw new MultiHttpAdapterException($exceptions, $responses);
-        }
-
-        return $responses;
-    }
-
-    /**
-     * Does an internal request send.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
-     */
-    abstract protected function doSendInternalRequest(InternalRequestInterface $internalRequest);
-
-    /**
-     * Does internal requests send.
-     *
-     * @param array    $internalRequests The internal requests.
-     * @param callable $success          The success callable.
-     * @param callable $error            The error callable.
-     */
-    protected function doSendInternalRequests(array $internalRequests, $success, $error)
-    {
-        foreach ($internalRequests as $internalRequest) {
-            try {
-                $response = $this->doSendInternalRequest($internalRequest);
-                $response = $response->withParameter('request', $internalRequest);
-                call_user_func($success, $response);
-            } catch (HttpAdapterException $e) {
-                $e->setRequest($internalRequest);
-                $e->setResponse(isset($response) ? $response : null);
-                call_user_func($error, $e);
-            }
-        }
     }
 
     /**
@@ -282,126 +156,6 @@ abstract class AbstractHttpAdapter extends AbstractHttpAdapterTemplate
     protected function prepareName($name, $subName)
     {
         return $name.'['.$subName.']';
-    }
-
-    /**
-     * Sends an internal request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
-     */
-    private function sendInternalRequest(InternalRequestInterface $internalRequest)
-    {
-        try {
-            if ($this->configuration->hasEventDispatcher()) {
-                $this->configuration->getEventDispatcher()->dispatch(
-                    Events::PRE_SEND,
-                    $preSendEvent = new PreSendEvent($this, $internalRequest)
-                );
-
-                $internalRequest = $preSendEvent->getRequest();
-            }
-
-            $response = $this->doSendInternalRequest($internalRequest);
-
-            if ($this->configuration->hasEventDispatcher()) {
-                $this->configuration->getEventDispatcher()->dispatch(
-                    Events::POST_SEND,
-                    $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response)
-                );
-
-                if ($postSendEvent->hasException()) {
-                    throw $postSendEvent->getException();
-                }
-
-                $response = $postSendEvent->getResponse();
-            }
-        } catch (HttpAdapterException $e) {
-            $e->setRequest($internalRequest);
-            $e->setResponse(isset($response) ? $response : null);
-
-            if ($this->configuration->hasEventDispatcher()) {
-                $this->configuration->getEventDispatcher()->dispatch(
-                    Events::EXCEPTION,
-                    $exceptionEvent = new ExceptionEvent($this, $e)
-                );
-
-                if ($exceptionEvent->hasResponse()) {
-                    return $exceptionEvent->getResponse();
-                }
-
-                $e = $exceptionEvent->getException();
-            }
-
-            throw $e;
-        }
-
-        return $response;
-    }
-
-    /**
-     * Sends internal requests.
-     *
-     * @param array $internalRequests The internal requests.
-     *
-     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred.
-     *
-     * @return array The responses.
-     */
-    private function sendInternalRequests(array $internalRequests)
-    {
-        if (!empty($internalRequests) && $this->configuration->hasEventDispatcher()) {
-            $this->configuration->getEventDispatcher()->dispatch(
-                Events::MULTI_PRE_SEND,
-                $multiPreSendEvent = new MultiPreSendEvent($this, $internalRequests)
-            );
-
-            $internalRequests = $multiPreSendEvent->getRequests();
-        }
-
-        $responses = array();
-        $exceptions = array();
-
-        $successHandler = function (ResponseInterface $response) use (&$responses) {
-            $responses[] = $response;
-        };
-
-        $errorHandler = function (HttpAdapterException $exception) use (&$exceptions) {
-            $exceptions[] = $exception;
-        };
-
-        $this->doSendInternalRequests($internalRequests, $successHandler, $errorHandler);
-
-        if (!empty($responses) && $this->configuration->hasEventDispatcher()) {
-            $this->configuration->getEventDispatcher()->dispatch(
-                Events::MULTI_POST_SEND,
-                $postSendEvent = new MultiPostSendEvent($this, $responses)
-            );
-
-            $exceptions = array_merge($exceptions, $postSendEvent->getExceptions());
-            $responses = $postSendEvent->getResponses();
-        }
-
-        if (!empty($exceptions)) {
-            if ($this->configuration->hasEventDispatcher()) {
-                $this->configuration->getEventDispatcher()->dispatch(
-                    Events::MULTI_EXCEPTION,
-                    $exceptionEvent = new MultiExceptionEvent($this, $exceptions)
-                );
-
-                $responses = array_merge($responses, $exceptionEvent->getResponses());
-                $exceptions = $exceptionEvent->getExceptions();
-            }
-
-            if (!empty($exceptions)) {
-                throw new MultiHttpAdapterException($exceptions, $responses);
-            }
-        }
-
-        return $responses;
     }
 
     /**

@@ -85,14 +85,6 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function cloneRequest(RequestInterface $request)
-    {
-        return clone $request;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createInternalRequest(
         $uri,
         $method = RequestInterface::METHOD_GET,
@@ -123,14 +115,6 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function cloneInternalRequest(InternalRequestInterface $internalRequest)
-    {
-        return clone $internalRequest;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createResponse(
         $statusCode = 200,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
@@ -144,14 +128,6 @@ class MessageFactory implements MessageFactoryInterface
             HeadersNormalizer::normalize($headers),
             $parameters
         ))->withProtocolVersion($protocolVersion);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function cloneResponse(ResponseInterface $response)
-    {
-        return clone $response;
     }
 
     /**

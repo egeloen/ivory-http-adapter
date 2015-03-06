@@ -45,7 +45,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $request = Request::init($internalRequest->getMethod())
             ->whenError(function () {})

@@ -16,7 +16,6 @@ use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Psr\Http\Message\UriInterface;
 
 /**
  * Socket http adapter.
@@ -36,7 +35,7 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $uri = $internalRequest->getUri();
 

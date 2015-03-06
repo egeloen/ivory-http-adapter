@@ -12,7 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Configuration interface.
@@ -40,27 +39,6 @@ interface ConfigurationInterface
      * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
      */
     public function setMessageFactory(MessageFactoryInterface $messageFactory);
-
-    /**
-     * Checks if there is an event dispatcher.
-     *
-     * @return boolean TRUE if there is an event dispatcher else FALSE.
-     */
-    public function hasEventDispatcher();
-
-    /**
-     * Gets the event dispatcher.
-     *
-     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface|null The event dispatcher.
-     */
-    public function getEventDispatcher();
-
-    /**
-     * Sets the event dispatcher.
-     *
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface|null $eventDispatcher The event dispatcher.
-     */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null);
 
     /**
      * Gets the protocol version.

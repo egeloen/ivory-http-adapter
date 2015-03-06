@@ -46,7 +46,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $curl = $this->createCurl($internalRequest);
 
@@ -66,7 +66,7 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequests(array $internalRequests, $success, $error)
+    protected function sendInternalRequests(array $internalRequests, $success, $error)
     {
         $curlMulti = curl_multi_init();
 

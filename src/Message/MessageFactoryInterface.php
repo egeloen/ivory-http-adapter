@@ -63,15 +63,6 @@ interface MessageFactoryInterface
     );
 
     /**
-     * Clones a request.
-     *
-     * @param \Ivory\HttpAdapter\Message\RequestInterface $request The request.
-     *
-     * @return \Ivory\HttpAdapter\Message\RequestInterface The cloned request.
-     */
-    public function cloneRequest(RequestInterface $request);
-
-    /**
      * Creates an internal request.
      *
      * @param string|object $uri             The uri.
@@ -95,15 +86,6 @@ interface MessageFactoryInterface
     );
 
     /**
-     * Clones an internal request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The cloned internal request.
-     */
-    public function cloneInternalRequest(InternalRequestInterface $internalRequest);
-
-    /**
      * Creates a response.
      *
      * @param integer                                                    $statusCode      The status code.
@@ -121,13 +103,4 @@ interface MessageFactoryInterface
         $body = null,
         array $parameters = array()
     );
-
-    /**
-     * Clones a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The cloned response.
-     */
-    public function cloneResponse(ResponseInterface $response);
 }

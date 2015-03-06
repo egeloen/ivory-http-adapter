@@ -54,7 +54,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         try {
             $response = $this->client->send($this->createRequest($internalRequest));
@@ -82,7 +82,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequests(array $internalRequests, $success, $error)
+    protected function sendInternalRequests(array $internalRequests, $success, $error)
     {
         $requests = array();
         foreach ($internalRequests as $internalRequest) {
