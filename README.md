@@ -10,7 +10,7 @@
 [![Total Downloads](https://poser.pugx.org/egeloen/http-adapter/downloads.svg)](https://packagist.org/packages/egeloen/http-adapter)
 [![License](https://poser.pugx.org/egeloen/http-adapter/license.svg)](https://packagist.org/packages/egeloen/http-adapter)
 
-The library allows to issue HTTP requests with PHP 5.3+. The supported adapters are:
+The library allows to issue HTTP requests with PHP 5.4.8+. The supported adapters are:
 
  - [Buzz](https://github.com/kriswallsmith/Buzz)
  - [Cake](http://cakephp.org/)
