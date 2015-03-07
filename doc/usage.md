@@ -2,11 +2,10 @@
 
 To send a request, you can use the API defined by the `Ivory\HttpAdapter\HttpAdapterInterface`. All these methods
 throw an `Ivory\HttpAdapter\HttpAdapterException` if an error occurred (I would recommend you to always use a try/catch
-block everywhere) and return an `Ivory\HttpAdapter\Message\ResponseInterface`. If you want to learn more about the
-response, you can read this [doc](/doc/response.md).
+block everywhere) and return an `Ivory\HttpAdapter\Message\ResponseInterface`.
 
-Additionally, the url can be a string or an object implementing the `__toString` method. The headers parameter can be
-an associative array describing an header key/value pair or an indexed array already formatted. The datas can be an
+Additionally, the url can be a string or an `Psr\Http\Message\UriInterface`. The headers parameter can be an
+associative array describing an header key/value pair or an indexed array already formatted. The datas can be an
 associative array or a string already formatted according to the content-type you want to use. Finally, the files are
 an associative array describing key/path pair.
 
@@ -77,9 +76,7 @@ $response = $httpAdapter->sendRequest(new Request($url, $method));
 $response = $httpAdapter->sendRequest(new InternalRequest($url, $method));
 ```
 
-If you want to learn more about the `Ivory\HttpAdapter\Message\Request`, your can read this [doc](/doc/request.md) or
-if you want to learn more about the `Ivory\HttpAdapter\Message\InternalRequest`, your can read this
-[doc](/doc/internal_request.md).
+If you want to learn more about the requests, your can read this [doc](/doc/psr-7.md).
 
 ## Send multiple requests
 

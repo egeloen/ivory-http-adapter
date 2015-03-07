@@ -1,8 +1,8 @@
 # Events
 
-When a request is sent, some events are triggered through the
-[Symfony2 event dispatcher](http://symfony.com/doc/current/components/event_dispatcher/introduction.html) and so, you
-can hook into them pretty easily.
+If you use the `Ivory\HttpAdapter\EventDispatcherHttpAdapter`, then, when a request is sent, some events are triggered
+through the [Symfony2 event dispatcher](http://symfony.com/doc/current/components/event_dispatcher/introduction.html)
+and so, you can hook into them pretty easily.
 
 ## Available events
 
@@ -182,8 +182,6 @@ use Ivory\HttpAdapter\Event\BasicAuth\BasicAuth;
 use Ivory\HttpAdapter\Event\Subscriber\BasicAuthSubscriber;
 
 $basicAuthSubscriber = new BasicAuthSubscriber(new BasicAuth('username', 'password'));
-
-$httpAdapter->getEventDispatcher()->addSubscriber($basicAuthSubscriber);
 ```
 
 Internally, the basic auth subscriber uses the `Ivory\HttpAdapter\Event\BasicAuth\BasicAuth` in order to do the
@@ -219,8 +217,6 @@ cookies through a jar. To use it:
 use Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber;
 
 $cookieSubscriber = new CookieSubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($cookieSubscriber);
 ```
 
 By default, a cookie jar is created by the subscriber but you can specify it in its constructor:
@@ -432,8 +428,6 @@ maintain an history of all requests/responses sent through a journal. To use it:
 use Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber;
 
 $historySubscriber = new HistorySubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($historySubscriber);
 ```
 
 By default, a journal is created by the subscriber but you can specify it in its constructor:
@@ -553,8 +547,6 @@ $monolog = new Logger('name');
 $monolog->pushHandler(new StreamHandler('path/to/your.log'));
 
 $loggerSubscriber = new LoggerSubscriber($monolog);
-
-$httpAdapter->getEventDispatcher()->addSubscriber($loggerSubscriber);
 ```
 
 You can also change the logger at runtime:
@@ -597,8 +589,6 @@ response. Then, if you want to follow redirect, just register the redirect subsc
 use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
 
 $redirectSubscriber = new RedirectSubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($redirectSubscriber);
 ```
 
 When you use the redirect subscriber, some parameters are available on the response:
@@ -669,8 +659,6 @@ errored request (more precisely when an exception is thrown). To use it:
 use Ivory\HttpAdapter\Event\Subscriber\RetrySubscriber;
 
 $retrySubscriber = new RetrySubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($retrySubscriber);
 ```
 
 When you use the retry subscriber, some parameters are available on the request:
@@ -892,13 +880,11 @@ subscriber:
 use Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber;
 
 $statusCodeSubscriber = new StatusCodeSubscriber();
-
-$httpAdapter->getEventDispatcher()->addSubscriber($statusCodeSubscriber);
 ```
 
 Internally, the status code subscriber uses the `Ivory\HttpAdapter\Event\StatusCode\StatusCode` in order to detect if
 a request is valid. By default, if you don't provide it, it will be created automatically. If you want to use your own,
-you can pass it via cosntructor or getter/setter:
+you can pass it via constructor or getter/setter:
 
 ``` php
 use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
@@ -921,8 +907,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 $stopwatch = new Stopwatch();
 $stopwatchSubscriber = new StopwatchSubscriber($stopwatch);
-
-$httpAdapter->getEventDispatcher()->addSubscriber($stopwatchSubscriber);
 ```
 
 You can also change the stopwatch at runtime:

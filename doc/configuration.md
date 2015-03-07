@@ -9,13 +9,13 @@ $curlHttpAdapter = new CurlHttpAdapter(new Configuration());
 // or
 $zend1HttpAdapter = new Zend1HttpAdapter(null, new Configuration());
 // or
-$configuration = $httpAdaptr->getConfiguration();
+$configuration = $httpAdapter->getConfiguration();
 $httpAdapter->setConfiguration($configuration);
 ```
 
 ## Message factory
 
-The message factory allows to create a PSR-7 request, an internal request and an empty response. So, if you want to
+The message factory allows to create a PSR-7 request, an internal request and a response. So, if you want to
 use your own classes in order to add extra behaviors, you can define your own and instantiate it in your custom
 factory which implements the `Ivory\HttpAdapter\Message\MessageFactoryInterface` or extends the
 `Ivory\HttpAdapter\Message\MessageFactory`. Then, to get/set it, you can use:
@@ -28,20 +28,6 @@ $configuration->setMessageFactory(new MessageFactory());
 // or
 $configuration = new Configuration($messageFactory);
 ```
-
-## Event dispatcher
-
-The event dispatcher allows you to attach listeners/subscribers in order to hook into the available events. To get/set
-it, you can use:
-
-``` php
-$eventDispatcher = $configuration->getEventDispatcher();
-$configuration->setEventDispatcher($eventDispatcher);
-// or
-$configuration = new Configuration(null, $eventDispatcher);
-```
-
-If you want to learn more about the events, you can read this [doc](/doc/events.md).
 
 ## Protocol version
 
@@ -122,10 +108,11 @@ $configuration->setUserAgent('My user agent');
 
 ## Base url
 
-If set, requests created using a relative url are combined with the configured base url. Requests created using an absolute url are not affected by this setting.
+If set, requests created using a relative url are combined with the configured base url. Requests created using an
+absolute url are not affected by this setting.
 
 ``` php
-$hasBaseUrl = $configuration->haseBaseUrl();
+$hasBaseUrl = $configuration->hasBaseUrl();
 $baseUrl = $configuration->getBaseUrl();
 
 $configuration->setBaseUrl('http://api.example.com');
