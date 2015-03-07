@@ -120,10 +120,32 @@ $zend2HttpAdapter = new Zend2HttpAdapter();
 $zend2HttpAdapter = new Zend2HttpAdapter(new Client());
 ```
 
+## Event Dispatcher
+
+The event dispatcher http adapter allows you to hook into the request process through the Symfony2 event dispatcher
+component.
+
+``` php
+use Ivory\HttpAdapter\CurlHttpAdapter;
+use Ivory\HttpAdapter\EventDispatcherHttpAdapter;
+use Ivory\HttpAdapter\SocketHttpAdapter;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
+$httpAdapter = new CurlHttpAdapter();
+// or
+$httpAdapter = new SocketHttpAdapter();
+
+$eventDispatcher = new EventDispatcher();
+
+$eventDispatcherHttpAdapter = new EventDispatcherHttpAdapter($httpAdapter, $eventDispatcher);
+```
+
+The event documentation is available [here](/doc/events.md).
+
 ## Stopwatch
 
-The stopwatch http adapter allows you to time the http adaper process (including subscribers, etc) through the Symfony2
-stopwatch component.
+The stopwatch http adapter allows you to time the http adapter process (including subscribers, etc) through the
+Symfony2 stopwatch component.
 
 ``` php
 use Ivory\HttpAdapter\CurlHttpAdapter;
@@ -133,7 +155,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 $httpAdapter = new CurlHttpAdapter();
 // or
-$httpAdapter = new SocketHttpAdpater();
+$httpAdapter = new SocketHttpAdapter();
 
 $stopwatch = new Stopwatch();
 

@@ -33,12 +33,9 @@ which defines how http message should be implemented.
  1. [Installation](/doc/installation.md)
  2. [Adapters](/doc/adapters.md)
  3. [Configuration](/doc/configuration.md)
- 4. [Usage](/doc/usage.md)
- 5. [Request](/doc/request.md)
- 6. [Internal request](/doc/internal_request.md)
- 7. [Response](/doc/response.md)
- 8. [Stream](/doc/stream.md)
- 9. [Events](/doc/events.md)
+ 4. [PSR-7](/doc/psr-7.md)
+ 5. [Usage](/doc/usage.md)
+ 6. [Events](/doc/events.md)
 
 ## Cookbook
 
