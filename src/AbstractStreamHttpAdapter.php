@@ -27,7 +27,7 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
     /**
      * {@inheritdoc}
      */
-    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $context = stream_context_create(array(
             'http' => array(

@@ -14,8 +14,6 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\MessageFactory;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\MessageInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * {@inheritdoc}
@@ -26,9 +24,6 @@ class Configuration implements ConfigurationInterface
 {
     /** @var \Ivory\HttpAdapter\Message\MessageFactoryInterface */
     private $messageFactory;
-
-    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|null */
-    private $eventDispatcher;
 
     /** @var string */
     private $protocolVersion = MessageInterface::PROTOCOL_VERSION_1_1;
@@ -51,19 +46,11 @@ class Configuration implements ConfigurationInterface
     /**
      * Creates an http adapter.
      *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null          $messageFactory  The message factory.
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface|null $eventDispatcher The event dispatcher.
+     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
      */
-    public function __construct(
-        MessageFactoryInterface $messageFactory = null,
-        EventDispatcherInterface $eventDispatcher = null
-    ) {
-        if (!$eventDispatcher && class_exists('Symfony\Component\EventDispatcher\EventDispatcher')) {
-            $eventDispatcher = new EventDispatcher();
-        }
-
+    public function __construct(MessageFactoryInterface $messageFactory = null)
+    {
         $this->setMessageFactory($messageFactory ?: new MessageFactory());
-        $this->setEventDispatcher($eventDispatcher);
         $this->setBoundary(sha1(microtime()));
         $this->setUserAgent('Ivory Http Adapter '.HttpAdapterInterface::VERSION);
     }
@@ -82,30 +69,6 @@ class Configuration implements ConfigurationInterface
     public function setMessageFactory(MessageFactoryInterface $factory)
     {
         $this->messageFactory = $factory;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasEventDispatcher()
-    {
-        return $this->eventDispatcher !== null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEventDispatcher()
-    {
-        return $this->eventDispatcher;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
-    {
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**

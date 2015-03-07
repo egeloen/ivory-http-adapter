@@ -44,13 +44,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     public function testDefaultState()
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\MessageFactory', $this->configuration->getMessageFactory());
-
-        $this->assertTrue($this->configuration->hasEventDispatcher());
-        $this->assertInstanceOf(
-            'Symfony\Component\EventDispatcher\EventDispatcher',
-            $this->configuration->getEventDispatcher()
-        );
-
         $this->assertSame(InternalRequestInterface::PROTOCOL_VERSION_1_1, $this->configuration->getProtocolVersion());
         $this->assertFalse($this->configuration->getKeepAlive());
         $this->assertFalse($this->configuration->hasEncodingType());
@@ -62,13 +55,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function testInitialState()
     {
-        $this->configuration = new Configuration(
-            $messageFactory = $this->createMessageFactoryMock(),
-            $eventDispatcher = $this->createEventDispatcherMock()
-        );
+        $this->configuration = new Configuration($messageFactory = $this->createMessageFactoryMock());
 
         $this->assertSame($messageFactory, $this->configuration->getMessageFactory());
-        $this->assertSame($eventDispatcher, $this->configuration->getEventDispatcher());
     }
 
     public function testSetMessageFactory()
@@ -76,22 +65,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->configuration->setMessageFactory($messageFactory = $this->createMessageFactoryMock());
 
         $this->assertSame($messageFactory, $this->configuration->getMessageFactory());
-    }
-
-    public function testSetEventDispatcher()
-    {
-        $this->configuration->setEventDispatcher($eventDispatcher = $this->createEventDispatcherMock());
-
-        $this->assertTrue($this->configuration->hasEventDispatcher());
-        $this->assertSame($eventDispatcher, $this->configuration->getEventDispatcher());
-    }
-
-    public function testResetEventDispatcher()
-    {
-        $this->configuration->setEventDispatcher(null);
-
-        $this->assertFalse($this->configuration->hasEventDispatcher());
-        $this->assertNull($this->configuration->getEventDispatcher());
     }
 
     public function testSetProtocolVersion()
@@ -152,15 +125,5 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     private function createMessageFactoryMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
-    }
-
-    /**
-     * Creates an event dispatcher mock.
-     *
-     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject The event dispatcher mock.
-     */
-    private function createEventDispatcherMock()
-    {
-        return $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
     }
 }
