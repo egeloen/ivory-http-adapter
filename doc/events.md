@@ -24,7 +24,6 @@ use Ivory\HttpAdapter\Event\PreSendEvent;
 $preSendEvent = new PreSendEvent($httpAdapter, $request);
 
 $httpAdapter = $preSendEvent->getHttpAdapter();
-$preSendEvent->setHttpAdapter($httpAdapter);
 
 $request = $preSendEvent->getRequest();
 $preSendEvent->setRequest($request);
@@ -42,7 +41,6 @@ use Ivory\HttpAdapter\Event\PostSendEvent;
 $postSendEvent = new PostSendEvent($httpAdapter, $request, $response);
 
 $httpAdapter = $postSendEvent->getHttpAdapter();
-$postSendEvent->setHttpAdapter($httpAdapter);
 
 $request = $postSendEvent->getRequest();
 $postSendEvent->setRequest($request);
@@ -63,7 +61,6 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 $exceptionEvent = new ExceptionEvent($httpAdapter, $request, $exception);
 
 $httpAdapter = $exceptionEvent->getHttpAdapter();
-$exceptionEvent->setHttpAdapter($httpAdapter);
 
 $exception = $exceptionEvent->getException();
 $exceptionEvent->setException($exception);
@@ -94,7 +91,6 @@ use Ivory\HttpAdapter\Event\MultiPreSendEvent;
 $multiPreSendEvent = new MultiPreSendEvent($httpAdapter, $requests);
 
 $httpAdapter = $multiPreSendEvent->getHttpAdapter();
-$multiPreSendEvent->setHttpAdapter($httpAdapter);
 
 $requests = $multiPreSendEvent->getRequests();
 $multiPreSendEvent->setRequests($requests);
@@ -113,7 +109,6 @@ use Ivory\HttpAdapter\Event\MultiPostSendEvent;
 $multiPostSendEvent = new MultiPostSendEvent($httpAdapter, $responses);
 
 $httpAdapter = $multiPostSendEvent->getHttpAdapter();
-$multiPostSendEvent->setHttpAdapter($httpAdapter);
 
 $responses = $multiPostSendEvent->getResponses();
 $multiPostSendEvent->setResponses($responses);
@@ -139,7 +134,6 @@ use Ivory\HttpAdapter\Event\ExceptionEvent;
 $multiExceptionEvent = new MultiExceptionEvent($httpAdapter, $multiException);
 
 $httpAdapter = $multiExceptionEvent->getHttpAdapter();
-$multiExceptionEvent->setHttpAdapter($httpAdapter);
 
 $exceptions = $multiExceptionEvent->getExceptions();
 $multiExceptionEvent->setExceptions($exceptions);

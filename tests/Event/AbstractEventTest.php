@@ -48,13 +48,6 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->httpAdapter, $this->event->getHttpAdapter());
     }
 
-    public function testSetHttpAdapter()
-    {
-        $this->event->setHttpAdapter($httpAdapter = $this->createHttpAdapterMock());
-
-        $this->assertSame($httpAdapter, $this->event->getHttpAdapter());
-    }
-
     /**
      * Creates the event.
      *

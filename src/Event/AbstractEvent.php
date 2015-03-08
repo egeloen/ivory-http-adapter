@@ -31,7 +31,7 @@ abstract class AbstractEvent extends Event
      */
     public function __construct(HttpAdapterInterface $httpAdapter)
     {
-        $this->setHttpAdapter($httpAdapter);
+        $this->httpAdapter = $httpAdapter;
     }
 
     /**
@@ -42,15 +42,5 @@ abstract class AbstractEvent extends Event
     public function getHttpAdapter()
     {
         return $this->httpAdapter;
-    }
-
-    /**
-     * Sets the http adapter.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
-     */
-    public function setHttpAdapter(HttpAdapterInterface $httpAdapter)
-    {
-        $this->httpAdapter = $httpAdapter;
     }
 }
