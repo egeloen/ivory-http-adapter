@@ -1,5 +1,35 @@
 # UPGRADE
 
+### 0.6 to 0.7
+
+ * The lowest PHP version supported has been bumped to 5.4.8+ due to the usage of `phly/http`.
+ * The `psr/http-message` has been bumped from `0.5` to `0.9` with plenty of BC breaks.
+ * The `Ivory\HttpAdapter\Message` namespace has been rewritten in order to match `phly/http` and `psr/http-message`.
+ * The `Ivory\HttpAdapter\AbstractHttpAdapterTemplate` has been removed in favor of the 
+   `Ivory\HttpAdapter\HttpAdapterTrait`.
+ * The event dispatcher has been moved to a decorator. So, it has been removed from the configuration and all the 
+   event related code is not part of the `Ivory\HttpAdapter\AbstractHttpAdapter` anymore but part of the 
+   `Ivory\HttpAdapter\EventDispatcherHttpAdapter`.
+ * The event model which populated informations into requests or responses now returns the new requests or responses 
+   created due to the immutability of these classes.
+ * The event http adapter setter has been removed in order to make the http adapter immutable.
+ * The `Ivory\HttpAdapter\AbstractHttpAdapter::doSendInternalRequest` and 
+   `Ivory\HttpAdapter\AbstractHttpAdapter::doSendInternalRequests` has been renamed respectively to 
+   `sendInternalRequest` and `sendInternalRequests` which were the methods previously reserved for the event 
+   dispatching.
+ * The internal request raw datas has been dropped in favor of the body already available through the extended request.
+ * The `Ivory\HttpAdapter\Message\Stream\AbstractStream::doRewind` has been introduced in order to match 
+   `psr/http-message`.
+ * The `Ivory\HttpAdapter\Message\Stream\ResourceStream` and `Ivory\HttpAdapter\Message\Stream\StringStream` have been 
+   removed. You should now rely on the `phly/http` stream.
+ * The `Ivory\HttpAdapter\Message\MessageFactory::clone*` methods have been removed (not used anymore) and the 
+   `reasonPhrase` parameter of the `Ivory\HttpAdapter\Message\MessageFactory::createResponse` has been removed too 
+   (not needed anymore).
+ * The `Ivory\HttpAdapter\Extractor\ReasonPhraseExtractor` has been removed (not used anymore).
+ * The `Ivory\HttpAdapter\Normalizer\MethodNormalizer` and `Ivory\HttpAdapter\Normalizer\UrlNormalizer` have been 
+   removed (not used anymore).
+ * All `url` have been renamed to `uri` (including properties and methods) in order to match `psr/http-message`.
+
 ### 0.5 to 0.6
 
  * The `Ivory\HttpAdapter\Event` namespace has been rewrite and so, it is plenty of BC breaks... Basically, lot of
