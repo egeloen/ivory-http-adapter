@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.7.0 (????-??-??)
+### 0.7.0 (2015-03-08)
 
  * 5e844f6 - Move event dispatcher into a decorator
  * d49ad91 - Rely on 'phly/http' for PSR-7 implementation

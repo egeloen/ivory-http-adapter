@@ -20,12 +20,12 @@ use Psr\Http\Message\RequestInterface;
  */
 interface PsrHttpAdapterInterface
 {
-    const VERSION = '0.7.0-DEV';
-    const VERSION_ID = '00600';
+    const VERSION = '0.7.0';
+    const VERSION_ID = '00700';
     const MAJOR_VERSION = '0';
     const MINOR_VERSION = '7';
     const PATCH_VERSION = '0';
-    const EXTRA_VERSION = 'DEV';
+    const EXTRA_VERSION = '';
 
     /**
      * Gets the configuration.
