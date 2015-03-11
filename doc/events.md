@@ -165,6 +165,10 @@ propose to add them in the core. The built-in ones are:
  * [Retry](/doc/events.md#retry)
  * [Status](/doc/events.md#status-code)
  * [Stopwatch](/doc/events.md#stopwatch)
+ 
+Some other event subscribers are available as dedicated packages:
+
+ * [Tape recorder](https://github.com/kreait/tape-recorder-subscriber)
 
 ### Basic authentication
 
