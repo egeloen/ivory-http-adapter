@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": ">=5.4.8",
-        "phly/http": "dev-header-case-sensitivity as 0.11.x-dev"
+        "phly/http": "^0.11.2"
     },
     "require-dev": {
         "cakephp/cakephp": "^2.5.7",
@@ -33,10 +33,6 @@
         "zendframework/zend-http": "^2.3.4"
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/egeloen/http.git"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/egeloen/phpunit-mock-objects.git"
