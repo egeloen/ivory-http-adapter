@@ -68,6 +68,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             $parameters = array('baz' => 'bat')
         );
 
+        $headers['Host'] = array('egeloen.fr');
+
         $this->assertSame($uri, (string) $this->request->getUri());
         $this->assertSame($method, $this->request->getMethod());
         $this->assertSame($headers, $this->request->getHeaders());

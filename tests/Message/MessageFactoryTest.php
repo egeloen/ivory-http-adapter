@@ -57,7 +57,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $request);
         $this->assertSame($uri, (string) $request->getUri());
         $this->assertSame(RequestInterface::METHOD_GET, $request->getMethod());
-        $this->assertEmpty($request->getHeaders());
+        $this->assertSame(array('Host' => array('egeloen.fr')), $request->getHeaders());
         $this->assertEmpty((string) $request->getBody());
         $this->assertEmpty($request->getParameters());
     }
@@ -72,6 +72,8 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
             $parameters = array('baz' => 'bat')
         );
+
+        $headers['Host'] = array('egeloen.fr');
 
         $this->assertSame($uri, (string) $request->getUri());
         $this->assertSame($method, $request->getMethod());
@@ -89,7 +91,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame(RequestInterface::METHOD_GET, $internalRequest->getMethod());
         $this->assertSame(RequestInterface::PROTOCOL_VERSION_1_1, $internalRequest->getProtocolVersion());
-        $this->assertEmpty($internalRequest->getHeaders());
+        $this->assertSame(array('Host' => array('egeloen.fr')), $internalRequest->getHeaders());
         $this->assertEmpty((string) $internalRequest->getBody());
         $this->assertEmpty($internalRequest->getDatas());
         $this->assertEmpty($internalRequest->getFiles());
@@ -107,6 +109,8 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $files = array('bot' => 'ban'),
             $parameters = array('bip' => 'pog')
         );
+
+        $headers['Host'] = array('egeloen.fr');
 
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame($method, $internalRequest->getMethod());
@@ -129,6 +133,8 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             array(),
             $parameters = array('bip' => 'pog')
         );
+
+        $headers['Host'] = array('egeloen.fr');
 
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame($method, $internalRequest->getMethod());
@@ -154,6 +160,8 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             array(),
             $parameters = array('bip' => 'pog')
         );
+
+        $headers['Host'] = array('egeloen.fr');
 
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame($method, $internalRequest->getMethod());

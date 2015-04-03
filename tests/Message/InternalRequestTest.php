@@ -68,6 +68,8 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
             $parameters = array('bip' => 'pog')
         );
 
+        $headers['Host'] = array('egeloen.fr');
+
         $this->assertSame($uri, (string) $this->internalRequest->getUri());
         $this->assertSame($method, $this->internalRequest->getMethod());
         $this->assertSame($headers, $this->internalRequest->getHeaders());
