@@ -42,7 +42,7 @@ class HistorySubscriber extends AbstractTimerSubscriber
     {
         parent::__construct($timer);
 
-        $this->setJournal($journal ?: new Journal());
+        $this->journal = $journal ?: new Journal();
     }
 
     /**
@@ -53,16 +53,6 @@ class HistorySubscriber extends AbstractTimerSubscriber
     public function getJournal()
     {
         return $this->journal;
-    }
-
-    /**
-     * Sets the journal.
-     *
-     * @param \Ivory\HttpAdapter\Event\History\JournalInterface $journal The journal.
-     */
-    public function setJournal(JournalInterface $journal)
-    {
-        $this->journal = $journal;
     }
 
     /**

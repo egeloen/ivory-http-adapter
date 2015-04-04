@@ -25,12 +25,15 @@ class CookieSubscriberTest extends AbstractSubscriberTest
     /** @var \Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber */
     private $cookieSubscriber;
 
+    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $cookieJar;
+
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->cookieSubscriber = new CookieSubscriber();
+        $this->cookieSubscriber = new CookieSubscriber($this->cookieJar = $this->createCookieJarMock());
     }
 
     /**
@@ -52,13 +55,6 @@ class CookieSubscriberTest extends AbstractSubscriberTest
     public function testInitialState()
     {
         $this->cookieSubscriber = new CookieSubscriber($cookieJar = $this->createCookieJarMock());
-
-        $this->assertSame($cookieJar, $this->cookieSubscriber->getCookieJar());
-    }
-
-    public function testSetCookieJar()
-    {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
 
         $this->assertSame($cookieJar, $this->cookieSubscriber->getCookieJar());
     }
@@ -88,9 +84,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function testPreSendEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
-        $cookieJar
+        $this->cookieJar
             ->expects($this->once())
             ->method('populate')
             ->with($this->identicalTo($request = $this->createRequestMock()))
@@ -103,9 +97,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function testPostSendEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
-        $cookieJar
+        $this->cookieJar
             ->expects($this->once())
             ->method('extract')
             ->with(
@@ -118,9 +110,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function testExceptionEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
-        $cookieJar
+        $this->cookieJar
             ->expects($this->once())
             ->method('extract')
             ->with(
@@ -136,11 +126,9 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiPreSendEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
         $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
 
-        $cookieJar
+        $this->cookieJar
             ->expects($this->exactly(count($requests)))
             ->method('populate')
             ->will($this->returnValueMap(array(
@@ -155,8 +143,6 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiPostSendEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
         $request1 = $this->createRequestMock();
         $request2 = $this->createRequestMock();
 
@@ -165,7 +151,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
             $response2 = $this->createResponseMock($request2),
         );
 
-        $cookieJar
+        $this->cookieJar
             ->expects($this->exactly(count($responses)))
             ->method('extract')
             ->withConsecutive(array($request1, $response1), array($request2, $response2));
@@ -175,8 +161,6 @@ class CookieSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiExceptionEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
         $exceptions = array(
             $this->createExceptionMock(
                 $request1 = $this->createRequestMock(),
@@ -188,7 +172,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
             ),
         );
 
-        $cookieJar
+        $this->cookieJar
             ->expects($this->exactly(count($exceptions)))
             ->method('extract')
             ->withConsecutive(

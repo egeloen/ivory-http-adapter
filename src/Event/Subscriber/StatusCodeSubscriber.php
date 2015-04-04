@@ -39,7 +39,7 @@ class StatusCodeSubscriber implements EventSubscriberInterface
      */
     public function __construct(StatusCodeInterface $statusCode = null)
     {
-        $this->setStatusCode($statusCode ?: new StatusCode());
+        $this->statusCode = $statusCode ?: new StatusCode();
     }
 
     /**
@@ -50,16 +50,6 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     public function getStatusCode()
     {
         return $this->statusCode;
-    }
-
-    /**
-     * Sets the status code.
-     *
-     * @param \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface $statusCode The status code.
-     */
-    public function setStatusCode(StatusCodeInterface $statusCode)
-    {
-        $this->statusCode = $statusCode;
     }
 
     /**

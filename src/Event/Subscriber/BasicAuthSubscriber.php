@@ -34,7 +34,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
      */
     public function __construct(BasicAuthInterface $basicAuth)
     {
-        $this->setBasicAuth($basicAuth);
+        $this->basicAuth = $basicAuth;
     }
 
     /**
@@ -45,16 +45,6 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     public function getBasicAuth()
     {
         return $this->basicAuth;
-    }
-
-    /**
-     * Sets the basic auth.
-     *
-     * @param \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface $basicAuth The basic auth.
-     */
-    public function setBasicAuth(BasicAuthInterface $basicAuth)
-    {
-        $this->basicAuth = $basicAuth;
     }
 
     /**

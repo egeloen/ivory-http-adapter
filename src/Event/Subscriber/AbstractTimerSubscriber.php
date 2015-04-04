@@ -32,7 +32,7 @@ abstract class AbstractTimerSubscriber implements EventSubscriberInterface
      */
     public function __construct(TimerInterface $timer = null)
     {
-        $this->setTimer($timer ?: new Timer());
+        $this->timer = $timer ?: new Timer();
     }
 
     /**
@@ -43,15 +43,5 @@ abstract class AbstractTimerSubscriber implements EventSubscriberInterface
     public function getTimer()
     {
         return $this->timer;
-    }
-
-    /**
-     * Sets the timer.
-     *
-     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface $timer The timer.
-     */
-    public function setTimer(TimerInterface $timer)
-    {
-        $this->timer = $timer;
     }
 }

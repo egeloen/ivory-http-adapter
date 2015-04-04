@@ -35,7 +35,7 @@ abstract class AbstractFormatterSubscriber extends AbstractTimerSubscriber
     {
         parent::__construct($timer);
 
-        $this->setFormatter($formatter ?: new Formatter());
+        $this->formatter = $formatter ?: new Formatter();
     }
 
     /**
@@ -46,15 +46,5 @@ abstract class AbstractFormatterSubscriber extends AbstractTimerSubscriber
     public function getFormatter()
     {
         return $this->formatter;
-    }
-
-    /**
-     * Sets the formatter.
-     *
-     * @param \Ivory\HttpAdapter\Event\Formatter\FormatterInterface $formatter The formatter.
-     */
-    public function setFormatter(FormatterInterface $formatter)
-    {
-        $this->formatter = $formatter;
     }
 }

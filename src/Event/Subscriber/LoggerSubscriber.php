@@ -50,7 +50,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     ) {
         parent::__construct($formatter, $timer);
 
-        $this->setLogger($logger);
+        $this->logger = $logger;
     }
 
     /**
@@ -61,16 +61,6 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     public function getLogger()
     {
         return $this->logger;
-    }
-
-    /**
-     * Sets the logger.
-     *
-     * @param \Psr\Log\LoggerInterface $logger The logger.
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**

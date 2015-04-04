@@ -57,13 +57,6 @@ class RetrySubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->retry, $this->retrySubscriber->getRetry());
     }
 
-    public function testSetRetry()
-    {
-        $this->retrySubscriber->setRetry($retry = $this->createRetryMock());
-
-        $this->assertSame($retry, $this->retrySubscriber->getRetry());
-    }
-
     public function testSubscribedEvents()
     {
         $events = RetrySubscriber::getSubscribedEvents();

@@ -37,7 +37,7 @@ class RedirectSubscriber implements EventSubscriberInterface
      */
     public function __construct(RedirectInterface $redirect = null)
     {
-        $this->setRedirect($redirect ?: new Redirect());
+        $this->redirect = $redirect ?: new Redirect();
     }
 
     /**
@@ -48,16 +48,6 @@ class RedirectSubscriber implements EventSubscriberInterface
     public function getRedirect()
     {
         return $this->redirect;
-    }
-
-    /**
-     * Sets the redirect.
-     *
-     * @param \Ivory\HttpAdapter\Event\Redirect\RedirectInterface $redirect The redirect.
-     */
-    public function setRedirect(RedirectInterface $redirect)
-    {
-        $this->redirect = $redirect;
     }
 
     /**

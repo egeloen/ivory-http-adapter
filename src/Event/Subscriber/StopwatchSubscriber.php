@@ -40,7 +40,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function __construct(Stopwatch $stopwatch)
     {
-        $this->setStopwatch($stopwatch);
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -51,16 +51,6 @@ class StopwatchSubscriber implements EventSubscriberInterface
     public function getStopwatch()
     {
         return $this->stopwatch;
-    }
-
-    /**
-     * Sets the stopwatch.
-     *
-     * @param \Symfony\Component\Stopwatch\Stopwatch $stopwatch The stopwatch.
-     */
-    public function setStopwatch(Stopwatch $stopwatch)
-    {
-        $this->stopwatch = $stopwatch;
     }
 
     /**

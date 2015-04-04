@@ -52,13 +52,6 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->stopwatch, $this->stopwatchSubscriber->getStopwatch());
     }
 
-    public function testSetStopwatch()
-    {
-        $this->stopwatchSubscriber->setStopwatch($stopwatch = $this->getMock('Symfony\Component\Stopwatch\Stopwatch'));
-
-        $this->assertSame($stopwatch, $this->stopwatchSubscriber->getStopwatch());
-    }
-
     public function testSubscribedEvents()
     {
         $events = StopwatchSubscriber::getSubscribedEvents();

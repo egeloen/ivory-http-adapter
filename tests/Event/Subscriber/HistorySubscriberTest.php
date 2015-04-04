@@ -67,13 +67,6 @@ class HistorySubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->timer, $this->historySubscriber->getTimer());
     }
 
-    public function testSetJournal()
-    {
-        $this->historySubscriber->setJournal($journal = $this->createJournalMock());
-
-        $this->assertSame($journal, $this->historySubscriber->getJournal());
-    }
-
     public function testSubscribedEvents()
     {
         $events = HistorySubscriber::getSubscribedEvents();

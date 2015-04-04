@@ -37,7 +37,7 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public function __construct(RetryInterface $retry = null)
     {
-        $this->setRetry($retry ?: new Retry());
+        $this->retry = $retry ?: new Retry();
     }
 
     /**
@@ -48,16 +48,6 @@ class RetrySubscriber implements EventSubscriberInterface
     public function getRetry()
     {
         return $this->retry;
-    }
-
-    /**
-     * Sets the retry.
-     *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryInterface $retry The retry.
-     */
-    public function setRetry(RetryInterface $retry)
-    {
-        $this->retry = $retry;
     }
 
     /**

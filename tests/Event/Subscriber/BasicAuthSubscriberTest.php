@@ -49,13 +49,6 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->basicAuth, $this->basicAuthSubscriber->getBasicAuth());
     }
 
-    public function testSetBasicAuth()
-    {
-        $this->basicAuthSubscriber->setBasicAuth($basicAuth = $this->createBasicAuthMock());
-
-        $this->assertSame($basicAuth, $this->basicAuthSubscriber->getBasicAuth());
-    }
-
     public function testSubscribedEvents()
     {
         $events = BasicAuthSubscriber::getSubscribedEvents();

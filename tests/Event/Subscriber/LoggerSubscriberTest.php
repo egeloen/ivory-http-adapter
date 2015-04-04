@@ -84,13 +84,6 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->timer, $this->loggerSubscriber->getTimer());
     }
 
-    public function testSetLogger()
-    {
-        $this->loggerSubscriber->setLogger($logger = $this->createLoggerMock());
-
-        $this->assertSame($logger, $this->loggerSubscriber->getLogger());
-    }
-
     public function testSubscribedEvents()
     {
         $events = LoggerSubscriber::getSubscribedEvents();

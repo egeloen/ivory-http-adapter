@@ -39,7 +39,7 @@ class CookieSubscriber implements EventSubscriberInterface
      */
     public function __construct(CookieJarInterface $cookieJar = null)
     {
-        $this->setCookieJar($cookieJar ?: new CookieJar());
+        $this->cookieJar = $cookieJar ?: new CookieJar();
     }
 
     /**
@@ -50,16 +50,6 @@ class CookieSubscriber implements EventSubscriberInterface
     public function getCookieJar()
     {
         return $this->cookieJar;
-    }
-
-    /**
-     * Sets the cookie jar.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface $cookieJar The cookie jar.
-     */
-    public function setCookieJar(CookieJarInterface $cookieJar)
-    {
-        $this->cookieJar = $cookieJar;
     }
 
     /**
