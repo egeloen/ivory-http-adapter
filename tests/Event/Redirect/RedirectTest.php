@@ -309,6 +309,92 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $this->redirect->prepareResponse($response, $request);
     }
 
+    public function testCreateRedirectRequestWillDiscardHostHeaderFromParentRequest()
+    {
+        $request = $this->createRequestMock();
+
+        $headers = array('X-Foo' => 'Bar');
+
+        $request
+            ->expects($this->any())
+            ->method('getHeaders')
+            ->will($this->returnValue(array_merge($headers, array('Host' => 'egeloen.fr'))));
+        
+        $request
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo(Redirect::REDIRECT_COUNT))
+            ->will($this->returnValue(0));
+
+        $request
+            ->expects($this->any())
+            ->method('getProtocolVersion')
+            ->will($this->returnValue($protocolVersion = InternalRequestInterface::PROTOCOL_VERSION_1_0));
+
+        $request
+            ->expects($this->any())
+            ->method('getParameters')
+            ->will($this->returnValue($parameters = array()));
+
+        $request
+            ->expects($this->any())
+            ->method('getBody')
+            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamableInterface')));
+
+        $response = $this->createResponseMock();
+
+        $response
+            ->method('getStatusCode')
+            ->will($this->returnValue(301));
+
+        $response
+            ->method('getHeader')
+            ->with($this->identicalTo('Location'))
+            ->will($this->returnValue($location = 'http://google.com'));
+
+        $response
+            ->method('hasHeader')
+            ->will($this->returnValue(true));
+
+        $messageFactory = $this->createMessageFactoryMock();
+
+        $messageFactory
+            ->expects($this->once())
+            ->method('createInternalRequest')
+            ->with(
+                $this->identicalTo($location),
+                $this->identicalTo(InternalRequestInterface::METHOD_GET),
+                $this->identicalTo($protocolVersion),
+                $this->identicalTo($headers),
+                $this->identicalTo(array()),
+                $this->identicalTo(array()),
+                $this->identicalTo($parameters)
+            )
+            ->will($this->returnValue($redirectRequest = $this->createRequestMock()));
+
+        $redirectRequest
+            ->expects($this->exactly(2))
+            ->method('withoutHeader')
+            ->will($this->returnValueMap(array(
+                array('Content-Type', $redirectRequest),
+                array('Content-Length', $redirectRequest),
+            )));
+
+        $redirectRequest
+            ->expects($this->exactly(2))
+            ->method('withParameter')
+            ->will($this->returnValueMap(array(
+                array(Redirect::PARENT_REQUEST, $request, $redirectRequest),
+                array(Redirect::REDIRECT_COUNT, 1, $redirectRequest),
+            )));
+
+        $this->redirect->setStrict(false);
+
+        $httpAdapter = $this->createHttpAdapterMock($messageFactory);
+
+        $this->assertSame($redirectRequest, $this->redirect->createRedirectRequest($response, $request, $httpAdapter));
+    }
+
     /**
      * Gets the valid status code provider.
      *
