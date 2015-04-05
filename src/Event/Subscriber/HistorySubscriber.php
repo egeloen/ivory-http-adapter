@@ -12,10 +12,10 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
+use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 use Ivory\HttpAdapter\Event\History\Journal;
 use Ivory\HttpAdapter\Event\History\JournalInterface;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
@@ -56,31 +56,31 @@ class HistorySubscriber extends AbstractTimerSubscriber
     }
 
     /**
-     * On pre send event.
+     * On request created event.
      *
-     * @param \Ivory\HttpAdapter\Event\PreSendEvent $event The pre send event.
+     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The request created event.
      */
-    public function onPreSend(PreSendEvent $event)
+    public function onRequestCreated(RequestCreatedEvent $event)
     {
         $event->setRequest($this->getTimer()->start($event->getRequest()));
     }
 
     /**
-     * On post send event.
+     * On request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event Th post send event.
+     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
      */
-    public function onPostSend(PostSendEvent $event)
+    public function onRequestSent(RequestSentEvent $event)
     {
         $event->setRequest($this->record($event->getRequest(), $event->getResponse()));
     }
 
     /**
-     * On multi pre send event.
+     * On multi request created event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
      */
-    public function onMultiPreSend(MultiPreSendEvent $event)
+    public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
         foreach ($event->getRequests() as $request) {
             $event->removeRequest($request);
@@ -89,11 +89,11 @@ class HistorySubscriber extends AbstractTimerSubscriber
     }
 
     /**
-     * On multi post send event.
+     * On multi request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
      */
-    public function onMultiPostSend(MultiPostSendEvent $event)
+    public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
         foreach ($event->getResponses() as $response) {
             $request = $this->record($response->getParameter('request'), $response);
@@ -109,10 +109,10 @@ class HistorySubscriber extends AbstractTimerSubscriber
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND        => array('onPreSend', 100),
-            Events::POST_SEND       => array('onPostSend', 100),
-            Events::MULTI_PRE_SEND  => array('onMultiPreSend', 100),
-            Events::MULTI_POST_SEND => array('onMultiPostSend', 100),
+            Events::REQUEST_CREATED       => array('onRequestCreated', 100),
+            Events::REQUEST_SENT          => array('onRequestSent', 100),
+            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 100),
+            Events::MULTI_REQUEST_SENT    => array('onMultiRequestSent', 100),
         );
     }
 

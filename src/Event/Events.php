@@ -20,21 +20,21 @@ use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
  */
 class Events extends AbstractUninstantiableAsset
 {
-    /** @const string The pre send event. */
-    const PRE_SEND = 'ivory.http_adapter.pre_send';
+    /** @const string The request created event. */
+    const REQUEST_CREATED = 'ivory.http_adapter.request_created';
 
-    /** @const string The post send event. */
-    const POST_SEND = 'ivory.http_adapter.post_send';
+    /** @const string The request sent event. */
+    const REQUEST_SENT = 'ivory.http_adapter.request_sent';
 
-    /** @const string The exception event. */
-    const EXCEPTION = 'ivory.http_adapter.exception';
+    /** @const string The request errored event. */
+    const REQUEST_ERRORED = 'ivory.http_adapter.request_errored';
 
-    /** @const string The pre send event. */
-    const MULTI_PRE_SEND = 'ivory.http_adapter.multi_pre_send';
+    /** @const string The multi request created event. */
+    const MULTI_REQUEST_CREATED = 'ivory.http_adapter.multi_request_created';
 
-    /** @const string The post send event. */
-    const MULTI_POST_SEND = 'ivory.http_adapter.multi_post_send';
+    /** @const string The multi request sent event. */
+    const MULTI_REQUEST_SENT = 'ivory.http_adapter.multi_request_sent';
 
-    /** @const string The exception event. */
-    const MULTI_EXCEPTION = 'ivory.http_adapter.multi_exception';
+    /** @const string The multi request errored event. */
+    const MULTI_REQUEST_ERRORED = 'ivory.http_adapter.multi_request_errored';
 }

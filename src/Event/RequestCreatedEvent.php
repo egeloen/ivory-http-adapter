@@ -15,17 +15,17 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Pre send event.
+ * Request created event.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PreSendEvent extends AbstractEvent
+class RequestCreatedEvent extends AbstractEvent
 {
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
     private $request;
 
     /**
-     * Creates a pre send event.
+     * Creates a request created event.
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.

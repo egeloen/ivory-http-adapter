@@ -14,12 +14,12 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface;
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
+use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -53,31 +53,31 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On pre send event.
+     * On request created event.
      *
-     * @param \Ivory\HttpAdapter\Event\PreSendEvent $event The pre send event.
+     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The request created event.
      */
-    public function onPreSend(PreSendEvent $event)
+    public function onRequestCreated(RequestCreatedEvent $event)
     {
         $event->setRequest($this->cookieJar->populate($event->getRequest()));
     }
 
     /**
-     * On post send event.
+     * On request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The post send event.
+     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
      */
-    public function onPostSend(PostSendEvent $event)
+    public function onRequestSent(RequestSentEvent $event)
     {
         $this->cookieJar->extract($event->getRequest(), $event->getResponse());
     }
 
     /**
-     * On exception event.
+     * On request errored event.
      *
-     * @param \Ivory\HttpAdapter\Event\ExceptionEvent $event The exception event.
+     * @param \Ivory\HttpAdapter\Event\RequestErroredEvent $event The request errored event.
      */
-    public function onException(ExceptionEvent $event)
+    public function onRequestErrored(RequestErroredEvent $event)
     {
         if ($event->getException()->hasResponse()) {
             $this->cookieJar->extract($event->getException()->getRequest(), $event->getException()->getResponse());
@@ -85,11 +85,11 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi pre send event.
+     * On multi request created event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
      */
-    public function onMultiPreSend(MultiPreSendEvent $event)
+    public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
         foreach ($event->getRequests() as $request) {
             $event->removeRequest($request);
@@ -98,11 +98,11 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi post send event.
+     * On multi request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
      */
-    public function onMultiPostSend(MultiPostSendEvent $event)
+    public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
         foreach ($event->getResponses() as $response) {
             $this->cookieJar->extract($response->getParameter('request'), $response);
@@ -110,11 +110,11 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi exception event.
+     * On multi request errored event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event The multi request errored event.
      */
-    public function onMultiException(MultiExceptionEvent $event)
+    public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
         foreach ($event->getExceptions() as $exception) {
             if ($exception->hasResponse()) {
@@ -129,12 +129,12 @@ class CookieSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND        => array('onPreSend', 300),
-            Events::POST_SEND       => array('onPostSend', 300),
-            Events::EXCEPTION       => array('onException', 300),
-            Events::MULTI_PRE_SEND  => array('onMultiPreSend', 300),
-            Events::MULTI_POST_SEND => array('onMultiPostSend', 300),
-            Events::MULTI_EXCEPTION => array('onMultiException', 300),
+            Events::REQUEST_CREATED       => array('onRequestCreated', 300),
+            Events::REQUEST_SENT          => array('onRequestSent', 300),
+            Events::REQUEST_ERRORED       => array('onRequestErrored', 300),
+            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 300),
+            Events::MULTI_REQUEST_SENT    => array('onMultiRequestSent', 300),
+            Events::MULTI_REQUEST_ERRORED => array('onMultiResponseErrored', 300),
         );
     }
 }

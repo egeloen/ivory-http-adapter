@@ -11,14 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
-use Ivory\HttpAdapter\Event\ExceptionEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
 
 /**
  * Exception event test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ExceptionEventTest extends AbstractEventTest
+class RequestErroredEventTest extends AbstractEventTest
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject */
     private $exception;
@@ -71,7 +71,7 @@ class ExceptionEventTest extends AbstractEventTest
      */
     protected function createEvent()
     {
-        return new ExceptionEvent($this->httpAdapter, $this->exception);
+        return new RequestErroredEvent($this->httpAdapter, $this->exception);
     }
 
     /**

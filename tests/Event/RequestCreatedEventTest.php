@@ -11,14 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
-use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 
 /**
  * Pre send event test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PreSendEventTest extends AbstractEventTest
+class RequestCreatedEventTest extends AbstractEventTest
 {
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
     protected $request;
@@ -62,7 +62,7 @@ class PreSendEventTest extends AbstractEventTest
      */
     protected function createEvent()
     {
-        return new PreSendEvent($this->httpAdapter, $this->request);
+        return new RequestCreatedEvent($this->httpAdapter, $this->request);
     }
 
     /**

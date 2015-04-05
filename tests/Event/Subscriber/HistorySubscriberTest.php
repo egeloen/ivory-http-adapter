@@ -71,20 +71,20 @@ class HistorySubscriberTest extends AbstractSubscriberTest
     {
         $events = HistorySubscriber::getSubscribedEvents();
 
-        $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame(array('onPreSend', 100), $events[Events::PRE_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_CREATED, $events);
+        $this->assertSame(array('onRequestCreated', 100), $events[Events::REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame(array('onPostSend', 100), $events[Events::POST_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
+        $this->assertSame(array('onRequestSent', 100), $events[Events::REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
-        $this->assertSame(array('onMultiPreSend', 100), $events[Events::MULTI_PRE_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
+        $this->assertSame(array('onMultiRequestCreated', 100), $events[Events::MULTI_REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
-        $this->assertSame(array('onMultiPostSend', 100), $events[Events::MULTI_POST_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
+        $this->assertSame(array('onMultiRequestSent', 100), $events[Events::MULTI_REQUEST_SENT]);
     }
 
-    public function testPostSendEvent()
+    public function testRequestSentEvent()
     {
         $this->timer
             ->expects($this->once())
@@ -106,13 +106,13 @@ class HistorySubscriberTest extends AbstractSubscriberTest
                 $this->identicalTo($response = $this->createResponseMock())
             );
 
-        $this->historySubscriber->onPreSend($this->createPreSendEvent(null, $request));
-        $this->historySubscriber->onPostSend($event = $this->createPostSendEvent(null, $startedRequest, $response));
+        $this->historySubscriber->onRequestCreated($this->createRequestCreatedEvent(null, $request));
+        $this->historySubscriber->onRequestSent($event = $this->createRequestSentEvent(null, $startedRequest, $response));
 
         $this->assertSame($stoppedRequest, $event->getRequest());
     }
 
-    public function testMultiPostSendEvent()
+    public function testMultiRequestSentEvent()
     {
         $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
 
@@ -154,8 +154,8 @@ class HistorySubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo('request'), $this->identicalTo($stoppedRequest2))
             ->will($this->returnValue($stoppedResponse2 = $this->createResponseMock($stoppedRequest2)));
 
-        $this->historySubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
-        $this->historySubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent(null, $responses));
+        $this->historySubscriber->onMultiRequestCreated($this->createMultiRequestCreatedEvent(null, $requests));
+        $this->historySubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent(null, $responses));
 
         $this->assertSame(array($stoppedResponse1, $stoppedResponse2), $event->getResponses());
     }

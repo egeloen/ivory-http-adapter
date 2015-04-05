@@ -11,14 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
 
 /**
  * Multi pre send event test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MultiPreSendEventTest extends AbstractEventTest
+class MultiRequestCreatedEventTest extends AbstractEventTest
 {
     /** @var array */
     private $requests;
@@ -52,7 +52,7 @@ class MultiPreSendEventTest extends AbstractEventTest
 
     public function testInitialState()
     {
-        $this->event = new MultiPreSendEvent($this->httpAdapter, $requests = array());
+        $this->event = new MultiRequestCreatedEvent($this->httpAdapter, $requests = array());
 
         $this->assertNoRequests();
     }
@@ -108,7 +108,7 @@ class MultiPreSendEventTest extends AbstractEventTest
      */
     protected function createEvent()
     {
-        return new MultiPreSendEvent($this->httpAdapter, $this->requests);
+        return new MultiRequestCreatedEvent($this->httpAdapter, $this->requests);
     }
 
     /**

@@ -16,11 +16,11 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Exception event.
+ * Request errored event.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ExceptionEvent extends AbstractEvent
+class RequestErroredEvent extends AbstractEvent
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException */
     private $exception;
@@ -29,7 +29,7 @@ class ExceptionEvent extends AbstractEvent
     private $response;
 
     /**
-     * Creates an exception event.
+     * Creates a request errored event.
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\HttpAdapterException $exception   The exception.

@@ -11,14 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
-use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 
 /**
  * Post send event test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PostSendEventTest extends PreSendEventTest
+class RequestSentEventTest extends RequestCreatedEventTest
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface[\PHPUnit_Framework_MockObject_MockObject */
     private $response;
@@ -72,7 +72,7 @@ class PostSendEventTest extends PreSendEventTest
      */
     protected function createEvent()
     {
-        return new PostSendEvent($this->httpAdapter, $this->request, $this->response);
+        return new RequestSentEvent($this->httpAdapter, $this->request, $this->response);
     }
 
     /**

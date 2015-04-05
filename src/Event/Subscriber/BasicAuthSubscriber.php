@@ -13,8 +13,8 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface;
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -48,21 +48,21 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On pre send event.
+     * On request created event.
      *
-     * @param \Ivory\HttpAdapter\Event\PreSendEvent $event The pre send event.
+     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The request created event.
      */
-    public function onPreSend(PreSendEvent $event)
+    public function onRequestCreated(RequestCreatedEvent $event)
     {
         $event->setRequest($this->basicAuth->authenticate($event->getRequest()));
     }
 
     /**
-     * On multi pre send event.
+     * On multi request created event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
      */
-    public function onMultiPreSend(MultiPreSendEvent $event)
+    public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
         foreach ($event->getRequests() as $request) {
             $event->removeRequest($request);
@@ -76,8 +76,8 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND       => array('onPreSend', 300),
-            Events::MULTI_PRE_SEND => array('onMultiPreSend', 300),
+            Events::REQUEST_CREATED       => array('onRequestCreated', 300),
+            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 300),
         );
     }
 }

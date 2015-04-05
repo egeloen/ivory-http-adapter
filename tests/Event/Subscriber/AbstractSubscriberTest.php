@@ -11,12 +11,12 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
-use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
+use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
@@ -35,13 +35,13 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      * @param \Ivory\HttpAdapter\HttpAdapterInterface|null             $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request     The request.
      *
-     * @return \Ivory\HttpAdapter\Event\PreSendEvent The pre send event.
+     * @return \Ivory\HttpAdapter\Event\RequestCreatedEvent The request created event.
      */
-    protected function createPreSendEvent(
+    protected function createRequestCreatedEvent(
         HttpAdapterInterface $httpAdapter = null,
         InternalRequestInterface $request = null
     ) {
-        return new PreSendEvent(
+        return new RequestCreatedEvent(
             $httpAdapter ?: $this->createHttpAdapterMock(),
             $request ?: $this->createRequestMock()
         );
@@ -54,14 +54,14 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request     The request.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface|null        $response    The response.
      *
-     * @return \Ivory\HttpAdapter\Event\PostSendEvent The post send event.
+     * @return \Ivory\HttpAdapter\Event\RequestSentEvent The request sent event.
      */
-    protected function createPostSendEvent(
+    protected function createRequestSentEvent(
         HttpAdapterInterface $httpAdapter = null,
         InternalRequestInterface $request = null,
         ResponseInterface $response = null
     ) {
-        return new PostSendEvent(
+        return new RequestSentEvent(
             $httpAdapter ?: $this->createHttpAdapterMock(),
             $request ?: $this->createRequestMock(),
             $response ?: $this->createResponseMock()
@@ -74,13 +74,13 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      * @param \Ivory\HttpAdapter\HttpAdapterInterface|null $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\HttpAdapterException|null $exception   The exception.
      *
-     * @return \Ivory\HttpAdapter\Event\ExceptionEvent The exception event.
+     * @return \Ivory\HttpAdapter\Event\RequestErroredEvent The request errored event.
      */
-    protected function createExceptionEvent(
+    protected function createRequestErroredEvent(
         HttpAdapterInterface $httpAdapter = null,
         HttpAdapterException $exception = null
     ) {
-        return new ExceptionEvent(
+        return new RequestErroredEvent(
             $httpAdapter ?: $this->createHttpAdapterMock(),
             $exception ?: $this->createExceptionMock()
         );
@@ -92,11 +92,11 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      * @param \Ivory\HttpAdapter\HttpAdapterInterface|null $httpAdapter The http adapter.
      * @param array                                        $requests    The requuests.
      *
-     * @return \Ivory\HttpAdapter\Event\MultiPreSendEvent The multi pre send event.
+     * @return \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent The multi request created event.
      */
-    protected function createMultiPreSendEvent(HttpAdapterInterface $httpAdapter = null, array $requests = array())
+    protected function createMultiRequestCreatedEvent(HttpAdapterInterface $httpAdapter = null, array $requests = array())
     {
-        return new MultiPreSendEvent($httpAdapter ?: $this->createHttpAdapterMock(), $requests);
+        return new MultiRequestCreatedEvent($httpAdapter ?: $this->createHttpAdapterMock(), $requests);
     }
 
     /**
@@ -105,11 +105,11 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      * @param \Ivory\HttpAdapter\HttpAdapterInterface|null $httpAdapter The http adapter.
      * @param array                                        $responses   The responses.
      *
-     * @return \Ivory\HttpAdapter\Event\MultiPostSendEvent The multi post send event.
+     * @return \Ivory\HttpAdapter\Event\MultiRequestSentEvent The multi request sent event.
      */
-    protected function createMultiPostSendEvent(HttpAdapterInterface $httpAdapter = null, array $responses = array())
+    protected function createMultiRequestSentEvent(HttpAdapterInterface $httpAdapter = null, array $responses = array())
     {
-        return new MultiPostSendEvent($httpAdapter ?: $this->createHttpAdapterMock(), $responses);
+        return new MultiRequestSentEvent($httpAdapter ?: $this->createHttpAdapterMock(), $responses);
     }
 
     /**
@@ -118,13 +118,13 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      * @param \Ivory\HttpAdapter\HttpAdapterInterface|null $httpAdapter The http adapter.
      * @param array                                        $exceptions  The exceptions.
      *
-     * @return \Ivory\HttpAdapter\Event\MultiExceptionEvent The multi exception event.
+     * @return \Ivory\HttpAdapter\Event\MultiRequestErroredEvent The multi request errored event.
      */
-    protected function createMultiExceptionEvent(
+    protected function createMultiRequestErroredEvent(
         HttpAdapterInterface $httpAdapter = null,
         array $exceptions = array()
     ) {
-        return new MultiExceptionEvent($httpAdapter ?: $this->createHttpAdapterMock(), $exceptions);
+        return new MultiRequestErroredEvent($httpAdapter ?: $this->createHttpAdapterMock(), $exceptions);
     }
 
     /**

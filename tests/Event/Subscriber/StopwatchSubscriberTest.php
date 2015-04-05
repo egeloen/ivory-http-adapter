@@ -56,56 +56,56 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
     {
         $events = StopwatchSubscriber::getSubscribedEvents();
 
-        $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame(array('onPreSend', 10000), $events[Events::PRE_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_CREATED, $events);
+        $this->assertSame(array('onRequestCreated', 10000), $events[Events::REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame(array('onPostSend', 10000), $events[Events::POST_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
+        $this->assertSame(array('onRequestSent', 10000), $events[Events::REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::EXCEPTION, $events);
-        $this->assertSame(array('onException', 10000), $events[Events::EXCEPTION]);
+        $this->assertArrayHasKey(Events::REQUEST_ERRORED, $events);
+        $this->assertSame(array('onRequestErrored', 10000), $events[Events::REQUEST_ERRORED]);
 
-        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
-        $this->assertSame(array('onMultiPreSend', 10000), $events[Events::MULTI_PRE_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
+        $this->assertSame(array('onMultiRequestCreated', 10000), $events[Events::MULTI_REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
-        $this->assertSame(array('onMultiPostSend', 10000), $events[Events::MULTI_POST_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
+        $this->assertSame(array('onMultiRequestSent', 10000), $events[Events::MULTI_REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::MULTI_EXCEPTION, $events);
-        $this->assertSame(array('onMultiException', 10000), $events[Events::MULTI_EXCEPTION]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_ERRORED, $events);
+        $this->assertSame(array('onMultiResponseErrored', 10000), $events[Events::MULTI_REQUEST_ERRORED]);
     }
 
-    public function testPreSendEvent()
+    public function testRequestCreatedEvent()
     {
         $this->stopwatch
             ->expects($this->once())
             ->method('start')
             ->with($this->identicalTo('ivory.http_adapter.http_adapter (uri)'));
 
-        $this->stopwatchSubscriber->onPreSend($this->createPreSendEvent());
+        $this->stopwatchSubscriber->onRequestCreated($this->createRequestCreatedEvent());
     }
 
-    public function testPostSendEvent()
+    public function testRequestSentEvent()
     {
         $this->stopwatch
             ->expects($this->once())
             ->method('stop')
             ->with($this->identicalTo('ivory.http_adapter.http_adapter (uri)'));
 
-        $this->stopwatchSubscriber->onPostSend($this->createPostSendEvent());
+        $this->stopwatchSubscriber->onRequestSent($this->createRequestSentEvent());
     }
 
-    public function testExceptionEvent()
+    public function testRequestErroredEvent()
     {
         $this->stopwatch
             ->expects($this->once())
             ->method('stop')
             ->with($this->identicalTo('ivory.http_adapter.http_adapter (uri)'));
 
-        $this->stopwatchSubscriber->onException($this->createExceptionEvent());
+        $this->stopwatchSubscriber->onRequestErrored($this->createRequestErroredEvent());
     }
 
-    public function testMultiPreSendEvent()
+    public function testMultiRequestCreatedEvent()
     {
         $requests = array($this->createRequestMock(), $this->createRequestMock());
 
@@ -117,10 +117,10 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
                 array('ivory.http_adapter.http_adapter (uri)')
             );
 
-        $this->stopwatchSubscriber->onMultiPreSend($this->createMultiPreSendEvent(null, $requests));
+        $this->stopwatchSubscriber->onMultiRequestCreated($this->createMultiRequestCreatedEvent(null, $requests));
     }
 
-    public function testMultiPostSendEvent()
+    public function testMultiRequestSentEvent()
     {
         $responses = array(
             $this->createResponseMock($this->createRequestMock()),
@@ -135,10 +135,10 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
                 array('ivory.http_adapter.http_adapter (uri)')
             );
 
-        $this->stopwatchSubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+        $this->stopwatchSubscriber->onMultiRequestSent($this->createMultiRequestSentEvent(null, $responses));
     }
 
-    public function testMultiExceptionEvent()
+    public function testMultiRequestErroredEvent()
     {
         $exceptions = array($this->createExceptionMock(), $this->createExceptionMock());
 
@@ -150,7 +150,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
                 array('ivory.http_adapter.http_adapter (uri)')
             );
 
-        $this->stopwatchSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
+        $this->stopwatchSubscriber->onMultiResponseErrored($this->createMultiRequestErroredEvent(null, $exceptions));
     }
 
     /**
