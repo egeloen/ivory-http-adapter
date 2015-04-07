@@ -122,11 +122,19 @@ class Redirect implements RedirectInterface
 
         $strict = $response->getStatusCode() === 303 || (!$this->strict && $response->getStatusCode() <= 302);
 
+        $headers = $internalRequest->getHeaders();
+
+        foreach ($headers as $key => $value) {
+            if (strtolower($key) === 'host') {
+                unset($headers[$key]);
+            }
+        }
+
         $redirect = $httpAdapter->getConfiguration()->getMessageFactory()->createInternalRequest(
             $response->getHeader('Location'),
             $strict ? InternalRequestInterface::METHOD_GET : $internalRequest->getMethod(),
             $internalRequest->getProtocolVersion(),
-            $internalRequest->getHeaders(),
+            $headers,
             $strict ? array() : $internalRequest->getDatas(),
             $strict ? array() : $internalRequest->getFiles(),
             $internalRequest->getParameters()
