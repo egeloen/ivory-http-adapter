@@ -20,11 +20,11 @@ use Psr\Http\Message\RequestInterface;
  */
 interface PsrHttpAdapterInterface
 {
-    const VERSION = '0.7.1-DEV';
-    const VERSION_ID = '00701';
+    const VERSION = '0.8.0-DEV';
+    const VERSION_ID = '00800';
     const MAJOR_VERSION = '0';
-    const MINOR_VERSION = '7';
-    const PATCH_VERSION = '1';
+    const MINOR_VERSION = '8';
+    const PATCH_VERSION = '0';
     const EXTRA_VERSION = 'DEV';
 
     /**
