@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### 0.7.1 (????-??-??)
+
+ * f996f8e - [Travis] Use minimum PHP version for lowest deps
+ * 0ae6275 - Fix RedirectSubscriber
+ * 1e174e7 - Fixed dependency to non existing branch
+ 
 ### 0.7.0 (2015-03-08)
 
  * 5e844f6 - Move event dispatcher into a decorator
