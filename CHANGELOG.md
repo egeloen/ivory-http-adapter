@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.7.1 (????-??-??)
+### 0.7.1 (2015-04-13)
 
  * f996f8e - [Travis] Use minimum PHP version for lowest deps
  * 0ae6275 - Fix RedirectSubscriber
