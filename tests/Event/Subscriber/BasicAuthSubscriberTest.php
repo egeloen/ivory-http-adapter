@@ -49,25 +49,18 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->basicAuth, $this->basicAuthSubscriber->getBasicAuth());
     }
 
-    public function testSetBasicAuth()
-    {
-        $this->basicAuthSubscriber->setBasicAuth($basicAuth = $this->createBasicAuthMock());
-
-        $this->assertSame($basicAuth, $this->basicAuthSubscriber->getBasicAuth());
-    }
-
     public function testSubscribedEvents()
     {
         $events = BasicAuthSubscriber::getSubscribedEvents();
 
-        $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame(array('onPreSend', 300), $events[Events::PRE_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_CREATED, $events);
+        $this->assertSame(array('onRequestCreated', 300), $events[Events::REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
-        $this->assertSame(array('onMultiPreSend', 300), $events[Events::MULTI_PRE_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
+        $this->assertSame(array('onMultiRequestCreated', 300), $events[Events::MULTI_REQUEST_CREATED]);
     }
 
-    public function testPreSendEvent()
+    public function testRequestCreatedEvent()
     {
         $this->basicAuth
             ->expects($this->once())
@@ -75,12 +68,12 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($request = $this->createRequestMock()))
             ->will($this->returnValue($authenticatedRequest = $this->createRequestMock()));
 
-        $this->basicAuthSubscriber->onPreSend($event = $this->createPreSendEvent(null, $request));
+        $this->basicAuthSubscriber->onRequestCreated($event = $this->createRequestCreatedEvent(null, $request));
 
         $this->assertSame($authenticatedRequest, $event->getRequest());
     }
 
-    public function testMultiPreSendEvent()
+    public function testMultiRequestCreatedEvent()
     {
         $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
 
@@ -92,7 +85,7 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
                 array($request2, $authenticatedRequest2 = $this->createRequestMock()),
             )));
 
-        $this->basicAuthSubscriber->onMultiPreSend($event = $this->createMultiPreSendEvent(null, $requests));
+        $this->basicAuthSubscriber->onMultiRequestCreated($event = $this->createMultiRequestCreatedEvent(null, $requests));
 
         $this->assertSame(array($authenticatedRequest1, $authenticatedRequest2), $event->getRequests());
     }

@@ -12,12 +12,12 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -40,7 +40,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function __construct(Stopwatch $stopwatch)
     {
-        $this->setStopwatch($stopwatch);
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -54,51 +54,41 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Sets the stopwatch.
+     * On request created event.
      *
-     * @param \Symfony\Component\Stopwatch\Stopwatch $stopwatch The stopwatch.
+     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The event.
      */
-    public function setStopwatch(Stopwatch $stopwatch)
-    {
-        $this->stopwatch = $stopwatch;
-    }
-
-    /**
-     * On pre send event.
-     *
-     * @param \Ivory\HttpAdapter\Event\PreSendEvent $event The event.
-     */
-    public function onPreSend(PreSendEvent $event)
+    public function onRequestCreated(RequestCreatedEvent $event)
     {
         $this->stopwatch->start($this->getStopwatchName($event->getHttpAdapter(), $event->getRequest()));
     }
 
     /**
-     * On post send event.
+     * On request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The event.
+     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The event.
      */
-    public function onPostSend(PostSendEvent $event)
+    public function onRequestSent(RequestSentEvent $event)
     {
         $this->stopwatch->stop($this->getStopwatchName($event->getHttpAdapter(), $event->getRequest()));
     }
 
     /**
-     * On exception event.
+     * On request errored event.
      *
-     * @param \Ivory\HttpAdapter\Event\ExceptionEvent $event The event.
+     * @param \Ivory\HttpAdapter\Event\RequestErroredEvent $event The event.
      */
-    public function onException(ExceptionEvent $event)
+    public function onRequestErrored(RequestErroredEvent $event)
     {
         $this->stopwatch->stop($this->getStopwatchName($event->getHttpAdapter(), $event->getException()->getRequest()));
     }
 
     /**
-     * On multi pre send event.
+     * On multi request created event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPreSendEvent $event The multi pre send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
      */
-    public function onMultiPreSend(MultiPreSendEvent $event)
+    public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
         foreach ($event->getRequests() as $request) {
             $this->stopwatch->start($this->getStopwatchName($event->getHttpAdapter(), $request));
@@ -106,11 +96,11 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi post send event.
+     * On multi request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
      */
-    public function onMultiPostSend(MultiPostSendEvent $event)
+    public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
         foreach ($event->getResponses() as $response) {
             $this->stopwatch->stop(
@@ -120,11 +110,11 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi exception event.
+     * On multi request errored event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event The multi request errored event.
      */
-    public function onMultiException(MultiExceptionEvent $event)
+    public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
         foreach ($event->getExceptions() as $exception) {
             $this->stopwatch->stop(
@@ -139,12 +129,12 @@ class StopwatchSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_SEND        => array('onPreSend', 10000),
-            Events::POST_SEND       => array('onPostSend', 10000),
-            Events::EXCEPTION       => array('onException', 10000),
-            Events::MULTI_PRE_SEND  => array('onMultiPreSend', 10000),
-            Events::MULTI_POST_SEND => array('onMultiPostSend', 10000),
-            Events::MULTI_EXCEPTION => array('onMultiException', 10000),
+            Events::REQUEST_CREATED       => array('onRequestCreated', 10000),
+            Events::REQUEST_SENT          => array('onRequestSent', 10000),
+            Events::REQUEST_ERRORED       => array('onRequestErrored', 10000),
+            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 10000),
+            Events::MULTI_REQUEST_SENT    => array('onMultiRequestSent', 10000),
+            Events::MULTI_REQUEST_ERRORED => array('onMultiResponseErrored', 10000),
         );
     }
 

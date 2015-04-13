@@ -25,12 +25,15 @@ class CookieSubscriberTest extends AbstractSubscriberTest
     /** @var \Ivory\HttpAdapter\Event\Subscriber\CookieSubscriber */
     private $cookieSubscriber;
 
+    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $cookieJar;
+
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->cookieSubscriber = new CookieSubscriber();
+        $this->cookieSubscriber = new CookieSubscriber($this->cookieJar = $this->createCookieJarMock());
     }
 
     /**
@@ -56,56 +59,45 @@ class CookieSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($cookieJar, $this->cookieSubscriber->getCookieJar());
     }
 
-    public function testSetCookieJar()
-    {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
-        $this->assertSame($cookieJar, $this->cookieSubscriber->getCookieJar());
-    }
-
     public function testSubscribedEvents()
     {
         $events = CookieSubscriber::getSubscribedEvents();
 
-        $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame(array('onPreSend', 300), $events[Events::PRE_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_CREATED, $events);
+        $this->assertSame(array('onRequestCreated', 300), $events[Events::REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame(array('onPostSend', 300), $events[Events::POST_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
+        $this->assertSame(array('onRequestSent', 300), $events[Events::REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::EXCEPTION, $events);
-        $this->assertSame(array('onException', 300), $events[Events::EXCEPTION]);
+        $this->assertArrayHasKey(Events::REQUEST_ERRORED, $events);
+        $this->assertSame(array('onRequestErrored', 300), $events[Events::REQUEST_ERRORED]);
 
-        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
-        $this->assertSame(array('onMultiPreSend', 300), $events[Events::MULTI_PRE_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
+        $this->assertSame(array('onMultiRequestCreated', 300), $events[Events::MULTI_REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
-        $this->assertSame(array('onMultiPostSend', 300), $events[Events::MULTI_POST_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
+        $this->assertSame(array('onMultiRequestSent', 300), $events[Events::MULTI_REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::MULTI_EXCEPTION, $events);
-        $this->assertSame(array('onMultiException', 300), $events[Events::MULTI_EXCEPTION]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_ERRORED, $events);
+        $this->assertSame(array('onMultiResponseErrored', 300), $events[Events::MULTI_REQUEST_ERRORED]);
     }
 
-    public function testPreSendEvent()
+    public function testRequestCreatedEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
-        $cookieJar
+        $this->cookieJar
             ->expects($this->once())
             ->method('populate')
             ->with($this->identicalTo($request = $this->createRequestMock()))
             ->will($this->returnValue($populatedRequest = $this->createRequestMock()));
 
-        $this->cookieSubscriber->onPreSend($event = $this->createPreSendEvent(null, $request));
+        $this->cookieSubscriber->onRequestCreated($event = $this->createRequestCreatedEvent(null, $request));
 
         $this->assertSame($populatedRequest, $event->getRequest());
     }
 
-    public function testPostSendEvent()
+    public function testRequestSentEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
-        $cookieJar
+        $this->cookieJar
             ->expects($this->once())
             ->method('extract')
             ->with(
@@ -113,14 +105,12 @@ class CookieSubscriberTest extends AbstractSubscriberTest
                 $this->identicalTo($response = $this->createResponseMock())
             );
 
-        $this->cookieSubscriber->onPostSend($this->createPostSendEvent(null, $request, $response));
+        $this->cookieSubscriber->onRequestSent($this->createRequestSentEvent(null, $request, $response));
     }
 
-    public function testExceptionEvent()
+    public function testRequestErroredEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
-        $cookieJar
+        $this->cookieJar
             ->expects($this->once())
             ->method('extract')
             ->with(
@@ -128,19 +118,17 @@ class CookieSubscriberTest extends AbstractSubscriberTest
                 $this->identicalTo($response = $this->createResponseMock())
             );
 
-        $this->cookieSubscriber->onException($this->createExceptionEvent(
+        $this->cookieSubscriber->onRequestErrored($this->createRequestErroredEvent(
             null,
             $this->createExceptionMock($request, $response)
         ));
     }
 
-    public function testMultiPreSendEvent()
+    public function testMultiRequestCreatedEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
         $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
 
-        $cookieJar
+        $this->cookieJar
             ->expects($this->exactly(count($requests)))
             ->method('populate')
             ->will($this->returnValueMap(array(
@@ -148,15 +136,13 @@ class CookieSubscriberTest extends AbstractSubscriberTest
                 array($request2, $populatedRequest2 = $this->createRequestMock()),
             )));
 
-        $this->cookieSubscriber->onMultiPreSend($event = $this->createMultiPreSendEvent(null, $requests));
+        $this->cookieSubscriber->onMultiRequestCreated($event = $this->createMultiRequestCreatedEvent(null, $requests));
 
         $this->assertSame(array($populatedRequest1, $populatedRequest2), $event->getRequests());
     }
 
-    public function testMultiPostSendEvent()
+    public function testMultiRequestSentEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
         $request1 = $this->createRequestMock();
         $request2 = $this->createRequestMock();
 
@@ -165,18 +151,16 @@ class CookieSubscriberTest extends AbstractSubscriberTest
             $response2 = $this->createResponseMock($request2),
         );
 
-        $cookieJar
+        $this->cookieJar
             ->expects($this->exactly(count($responses)))
             ->method('extract')
             ->withConsecutive(array($request1, $response1), array($request2, $response2));
 
-        $this->cookieSubscriber->onMultiPostSend($this->createMultiPostSendEvent(null, $responses));
+        $this->cookieSubscriber->onMultiRequestSent($this->createMultiRequestSentEvent(null, $responses));
     }
 
-    public function testMultiExceptionEvent()
+    public function testMultiRequestErroredEvent()
     {
-        $this->cookieSubscriber->setCookieJar($cookieJar = $this->createCookieJarMock());
-
         $exceptions = array(
             $this->createExceptionMock(
                 $request1 = $this->createRequestMock(),
@@ -188,7 +172,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
             ),
         );
 
-        $cookieJar
+        $this->cookieJar
             ->expects($this->exactly(count($exceptions)))
             ->method('extract')
             ->withConsecutive(
@@ -196,7 +180,7 @@ class CookieSubscriberTest extends AbstractSubscriberTest
                 array($request2, $response2)
             );
 
-        $this->cookieSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
+        $this->cookieSubscriber->onMultiResponseErrored($this->createMultiRequestErroredEvent(null, $exceptions));
     }
 
     /**

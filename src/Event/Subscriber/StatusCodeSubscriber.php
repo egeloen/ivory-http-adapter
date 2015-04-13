@@ -12,8 +12,8 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
 use Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
@@ -39,7 +39,7 @@ class StatusCodeSubscriber implements EventSubscriberInterface
      */
     public function __construct(StatusCodeInterface $statusCode = null)
     {
-        $this->setStatusCode($statusCode ?: new StatusCode());
+        $this->statusCode = $statusCode ?: new StatusCode();
     }
 
     /**
@@ -53,21 +53,11 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Sets the status code.
+     * On request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface $statusCode The status code.
+     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
      */
-    public function setStatusCode(StatusCodeInterface $statusCode)
-    {
-        $this->statusCode = $statusCode;
-    }
-
-    /**
-     * On post send event.
-     *
-     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The event.
-     */
-    public function onPostSend(PostSendEvent $event)
+    public function onRequestSent(RequestSentEvent $event)
     {
         if (!$this->statusCode->validate($event->getResponse())) {
             $event->setException($this->createStatusCodeException(
@@ -79,11 +69,11 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi post send event.
+     * On multi request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
      */
-    public function onMultiPostSend(MultiPostSendEvent $event)
+    public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
         foreach ($event->getResponses() as $response) {
             if (!$this->statusCode->validate($response)) {
@@ -104,8 +94,8 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::POST_SEND       => array('onPostSend', 200),
-            Events::MULTI_POST_SEND => array('onMultiPostSend', 200),
+            Events::REQUEST_SENT       => array('onRequestSent', 200),
+            Events::MULTI_REQUEST_SENT => array('onMultiRequestSent', 200),
         );
     }
 

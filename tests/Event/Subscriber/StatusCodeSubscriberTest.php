@@ -64,14 +64,14 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
     {
         $events = StatusCodeSubscriber::getSubscribedEvents();
 
-        $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame(array('onPostSend', 200), $events[Events::POST_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
+        $this->assertSame(array('onRequestSent', 200), $events[Events::REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
-        $this->assertSame(array('onMultiPostSend', 200), $events[Events::MULTI_POST_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
+        $this->assertSame(array('onMultiRequestSent', 200), $events[Events::MULTI_REQUEST_SENT]);
     }
 
-    public function testPostSendEventWithValidStatusCode()
+    public function testRequestSentEventWithValidStatusCode()
     {
         $this->statusCode
             ->expects($this->once())
@@ -79,12 +79,12 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($response = $this->createResponseMock(null, $valid = true)))
             ->will($this->returnValue($valid));
 
-        $this->statusCodeSubscriber->onPostSend($event = $this->createPostSendEvent(null, null, $response));
+        $this->statusCodeSubscriber->onRequestSent($event = $this->createRequestSentEvent(null, null, $response));
 
         $this->assertFalse($event->hasException());
     }
 
-    public function testPostSendEventWithInvalidStatusCode()
+    public function testRequestSentEventWithInvalidStatusCode()
     {
         $this->statusCode
             ->expects($this->once())
@@ -92,7 +92,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo($response = $this->createResponseMock(null, $valid = false)))
             ->will($this->returnValue($valid));
 
-        $this->statusCodeSubscriber->onPostSend($event = $this->createPostSendEvent(null, null, $response));
+        $this->statusCodeSubscriber->onRequestSent($event = $this->createRequestSentEvent(null, null, $response));
 
         $this->assertTrue($event->hasException());
         $this->assertSame(
@@ -101,7 +101,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
         );
     }
 
-    public function testMultiPostSendEventWithValidStatusCode()
+    public function testMultiRequestSentEventWithValidStatusCode()
     {
         $responses = array($response1 = $this->createResponseMock(), $response2 = $this->createResponseMock());
 
@@ -113,14 +113,14 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
                 array($response2, true),
             )));
 
-        $this->statusCodeSubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent(null, $responses));
+        $this->statusCodeSubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent(null, $responses));
 
         $this->assertFalse($event->hasExceptions());
         $this->assertTrue($event->hasResponses());
         $this->assertSame($responses, $event->getResponses());
     }
 
-    public function testMultiPostSendEventWithInvalidStatusCode()
+    public function testMultiRequestSentEventWithInvalidStatusCode()
     {
         $responses = array(
             $response1 = $this->createResponseMock($this->createRequestMock(), false),
@@ -135,7 +135,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
                 array($response2, false),
             )));
 
-        $this->statusCodeSubscriber->onMultiPostSend($event = $this->createMultiPostSendEvent(null, $responses));
+        $this->statusCodeSubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent(null, $responses));
 
         $this->assertFalse($event->hasResponses());
         $this->assertCount(count($responses), $event->getExceptions());

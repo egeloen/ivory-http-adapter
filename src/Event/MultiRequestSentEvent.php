@@ -16,11 +16,11 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Multi post send event.
+ * Multi request sent event.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MultiPostSendEvent extends AbstractEvent
+class MultiRequestSentEvent extends AbstractEvent
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface[] */
     private $responses;
@@ -29,7 +29,7 @@ class MultiPostSendEvent extends AbstractEvent
     private $exceptions = array();
 
     /**
-     * Creates a multi post send event.
+     * Creates a multi request sent event.
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface        $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses   The responses.

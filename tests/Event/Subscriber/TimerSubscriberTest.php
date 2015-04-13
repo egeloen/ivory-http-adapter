@@ -55,13 +55,6 @@ class TimerSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->timer, $this->timerSubscriber->getTimer());
     }
 
-    public function testSetTimer()
-    {
-        $this->timerSubscriber->setTimer($timer = $this->createTimerMock());
-
-        $this->assertSame($timer, $this->timerSubscriber->getTimer());
-    }
-
     /**
      * Creates a timer subscriber mock builder.
      *

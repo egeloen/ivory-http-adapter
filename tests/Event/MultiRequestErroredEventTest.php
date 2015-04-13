@@ -11,24 +11,24 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
+use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 
 /**
- * Multi post send event test.
+ * Multi exception event test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MultiPostSendEventTest extends AbstractEventTest
+class MultiRequestErroredEventTest extends AbstractEventTest
 {
     /** @var array */
-    private $responses;
+    private $exceptions;
 
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->responses = array($this->createResponseMock());
+        $this->exceptions = array($this->createExceptionMock());
 
         parent::setUp();
     }
@@ -38,7 +38,7 @@ class MultiPostSendEventTest extends AbstractEventTest
      */
     protected function tearDown()
     {
-        unset($this->responses);
+        unset($this->exceptions);
 
         parent::tearDown();
     }
@@ -47,54 +47,8 @@ class MultiPostSendEventTest extends AbstractEventTest
     {
         parent::testDefaultState();
 
-        $this->assertResponses($this->responses);
-        $this->assertNoExceptions();
-    }
-
-    public function testSetResponses()
-    {
-        $this->event->setResponses($responses = array($this->createResponseMock()));
-
-        $this->assertResponses($responses);
-    }
-
-    public function testAddResponses()
-    {
-        $this->event->setResponses($responses = array($this->createResponseMock()));
-        $this->event->addResponses($newResponses = array($this->createResponseMock()));
-
-        $this->assertResponses(array_merge($responses, $newResponses));
-    }
-
-    public function testRemoveResponses()
-    {
-        $this->event->setResponses($responses = array($this->createResponseMock()));
-        $this->event->removeResponses($responses);
-
+        $this->assertExceptions($this->exceptions);
         $this->assertNoResponses();
-    }
-
-    public function testClearResponses()
-    {
-        $this->event->setResponses(array($this->createResponseMock()));
-        $this->event->clearResponses();
-
-        $this->assertNoResponses();
-    }
-
-    public function testAddResponse()
-    {
-        $this->event->addResponse($response = $this->createResponseMock());
-
-        $this->assertResponse($response);
-    }
-
-    public function testRemoveResponse()
-    {
-        $this->event->addResponse($response = $this->createResponseMock());
-        $this->event->removeResponse($response);
-
-        $this->assertNoResponse($response);
     }
 
     public function testSetExceptions()
@@ -143,22 +97,58 @@ class MultiPostSendEventTest extends AbstractEventTest
         $this->assertNoException($exception);
     }
 
+    public function testSetResponses()
+    {
+        $this->event->setResponses($responses = array($this->createResponseMock()));
+
+        $this->assertResponses($responses);
+    }
+
+    public function testAddResponses()
+    {
+        $this->event->setResponses($responses = array($this->createResponseMock()));
+        $this->event->addResponses($newResponses = array($this->createResponseMock()));
+
+        $this->assertResponses(array_merge($responses, $newResponses));
+    }
+
+    public function testRemoveResponses()
+    {
+        $this->event->setResponses($responses = array($this->createResponseMock()));
+        $this->event->removeResponses($responses);
+
+        $this->assertNoResponses();
+    }
+
+    public function testClearResponses()
+    {
+        $this->event->setResponses(array($this->createResponseMock()));
+        $this->event->clearResponses();
+
+        $this->assertNoResponses();
+    }
+
+    public function testAddResponse()
+    {
+        $this->event->addResponse($response = $this->createResponseMock());
+
+        $this->assertResponse($response);
+    }
+
+    public function testRemoveResponse()
+    {
+        $this->event->addResponse($response = $this->createResponseMock());
+        $this->event->removeResponse($response);
+
+        $this->assertNoResponse($response);
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function createEvent()
     {
-        return new MultiPostSendEvent($this->httpAdapter, $this->responses);
-    }
-
-    /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
-     */
-    private function createResponseMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return new MultiRequestErroredEvent($this->httpAdapter, $this->exceptions);
     }
 
     /**
@@ -169,6 +159,16 @@ class MultiPostSendEventTest extends AbstractEventTest
     private function createExceptionMock()
     {
         return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+    }
+
+    /**
+     * Creates a response mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     */
+    private function createResponseMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**

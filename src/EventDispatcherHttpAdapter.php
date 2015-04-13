@@ -12,12 +12,12 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\MultiPreSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
-use Ivory\HttpAdapter\Event\PreSendEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
+use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -49,29 +49,29 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
     {
         try {
             $this->eventDispatcher->dispatch(
-                Events::PRE_SEND,
-                $preSendEvent = new PreSendEvent($this, $internalRequest)
+                Events::REQUEST_CREATED,
+                $requestCreatedEvent = new RequestCreatedEvent($this, $internalRequest)
             );
 
-            $response = parent::sendInternalRequest($preSendEvent->getRequest());
+            $response = parent::sendInternalRequest($requestCreatedEvent->getRequest());
 
             $this->eventDispatcher->dispatch(
-                Events::POST_SEND,
-                $postSendEvent = new PostSendEvent($this, $preSendEvent->getRequest(), $response)
+                Events::REQUEST_SENT,
+                $requestSentEvent = new RequestSentEvent($this, $requestCreatedEvent->getRequest(), $response)
             );
 
-            if ($postSendEvent->hasException()) {
-                throw $postSendEvent->getException();
+            if ($requestSentEvent->hasException()) {
+                throw $requestSentEvent->getException();
             }
 
-            $response = $postSendEvent->getResponse();
+            $response = $requestSentEvent->getResponse();
         } catch (HttpAdapterException $e) {
             $e->setRequest($internalRequest);
             $e->setResponse(isset($response) ? $response : null);
 
             $this->eventDispatcher->dispatch(
-                Events::EXCEPTION,
-                $exceptionEvent = new ExceptionEvent($this, $e)
+                Events::REQUEST_ERRORED,
+                $exceptionEvent = new RequestErroredEvent($this, $e)
             );
 
             if ($exceptionEvent->hasResponse()) {
@@ -91,11 +91,11 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
     {
         if (!empty($internalRequests)) {
             $this->eventDispatcher->dispatch(
-                Events::MULTI_PRE_SEND,
-                $multiPreSendEvent = new MultiPreSendEvent($this, $internalRequests)
+                Events::MULTI_REQUEST_CREATED,
+                $multiRequestCreatedEvent = new MultiRequestCreatedEvent($this, $internalRequests)
             );
 
-            $internalRequests = $multiPreSendEvent->getRequests();
+            $internalRequests = $multiRequestCreatedEvent->getRequests();
         }
 
         $exceptions = array();
@@ -109,18 +109,18 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
 
         if (!empty($responses)) {
             $this->eventDispatcher->dispatch(
-                Events::MULTI_POST_SEND,
-                $postSendEvent = new MultiPostSendEvent($this, $responses)
+                Events::MULTI_REQUEST_SENT,
+                $requestSentEvent = new MultiRequestSentEvent($this, $responses)
             );
 
-            $exceptions = array_merge($exceptions, $postSendEvent->getExceptions());
-            $responses = $postSendEvent->getResponses();
+            $exceptions = array_merge($exceptions, $requestSentEvent->getExceptions());
+            $responses = $requestSentEvent->getResponses();
         }
 
         if (!empty($exceptions)) {
             $this->eventDispatcher->dispatch(
-                Events::MULTI_EXCEPTION,
-                $exceptionEvent = new MultiExceptionEvent($this, $exceptions)
+                Events::MULTI_REQUEST_ERRORED,
+                $exceptionEvent = new MultiRequestErroredEvent($this, $exceptions)
             );
 
             $responses = array_merge($responses, $exceptionEvent->getResponses());

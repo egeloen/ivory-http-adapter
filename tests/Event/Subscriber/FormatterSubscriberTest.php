@@ -58,13 +58,6 @@ class FormatterSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->formatter, $this->formatterSubscriber->getFormatter());
     }
 
-    public function testSetFormatter()
-    {
-        $this->formatterSubscriber->setFormatter($formatter = $this->createFormatterMock());
-
-        $this->assertSame($formatter, $this->formatterSubscriber->getFormatter());
-    }
-
     /**
      * Creates a formatter subscriber mock builder.
      *

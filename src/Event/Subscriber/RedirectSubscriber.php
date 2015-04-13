@@ -12,8 +12,8 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\MultiPostSendEvent;
-use Ivory\HttpAdapter\Event\PostSendEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\Redirect\Redirect;
 use Ivory\HttpAdapter\Event\Redirect\RedirectInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
@@ -37,7 +37,7 @@ class RedirectSubscriber implements EventSubscriberInterface
      */
     public function __construct(RedirectInterface $redirect = null)
     {
-        $this->setRedirect($redirect ?: new Redirect());
+        $this->redirect = $redirect ?: new Redirect();
     }
 
     /**
@@ -51,21 +51,11 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Sets the redirect.
+     * On request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\Redirect\RedirectInterface $redirect The redirect.
+     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
      */
-    public function setRedirect(RedirectInterface $redirect)
-    {
-        $this->redirect = $redirect;
-    }
-
-    /**
-     * On post send event.
-     *
-     * @param \Ivory\HttpAdapter\Event\PostSendEvent $event The event.
-     */
-    public function onPostSend(PostSendEvent $event)
+    public function onRequestSent(RequestSentEvent $event)
     {
         try {
             $redirectRequest = $this->redirect->createRedirectRequest(
@@ -93,11 +83,11 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi post send event.
+     * On multi request sent event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiPostSendEvent $event The multi post send event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
      */
-    public function onMultiPostSend(MultiPostSendEvent $event)
+    public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
         $redirectRequests = array();
 
@@ -141,8 +131,8 @@ class RedirectSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::POST_SEND       => array('onPostSend', 0),
-            Events::MULTI_POST_SEND => array('onMultiPostSend', 0),
+            Events::REQUEST_SENT       => array('onRequestSent', 0),
+            Events::MULTI_REQUEST_SENT => array('onMultiRequestSent', 0),
         );
     }
 }

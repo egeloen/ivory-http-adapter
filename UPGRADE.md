@@ -1,5 +1,15 @@
 # UPGRADE
 
+### 0.7 to 0.8
+
+ * `PreRequest` event renamed to `RequestCreated`
+ * `PostRequest` event renamed to `RequestSent`
+ * `Exception` event renamed to `RequestErrored`
+ * `MultiPreRequest` event renamed to `MultiRequestCreated`
+ * `MultiPostRequest` event renamed to `MultiRequestSent`
+ * `MultiException` event renamed to `MultiRequestErrored`
+ * Event subscribers are now immutable
+
 ### 0.6 to 0.7
 
  * The lowest PHP version supported has been bumped to 5.4.8+ due to the usage of `phly/http`.

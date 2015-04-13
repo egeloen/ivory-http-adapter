@@ -12,8 +12,8 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\ExceptionEvent;
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 use Ivory\HttpAdapter\Event\Retry\Retry;
 use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
@@ -37,7 +37,7 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public function __construct(RetryInterface $retry = null)
     {
-        $this->setRetry($retry ?: new Retry());
+        $this->retry = $retry ?: new Retry();
     }
 
     /**
@@ -51,19 +51,9 @@ class RetrySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Sets the retry.
-     *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryInterface $retry The retry.
-     */
-    public function setRetry(RetryInterface $retry)
-    {
-        $this->retry = $retry;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function onException(ExceptionEvent $event)
+    public function onRequestErrored(RequestErroredEvent $event)
     {
         if (($request = $this->retry->retry($event->getException()->getRequest())) === false) {
             return;
@@ -79,11 +69,11 @@ class RetrySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi exception event.
+     * On multi request errored event.
      *
-     * @param \Ivory\HttpAdapter\Event\MultiExceptionEvent $event The multi exception event.
+     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event The multi request errored event.
      */
-    public function onMultiException(MultiExceptionEvent $event)
+    public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
         $retryRequests = array();
 
@@ -112,8 +102,8 @@ class RetrySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::EXCEPTION       => array('onException', 0),
-            Events::MULTI_EXCEPTION => array('onMultiException', 0),
+            Events::REQUEST_ERRORED       => array('onRequestErrored', 0),
+            Events::MULTI_REQUEST_ERRORED => array('onMultiResponseErrored', 0),
         );
     }
 }

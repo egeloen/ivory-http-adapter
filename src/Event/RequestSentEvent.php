@@ -17,11 +17,11 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
- * Post send event.
+ * Request sent event.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PostSendEvent extends PreSendEvent
+class RequestSentEvent extends RequestCreatedEvent
 {
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface */
     private $response;
@@ -30,7 +30,7 @@ class PostSendEvent extends PreSendEvent
     private $exception;
 
     /**
-     * Creates a post send event.
+     * Creates a request sent event.
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.

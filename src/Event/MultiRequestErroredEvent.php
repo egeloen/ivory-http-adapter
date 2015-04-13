@@ -16,11 +16,11 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Multi exception event.
+ * Multi request errored event.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MultiExceptionEvent extends AbstractEvent
+class MultiRequestErroredEvent extends AbstractEvent
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException[] */
     private $exceptions;
@@ -29,7 +29,7 @@ class MultiExceptionEvent extends AbstractEvent
     private $responses = array();
 
     /**
-     * Creates a multi exception event.
+     * Creates a multi request errored event.
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface   $httpAdapter The http adapter.
      * @param \Ivory\HttpAdapter\HttpAdapterException[] $exceptions  The exceptions.

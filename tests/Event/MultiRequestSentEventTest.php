@@ -11,24 +11,24 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
-use Ivory\HttpAdapter\Event\MultiExceptionEvent;
+use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
 
 /**
- * Multi exception event test.
+ * Multi post send event test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MultiExceptionEventTest extends AbstractEventTest
+class MultiRequestSentEventTest extends AbstractEventTest
 {
     /** @var array */
-    private $exceptions;
+    private $responses;
 
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->exceptions = array($this->createExceptionMock());
+        $this->responses = array($this->createResponseMock());
 
         parent::setUp();
     }
@@ -38,7 +38,7 @@ class MultiExceptionEventTest extends AbstractEventTest
      */
     protected function tearDown()
     {
-        unset($this->exceptions);
+        unset($this->responses);
 
         parent::tearDown();
     }
@@ -47,54 +47,8 @@ class MultiExceptionEventTest extends AbstractEventTest
     {
         parent::testDefaultState();
 
-        $this->assertExceptions($this->exceptions);
-        $this->assertNoResponses();
-    }
-
-    public function testSetExceptions()
-    {
-        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
-
-        $this->assertExceptions($exceptions);
-    }
-
-    public function testAddExceptions()
-    {
-        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
-        $this->event->addExceptions($newExceptions = array($this->createExceptionMock()));
-
-        $this->assertExceptions(array_merge($exceptions, $newExceptions));
-    }
-
-    public function testRemoveExceptions()
-    {
-        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
-        $this->event->removeExceptions($exceptions);
-
+        $this->assertResponses($this->responses);
         $this->assertNoExceptions();
-    }
-
-    public function testClearExceptions()
-    {
-        $this->event->setExceptions(array($this->createExceptionMock()));
-        $this->event->clearExceptions();
-
-        $this->assertNoExceptions();
-    }
-
-    public function testAddException()
-    {
-        $this->event->addException($exception = $this->createExceptionMock());
-
-        $this->assertException($exception);
-    }
-
-    public function testRemoveException()
-    {
-        $this->event->addException($exception = $this->createExceptionMock());
-        $this->event->removeException($exception);
-
-        $this->assertNoException($exception);
     }
 
     public function testSetResponses()
@@ -143,22 +97,58 @@ class MultiExceptionEventTest extends AbstractEventTest
         $this->assertNoResponse($response);
     }
 
+    public function testSetExceptions()
+    {
+        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
+
+        $this->assertExceptions($exceptions);
+    }
+
+    public function testAddExceptions()
+    {
+        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
+        $this->event->addExceptions($newExceptions = array($this->createExceptionMock()));
+
+        $this->assertExceptions(array_merge($exceptions, $newExceptions));
+    }
+
+    public function testRemoveExceptions()
+    {
+        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
+        $this->event->removeExceptions($exceptions);
+
+        $this->assertNoExceptions();
+    }
+
+    public function testClearExceptions()
+    {
+        $this->event->setExceptions(array($this->createExceptionMock()));
+        $this->event->clearExceptions();
+
+        $this->assertNoExceptions();
+    }
+
+    public function testAddException()
+    {
+        $this->event->addException($exception = $this->createExceptionMock());
+
+        $this->assertException($exception);
+    }
+
+    public function testRemoveException()
+    {
+        $this->event->addException($exception = $this->createExceptionMock());
+        $this->event->removeException($exception);
+
+        $this->assertNoException($exception);
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function createEvent()
     {
-        return new MultiExceptionEvent($this->httpAdapter, $this->exceptions);
-    }
-
-    /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
-     */
-    private function createExceptionMock()
-    {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        return new MultiRequestSentEvent($this->httpAdapter, $this->responses);
     }
 
     /**
@@ -169,6 +159,16 @@ class MultiExceptionEventTest extends AbstractEventTest
     private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
+
+    /**
+     * Creates an exception mock.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     */
+    private function createExceptionMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 
     /**

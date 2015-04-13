@@ -84,37 +84,30 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->assertSame($this->timer, $this->loggerSubscriber->getTimer());
     }
 
-    public function testSetLogger()
-    {
-        $this->loggerSubscriber->setLogger($logger = $this->createLoggerMock());
-
-        $this->assertSame($logger, $this->loggerSubscriber->getLogger());
-    }
-
     public function testSubscribedEvents()
     {
         $events = LoggerSubscriber::getSubscribedEvents();
 
-        $this->assertArrayHasKey(Events::PRE_SEND, $events);
-        $this->assertSame(array('onPreSend', 100), $events[Events::PRE_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_CREATED, $events);
+        $this->assertSame(array('onRequestCreated', 100), $events[Events::REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::POST_SEND, $events);
-        $this->assertSame(array('onPostSend', 100), $events[Events::POST_SEND]);
+        $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
+        $this->assertSame(array('onRequestSent', 100), $events[Events::REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::EXCEPTION, $events);
-        $this->assertSame(array('onException', 100), $events[Events::EXCEPTION]);
+        $this->assertArrayHasKey(Events::REQUEST_ERRORED, $events);
+        $this->assertSame(array('onRequestErrored', 100), $events[Events::REQUEST_ERRORED]);
 
-        $this->assertArrayHasKey(Events::MULTI_PRE_SEND, $events);
-        $this->assertSame(array('onMultiPreSend', 100), $events[Events::MULTI_PRE_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
+        $this->assertSame(array('onMultiRequestCreated', 100), $events[Events::MULTI_REQUEST_CREATED]);
 
-        $this->assertArrayHasKey(Events::MULTI_POST_SEND, $events);
-        $this->assertSame(array('onMultiPostSend', 100), $events[Events::MULTI_POST_SEND]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
+        $this->assertSame(array('onMultiRequestSent', 100), $events[Events::MULTI_REQUEST_SENT]);
 
-        $this->assertArrayHasKey(Events::MULTI_EXCEPTION, $events);
-        $this->assertSame(array('onMultiException', 100), $events[Events::MULTI_EXCEPTION]);
+        $this->assertArrayHasKey(Events::MULTI_REQUEST_ERRORED, $events);
+        $this->assertSame(array('onMultiResponseErrored', 100), $events[Events::MULTI_REQUEST_ERRORED]);
     }
 
-    public function testPostSendEvent()
+    public function testRequestSentEvent()
     {
         $this->timer
             ->expects($this->once())
@@ -152,14 +145,14 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 ))
             );
 
-        $this->loggerSubscriber->onPreSend($preSendEvent = $this->createPreSendEvent(null, $request));
-        $this->loggerSubscriber->onPostSend($postSendEvent = $this->createPostSendEvent(null, $startedRequest, $response));
+        $this->loggerSubscriber->onRequestCreated($requestCreatedEvent = $this->createRequestCreatedEvent(null, $request));
+        $this->loggerSubscriber->onRequestSent($requestSentEvent = $this->createRequestSentEvent(null, $startedRequest, $response));
 
-        $this->assertSame($startedRequest, $preSendEvent->getRequest());
-        $this->assertSame($stoppedRequest, $postSendEvent->getRequest());
+        $this->assertSame($startedRequest, $requestCreatedEvent->getRequest());
+        $this->assertSame($stoppedRequest, $requestSentEvent->getRequest());
     }
 
-    public function testExceptionEvent()
+    public function testRequestErroredEvent()
     {
         $this->timer
             ->expects($this->once())
@@ -209,13 +202,13 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 ))
             );
 
-        $this->loggerSubscriber->onPreSend($event = $this->createPreSendEvent(null, $request));
-        $this->loggerSubscriber->onException($this->createExceptionEvent(null, $exception));
+        $this->loggerSubscriber->onRequestCreated($event = $this->createRequestCreatedEvent(null, $request));
+        $this->loggerSubscriber->onRequestErrored($this->createRequestErroredEvent(null, $exception));
 
         $this->assertSame($startedRequest, $event->getRequest());
     }
 
-    public function testMultiPostSendEvent()
+    public function testMultiRequestSentEvent()
     {
         $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
 
@@ -290,14 +283,14 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->with($this->identicalTo('request'), $this->identicalTo($stoppedRequest2))
             ->will($this->returnValue($stoppedResponse2 = $this->createResponseMock($stoppedRequest2)));
 
-        $this->loggerSubscriber->onMultiPreSend($preSendEvent = $this->createMultiPreSendEvent(null, $requests));
-        $this->loggerSubscriber->onMultiPostSend($postSendEvent = $this->createMultiPostSendEvent(null, $responses));
+        $this->loggerSubscriber->onMultiRequestCreated($requestCreatedEvent = $this->createMultiRequestCreatedEvent(null, $requests));
+        $this->loggerSubscriber->onMultiRequestSent($requestSentEvent = $this->createMultiRequestSentEvent(null, $responses));
 
-        $this->assertSame(array($startedRequest1, $startedRequest2), $preSendEvent->getRequests());
-        $this->assertSame(array($stoppedResponse1, $stoppedResponse2), $postSendEvent->getResponses());
+        $this->assertSame(array($startedRequest1, $startedRequest2), $requestCreatedEvent->getRequests());
+        $this->assertSame(array($stoppedResponse1, $stoppedResponse2), $requestSentEvent->getResponses());
     }
 
-    public function testMultiExceptionEvent()
+    public function testMultiRequestErroredEvent()
     {
         $requests = array(
             $request1 = $this->createRequestMock(),
@@ -389,8 +382,8 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->method('setRequest')
             ->with($this->identicalTo($stoppedRequest2));
 
-        $this->loggerSubscriber->onMultiPreSend($event = $this->createMultiPreSendEvent(null, $requests));
-        $this->loggerSubscriber->onMultiException($this->createMultiExceptionEvent(null, $exceptions));
+        $this->loggerSubscriber->onMultiRequestCreated($event = $this->createMultiRequestCreatedEvent(null, $requests));
+        $this->loggerSubscriber->onMultiResponseErrored($this->createMultiRequestErroredEvent(null, $exceptions));
 
         $this->assertSame(array($startedRequest1, $startedRequest2), $event->getRequests());
     }
