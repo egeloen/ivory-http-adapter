@@ -195,7 +195,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
 
         $response
             ->expects($this->any())
-            ->method('getHeader')
+            ->method('getHeaderLine')
             ->with($this->identicalTo('Location'))
             ->will($this->returnValue($location = 'http://egeloen.fr/'));
 
@@ -218,7 +218,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $request
             ->expects($this->any())
             ->method('getBody')
-            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamableInterface')));
+            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamInterface')));
 
         $request
             ->expects($this->any())
@@ -319,7 +319,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getHeaders')
             ->will($this->returnValue(array_merge($headers, array('Host' => 'egeloen.fr'))));
-        
+
         $request
             ->expects($this->any())
             ->method('getParameter')
@@ -339,7 +339,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $request
             ->expects($this->any())
             ->method('getBody')
-            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamableInterface')));
+            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamInterface')));
 
         $response = $this->createResponseMock();
 
@@ -348,7 +348,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(301));
 
         $response
-            ->method('getHeader')
+            ->method('getHeaderLine')
             ->with($this->identicalTo('Location'))
             ->will($this->returnValue($location = 'http://google.com'));
 

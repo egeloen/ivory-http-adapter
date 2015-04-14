@@ -14,7 +14,7 @@ namespace Ivory\HttpAdapter\Message;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 use Phly\Http\Stream;
 use Phly\Http\Uri;
-use Psr\Http\Message\StreamableInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Message factory.
@@ -149,13 +149,13 @@ class MessageFactory implements MessageFactoryInterface
     /**
      * Creates a stream.
      *
-     * @param null|resource|string|\Psr\Http\Message\StreamableInterface|null $body The body.
+     * @param null|resource|string|\Psr\Http\Message\StreamInterface|null $body The body.
      *
-     * @return \Psr\Http\Message\StreamableInterface The stream.
+     * @return \Psr\Http\Message\StreamInterface The stream.
      */
     private function createStream($body)
     {
-        if ($body instanceof StreamableInterface) {
+        if ($body instanceof StreamInterface) {
             return $body;
         }
 

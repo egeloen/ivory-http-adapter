@@ -564,7 +564,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
         foreach ($options['headers'] as $name => $value) {
             $this->assertTrue($response->hasHeader($name));
-            $this->assertStringStartsWith($value, $response->getHeader($name));
+            $this->assertStringStartsWith($value, $response->getHeaderLine($name));
         }
 
         if ($options['body'] === null) {

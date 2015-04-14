@@ -46,5 +46,6 @@ class CakeUtility
         require_once ROOT.DS.'lib'.DS.'Cake'.DS.'bootstrap.php';
 
         \App::uses('HttpSocket', 'Network/Http');
+        \Configure::write('debug', false);
     }
 }

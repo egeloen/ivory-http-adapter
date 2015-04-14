@@ -23,10 +23,10 @@ class Response extends PhlyResponse implements ResponseInterface
     use MessageTrait;
 
     /**
-     * @param string|resource|\Psr\Http\Message\StreamableInterface $body       The response body.
-     * @param integer                                               $status     The response status code.
-     * @param array                                                 $headers    The response headers.
-     * @param array                                                 $parameters The response parameters.
+     * @param string|resource|\Psr\Http\Message\StreamInterface $body       The response body.
+     * @param integer                                           $status     The response status code.
+     * @param array                                             $headers    The response headers.
+     * @param array                                             $parameters The response parameters.
      */
     public function __construct(
         $body = 'php://memory',

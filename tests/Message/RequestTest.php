@@ -63,7 +63,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request(
             $uri = 'http://egeloen.fr/',
             $method = Request::METHOD_POST,
-            $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
+            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
             $headers = array('foo' => array('bar')),
             $parameters = array('baz' => 'bat')
         );

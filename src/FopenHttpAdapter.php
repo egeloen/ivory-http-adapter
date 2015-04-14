@@ -32,7 +32,16 @@ class FopenHttpAdapter extends AbstractStreamHttpAdapter
     protected function process($uri, $context)
     {
         $http_response_header = array();
+        $resource = @fopen($uri, 'rb', false, $context);
 
-        return array(@fopen($uri, 'rb', false, $context), $http_response_header);
+        if (is_resource($resource)) {
+            $copy = @fopen('php://memory', 'rb+');
+            stream_copy_to_stream($resource, $copy);
+            fclose($resource);
+        } else {
+            $copy = $resource;
+        }
+
+        return array($copy, $http_response_header);
     }
 }

@@ -131,7 +131,7 @@ class Redirect implements RedirectInterface
         }
 
         $redirect = $httpAdapter->getConfiguration()->getMessageFactory()->createInternalRequest(
-            $response->getHeader('Location'),
+            $response->getHeaderLine('Location'),
             $strict ? InternalRequestInterface::METHOD_GET : $internalRequest->getMethod(),
             $internalRequest->getProtocolVersion(),
             $headers,
