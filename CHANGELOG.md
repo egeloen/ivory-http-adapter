@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.8.0 (????-??-??)
+
+ * 79e75ea - Makes event subscribers immutable + rename events 
+
 ### 0.7.1 (2015-04-13)
 
  * f996f8e - [Travis] Use minimum PHP version for lowest deps
