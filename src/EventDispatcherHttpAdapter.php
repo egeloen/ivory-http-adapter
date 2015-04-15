@@ -45,7 +45,7 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
     /**
      * {@inheritdoc}
      */
-    protected function sendInternalRequest(InternalRequestInterface $internalRequest)
+    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
         try {
             $this->eventDispatcher->dispatch(
@@ -53,7 +53,7 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
                 $requestCreatedEvent = new RequestCreatedEvent($this, $internalRequest)
             );
 
-            $response = parent::sendInternalRequest($requestCreatedEvent->getRequest());
+            $response = parent::doSendInternalRequest($requestCreatedEvent->getRequest());
 
             $this->eventDispatcher->dispatch(
                 Events::REQUEST_SENT,
@@ -87,7 +87,7 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
     /**
      * {@inheritdoc}
      */
-    protected function sendInternalRequests(array $internalRequests, $success, $error)
+    protected function doSendInternalRequests(array $internalRequests)
     {
         if (!empty($internalRequests)) {
             $this->eventDispatcher->dispatch(
@@ -101,7 +101,7 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
         $exceptions = array();
 
         try {
-            $responses = $this->decorate('sendRequests', array($internalRequests));
+            $responses = parent::doSendInternalRequests($internalRequests);
         } catch (MultiHttpAdapterException $e) {
             $responses = $e->getResponses();
             $exceptions = $e->getExceptions();
@@ -125,14 +125,12 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
 
             $responses = array_merge($responses, $exceptionEvent->getResponses());
             $exceptions = $exceptionEvent->getExceptions();
+
+            if (!empty($exceptions)) {
+                throw new MultiHttpAdapterException($exceptions, $responses);
+            }
         }
 
-        foreach ($responses as $response) {
-            call_user_func($success, $response);
-        }
-
-        foreach ($exceptions as $exception) {
-            call_user_func($error, $exception);
-        }
+        return $responses;
     }
 }

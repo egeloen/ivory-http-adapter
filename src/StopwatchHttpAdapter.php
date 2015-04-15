@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
@@ -39,12 +40,32 @@ class StopwatchHttpAdapter extends PsrHttpAdapterDecorator
     /**
      * {@inheritdoc}
      */
-    protected function decorate($method, array $params = array())
+    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $this->stopwatch->start($name = 'ivory.http_adapter');
 
         try {
-            $result = parent::decorate($method, $params);
+            $result = parent::doSendInternalRequest($internalRequest);
+        } catch (\Exception $e) {
+            $this->stopwatch->stop($name);
+
+            throw $e;
+        }
+
+        $this->stopwatch->stop($name);
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doSendInternalRequests(array $internalRequests)
+    {
+        $this->stopwatch->start($name = 'ivory.http_adapter');
+
+        try {
+            $result = parent::doSendInternalRequests($internalRequests);
         } catch (\Exception $e) {
             $this->stopwatch->stop($name);
 
