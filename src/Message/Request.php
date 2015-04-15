@@ -25,7 +25,7 @@ class Request extends PhlyRequest implements RequestInterface
     /**
      * @param null|string|\Psr\Http\Message\UriInterface            $uri        The request uri.
      * @param null|string                                           $method     The request method.
-     * @param string|resource|\Psr\Http\Message\StreamableInterface $body       The request body.
+     * @param string|resource|\Psr\Http\Message\StreamInterface $body       The request body.
      * @param array                                                 $headers    The request headers.
      * @param array                                                 $parameters The request parameters.
      */

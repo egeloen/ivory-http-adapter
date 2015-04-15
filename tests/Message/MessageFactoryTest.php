@@ -69,7 +69,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
             $headers = array('foo' => array('bar')),
-            $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
+            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
             $parameters = array('baz' => 'bat')
         );
 
@@ -192,7 +192,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $statusCode = 404,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
             $headers = array('foo' => array('bar')),
-            $body = $this->getMock('Psr\Http\Message\StreamableInterface'),
+            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
             $parameters = array('baz' => 'bat')
         );
 

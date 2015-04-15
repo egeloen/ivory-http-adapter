@@ -25,13 +25,13 @@ class InternalRequest extends Request implements InternalRequestInterface
     private $files = array();
 
     /**
-     * @param null|string|\Psr\Http\Message\UriInterface            $uri        The internal request uri.
-     * @param null|string                                           $method     The internal request method.
-     * @param string|resource|\Psr\Http\Message\StreamableInterface $body       The internal request body.
-     * @param array                                                 $datas      The internal request datas.
-     * @param array                                                 $files      The internal request files.
-     * @param array                                                 $headers    The internal request headers.
-     * @param array                                                 $parameters The internal request parameters.
+     * @param null|string|\Psr\Http\Message\UriInterface        $uri        The internal request uri.
+     * @param null|string                                       $method     The internal request method.
+     * @param string|resource|\Psr\Http\Message\StreamInterface $body       The internal request body.
+     * @param array                                             $datas      The internal request datas.
+     * @param array                                             $files      The internal request files.
+     * @param array                                             $headers    The internal request headers.
+     * @param array                                             $parameters The internal request parameters.
      */
     public function __construct(
         $uri = null,

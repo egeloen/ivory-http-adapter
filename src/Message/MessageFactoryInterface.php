@@ -44,12 +44,12 @@ interface MessageFactoryInterface
     /**
      * Creates a request.
      *
-     * @param string|object                                              $uri             The uri.
-     * @param string                                                     $method          The method.
-     * @param string                                                     $protocolVersion The protocol version.
-     * @param array                                                      $headers         The headers.
-     * @param resource|string|\Psr\Http\Message\StreamableInterface|null $body            The body.
-     * @param array                                                      $parameters      The parameters.
+     * @param string|object                                          $uri             The uri.
+     * @param string                                                 $method          The method.
+     * @param string                                                 $protocolVersion The protocol version.
+     * @param array                                                  $headers         The headers.
+     * @param resource|string|\Psr\Http\Message\StreamInterface|null $body            The body.
+     * @param array                                                  $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
      */
@@ -88,11 +88,11 @@ interface MessageFactoryInterface
     /**
      * Creates a response.
      *
-     * @param integer                                                    $statusCode      The status code.
-     * @param string                                                     $protocolVersion The protocol version.
-     * @param array                                                      $headers         The headers.
-     * @param resource|string|\Psr\Http\Message\StreamableInterface|null $body            The body.
-     * @param array                                                      $parameters      The parameters.
+     * @param integer                                                $statusCode      The status code.
+     * @param string                                                 $protocolVersion The protocol version.
+     * @param array                                                  $headers         The headers.
+     * @param resource|string|\Psr\Http\Message\StreamInterface|null $body            The body.
+     * @param array                                                  $parameters      The parameters.
      *
      * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */

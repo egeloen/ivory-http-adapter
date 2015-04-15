@@ -30,7 +30,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
     /** @const string The mode write disabled. */
     const MODE_WRITE_DISABLED = 'write';
 
-    /** @var \Psr\Http\Message\StreamableInterface */
+    /** @var \Psr\Http\Message\StreamInterface */
     private $stream;
 
     /** @var string */
@@ -61,7 +61,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testInheritance()
     {
-        $this->assertInstanceOf('Psr\Http\Message\StreamableInterface', $this->stream);
+        $this->assertInstanceOf('Psr\Http\Message\StreamInterface', $this->stream);
     }
 
     public function testDefaultState()
@@ -463,7 +463,7 @@ abstract class AbstractStreamTest extends \PHPUnit_Framework_TestCase
      * @param string      $string The string.
      * @param string|null $mode   The mode.
      *
-     * @return \Psr\Http\Message\StreamableInterface The stream.
+     * @return \Psr\Http\Message\StreamInterface The stream.
      */
     abstract protected function createStream($string, $mode = null);
 
