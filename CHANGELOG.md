@@ -2,6 +2,7 @@
 
 ### 0.8.0 (????-??-??)
 
+ * 9d126f8 - Upgrade phly/http library
  * 79e75ea - Makes event subscribers immutable + rename events 
 
 ### 0.7.1 (2015-04-13)
