@@ -2,6 +2,7 @@
 
 ### 0.8.0 (????-??-??)
 
+ * 2d245b6 - Rely on PSR response interface for trait typehint closure
  * 458a9e2 - [Decorator] Make decorator calls explicit
  * 9d126f8 - Upgrade phly/http library
  * 79e75ea - Makes event subscribers immutable + rename events 
