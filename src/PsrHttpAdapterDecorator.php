@@ -75,7 +75,7 @@ class PsrHttpAdapterDecorator implements HttpAdapterInterface
      */
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        return $this->decorate('sendRequest', array($internalRequest));
+        return $this->doSendInternalRequest($internalRequest);
     }
 
     /**
@@ -86,7 +86,7 @@ class PsrHttpAdapterDecorator implements HttpAdapterInterface
         $exceptions = array();
 
         try {
-            $responses = $this->decorate('sendRequests', array($internalRequests));
+            $responses = $this->doSendInternalRequests($internalRequests);
         } catch (MultiHttpAdapterException $e) {
             $responses = $e->getResponses();
             $exceptions = $e->getExceptions();
@@ -102,15 +102,26 @@ class PsrHttpAdapterDecorator implements HttpAdapterInterface
     }
 
     /**
-     * Decorates a method.
+     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
      *
-     * @param string $method The method.
-     * @param array  $params The parameters.
+     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
      *
-     * @return mixed The result.
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
      */
-    protected function decorate($method, array $params = array())
+    protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        return call_user_func_array(array($this->httpAdapter, $method), $params);
+        return $this->httpAdapter->sendRequest($internalRequest);
+    }
+
+    /**
+     * @param array $internalRequests The internal requests.
+     *
+     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred.
+     *
+     * @return array The responses.
+     */
+    protected function doSendInternalRequests(array $internalRequests)
+    {
+        return $this->httpAdapter->sendRequests($internalRequests);
     }
 }
