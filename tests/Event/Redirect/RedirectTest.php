@@ -12,6 +12,7 @@
 namespace Ivory\Tests\HttpAdapter\Event\Redirect;
 
 use Ivory\HttpAdapter\Event\Redirect\Redirect;
+use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 
@@ -138,8 +139,6 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider maxRedirectReachedProvider
-     * @expectedException \Ivory\HttpAdapter\HttpAdapterException
-     * @expectedExceptionMessage An error occurred when fetching the URI "http://egeloen.fr" with the adapter "http_adapter" ("Max redirects exceeded (5)")
      */
     public function testCreateRedirectRequestWithMaxRedirectReachedThrowException($redirectCount, $max)
     {
@@ -173,7 +172,17 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $this->redirect->setThrowException(true);
         $this->redirect->setMax($max);
 
-        $this->redirect->createRedirectRequest($response, $request, $this->createHttpAdapterMock());
+        try {
+            $this->redirect->createRedirectRequest($response, $request, $this->createHttpAdapterMock());
+            $this->fail();
+        } catch (HttpAdapterException $e) {
+            $this->assertSame(
+                'An error occurred when fetching the URI "http://egeloen.fr" with the adapter "http_adapter" ("Max redirects exceeded (5)").',
+                $e->getMessage()
+            );
+
+            $this->assertSame($rootRequest, $e->getRequest());
+        }
     }
 
     /**

@@ -110,11 +110,16 @@ class Redirect implements RedirectInterface
 
         if ($internalRequest->getParameter(self::REDIRECT_COUNT) >= $this->max) {
             if ($this->throwException) {
-                throw HttpAdapterException::maxRedirectsExceeded(
-                    (string) $this->getRootRequest($internalRequest)->getUri(),
+                $rootRequest = $this->getRootRequest($internalRequest);
+                $exception = HttpAdapterException::maxRedirectsExceeded(
+                    (string) $rootRequest->getUri(),
                     $this->max,
                     $httpAdapter->getName()
                 );
+
+                $exception->setRequest($rootRequest);
+
+                throw $exception;
             }
 
             return false;
