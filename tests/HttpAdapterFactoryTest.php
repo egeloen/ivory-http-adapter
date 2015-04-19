@@ -12,7 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\HttpAdapterFactory;
-use Ivory\Tests\HttpAdapter\Utility\CakeUtility;
 
 /**
  * Http adapter factory test.
@@ -21,14 +20,6 @@ use Ivory\Tests\HttpAdapter\Utility\CakeUtility;
  */
 class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function setUpBeforeClass()
-    {
-        CakeUtility::setUp();
-    }
-
     /**
      * @dataProvider httpAdapterProvider
      */

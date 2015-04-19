@@ -68,7 +68,7 @@ class HttpAdapterFactory
         ),
         self::CAKE => array(
             'adapter' => 'Ivory\HttpAdapter\CakeHttpAdapter',
-            'client'  => '\HttpSocket',
+            'client'  => 'Cake\Network\Http\Client',
         ),
         self::CURL => array(
             'adapter' => 'Ivory\HttpAdapter\CurlHttpAdapter',

@@ -11,9 +11,9 @@
 
 namespace Ivory\HttpAdapter;
 
-use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
+use Cake\Network\Http\Client;
+use Cake\Network\Http\Request;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
  * Cake http adapter.
@@ -22,20 +22,20 @@ use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
  */
 class CakeHttpAdapter extends AbstractHttpAdapter
 {
-    /** @var \HttpSocket */
-    private $httpSocket;
+    /** @var \Cake\Network\Http\Client */
+    private $client;
 
     /**
      * Creates a Cake http adapter.
      *
-     * @param \HttpSocket|null                               $httpSocket    The Cake http socket.
+     * @param \Cake\Network\Http\Client|null                 $client        The Cake client.
      * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
-    public function __construct(\HttpSocket $httpSocket = null, ConfigurationInterface $configuration = null)
+    public function __construct(Client $client = null, ConfigurationInterface $configuration = null)
     {
         parent::__construct($configuration);
 
-        $this->httpSocket = $httpSocket ?: new \HttpSocket();
+        $this->client = $client ?: new Client();
     }
 
     /**
@@ -51,32 +51,31 @@ class CakeHttpAdapter extends AbstractHttpAdapter
      */
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $this->httpSocket->config['timeout'] = $this->getConfiguration()->getTimeout();
+        $request = new Request();
 
-        $request = array(
-            'version'  => $this->getConfiguration()->getProtocolVersion(),
-            'redirect' => false,
-            'uri'      => $uri = (string) $internalRequest->getUri(),
-            'method'   => $internalRequest->getMethod(),
-            'header'   => $this->prepareHeaders($internalRequest),
-            'body'     => $this->prepareBody($internalRequest),
-        );
+        foreach ($this->prepareHeaders($internalRequest) as $name => $value) {
+            $request->header($name, $value);
+        }
+
+        $request->method($internalRequest->getMethod());
+        $request->body($this->prepareBody($internalRequest));
+        $request->url($uri = (string) $internalRequest->getUri());
+        $request->version($this->getConfiguration()->getProtocolVersion());
 
         try {
-            $response = $this->httpSocket->request($request);
+            $response = $this->client->send($request, array(
+                'timeout'  => $this->getConfiguration()->getTimeout(),
+                'redirect' => false,
+            ));
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
 
-        if (($error = $this->httpSocket->lastError()) !== null) {
-            throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $error);
-        }
-
         return $this->getConfiguration()->getMessageFactory()->createResponse(
-            (integer) $response->code,
-            ProtocolVersionExtractor::extract($response->httpVersion),
-            $response->headers,
-            BodyNormalizer::normalize($response->body, $internalRequest->getMethod())
+            (integer) $response->statusCode(),
+            $response->version(),
+            $response->headers(),
+            $response->body()
         );
     }
 }
