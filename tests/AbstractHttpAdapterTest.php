@@ -171,10 +171,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             http_build_query($data, null, '&')
         );
 
-        if (!empty($data)) {
-            $this->httpAdapter->getConfiguration()->setEncodingType(ConfigurationInterface::ENCODING_TYPE_URLENCODED);
-        }
-
         $options = array();
         if ($method === Request::METHOD_HEAD) {
             $options['body'] = null;

@@ -76,6 +76,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
         }
 
         if (!$internalRequest->hasHeader('Content-Type')) {
+            $rawDatas = (string) $internalRequest->getBody();
             $datas = $internalRequest->getDatas();
             $files = $internalRequest->getFiles();
 
@@ -89,7 +90,7 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
                     'Content-Type',
                     ConfigurationInterface::ENCODING_TYPE_FORMDATA.'; boundary='.$this->configuration->getBoundary()
                 );
-            } elseif ($contentType && !empty($datas)) {
+            } elseif ($contentType && (!empty($datas) || !empty($rawDatas))) {
                 $internalRequest = $internalRequest->withHeader(
                     'Content-Type',
                     ConfigurationInterface::ENCODING_TYPE_URLENCODED
