@@ -20,6 +20,7 @@ The library allows to issue HTTP requests with PHP 5.4.8+. The supported adapter
  - [Guzzle](http://guzzle3.readthedocs.org/)
  - [GuzzleHttp](http://guzzle.readthedocs.org/)
  - [Httpful](http://phphttpclient.com/)
+ - [Pecl Http](http://devel-m6w6.rhcloud.com/mdref/http)
  - [React](http://reactphp.org/)
  - [Socket](http://php.net/manual/en/function.stream-socket-client.php)
  - [Zend1](http://framework.zend.com/manual/1.12/en/zend.http.html)

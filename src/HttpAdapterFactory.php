@@ -26,6 +26,7 @@ class HttpAdapterFactory
     const GUZZLE = 'guzzle';
     const GUZZLE_HTTP = 'guzzle_http';
     const HTTPFUL = 'httpful';
+    const PECL_HTTP = 'pecl_http';
     const REACT = 'react';
     const SOCKET = 'socket';
     const ZEND1 = 'zend1';
@@ -60,6 +61,10 @@ class HttpAdapterFactory
         self::HTTPFUL => array(
             'adapter' => 'Ivory\HttpAdapter\HttpfulHttpAdapter',
             'client'  => 'Httpful\Request',
+        ),
+        self::PECL_HTTP => array(
+            'adapter' => 'Ivory\HttpAdapter\PeclHttpAdapter',
+            'client'  => 'http\Client',
         ),
         self::CAKE => array(
             'adapter' => 'Ivory\HttpAdapter\CakeHttpAdapter',
