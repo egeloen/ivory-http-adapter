@@ -2,6 +2,7 @@
 
 ### 0.8.0 (????-??-??)
 
+ * 005efb0 - Add PECL http adapter support
  * 789326e - [Event] Fix redirect subscriber which throws an exception
  * 2d245b6 - Rely on PSR response interface for trait typehint closure
  * 458a9e2 - [Decorator] Make decorator calls explicit
