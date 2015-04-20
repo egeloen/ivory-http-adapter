@@ -12,7 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\CakeHttpAdapter;
-use Ivory\Tests\HttpAdapter\Utility\CakeUtility;
 
 /**
  * Cake http adapter test.
@@ -21,16 +20,6 @@ use Ivory\Tests\HttpAdapter\Utility\CakeUtility;
  */
 class CakeHttpAdapterTest extends AbstractHttpAdapterTest
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function setUpBeforeClass()
-    {
-        CakeUtility::setUp();
-
-        parent::setUpBeforeClass();
-    }
-
     public function testGetName()
     {
         $this->assertSame('cake', $this->httpAdapter->getName());

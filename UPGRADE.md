@@ -2,13 +2,14 @@
 
 ### 0.7 to 0.8
 
- * `PreRequest` event renamed to `RequestCreated`
- * `PostRequest` event renamed to `RequestSent`
- * `Exception` event renamed to `RequestErrored`
- * `MultiPreRequest` event renamed to `MultiRequestCreated`
- * `MultiPostRequest` event renamed to `MultiRequestSent`
- * `MultiException` event renamed to `MultiRequestErrored`
- * Event subscribers are now immutable
+ * The CakePHP 2.x support has been dropped in favor of the 3.x one.
+ * `PreRequest` event renamed to `RequestCreated`.
+ * `PostRequest` event renamed to `RequestSent`.
+ * `Exception` event renamed to `RequestErrored`.
+ * `MultiPreRequest` event renamed to `MultiRequestCreated`.
+ * `MultiPostRequest` event renamed to `MultiRequestSent`.
+ * `MultiException` event renamed to `MultiRequestErrored`.
+ * Event subscribers are now immutable.
 
 ### 0.6 to 0.7
 
