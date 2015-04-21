@@ -2,6 +2,7 @@
 
 ### 0.8.0 (????-??-??)
 
+ * e6ef972 - [Travis] Add PHP 7
  * 1e609b9 - [CakePHP] Drop 2.x support in favor of 3.x
  * 19a0e44 - [Headers] Automatically add content-type when there are datas
  * 005efb0 - Add PECL http adapter support
