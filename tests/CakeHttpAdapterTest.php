@@ -29,8 +29,8 @@ class CakeHttpAdapterTest extends AbstractHttpAdapterTest
             define('DS', DIRECTORY_SEPARATOR);
         }
 
-        if (!defined('CAKE')) {
-            define('CAKE', __DIR__.'/../vendor/cakephp/cakephp/src/');
+        if (!defined('CORE_PATH')) {
+            define('CORE_PATH', __DIR__.'/../vendor/cakephp/cakephp/src/');
         }
 
         parent::setUpBeforeClass();
