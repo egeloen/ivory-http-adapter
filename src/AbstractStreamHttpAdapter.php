@@ -40,6 +40,10 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
                 'header'           => $this->prepareHeaders($internalRequest, false),
                 'content'          => $this->prepareBody($internalRequest),
             ),
+            'ssl' => array(
+                'verify_peer'       => $this->getConfiguration()->getSslVerifyPeer(),
+                'allow_self_signed' => !$this->getConfiguration()->getSslVerifyPeer(),
+            ),
         ));
 
         list($body, $headers) = $this->process($uri = (string) $internalRequest->getUri(), $context);

@@ -98,6 +98,7 @@ The React http adapter does not support all features. The limitations are:
 
  * HTTP 1.1 not supported.
  * Timeout not suppoted.
+ * Disable SSL verification not supported.
 
 ## Socket
 

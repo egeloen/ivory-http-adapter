@@ -60,6 +60,7 @@ class PeclHttpAdapter extends AbstractHttpAdapter
             'protocol'       => $httpVersion,
             'timeout'        => $this->getConfiguration()->getTimeout(),
             'connecttimeout' => $this->getConfiguration()->getTimeout(),
+            'ssl'            => array('verifypeer' => $this->getConfiguration()->getSslVerifyPeer()),
         ));
 
         try {

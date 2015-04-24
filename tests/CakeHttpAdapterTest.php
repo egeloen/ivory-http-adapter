@@ -20,6 +20,22 @@ use Ivory\HttpAdapter\CakeHttpAdapter;
  */
 class CakeHttpAdapterTest extends AbstractHttpAdapterTest
 {
+    /**
+     * {@inheritdoc}
+     */
+    public static function setUpBeforeClass()
+    {
+        if (!defined('DS')) {
+            define('DS', DIRECTORY_SEPARATOR);
+        }
+
+        if (!defined('CORE_PATH')) {
+            define('CORE_PATH', __DIR__.'/../vendor/cakephp/cakephp/src/');
+        }
+
+        parent::setUpBeforeClass();
+    }
+
     public function testGetName()
     {
         $this->assertSame('cake', $this->httpAdapter->getName());

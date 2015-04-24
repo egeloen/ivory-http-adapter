@@ -64,8 +64,10 @@ class CakeHttpAdapter extends AbstractHttpAdapter
 
         try {
             $response = $this->client->send($request, array(
-                'timeout'  => $this->getConfiguration()->getTimeout(),
-                'redirect' => false,
+                'timeout'               => $this->getConfiguration()->getTimeout(),
+                'redirect'              => false,
+                'ssl_verify_peer'       => $this->getConfiguration()->getSslVerifyPeer(),
+                'ssl_allow_self_signed' => !$this->getConfiguration()->getSslVerifyPeer(),
             ));
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());

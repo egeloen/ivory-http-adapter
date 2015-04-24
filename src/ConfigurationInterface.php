@@ -151,4 +151,18 @@ interface ConfigurationInterface
      * @param string $baseUri The base uri.
      */
     public function setBaseUri($baseUri);
+
+    /**
+     * Checks if there is an SSL certificate verification.
+     *
+     * @return boolean TRUE if there is an SSL certificate verification else FALSE.
+     */
+    public function getSslVerifyPeer();
+
+    /**
+     * Sets if there is an SSL certificate verification.
+     *
+     * @param boolean $verify TRUE if there is an SSL certificate verification else FALSE.
+     */
+    public function setSslVerifyPeer($verify);
 }

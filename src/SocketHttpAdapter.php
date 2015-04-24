@@ -16,6 +16,7 @@ use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Socket http adapter.
@@ -37,14 +38,21 @@ class SocketHttpAdapter extends AbstractHttpAdapter
      */
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $uri = $internalRequest->getUri();
-
         $socket = @stream_socket_client(
-            ($uri->getScheme() === 'https' ? 'ssl' : 'tcp').'://'.$uri->getHost().':'.($uri->getPort() ?: 80),
+            $this->prepareUri($internalRequest->getUri()),
             $errno,
             $errstr,
-            $this->getConfiguration()->getTimeout()
+            $this->getConfiguration()->getTimeout(),
+            STREAM_CLIENT_CONNECT,
+            stream_context_create(array(
+                'ssl' => array(
+                    'verify_peer'       => $this->getConfiguration()->getSslVerifyPeer(),
+                    'allow_self_signed' => !$this->getConfiguration()->getSslVerifyPeer(),
+                ),
+            ))
         );
+
+        $uri = (string) $internalRequest->getUri();
 
         if ($socket === false) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $errstr);
@@ -73,6 +81,18 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
+     * Prepares the uri.
+     *
+     * @param \Psr\Http\Message\UriInterface $uri The uri.
+     *
+     * @return string The prepared uri.
+     */
+    private function prepareUri(UriInterface $uri)
+    {
+        return ($uri->getScheme() === 'https' ? 'ssl' : 'tcp').'://'.$uri->getHost().':'.($uri->getPort() ?: 80);
+    }
+
+    /**
      * Prepares the request.
      *
      * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
@@ -85,7 +105,6 @@ class SocketHttpAdapter extends AbstractHttpAdapter
         $path = $uri->getPath().($uri->getQuery() ? '?'.$uri->getQuery() : '');
 
         $request = $internalRequest->getMethod().' '.$path.' HTTP/'.$internalRequest->getProtocolVersion()."\r\n";
-        $request .= 'Host: '.$uri->getHost().($uri->getPort() !== null ? ':'.$uri->getPort() : '')."\r\n";
         $request .= implode("\r\n", $this->prepareHeaders($internalRequest, false, true, true))."\r\n\r\n";
         $request .= $this->prepareBody($internalRequest)."\r\n";
 
