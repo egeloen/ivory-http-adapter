@@ -97,7 +97,7 @@ $reactHttpAdapter = new ReactHttpAdapter();
 The React http adapter does not support all features. The limitations are:
 
  * HTTP 1.1 not supported.
- * Timeout not suppoted.
+ * Timeout not supported.
 
 ## Socket
 

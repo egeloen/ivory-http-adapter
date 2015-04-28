@@ -57,9 +57,8 @@ class PeclHttpAdapter extends AbstractHttpAdapter
             : \http\Client\Curl\HTTP_VERSION_1_1;
 
         $request->setOptions(array(
-            'protocol'       => $httpVersion,
-            'timeout'        => $this->getConfiguration()->getTimeout(),
-            'connecttimeout' => $this->getConfiguration()->getTimeout(),
+            'protocol' => $httpVersion,
+            'timeout'  => $this->getConfiguration()->getTimeout(),
         ));
 
         try {

@@ -90,7 +90,7 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
             $response->getStatusCode(),
-            (string) $response->getProtocolVersion(),
+            sprintf('%.1f', $response->getProtocolVersion()),
             HeadersNormalizer::normalize($response->getHeaders()),
             BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod())
         );
