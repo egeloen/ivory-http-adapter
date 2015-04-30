@@ -12,6 +12,7 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\Message\MessageInterface;
+use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\ReactHttpAdapter;
 
 /**
@@ -31,6 +32,9 @@ class ReactHttpAdapterTest extends AbstractHttpAdapterTest
         }
 
         parent::setUp();
+
+        // ReactPHP is only compatible with the HTTP 1.0 protocol version.
+        $this->defaultOptions['protocol_version'] = Request::PROTOCOL_VERSION_1_0;
     }
 
     public function testGetName()

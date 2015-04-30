@@ -11,7 +11,6 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\ConfigurationInterface;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\Request;
@@ -30,6 +29,9 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /** @var \Ivory\HttpAdapter\HttpAdapterInterface */
     protected $httpAdapter;
+
+    /** @var array */
+    protected $defaultOptions;
 
     /**
      * {@inheritdoc}
@@ -54,9 +56,13 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        if (!$this->getUri()) {
-            $this->markTestSkipped();
-        }
+        $this->defaultOptions = array(
+            'protocol_version' => Request::PROTOCOL_VERSION_1_1,
+            'status_code'      => 200,
+            'reason_phrase'    => 'OK',
+            'headers'          => array('Content-Type' => 'text/html'),
+            'body'             => 'Ok',
+        );
 
         $this->httpAdapter = $this->createHttpAdapter();
     }
@@ -78,6 +84,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider simpleProvider
+     * @group integration
      */
     public function testGet($uri, array $headers = array())
     {
@@ -87,6 +94,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider simpleProvider
+     * @group integration
      */
     public function testHead($uri, array $headers = array())
     {
@@ -96,6 +104,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider simpleProvider
+     * @group integration
      */
     public function testTrace($uri, array $headers = array())
     {
@@ -105,16 +114,13 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $this->markTestIncomplete();
         }
 
-        $options = array(
-            'headers' => array('Content-Type' => 'message/http'),
-            'body'    => 'TRACE /server.php',
-        );
-
-        $this->assertResponse($response, $options);
+        $this->assertResponse($response);
+        $this->assertRequest(Request::METHOD_TRACE, $headers);
     }
 
     /**
      * @dataProvider fullProvider
+     * @group integration
      */
     public function testPost($uri, array $headers = array(), array $data = array(), array $files = array())
     {
@@ -124,6 +130,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider fullProvider
+     * @group integration
      */
     public function testPut($uri, array $headers = array(), array $data = array(), array $files = array())
     {
@@ -133,6 +140,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider fullProvider
+     * @group integration
      */
     public function testPatch($uri, array $headers = array(), array $data = array(), array $files = array())
     {
@@ -142,6 +150,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider fullProvider
+     * @group integration
      */
     public function testDelete($uri, array $headers = array(), array $data = array(), array $files = array())
     {
@@ -151,6 +160,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider fullProvider
+     * @group integration
      */
     public function testOptions($uri, array $headers = array(), array $data = array(), array $files = array())
     {
@@ -160,6 +170,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider requestProvider
+     * @group integration
      */
     public function testSendRequest($uri, $method, array $headers = array(), array $data = array())
     {
@@ -174,9 +185,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $options = array();
         if ($method === Request::METHOD_HEAD) {
             $options['body'] = null;
-        } elseif ($method === Request::METHOD_TRACE) {
-            $options['headers'] = array('Content-Type' => 'message/http');
-            $options['body'] = 'TRACE /server.php';
         }
 
         $response = $this->httpAdapter->sendRequest($request);
@@ -186,14 +194,12 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertResponse($response, $options);
-
-        if ($method !== Request::METHOD_TRACE) {
-            $this->assertRequest($method, $headers, $data);
-        }
+        $this->assertRequest($method, $headers, $data);
     }
 
     /**
      * @dataProvider internalRequestProvider
+     * @group integration
      */
     public function testSendInternalRequest(
         $uri,
@@ -214,9 +220,6 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $options = array();
         if ($method === Request::METHOD_HEAD) {
             $options['body'] = null;
-        } elseif ($method === Request::METHOD_TRACE) {
-            $options['headers'] = array('Content-Type' => 'message/http');
-            $options['body'] = 'TRACE /server.php';
         }
 
         $response = $this->httpAdapter->sendRequest($request);
@@ -226,17 +229,20 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertResponse($response, $options);
-
-        if ($method !== Request::METHOD_TRACE) {
-            $this->assertRequest($method, $headers, $datas, $files);
-        }
+        $this->assertRequest($method, $headers, $datas, $files);
     }
 
+    /**
+     * @group integration
+     */
     public function testSendRequests()
     {
         $this->assertMultiResponses($this->httpAdapter->sendRequests($requests = $this->requestsProvider()), $requests);
     }
 
+    /**
+     * @group integration
+     */
     public function testSendErroredRequests()
     {
         list($requests, $erroredRequests) = $this->erroredRequestsProvider();
@@ -250,6 +256,9 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group integration
+     */
     public function testSendWithCustomArgSeparatorOutput()
     {
         $argSeparatorOutput = ini_get('arg_separator.output');
@@ -264,14 +273,21 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         ini_set('arg_separator.output', $argSeparatorOutput);
     }
 
+    /**
+     * @group integration
+     */
     public function testSendWithProtocolVersion10()
     {
         $this->httpAdapter->getConfiguration()->setProtocolVersion($protocolVersion = Request::PROTOCOL_VERSION_1_0);
+        $response = $this->httpAdapter->send($this->getUri(), $method = Request::METHOD_GET);
 
-        $this->assertResponse($this->httpAdapter->send($this->getUri(), $method = Request::METHOD_GET));
+        $this->assertResponse($response, array('protocol_version' => $protocolVersion));
         $this->assertRequest($method, array(), array(), array(), $protocolVersion);
     }
 
+    /**
+     * @group integration
+     */
     public function testSendWithUserAgent()
     {
         $this->httpAdapter->getConfiguration()->setUserAgent($userAgent = 'foo');
@@ -280,6 +296,9 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertRequest($method, array('User-Agent' => $userAgent));
     }
 
+    /**
+     * @group integration
+     */
     public function testSendWithClientError()
     {
         $this->assertResponse(
@@ -293,6 +312,9 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertRequest($method);
     }
 
+    /**
+     * @group integration
+     */
     public function testSendWithServerError()
     {
         $this->assertResponse(
@@ -306,6 +328,9 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertRequest($method);
     }
 
+    /**
+     * @group integration
+     */
     public function testSendWithRedirect()
     {
         $this->assertResponse(
@@ -322,6 +347,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @group integration
      */
     public function testSendWithInvalidUri()
     {
@@ -331,6 +357,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider timeoutProvider
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException
+     * @group integration
      */
     public function testSendWithTimeoutExceeded($timeout)
     {
@@ -541,16 +568,7 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\ResponseInterface', $response);
 
-        $options = array_merge(
-            array(
-                'protocol_version' => Request::PROTOCOL_VERSION_1_1,
-                'status_code'      => 200,
-                'reason_phrase'    => 'OK',
-                'headers'          => array('Content-Type' => 'text/html'),
-                'body'             => 'Ok',
-            ),
-            $options
-        );
+        $options = array_merge($this->defaultOptions, $options);
 
         $this->assertSame($options['protocol_version'], $response->getProtocolVersion());
         $this->assertSame($options['status_code'], $response->getStatusCode());

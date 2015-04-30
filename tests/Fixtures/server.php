@@ -23,11 +23,11 @@ $delay = isset($_GET['delay']) ? $_GET['delay'] : 0;
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : false;
 
 if ($serverError) {
-    header('HTTP/1.1 500 Internal Server Error', true, 500);
+    header($_SERVER['SERVER_PROTOCOL'].' 500 Internal Server Error', true, 500);
 }
 
 if ($clientError) {
-    header('HTTP/1.1 400 Bad Request', true, 400);
+    header($_SERVER['SERVER_PROTOCOL'].' 400 Bad Request', true, 400);
 }
 
 if ($delay > 0) {
@@ -35,7 +35,7 @@ if ($delay > 0) {
 }
 
 if ($redirect) {
-    header('HTTP/1.1 302 Found', true, 302);
+    header($_SERVER['SERVER_PROTOCOL'].' 302 Found', true, 302);
     header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']);
     echo 'Redirect';
 } else {

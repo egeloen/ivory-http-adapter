@@ -17,8 +17,9 @@
     "require-dev": {
         "cakephp/cakephp": "^3.0.3@dev",
         "ext-curl": "*",
-        "guzzle/guzzle": "^3.9.2",
+        "guzzle/guzzle": "^3.9.4@dev",
         "guzzlehttp/guzzle": "^4.1.4|^5.0",
+        "guzzlehttp/ringphp": "^1.0.8@dev",
         "guzzlehttp/streams": "^1.5|^2.0|^3.0",
         "kriswallsmith/buzz": "^0.13",
         "nategood/httpful": "^0.2.17",

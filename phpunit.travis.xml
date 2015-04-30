@@ -9,11 +9,6 @@
     <php>
         <server name="TEST_SERVER" value="http://127.0.0.1:10000/server.php" />
     </php>
-    <groups>
-        <exclude>
-            <group>integration</group>
-        </exclude>
-    </groups>
     <filter>
         <whitelist>
             <directory>./src</directory>

@@ -41,34 +41,18 @@ When you're on the new branch with the dependencies, code as much as you want an
 it immediately. Before, you will need to add tests and update the doc. For the tests, everything is tested with
 [PHPUnit](http://phpunit.de/) and the doc is in the markdown format under the `doc` directory.
 
-To run the tests, use the following command:
+To execute the tests, use the following command:
 
 ``` bash
 $ bin/phpunit
 ```
 
-This command will only run tests which does not require a real web server. To run the full tests, you will need to
-copy/paste the `phpunit.xml.dist` to `phpunit.xml` and uncomment the `TEST_SERVER` php server variable. Then, you have
-three possibilities:
-
- * Rely on Apache2 (PHP) by using the `tests/Ivory/Tests/HttpAdapter/Fixtures/etc/apache2-php.conf`.
- * Rely on Apache2 (HHVM) by using the `tests/Ivory/Tests/HttpAdapter/Fixtures/etc/apache2-hhvm.conf`.
- * Rely on Nginx (PHP and HHVM) by using the `tests/Ivory/Tests/HttpAdapter/Fixtures/etc/nginx.conf`.
-
-I would recommend you to rely on Apache2 as Nginx does not support TRACE request. When, your web server is configured
-and running, you will need to increase the number of fastcgi child processes (otherwise the main process will crash)
-and then, start it with the following commands:
+This command will only execute unit tests. The library is also shipped with integration tests which require a web 
+server. To execute them, just start the built in PHP web server and execute tests again with the `integration` group:
 
 ``` bash
-$ export PHP_FCGI_CHILDREN=10
-$ php-cgi -b 127.0.0.1:9000 # PHP
-$ hhvm --mode server -vServer.Type=fastcgi -vServer.Port=9000 -vServer.FixPathInfo=true # HHVM
-```
-
-Then, run the tests again:
-
-``` bash
-$ bin/phpunit
+$ php -S 127.0.0.1:10000 -t tests/Fixtures
+$ bin/phpunit --group integration
 ```
 
 When you have fixed the bug, tested it and documented it, you can commit and push it with the following commands:
