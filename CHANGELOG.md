@@ -2,6 +2,8 @@
 
 ### 0.8.0 (????-??-??)
 
+ * 9de52ee - Rewind stream before setting it on the response
+ * 9a29e09 - Rely on PHP built in server instead of Nginx or Apache
  * e6ef972 - [Travis] Add PHP 7
  * 1e609b9 - [CakePHP] Drop 2.x support in favor of 3.x
  * 19a0e44 - [Headers] Automatically add content-type when there are datas
