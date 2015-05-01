@@ -156,10 +156,14 @@ class MessageFactory implements MessageFactoryInterface
     private function createStream($body)
     {
         if ($body instanceof StreamInterface) {
+            $body->rewind();
+
             return $body;
         }
 
         if (is_resource($body)) {
+            rewind($body);
+
             return new Stream($body);
         }
 
@@ -170,6 +174,7 @@ class MessageFactory implements MessageFactoryInterface
         }
 
         $stream->write((string) $body);
+        $stream->rewind();
 
         return $stream;
     }
