@@ -17,7 +17,6 @@ use GuzzleHttp\Event\CompleteEvent;
 use GuzzleHttp\Event\ErrorEvent;
 use GuzzleHttp\Pool;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
@@ -72,7 +71,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
             $response->getHeaders(),
             BodyNormalizer::normalize(
                 function () use ($response) {
-                    return new GuzzleHttpStream($response->getBody());
+                    return $response->getBody()->detach();
                 },
                 $internalRequest->getMethod()
             )
@@ -139,7 +138,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
                         $event->getResponse()->getHeaders(),
                         BodyNormalizer::normalize(
                             function () use ($event) {
-                                return new GuzzleHttpStream($event->getResponse()->getBody());
+                                return $event->getResponse()->getBody()->detach();
                             },
                             $internalRequest->getMethod()
                         )

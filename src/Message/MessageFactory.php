@@ -162,9 +162,7 @@ class MessageFactory implements MessageFactoryInterface
         }
 
         if (is_resource($body)) {
-            rewind($body);
-
-            return new Stream($body);
+            return $this->createStream(new Stream($body));
         }
 
         $stream = new Stream('php://memory', 'rw');
@@ -174,8 +172,7 @@ class MessageFactory implements MessageFactoryInterface
         }
 
         $stream->write((string) $body);
-        $stream->rewind();
 
-        return $stream;
+        return $this->createStream($stream);
     }
 }
