@@ -101,5 +101,4 @@ The response is based on `Phly\Http\Response` with additionally the Ivory messag
 
 ## Stream
 
-The response is based on `Phly\Http\Stream`. There is additionally two custom implementations in order to respectively 
-decorates the Guzzle 3 and 4 streams. 
+The response is based on `Phly\Http\Stream`.
