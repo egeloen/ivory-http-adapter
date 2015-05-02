@@ -2,6 +2,7 @@
 
 ### 0.8.0 (????-??-??)
 
+ * fbc3c4d - [Message][Stream] Remove guzzle streams
  * 9de52ee - Rewind stream before setting it on the response
  * 9a29e09 - Rely on PHP built in server instead of Nginx or Apache
  * e6ef972 - [Travis] Add PHP 7
