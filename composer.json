@@ -12,10 +12,10 @@
     ],
     "require": {
         "php": ">=5.4.8",
-        "phly/http": "^0.12.0"
+        "phly/http": "^0.12|^0.13"
     },
     "require-dev": {
-        "cakephp/cakephp": "^3.0.3@dev",
+        "cakephp/cakephp": "^3.0.3",
         "ext-curl": "*",
         "guzzle/guzzle": "^3.9.4@dev",
         "guzzlehttp/guzzle": "^4.1.4|^5.0",
