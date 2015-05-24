@@ -12,8 +12,8 @@
 namespace Ivory\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
-use Phly\Http\Stream;
-use Phly\Http\Uri;
+use Zend\Diactoros\Stream;
+use Zend\Diactoros\Uri;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -23,7 +23,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class MessageFactory implements MessageFactoryInterface
 {
-    /** @var null|\Phly\Http\Uri */
+    /** @var null|\Zend\Diactoros\Uri */
     private $baseUri;
 
     /**

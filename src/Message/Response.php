@@ -11,14 +11,14 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Phly\Http\Response as PhlyResponse;
+use Zend\Diactoros\Response as DiactorosResponse;
 
 /**
  * Response.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Response extends PhlyResponse implements ResponseInterface
+class Response extends DiactorosResponse implements ResponseInterface
 {
     use MessageTrait;
 
