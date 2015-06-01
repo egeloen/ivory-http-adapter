@@ -56,10 +56,14 @@ class ReactHttpAdapter extends AbstractHttpAdapter
             $error = $onError;
         });
 
-        $request->on('response', function (Response $onResponse) use (&$response, &$body) {
+        $totalTime = 0;
+        $request->on('response', function (Response $onResponse) use (&$response, &$body, &$totalTime) {
+            $start = microtime(true);
             $onResponse->on('data', function ($data) use (&$body) {
                 $body .= $data;
             });
+
+            $totalTime = microtime(true) - $start;
 
             $response = $onResponse;
         });
@@ -75,7 +79,8 @@ class ReactHttpAdapter extends AbstractHttpAdapter
             (integer) $response->getCode(),
             $response->getVersion(),
             $response->getHeaders(),
-            BodyNormalizer::normalize($body, $internalRequest->getMethod())
+            BodyNormalizer::normalize($body, $internalRequest->getMethod()),
+            array('duration' => $totalTime)
         );
     }
 }

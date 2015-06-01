@@ -68,7 +68,9 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
         }
 
         try {
+            $start = microtime(true);
             $response = $request->send();
+            $totalTime = microtime(true) - $start;
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
@@ -77,7 +79,8 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             $response->code,
             ProtocolVersionExtractor::extract($response->raw_headers),
             $response->headers->toArray(),
-            BodyNormalizer::normalize($response->body, $internalRequest->getMethod())
+            BodyNormalizer::normalize($response->body, $internalRequest->getMethod()),
+            ['duration' => $totalTime]
         );
     }
 }
