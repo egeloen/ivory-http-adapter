@@ -94,8 +94,8 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
             $response->getStatusCode(),
             sprintf('%.1f', $response->getProtocolVersion()),
             HeadersNormalizer::normalize($response->getHeaders()),
-            BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod(),
-            array('duration' => $totalTime))
+            BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod()),
+            array('duration' => $totalTime)
         );
     }
 }

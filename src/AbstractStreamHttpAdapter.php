@@ -55,8 +55,8 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             StatusCodeExtractor::extract($headers),
             ProtocolVersionExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
-            BodyNormalizer::normalize($body, $internalRequest->getMethod(),
-            array('duration' => $totalTime))
+            BodyNormalizer::normalize($body, $internalRequest->getMethod()),
+            array('duration' => $totalTime)
         );
     }
 

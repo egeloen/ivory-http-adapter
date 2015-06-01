@@ -80,7 +80,7 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
             ProtocolVersionExtractor::extract($response->raw_headers),
             $response->headers->toArray(),
             BodyNormalizer::normalize($response->body, $internalRequest->getMethod()),
-            ['duration' => $totalTime]
+            array('duration' => $totalTime)
         );
     }
 }

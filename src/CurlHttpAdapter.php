@@ -202,8 +202,8 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
             StatusCodeExtractor::extract($headers),
             ProtocolVersionExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
-            BodyNormalizer::normalize(substr($data, $headersSize), $internalRequest->getMethod(),
-            array('duration' => curl_getinfo($curl, CURLINFO_TOTAL_TIME) * 1000))
+            BodyNormalizer::normalize(substr($data, $headersSize), $internalRequest->getMethod()),
+            array('duration' => curl_getinfo($curl, CURLINFO_TOTAL_TIME) * 1000)
         );
     }
 
