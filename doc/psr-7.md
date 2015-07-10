@@ -1,11 +1,11 @@
 # PSR-7 (Http)
 
 For http messaging, the library is based on the [PSR-7 Standard](https://github.com/php-fig/fig-standards/blob/master/proposed/http-message.md) 
-by using the [phly/http](https://github.com/phly/http) package.
+by using the [zendframework/zend-diactoros](https://github.com/zendframework/zend-diactoros) package.
 
 ## Factory
 
-The PSR-7 only defines interfaces and phly/http only defines implementation. The library is shipped with a factory 
+The PSR-7 only defines interfaces and zendframework/zend-diactoros only defines implementation. The library is shipped with a factory 
 which ease the creation of requests/responses. As explained in the configuration [doc](/doc/configuration.md#messafe-factory),
 the requests/responses are created through a factory, so, if you want to create any PSR-7 objects, it is recommended 
 to use the following API:
@@ -41,7 +41,7 @@ $response = $messageFactory->createResponse(
 
 ## Message
 
-The message implementation is based on `Phly\Http\MessageTrait` with some features on top of it through the 
+The message implementation is based on `Zend\Diactoros\MessageTrait` with some features on top of it through the 
 `Ivory\HttpAdapter\Message\MessageTrait` such as parameters. Basically, parameters are arbitrary values that you can 
 store in your message. They are mostly used by the event system in order to store additional informations.
 
@@ -57,7 +57,7 @@ $newMessage = $message->withoutParameter($name);
 
 ## Request
 
-The request is based on `Phly\Http\Request` with additionally the Ivory message features. 
+The request is based on `Zend\Diactoros\Request` with additionally the Ivory message features. 
 
 ## Internal Request
 
@@ -97,8 +97,8 @@ $newInternalRequest = $internalRequest->withoutFile('file');
 
 ## Response
 
-The response is based on `Phly\Http\Response` with additionally the Ivory message features. 
+The response is based on `Zend\Diactoros\Response` with additionally the Ivory message features. 
 
 ## Stream
 
-The response is based on `Phly\Http\Stream`.
+The response is based on `Zend\Diactoros\Stream`.

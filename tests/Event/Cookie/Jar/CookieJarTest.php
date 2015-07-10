@@ -13,7 +13,7 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
-use Phly\Http\Uri;
+use Zend\Diactoros\Uri;
 
 /**
  * Cookie jar test.

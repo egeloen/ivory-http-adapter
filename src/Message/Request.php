@@ -11,14 +11,14 @@
 
 namespace Ivory\HttpAdapter\Message;
 
-use Phly\Http\Request as PhlyRequest;
+use  Zend\Diactoros\Request as DiactorosRequest;
 
 /**
  * Request.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class Request extends PhlyRequest implements RequestInterface
+class Request extends DiactorosRequest implements RequestInterface
 {
     use MessageTrait;
 
