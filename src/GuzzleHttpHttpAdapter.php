@@ -15,6 +15,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Event\CompleteEvent;
 use GuzzleHttp\Event\ErrorEvent;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
@@ -57,7 +58,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
     {
         try {
             $response = $this->client->send($this->createRequest($internalRequest));
-        } catch (\Exception $e) {
+        } catch (RequestException $e) {
             throw HttpAdapterException::cannotFetchUri(
                 $e->getRequest()->getUrl(),
                 $this->getName(),
