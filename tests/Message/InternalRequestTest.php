@@ -48,7 +48,7 @@ class InternalRequestTest extends \PHPUnit_Framework_TestCase
     public function testDefaultState()
     {
         $this->assertEmpty((string) $this->internalRequest->getUri());
-        $this->assertNull($this->internalRequest->getMethod());
+        $this->assertEmpty($this->internalRequest->getMethod());
         $this->assertEmpty($this->internalRequest->getHeaders());
         $this->assertEmpty((string) $this->internalRequest->getBody());
         $this->assertEmpty($this->internalRequest->getDatas());

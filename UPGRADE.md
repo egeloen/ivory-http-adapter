@@ -2,6 +2,8 @@
 
 ### 0.7 to 0.8
 
+ * The [phly/http](https://github.com/phly/http) has been replaced by
+   [zendframework/zend-diactoros](https://github.com/zendframework/zend-diactoros).
  * The `Ivory\HttpAdapter\Message\Stream\AbstractStream`, `Ivory\HttpAdapter\Message\Stream\GuzzleStream` and 
    `Ivory\HttpAdapter\Message\Stream\GuzzleHttpStream` have been removed. 
  * The CakePHP 2.x support has been dropped in favor of the 3.x one.

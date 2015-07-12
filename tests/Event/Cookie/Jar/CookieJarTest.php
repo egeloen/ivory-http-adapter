@@ -13,7 +13,6 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
-use Phly\Http\Uri;
 
 /**
  * Cookie jar test.
@@ -68,8 +67,8 @@ class CookieJarTest extends AbstractCookieJarTest
 
     public function testSetCookies()
     {
-        $this->cookieJar->setCookies(array($this->createCookieMock()));
-        $this->cookieJar->setCookies($cookies = array($this->createCookieMock()));
+        $this->cookieJar->setCookies([$this->createCookieMock()]);
+        $this->cookieJar->setCookies($cookies = [$this->createCookieMock()]);
 
         $this->assertTrue($this->cookieJar->hasCookies());
         $this->assertSame($cookies, $this->cookieJar->getCookies());
@@ -80,8 +79,8 @@ class CookieJarTest extends AbstractCookieJarTest
 
     public function testAddCookies()
     {
-        $this->cookieJar->setCookies($cookies1 = array($this->createCookieMock()));
-        $this->cookieJar->addCookies($cookies2 = array($this->createCookieMock()));
+        $this->cookieJar->setCookies($cookies1 = [$this->createCookieMock()]);
+        $this->cookieJar->addCookies($cookies2 = [$this->createCookieMock()]);
 
         $this->assertTrue($this->cookieJar->hasCookies());
         $this->assertSame(array_merge($cookies1, $cookies2), $this->cookieJar->getCookies());
@@ -92,7 +91,7 @@ class CookieJarTest extends AbstractCookieJarTest
 
     public function testRemoveCookies()
     {
-        $this->cookieJar->setCookies($cookies = array($this->createCookieMock()));
+        $this->cookieJar->setCookies($cookies = [$this->createCookieMock()]);
         $this->cookieJar->removeCookies($cookies);
 
         $this->assertFalse($this->cookieJar->hasCookies());
@@ -108,10 +107,10 @@ class CookieJarTest extends AbstractCookieJarTest
 
         $this->assertTrue($this->cookieJar->hasCookies());
         $this->assertTrue($this->cookieJar->hasCookie($cookie));
-        $this->assertSame(array($cookie), $this->cookieJar->getCookies());
+        $this->assertSame([$cookie], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($cookie), iterator_to_array($this->cookieJar));
+        $this->assertSame([$cookie], iterator_to_array($this->cookieJar));
     }
 
     public function testAddCookieWithoutName()
@@ -155,10 +154,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->assertTrue($this->cookieJar->hasCookies());
         $this->assertTrue($this->cookieJar->hasCookie($cookie1));
         $this->assertTrue($this->cookieJar->hasCookie($cookie2));
-        $this->assertSame(array($cookie1, $cookie2), $this->cookieJar->getCookies());
+        $this->assertSame([$cookie1, $cookie2], $this->cookieJar->getCookies());
 
         $this->assertCount(2, $this->cookieJar);
-        $this->assertSame(array($cookie1, $cookie2), iterator_to_array($this->cookieJar));
+        $this->assertSame([$cookie1, $cookie2], iterator_to_array($this->cookieJar));
     }
 
     public function testAddCookieComparable()
@@ -178,10 +177,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->assertTrue($this->cookieJar->hasCookies());
         $this->assertTrue($this->cookieJar->hasCookie($cookie1));
         $this->assertFalse($this->cookieJar->hasCookie($cookie2));
-        $this->assertSame(array($cookie1), $this->cookieJar->getCookies());
+        $this->assertSame([$cookie1], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($cookie1), iterator_to_array($this->cookieJar));
+        $this->assertSame([$cookie1], iterator_to_array($this->cookieJar));
     }
 
     public function testAddCookieComparableLessExpired()
@@ -210,10 +209,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->assertTrue($this->cookieJar->hasCookies());
         $this->assertFalse($this->cookieJar->hasCookie($cookie1));
         $this->assertTrue($this->cookieJar->hasCookie($cookie2));
-        $this->assertSame(array($cookie2), $this->cookieJar->getCookies());
+        $this->assertSame([$cookie2], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($cookie2), iterator_to_array($this->cookieJar));
+        $this->assertSame([$cookie2], iterator_to_array($this->cookieJar));
     }
 
     public function testAddCookieComparableWithDifferentValue()
@@ -242,10 +241,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->assertTrue($this->cookieJar->hasCookies());
         $this->assertFalse($this->cookieJar->hasCookie($cookie1));
         $this->assertTrue($this->cookieJar->hasCookie($cookie2));
-        $this->assertSame(array($cookie2), $this->cookieJar->getCookies());
+        $this->assertSame([$cookie2], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($cookie2), iterator_to_array($this->cookieJar));
+        $this->assertSame([$cookie2], iterator_to_array($this->cookieJar));
     }
 
     public function testRemoveCookie()
@@ -294,10 +293,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->cookieJar->clear($domain);
 
         $this->assertTrue($this->cookieJar->hasCookies());
-        $this->assertSame(array($unmatchCookie), $this->cookieJar->getCookies());
+        $this->assertSame([$unmatchCookie], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($unmatchCookie), iterator_to_array($this->cookieJar));
+        $this->assertSame([$unmatchCookie], iterator_to_array($this->cookieJar));
     }
 
     public function testClearCookiesByPath()
@@ -321,10 +320,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->cookieJar->clear(null, $path);
 
         $this->assertTrue($this->cookieJar->hasCookies());
-        $this->assertSame(array($unmatchCookie), $this->cookieJar->getCookies());
+        $this->assertSame([$unmatchCookie], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($unmatchCookie), iterator_to_array($this->cookieJar));
+        $this->assertSame([$unmatchCookie], iterator_to_array($this->cookieJar));
     }
 
     public function testClearCookiesByName()
@@ -346,10 +345,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->cookieJar->clear(null, null, $name);
 
         $this->assertTrue($this->cookieJar->hasCookies());
-        $this->assertSame(array($unmatchCookie), $this->cookieJar->getCookies());
+        $this->assertSame([$unmatchCookie], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($unmatchCookie), iterator_to_array($this->cookieJar));
+        $this->assertSame([$unmatchCookie], iterator_to_array($this->cookieJar));
     }
 
     public function testClearCookiesByDomainAndPathAndName()
@@ -389,10 +388,10 @@ class CookieJarTest extends AbstractCookieJarTest
         $this->cookieJar->clean();
 
         $this->assertTrue($this->cookieJar->hasCookies());
-        $this->assertSame(array($cookie), $this->cookieJar->getCookies());
+        $this->assertSame([$cookie], $this->cookieJar->getCookies());
 
         $this->assertCount(1, $this->cookieJar);
-        $this->assertSame(array($cookie), iterator_to_array($this->cookieJar));
+        $this->assertSame([$cookie], iterator_to_array($this->cookieJar));
     }
 
     public function testPopulate()
@@ -442,17 +441,17 @@ class CookieJarTest extends AbstractCookieJarTest
             ->expects($this->once())
             ->method('getHeader')
             ->with($this->identicalTo('Set-Cookie'))
-            ->will($this->returnValue(array('foo', 'bar')));
+            ->will($this->returnValue(['foo', 'bar']));
 
         $this->cookieJar->setCookieFactory($cookieFactory = $this->createCookieFactoryMock());
 
         $cookieFactory
             ->expects($this->exactly(2))
             ->method('parse')
-            ->will($this->returnValueMap(array(
-                array('foo', $cookie1 = $this->createCookieMock()),
-                array('bar', $cookie2 = $this->createCookieMock()),
-            )));
+            ->will($this->returnValueMap([
+                ['foo', $cookie1 = $this->createCookieMock()],
+                ['bar', $cookie2 = $this->createCookieMock()],
+            ]));
 
         $cookie1
             ->expects($this->once())
@@ -469,17 +468,23 @@ class CookieJarTest extends AbstractCookieJarTest
         $cookie2
             ->expects($this->once())
             ->method('setAttribute')
-            ->with($this->identicalTo(CookieInterface::ATTR_DOMAIN), $this->identicalTo('egeloen.fr'));
+            ->with($this->identicalTo(CookieInterface::ATTR_DOMAIN), $this->identicalTo($domain = 'egeloen.fr'));
+
+        $uri = $this->createUriMock();
+        $uri
+            ->expects($this->once())
+            ->method('getHost')
+            ->will($this->returnValue($domain));
 
         $request = $this->createRequestMock();
         $request
             ->expects($this->any())
             ->method('getUri')
-            ->will($this->returnValue(new Uri('http://egeloen.fr/path')));
+            ->will($this->returnValue($uri));
 
         $this->cookieJar->extract($request, $response);
 
-        $this->assertSame(array($cookie1, $cookie2), $this->cookieJar->getCookies());
+        $this->assertSame([$cookie1, $cookie2], $this->cookieJar->getCookies());
     }
 
     /**
@@ -500,5 +505,15 @@ class CookieJarTest extends AbstractCookieJarTest
     private function createResponseMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
+
+    /**
+     * Creates an uri mock.
+     *
+     * @return \Psr\Http\Message\UriInterface|\PHPUnit_Framework_MockObject_MockObject The uri mock.
+     */
+    private function createUriMock()
+    {
+        return $this->getMock('Psr\Http\Message\UriInterface');
     }
 }

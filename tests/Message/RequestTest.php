@@ -52,7 +52,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     public function testDefaultState()
     {
         $this->assertEmpty((string) $this->request->getUri());
-        $this->assertNull($this->request->getMethod());
+        $this->assertEmpty($this->request->getMethod());
         $this->assertEmpty($this->request->getHeaders());
         $this->assertEmpty((string) $this->request->getBody());
         $this->assertEmpty($this->request->getParameters());
