@@ -2,6 +2,8 @@
 
 ### 0.8.0 (????-??-??)
 
+ * 6ac4d3b - [Travis] Add Symfony 2.7 to stable + Add Symfony 2.8.*@dev as unstable
+ * 4f35c0e - Replace phly/http by zendframework/zend-diactoros
  * fbc3c4d - [Message][Stream] Remove guzzle streams
  * 9de52ee - Rewind stream before setting it on the response
  * 9a29e09 - Rely on PHP built in server instead of Nginx or Apache
