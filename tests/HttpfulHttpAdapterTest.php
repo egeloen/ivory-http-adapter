@@ -14,7 +14,7 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\HttpfulHttpAdapter;
 
 /**
- * Description of HttpfulHttpAdapterTest.
+ * Httpful http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */

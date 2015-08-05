@@ -78,6 +78,27 @@ use Ivory\HttpAdapter\HttpfulHttpAdapter;
 $httpAdapter = new HttpfulHttpAdapter();
 ```
 
+## Mock
+
+``` php
+use Ivory\HttpAdapter\MockHttpAdapter;
+use Ivory\HttpAdapter\Message\RequestInterface;
+
+$mockHttpAdapter = new MockHttpAdapter();
+
+$expectedResponse = $messageFactory->getConfiguration()->getMessageFactory()->createResponse(
+    200,
+    RequestInterface::PROTOCOL_VERSION_1_1,
+    ['Content-Type: application/json'],
+    '{"hello":"world"}'
+);
+
+$mockHttpAdapter->appendResponse($expectedResponse);
+
+$response = $mockHttpAdapter->send('http://www.google.com');
+// $response === $expectedResponse
+```
+
 ## Pecl Http
 
 ``` php
