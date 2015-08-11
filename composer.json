@@ -18,8 +18,7 @@
         "cakephp/cakephp": "^3.0.3",
         "ext-curl": "*",
         "guzzle/guzzle": "^3.9.4@dev",
-        "guzzlehttp/guzzle": "^4.1.4|^5.0",
-        "guzzlehttp/streams": "^1.5|^2.0|^3.0",
+        "guzzlehttp/guzzle": "^4.1.4|^5.0|^6.0",
         "kriswallsmith/buzz": "^0.13",
         "nategood/httpful": "^0.2.17",
         "phpunit/phpunit": "^4.0",
@@ -29,7 +28,7 @@
         "react/dns": "^0.4.1",
         "satooshi/php-coveralls": "^0.6",
         "symfony/event-dispatcher": "^2.0",
-        "zendframework/zendframework1": "^1.12.9",
+        "zendframework/zendframework1": ">=1.12.9,<=1.12.14|^1.12.16",
         "zendframework/zend-http": "^2.3.4"
     },
     "repositories": [

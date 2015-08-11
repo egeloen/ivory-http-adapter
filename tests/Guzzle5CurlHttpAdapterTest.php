@@ -11,15 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use GuzzleHttp\Adapter\Curl\CurlAdapter;
 use GuzzleHttp\Ring\Client\CurlHandler;
 
 /**
- * Guzzle http curl http adapter test.
+ * Guzzle 5 curl http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class GuzzleHttpCurlHttpAdapterTest extends AbstractGuzzleHttpCurlHttpAdapterTest
+class Guzzle5CurlHttpAdapterTest extends AbstractGuzzle5CurlHttpAdapterTest
 {
     /**
      * {@inheritdoc}
@@ -36,12 +35,8 @@ class GuzzleHttpCurlHttpAdapterTest extends AbstractGuzzleHttpCurlHttpAdapterTes
     /**
      * {@inheritdoc}
      */
-    protected function createAdapter()
+    protected function createHandler()
     {
-        if (class_exists('GuzzleHttp\Ring\Client\CurlHandler')) {
-            return new CurlHandler();
-        }
-
-        return new CurlAdapter($this->createMessageFactory());
+        return new CurlHandler();
     }
 }

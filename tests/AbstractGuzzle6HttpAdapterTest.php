@@ -11,21 +11,22 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use Ivory\HttpAdapter\GuzzleHttpAdapter;
+use GuzzleHttp\Client;
+use Ivory\HttpAdapter\Guzzle6HttpAdapter;
 
 /**
- * Guzzle http adapter test.
+ * Abstract guzzle 6 http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class GuzzleHttpAdapterTest extends AbstractHttpAdapterTest
+abstract class AbstractGuzzle6HttpAdapterTest extends AbstractHttpAdapterTest
 {
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        if (!function_exists('curl_init')) {
+        if (!class_exists('GuzzleHttp\Handler\CurlHandler')) {
             $this->markTestSkipped();
         }
 
@@ -34,7 +35,7 @@ class GuzzleHttpAdapterTest extends AbstractHttpAdapterTest
 
     public function testGetName()
     {
-        $this->assertSame('guzzle', $this->httpAdapter->getName());
+        $this->assertSame('guzzle6', $this->httpAdapter->getName());
     }
 
     /**
@@ -42,6 +43,13 @@ class GuzzleHttpAdapterTest extends AbstractHttpAdapterTest
      */
     protected function createHttpAdapter()
     {
-        return new GuzzleHttpAdapter();
+        return new Guzzle6HttpAdapter(new Client(array('handler' => $this->createHandler())));
     }
+
+    /**
+     * Creates a guzzle 6 handler.
+     *
+     * @return object The guzzle 6 handler.
+     */
+    abstract protected function createHandler();
 }

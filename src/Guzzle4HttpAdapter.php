@@ -21,17 +21,17 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Guzzle http http adapter.
+ * Guzzle 4 http adapter.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
+class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
 {
     /** @var \GuzzleHttp\ClientInterface */
     private $client;
 
     /**
-     * Creates a guzzle http http adapter.
+     * Creates a guzzle 5 http adapter.
      *
      * @param \GuzzleHttp\ClientInterface|null               $client        The guzzle 4 client.
      * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
@@ -48,7 +48,7 @@ class GuzzleHttpHttpAdapter extends AbstractCurlHttpAdapter
      */
     public function getName()
     {
-        return 'guzzle_http';
+        return 'guzzle4';
     }
 
     /**

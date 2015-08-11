@@ -128,7 +128,7 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
             $this->httpAdapterProvider(),
             array(
                 array(HttpAdapterFactory::CURL),
-                array(HttpAdapterFactory::GUZZLE),
+                array(HttpAdapterFactory::GUZZLE3),
                 array(HttpAdapterFactory::HTTPFUL),
             )
         );
@@ -158,12 +158,20 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
 
         if (function_exists('curl_init')) {
             $adapters[] = array(HttpAdapterFactory::CURL, 'Ivory\HttpAdapter\CurlHttpAdapter');
-            $adapters[] = array(HttpAdapterFactory::GUZZLE, 'Ivory\HttpAdapter\GuzzleHttpAdapter');
+            $adapters[] = array(HttpAdapterFactory::GUZZLE3, 'Ivory\HttpAdapter\Guzzle3HttpAdapter');
             $adapters[] = array(HttpAdapterFactory::HTTPFUL, 'Ivory\HttpAdapter\HttpfulHttpAdapter');
         }
 
-        if (class_exists('GuzzleHttp\Client')) {
-            $adapters[] = array(HttpAdapterFactory::GUZZLE_HTTP, 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter');
+        if (class_exists('GuzzleHttp\Adapter\Curl\CurlAdapter')) {
+            $adapters[] = array(HttpAdapterFactory::GUZZLE4, 'Ivory\HttpAdapter\Guzzle4HttpAdapter');
+        }
+
+        if (class_exists('GuzzleHttp\Ring\Client\CurlHandler')) {
+            $adapters[] = array(HttpAdapterFactory::GUZZLE5, 'Ivory\HttpAdapter\Guzzle5HttpAdapter');
+        }
+
+        if (class_exists('GuzzleHttp\Handler\CurlHandler')) {
+            $adapters[] = array(HttpAdapterFactory::GUZZLE6, 'Ivory\HttpAdapter\Guzzle6HttpAdapter');
         }
 
         if (class_exists('http\Client')) {
@@ -188,10 +196,14 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function guessProvider()
     {
-        if (class_exists('GuzzleHttp\Client')) {
-            $httpAdapter = 'Ivory\HttpAdapter\GuzzleHttpHttpAdapter';
+        if (class_exists('GuzzleHttp\Handler\CurlHandler')) {
+            $httpAdapter = 'Ivory\HttpAdapter\Guzzle6HttpAdapter';
+        } elseif (class_exists('GuzzleHttp\Ring\Client\CurlHandler')) {
+            $httpAdapter = 'Ivory\HttpAdapter\Guzzle5HttpAdapter';
+        } elseif (class_exists('GuzzleHttp\Adapter\Curl\CurlAdapter')) {
+            $httpAdapter = 'Ivory\HttpAdapter\Guzzle4HttpAdapter';
         } elseif (function_exists('curl_init')) {
-            $httpAdapter = 'Ivory\HttpAdapter\GuzzleHttpAdapter';
+            $httpAdapter = 'Ivory\HttpAdapter\Guzzle3HttpAdapter';
         } elseif (class_exists('Zend\Http\Client')) {
             $httpAdapter = 'Ivory\HttpAdapter\Zend2HttpAdapter';
         } else {

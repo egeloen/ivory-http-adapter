@@ -2,6 +2,13 @@
 
 ### 0.7 to 0.8
 
+ * The `Ivory\HttpAdapter\GuzzleHttpAdapter` has been renamed to `Ivory\HttpAdapter\Guzzle3HttpAdapter` and its name
+   has been renamed from `guzzle` to `guzzle3`.
+ * The `Ivory\HttpAdapter\GuzzleHttpHttpAdapter` has been renamed to `Ivory\HttpAdapter\Guzzle5HttpAdapter` and its
+   name has been renamed from `guzzle_http` to `guzzle5`.
+ * The `Ivory\HttpAdapter\Guzzle4HttpAdapter` is now an alias of thz Guzzle 5 http adapter. Its name is `guzzle4`.
+ * The `Ivory\HttpAdapter\HttpAdapterFactory::GUZZLE` constant has been renamed to `GUZZLE3`.
+ * The `Ivory\HttpAdapter\HttpAdapterFactory::GUZZLE_HTTP` constant has been renamed to `GUZZLE4` and `GUZZLE5`.
  * The [phly/http](https://github.com/phly/http) has been replaced by
    [zendframework/zend-diactoros](https://github.com/zendframework/zend-diactoros).
  * The `Ivory\HttpAdapter\Message\Stream\AbstractStream`, `Ivory\HttpAdapter\Message\Stream\GuzzleStream` and 

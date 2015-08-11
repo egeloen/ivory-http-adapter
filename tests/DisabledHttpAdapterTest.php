@@ -16,7 +16,7 @@ use Buzz\Client\Curl;
 use Buzz\Client\MultiCurl;
 use Ivory\HttpAdapter\BuzzHttpAdapter;
 use Ivory\HttpAdapter\CurlHttpAdapter;
-use Ivory\HttpAdapter\GuzzleHttpAdapter;
+use Ivory\HttpAdapter\Guzzle3HttpAdapter;
 use Ivory\HttpAdapter\HttpfulHttpAdapter;
 
 /**
@@ -61,7 +61,7 @@ class DisabledHttpAdapterTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->setExpectedException('\Ivory\HttpAdapter\HttpAdapterException');
-        new GuzzleHttpAdapter();
+        new Guzzle3HttpAdapter();
     }
 
     public function testHttpfulHttpAdapterWithoutCurl()

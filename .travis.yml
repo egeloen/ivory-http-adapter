@@ -12,6 +12,7 @@ env:
     global:
         - TEST_SERVER=http://127.0.0.1:10000/server.php
         - SYMFONY_VERSION=2.3.*
+        - GUZZLE_VERSION=6.*
         - COMPOSER_PREFER_LOWEST=false
         - ENABLE_CURL=true
 
@@ -24,7 +25,7 @@ install:
     - if [[ "$TRAVIS_PHP_VERSION" = "5.6" ]]; then echo "always_populate_raw_post_data = -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
     - php -S 127.0.0.1:10000 -t tests/Fixtures > /dev/null 2>&1 &
     - composer require symfony/event-dispatcher:${SYMFONY_VERSION} --no-update --dev
-    - if [[ $COMPOSER_PREFER_LOWEST = true ]]; then composer remove guzzlehttp/ringphp --no-update --dev; fi
+    - if [[ "$GUZZLE_VERSION" != "6.*" ]]; then composer require guzzlehttp/guzzle:${GUZZLE_VERSION} --no-update --dev; fi
     - if [[ "$SYMFONY_VERSION" = *dev* ]]; then sed -i "s/\"MIT\"/\"MIT\",\"minimum-stability\":\"dev\"/g" composer.json; fi
     - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST = true ]]; then echo "--prefer-lowest --prefer-stable"; fi`
 
@@ -36,6 +37,10 @@ after_script:
 
 matrix:
     include:
+        - php: 5.6
+          env: GUZZLE_VERSION=4.*
+        - php: 5.6
+          env: GUZZLE_VERSION=5.*
         - php: 5.4
           env: COMPOSER_PREFER_LOWEST=true
         - php: 5.6

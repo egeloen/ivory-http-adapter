@@ -13,21 +13,21 @@ namespace Ivory\Tests\HttpAdapter;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\MessageFactory;
-use Ivory\HttpAdapter\GuzzleHttpHttpAdapter;
+use Ivory\HttpAdapter\Guzzle4HttpAdapter;
 
 /**
- * Abstract guzzle http http adapter test.
+ * Abstract guzzle 4 http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractGuzzleHttpHttpAdapterTest extends AbstractHttpAdapterTest
+abstract class AbstractGuzzle4HttpAdapterTest extends AbstractHttpAdapterTest
 {
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        if (!class_exists('GuzzleHttp\Client')) {
+        if (!class_exists('GuzzleHttp\Adapter\Curl\CurlAdapter')) {
             $this->markTestSkipped();
         }
 
@@ -36,7 +36,7 @@ abstract class AbstractGuzzleHttpHttpAdapterTest extends AbstractHttpAdapterTest
 
     public function testGetName()
     {
-        $this->assertSame('guzzle_http', $this->httpAdapter->getName());
+        $this->assertSame('guzzle4', $this->httpAdapter->getName());
     }
 
     /**
@@ -44,13 +44,13 @@ abstract class AbstractGuzzleHttpHttpAdapterTest extends AbstractHttpAdapterTest
      */
     protected function createHttpAdapter()
     {
-        return new GuzzleHttpHttpAdapter(new Client(array('adapter' => $this->createAdapter())));
+        return new Guzzle4HttpAdapter(new Client(array('adapter' => $this->createAdapter())));
     }
 
     /**
-     * Creates a guzzle4 adapter.
+     * Creates a guzzle 4 adapter.
      *
-     * @return \GuzzleHttp\Adapter\AdapterInterface The guzzle4 adapter.
+     * @return \GuzzleHttp\Adapter\AdapterInterface The guzzle 4 adapter.
      */
     abstract protected function createAdapter();
 

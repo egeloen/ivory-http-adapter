@@ -19,11 +19,11 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Guzzle http adapter.
+ * Guzzle 3 http adapter.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
+class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
 {
     /** @var \Guzzle\Http\ClientInterface */
     private $client;
@@ -46,7 +46,7 @@ class GuzzleHttpAdapter extends AbstractCurlHttpAdapter
      */
     public function getName()
     {
-        return 'guzzle';
+        return 'guzzle3';
     }
 
     /**

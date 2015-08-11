@@ -11,25 +11,20 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
-use GuzzleHttp\Adapter\StreamAdapter;
 use GuzzleHttp\Ring\Client\StreamHandler;
 
 /**
- * Guzzle http stream http adapter test.
+ * Guzzle 5 stream http adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class GuzzleHttpStreamHttpAdapterTest extends AbstractGuzzleHttpHttpAdapterTest
+class Guzzle5StreamHttpAdapterTest extends AbstractGuzzle5HttpAdapterTest
 {
     /**
      * {@inheritdoc}
      */
-    protected function createAdapter()
+    protected function createHandler()
     {
-        if (class_exists('GuzzleHttp\Ring\Client\StreamHandler')) {
-            return new StreamHandler();
-        }
-
-        return new StreamAdapter($this->createMessageFactory());
+        return new StreamHandler();
     }
 }
