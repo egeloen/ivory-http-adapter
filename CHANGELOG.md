@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.8.0 (????-??-??)
+### 0.8.0 (2015-08-12)
 
  * 2d8061b - Add guzzle 6 support
  * 26d6b7b - Add mock http adapter
