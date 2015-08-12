@@ -2,6 +2,7 @@
 
 ### 0.8.0 (????-??-??)
 
+ * 2d8061b - Add guzzle 6 support
  * 26d6b7b - Add mock http adapter
  * 1cd6ee4 - [GuzzleHttp] Catch an exception that is able to provide a request
  * 6ac4d3b - [Travis] Add Symfony 2.7 to stable + Add Symfony 2.8.*@dev as unstable
