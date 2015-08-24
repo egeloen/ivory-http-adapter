@@ -38,9 +38,10 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $uri = $internalRequest->getUri();
+        $https = $uri->getScheme() === 'https';
 
         $socket = @stream_socket_client(
-            ($uri->getScheme() === 'https' ? 'ssl' : 'tcp').'://'.$uri->getHost().':'.($uri->getPort() ?: 80),
+            ($https ? 'ssl' : 'tcp').'://'.$uri->getHost().':'.($uri->getPort() ?: ($https ? 443 : 80)),
             $errno,
             $errstr,
             $this->getConfiguration()->getTimeout()
