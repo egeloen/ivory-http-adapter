@@ -108,7 +108,7 @@ use Ivory\HttpAdapter\Message\RequestInterface;
 
 $mockHttpAdapter = new MockHttpAdapter();
 
-$expectedResponse = $messageFactory->getConfiguration()->getMessageFactory()->createResponse(
+$expectedResponse = $mockHttpAdapter->getConfiguration()->getMessageFactory()->createResponse(
     200,
     RequestInterface::PROTOCOL_VERSION_1_1,
     ['Content-Type: application/json'],
