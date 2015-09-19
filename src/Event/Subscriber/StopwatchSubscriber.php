@@ -70,7 +70,9 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function onRequestSent(RequestSentEvent $event)
     {
-        $this->stopwatch->stop($this->getStopwatchName($event->getHttpAdapter(), $event->getRequest()));
+        if (!$event->hasException()) {
+            $this->stopwatch->stop($this->getStopwatchName($event->getHttpAdapter(), $event->getRequest()));
+        }
     }
 
     /**
@@ -116,6 +118,12 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
+        foreach ($event->getResponses() as $response) {
+            $this->stopwatch->stop(
+                $this->getStopwatchName($event->getHttpAdapter(), $response->getParameter('request'))
+            );
+        }
+
         foreach ($event->getExceptions() as $exception) {
             $this->stopwatch->stop(
                 $this->getStopwatchName($event->getHttpAdapter(), $exception->getRequest())
@@ -128,14 +136,14 @@ class StopwatchSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::REQUEST_CREATED       => array('onRequestCreated', 10000),
-            Events::REQUEST_SENT          => array('onRequestSent', 10000),
-            Events::REQUEST_ERRORED       => array('onRequestErrored', 10000),
-            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 10000),
-            Events::MULTI_REQUEST_SENT    => array('onMultiRequestSent', 10000),
-            Events::MULTI_REQUEST_ERRORED => array('onMultiResponseErrored', 10000),
-        );
+        return [
+            Events::REQUEST_CREATED       => ['onRequestCreated', 10000],
+            Events::REQUEST_SENT          => ['onRequestSent', -10000],
+            Events::REQUEST_ERRORED       => ['onRequestErrored', -10000],
+            Events::MULTI_REQUEST_CREATED => ['onMultiRequestCreated', 10000],
+            Events::MULTI_REQUEST_SENT    => ['onMultiRequestSent', -10000],
+            Events::MULTI_REQUEST_ERRORED => ['onMultiResponseErrored', -10000],
+        ];
     }
 
     /**

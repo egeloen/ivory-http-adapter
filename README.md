@@ -47,6 +47,7 @@ which defines how http message should be implemented.
  - [Throw exceptions for errored responses](/doc/events.md#status-code)
  - [Retry errored requests](/doc/events.md#retry)
  - [Follow redirects](/doc/events.md#redirect)
+ - [Cache responses and exceptions](/doc/events.md#cache)
  - [Manage cookies](/doc/events.md#cookie)
 
 ## Testing

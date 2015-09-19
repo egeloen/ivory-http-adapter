@@ -21,7 +21,7 @@ use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 class RequestCreatedEventTest extends AbstractEventTest
 {
     /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
-    protected $request;
+    private $request;
 
     /**
      * {@inheritdoc}
@@ -48,6 +48,10 @@ class RequestCreatedEventTest extends AbstractEventTest
         parent::setUp();
 
         $this->assertSame($this->request, $this->event->getRequest());
+        $this->assertFalse($this->event->hasResponse());
+        $this->assertNull($this->event->getResponse());
+        $this->assertFalse($this->event->hasException());
+        $this->assertNull($this->event->getException());
     }
 
     public function testSetRequest()
@@ -55,6 +59,22 @@ class RequestCreatedEventTest extends AbstractEventTest
         $this->event->setRequest($request = $this->createRequestMock());
 
         $this->assertSame($request, $this->event->getRequest());
+    }
+
+    public function testSetResponse()
+    {
+        $this->event->setResponse($response = $this->createResponseMock());
+
+        $this->assertTrue($this->event->hasResponse());
+        $this->assertSame($response, $this->event->getResponse());
+    }
+
+    public function testSetException()
+    {
+        $this->event->setException($exception = $this->createExceptionMock());
+
+        $this->assertTrue($this->event->hasException());
+        $this->assertSame($exception, $this->event->getException());
     }
 
     /**
@@ -73,5 +93,25 @@ class RequestCreatedEventTest extends AbstractEventTest
     private function createRequestMock()
     {
         return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+    }
+
+    /**
+     * Creates a response mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createResponseMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+    }
+
+    /**
+     * Creates an exception mock.
+     *
+     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createExceptionMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 }

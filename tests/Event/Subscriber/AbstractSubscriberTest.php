@@ -11,6 +11,7 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
+use Ivory\HttpAdapter\ConfigurationInterface;
 use Ivory\HttpAdapter\Event\RequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
@@ -20,6 +21,7 @@ use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
@@ -94,7 +96,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent The multi request created event.
      */
-    protected function createMultiRequestCreatedEvent(HttpAdapterInterface $httpAdapter = null, array $requests = array())
+    protected function createMultiRequestCreatedEvent(HttpAdapterInterface $httpAdapter = null, array $requests = [])
     {
         return new MultiRequestCreatedEvent($httpAdapter ?: $this->createHttpAdapterMock(), $requests);
     }
@@ -107,7 +109,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\Event\MultiRequestSentEvent The multi request sent event.
      */
-    protected function createMultiRequestSentEvent(HttpAdapterInterface $httpAdapter = null, array $responses = array())
+    protected function createMultiRequestSentEvent(HttpAdapterInterface $httpAdapter = null, array $responses = [])
     {
         return new MultiRequestSentEvent($httpAdapter ?: $this->createHttpAdapterMock(), $responses);
     }
@@ -117,22 +119,29 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      *
      * @param \Ivory\HttpAdapter\HttpAdapterInterface|null $httpAdapter The http adapter.
      * @param array                                        $exceptions  The exceptions.
+     * @param array                                        $responses   The responses.
      *
      * @return \Ivory\HttpAdapter\Event\MultiRequestErroredEvent The multi request errored event.
      */
     protected function createMultiRequestErroredEvent(
         HttpAdapterInterface $httpAdapter = null,
-        array $exceptions = array()
+        array $exceptions = [],
+        array $responses = []
     ) {
-        return new MultiRequestErroredEvent($httpAdapter ?: $this->createHttpAdapterMock(), $exceptions);
+        $event = new MultiRequestErroredEvent($httpAdapter ?: $this->createHttpAdapterMock(), $exceptions);
+        $event->setResponses($responses);
+
+        return $event;
     }
 
     /**
      * Creates an http adapter mock.
      *
+     * @param ConfigurationInterface|null $configuration The configuration.
+     *
      * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
      */
-    protected function createHttpAdapterMock()
+    protected function createHttpAdapterMock(ConfigurationInterface $configuration = null)
     {
         $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
         $httpAdapter
@@ -143,7 +152,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
         $httpAdapter
             ->expects($this->any())
             ->method('getConfiguration')
-            ->will($this->returnValue($this->createConfigurationMock()));
+            ->will($this->returnValue($configuration ?: $this->createConfigurationMock()));
 
         return $httpAdapter;
     }
@@ -151,11 +160,29 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * Creates a configuration mock.
      *
+     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
+     *
      * @return \Ivory\HttpAdapter\ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject The configuration mock.
      */
-    protected function createConfigurationMock()
+    protected function createConfigurationMock(MessageFactoryInterface $messageFactory = null)
     {
-        return $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
+        $configuration = $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
+        $configuration
+            ->expects($this->any())
+            ->method('getMessageFactory')
+            ->will($this->returnValue($messageFactory ?: $this->createMessageFactoryMock()));
+
+        return $configuration;
+    }
+
+    /**
+     * Creates a message factory mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
+     */
+    protected function createMessageFactoryMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }
 
     /**
@@ -229,7 +256,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      *
      * @return \Ivory\HttpAdapter\MultiHttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The multi exception mock.
      */
-    protected function createMultiExceptionMock(array $exceptions = array(), array $responses = array())
+    protected function createMultiExceptionMock(array $exceptions = [], array $responses = [])
     {
         $exception = $this->getMock('Ivory\HttpAdapter\MultiHttpAdapterException');
         $exception

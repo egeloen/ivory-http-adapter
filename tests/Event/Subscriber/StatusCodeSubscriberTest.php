@@ -144,20 +144,6 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
     /**
      * {@inheritdoc}
      */
-    protected function createHttpAdapterMock()
-    {
-        $httpAdapter = parent::createHttpAdapterMock();
-        $httpAdapter
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('name'));
-
-        return $httpAdapter;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function createRequestMock()
     {
         $request = parent::createRequestMock();

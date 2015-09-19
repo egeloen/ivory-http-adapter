@@ -3,7 +3,7 @@
 ### 0.8.1 (????-??-??)
 
  * b6e4bdf - [Socket] Fix https connection
- 
+
 ### 0.8.0 (2015-08-12)
 
  * 2d8061b - Add guzzle 6 support

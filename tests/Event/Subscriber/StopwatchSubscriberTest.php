@@ -60,19 +60,19 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
         $this->assertSame(array('onRequestCreated', 10000), $events[Events::REQUEST_CREATED]);
 
         $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
-        $this->assertSame(array('onRequestSent', 10000), $events[Events::REQUEST_SENT]);
+        $this->assertSame(array('onRequestSent', -10000), $events[Events::REQUEST_SENT]);
 
         $this->assertArrayHasKey(Events::REQUEST_ERRORED, $events);
-        $this->assertSame(array('onRequestErrored', 10000), $events[Events::REQUEST_ERRORED]);
+        $this->assertSame(array('onRequestErrored', -10000), $events[Events::REQUEST_ERRORED]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
         $this->assertSame(array('onMultiRequestCreated', 10000), $events[Events::MULTI_REQUEST_CREATED]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
-        $this->assertSame(array('onMultiRequestSent', 10000), $events[Events::MULTI_REQUEST_SENT]);
+        $this->assertSame(array('onMultiRequestSent', -10000), $events[Events::MULTI_REQUEST_SENT]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_ERRORED, $events);
-        $this->assertSame(array('onMultiResponseErrored', 10000), $events[Events::MULTI_REQUEST_ERRORED]);
+        $this->assertSame(array('onMultiResponseErrored', -10000), $events[Events::MULTI_REQUEST_ERRORED]);
     }
 
     public function testRequestCreatedEvent()
@@ -123,9 +123,21 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
     public function testMultiRequestSentEvent()
     {
         $responses = array(
-            $this->createResponseMock($this->createRequestMock()),
-            $this->createResponseMock($this->createRequestMock()),
+            $response1 = $this->createResponseMock(),
+            $response2 = $this->createResponseMock(),
         );
+
+        $response1
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($this->createRequestMock()));
+
+        $response2
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($this->createRequestMock()));
 
         $this->stopwatch
             ->expects($this->exactly(count($responses)))
@@ -142,29 +154,36 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
     {
         $exceptions = array($this->createExceptionMock(), $this->createExceptionMock());
 
+        $responses = array(
+            $response1 = $this->createResponseMock(),
+            $response2 = $this->createResponseMock(),
+        );
+
+        $response1
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($this->createRequestMock()));
+
+        $response2
+            ->expects($this->any())
+            ->method('getParameter')
+            ->with($this->identicalTo('request'))
+            ->will($this->returnValue($this->createRequestMock()));
+
         $this->stopwatch
-            ->expects($this->exactly(count($exceptions)))
+            ->expects($this->exactly(count($exceptions) + count($responses)))
             ->method('stop')
             ->withConsecutive(
+                array('ivory.http_adapter.http_adapter (uri)'),
+                array('ivory.http_adapter.http_adapter (uri)'),
                 array('ivory.http_adapter.http_adapter (uri)'),
                 array('ivory.http_adapter.http_adapter (uri)')
             );
 
-        $this->stopwatchSubscriber->onMultiResponseErrored($this->createMultiRequestErroredEvent(null, $exceptions));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createHttpAdapterMock()
-    {
-        $httpAdapter = parent::createHttpAdapterMock();
-        $httpAdapter
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('name'));
-
-        return $httpAdapter;
+        $this->stopwatchSubscriber->onMultiResponseErrored(
+            $this->createMultiRequestErroredEvent(null, $exceptions, $responses)
+        );
     }
 
     /**
@@ -179,20 +198,5 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
             ->will($this->returnValue('uri'));
 
         return $request;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createResponseMock(InternalRequestInterface $internalRequest = null)
-    {
-        $response = parent::createResponseMock();
-        $response
-            ->expects($this->any())
-            ->method('getParameter')
-            ->with($this->identicalTo('request'))
-            ->will($this->returnValue($internalRequest));
-
-        return $response;
     }
 }

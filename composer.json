@@ -16,6 +16,7 @@
     },
     "require-dev": {
         "cakephp/cakephp": "^3.0.3",
+        "doctrine/cache": "^1.4",
         "ext-curl": "*",
         "guzzle/guzzle": "^3.9.4@dev",
         "guzzlehttp/guzzle": "^4.1.4|^5.0|^6.0",
@@ -28,6 +29,7 @@
         "react/dns": "^0.4.1",
         "satooshi/php-coveralls": "^0.6",
         "symfony/event-dispatcher": "^2.0",
+        "tedivm/stash": "^0.13",
         "zendframework/zendframework1": ">=1.12.9,<=1.12.14|^1.12.16",
         "zendframework/zend-http": "^2.3.4"
     },
@@ -38,6 +40,7 @@
         }
     ],
     "suggest": {
+        "doctrine/cache": "Allows you to use the cache event subscriber",
         "ext-curl": "Allows you to use the cURL adapter",
         "ext-http": "Allows you to use the PECL adapter",
         "guzzle/guzzle": "Allows you to use the Guzzle 3 adapter",
@@ -48,7 +51,8 @@
         "zendframework/zend-http": "Allows you to use the Zend 2 adapter",
         "psr/log": "Allows you to use the logger event subscriber",
         "symfony/event-dispatcher": "Allows you to use the event lifecycle",
-        "symfony/stopwatch": "Allows you to use the stopwatch http adapter and event subscriber"
+        "symfony/stopwatch": "Allows you to use the stopwatch http adapter and event subscriber",
+        "tedivm/stash": "Allows you to use the cache event subscriber"
     },
     "autoload": {
         "psr-4": { "Ivory\\HttpAdapter\\": "src/" }

@@ -158,6 +158,7 @@ The library provides some useful built-in subscribers you can directly use. Obvi
 propose to add them in the core. The built-in ones are:
 
  * [Basic authentication](/doc/events.md#basic-authentication)
+ * [Cache](/doc/events.md#cache)
  * [Cookie](/doc/events.md#cookie)
  * [History](/doc/events.md#history)
  * [Logger](/doc/events.md#logger)
@@ -204,6 +205,105 @@ $basicAuth->setPassword($password);
 $hasMatcher = $basicAuth->hasMatcher();
 $matcher = $basicAuth->getMatcher();
 $basicAuth->setMatcher($matcher);
+```
+
+### Cache
+
+The cache subscriber is defined by the `Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber` and allow you to cache
+responses/exceptions. We are not talking about http cache mechanism but a cache layer which pick response/exceptions
+according to a request and save them the first time requests are sent. To use it:
+
+``` php
+use Doctrine\Common\Cache\FilesystemCache;
+use Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter;
+use Ivory\HttpAdapter\Event\Cache\Cache;
+use Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber;
+
+$filesystemCache = new FilesystemCache(__DIR__.'/cache');
+$doctrineCache = new DoctrineCacheAdapter($filesystemCache);
+$cache = new Cache($doctrineCache);
+$cacheSubscriber = new CacheSubscriber($cache);
+```
+
+At a first read, it seems complex but it is pretty easy and allows you to use any kind of caching system. Basically,
+the subscriber needs a cache system represented by the  `Ivory\HttpAdapter\Event\Cache\CacheInterface` in order to
+get/save responses/exceptions. The default implementation is the `Ivory\HttpAdapter\Event\Cache\Cache`. The cache
+system needs a cache adapter defined by the `Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface` which is
+responsible to get/save scalar data. Currently, there are the
+`Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter` and the
+`Ivory\HttpAdapter\Event\Cache\Adapter\StashCacheAdapter`. Then, the cache adapters requires the underlying cache
+(doctrine, stash, ...).
+
+The cache system serializes/unserializes responses/exceptions through the formatter represented by the
+`Ivory\HttpAdapter\Event\Formatter\FormatterInterface`. Its default implementation is the
+`Ivory\HttpAdapter\Event\Formatter\Formatter` and can be passed as second constructor argument:
+
+``` php
+use Doctrine\Common\Cache\ArrayCache;
+use Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter;
+use Ivory\HttpAdapter\Event\Cache\Cache;
+use Ivory\HttpAdapter\Event\Formatter\Formatter;
+use Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber;
+
+$arrayCache = new ArrayCache();
+$doctrineCache = new DoctrineCacheAdapter($arrayCache);
+$formatter = new Formatter();
+$cache = new Cache($doctrineCache, $formatter);
+$cacheSubscriber = new CacheSubscriber($cache);
+```
+
+You can specify the lifetime of the cache by passing it as third argument:
+
+``` php
+use Doctrine\Common\Cache\ArrayCache;
+use Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter;
+use Ivory\HttpAdapter\Event\Cache\Cache;
+use Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber;
+
+$arrayCache = new ArrayCache();
+$doctrineCache = new DoctrineCacheAdapter($arrayCache);
+$cache = new Cache($doctrineCache, null, 100);
+$cacheSubscriber = new CacheSubscriber($cache);
+```
+
+or at runtime:
+
+``` php
+$cache->setLifetime(100);
+```
+
+You can also disable exceptions caching only (keeping responses caching) by passing false as fourth argument:
+
+``` php
+use Doctrine\Common\Cache\ArrayCache;
+use Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter;
+use Ivory\HttpAdapter\Event\Cache\Cache;
+use Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber;
+
+$arrayCache = new ArrayCache();
+$doctrineCache = new DoctrineCacheAdapter($arrayCache);
+$cache = new Cache($doctrineCache, null, null, false);
+$cacheSubscriber = new CacheSubscriber($cache);
+```
+
+or at runtime:
+
+``` php
+$cache->cacheException(false);
+```
+
+If you prefer using stash, an other example:
+
+``` php
+use Ivory\HttpAdapter\Event\Cache\Adapter\StashCacheAdapter;
+use Ivory\HttpAdapter\Event\Cache\Cache;
+use Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber;
+use Stash\Pool
+
+$pool = new Stash\Pool();
+$stashCache = new StashCacheAdapter($pool);
+$cache = new Cache($stashCache);
+$cacheSubscriber = new CacheSubscriber($cache);
 ```
 
 ### Cookie
@@ -920,7 +1020,7 @@ All event subscribers can work together (thanks to the event priorities). Here, 
 
 | Event Subscriber | Pre Send Event | Post Send Event | Exception Event |
 | ---------------- | :------------: | :-------------: | :-------------: |
-| Stopwatch        | 10000          | 10000           | 10000           |
+| Stopwatch        | 10000          | -10000          | -10000          |
 | Basic Auth       | 300            | -               | -               |
 | Cookie           | 300            | 300             | -               |
 | Status Code      | -              | 200             | -               |
@@ -928,3 +1028,4 @@ All event subscribers can work together (thanks to the event priorities). Here, 
 | Logger           | 100            | 100             | 100             |
 | Redirect         | -              | 0               | -               |
 | Retry            | -              | -               | 0               |
+| Cache            | -100           | -100            | -100            |
