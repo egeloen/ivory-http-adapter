@@ -295,18 +295,4 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         return $response;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationMock()
-    {
-        $configuration = parent::createConfigurationMock();
-        $configuration
-            ->expects($this->any())
-            ->method('getMessageFactory')
-            ->will($this->returnValue($this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface')));
-
-        return $configuration;
-    }
 }

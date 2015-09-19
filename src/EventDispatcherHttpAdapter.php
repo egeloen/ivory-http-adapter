@@ -53,7 +53,13 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
                 $requestCreatedEvent = new RequestCreatedEvent($this, $internalRequest)
             );
 
-            $response = parent::doSendInternalRequest($requestCreatedEvent->getRequest());
+            if ($requestCreatedEvent->hasException()) {
+                throw $requestCreatedEvent->getException();
+            }
+
+            $response = $requestCreatedEvent->hasResponse()
+                ? $requestCreatedEvent->getResponse()
+                : parent::doSendInternalRequest($requestCreatedEvent->getRequest());
 
             $this->eventDispatcher->dispatch(
                 Events::REQUEST_SENT,
@@ -89,6 +95,9 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
      */
     protected function doSendInternalRequests(array $internalRequests)
     {
+        $responses = [];
+        $exceptions = [];
+
         if (!empty($internalRequests)) {
             $this->eventDispatcher->dispatch(
                 Events::MULTI_REQUEST_CREATED,
@@ -96,15 +105,15 @@ class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
             );
 
             $internalRequests = $multiRequestCreatedEvent->getRequests();
+            $responses = $multiRequestCreatedEvent->getResponses();
+            $exceptions = $multiRequestCreatedEvent->getExceptions();
         }
 
-        $exceptions = array();
-
         try {
-            $responses = parent::doSendInternalRequests($internalRequests);
+            $responses = array_merge($responses, parent::doSendInternalRequests($internalRequests));
         } catch (MultiHttpAdapterException $e) {
-            $responses = $e->getResponses();
-            $exceptions = $e->getExceptions();
+            $responses = array_merge($responses, $e->getResponses());
+            $exceptions = array_merge($exceptions, $e->getExceptions());
         }
 
         if (!empty($responses)) {

@@ -18,8 +18,11 @@ use Ivory\HttpAdapter\Event\RequestSentEvent;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RequestSentEventTest extends RequestCreatedEventTest
+class RequestSentEventTest extends AbstractEventTest
 {
+    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $request;
+
     /** @var \Ivory\HttpAdapter\Message\ResponseInterface[\PHPUnit_Framework_MockObject_MockObject */
     private $response;
 
@@ -28,6 +31,7 @@ class RequestSentEventTest extends RequestCreatedEventTest
      */
     protected function setUp()
     {
+        $this->request = $this->createRequestMock();
         $this->response = $this->createResponseMock();
 
         parent::setUp();
@@ -38,6 +42,7 @@ class RequestSentEventTest extends RequestCreatedEventTest
      */
     protected function tearDown()
     {
+        unset($this->request);
         unset($this->response);
 
         parent::tearDown();
@@ -45,11 +50,17 @@ class RequestSentEventTest extends RequestCreatedEventTest
 
     public function testDefaultState()
     {
-        parent::testDefaultState();
-
+        $this->assertSame($this->request, $this->event->getRequest());
         $this->assertSame($this->response, $this->event->getResponse());
         $this->assertFalse($this->event->hasException());
         $this->assertNull($this->event->getException());
+    }
+
+    public function testSetRequest()
+    {
+        $this->event->setRequest($request = $this->createRequestMock());
+
+        $this->assertSame($request, $this->event->getRequest());
     }
 
     public function testSetResponse()
@@ -73,6 +84,16 @@ class RequestSentEventTest extends RequestCreatedEventTest
     protected function createEvent()
     {
         return new RequestSentEvent($this->httpAdapter, $this->request, $this->response);
+    }
+
+    /**
+     * Creates a request mock.
+     *
+     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     */
+    private function createRequestMock()
+    {
+        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**

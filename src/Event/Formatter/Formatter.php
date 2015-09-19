@@ -27,16 +27,16 @@ class Formatter implements FormatterInterface
      */
     public function formatRequest(InternalRequestInterface $request)
     {
-        return array(
+        return [
             'protocol_version' => $request->getProtocolVersion(),
             'uri'              => (string) $request->getUri(),
             'method'           => $request->getMethod(),
             'headers'          => $request->getHeaders(),
-            'body'             => (string) $request->getBody(),
+            'body'             => utf8_encode((string) $request->getBody()),
             'datas'            => $request->getDatas(),
             'files'            => $request->getFiles(),
-            'parameters'       => $request->getParameters(),
-        );
+            'parameters'       => $this->filterParameters($request->getParameters()),
+        ];
     }
 
     /**
@@ -44,14 +44,14 @@ class Formatter implements FormatterInterface
      */
     public function formatResponse(ResponseInterface $response)
     {
-        return array(
+        return [
             'protocol_version' => $response->getProtocolVersion(),
             'status_code'      => $response->getStatusCode(),
             'reason_phrase'    => $response->getReasonPhrase(),
             'headers'          => $response->getHeaders(),
-            'body'             => (string) $response->getBody(),
-            'parameters'       => $response->getParameters(),
-        );
+            'body'             => utf8_encode((string) $response->getBody()),
+            'parameters'       => $this->filterParameters($response->getParameters()),
+        ];
     }
 
     /**
@@ -59,11 +59,25 @@ class Formatter implements FormatterInterface
      */
     public function formatException(HttpAdapterException $exception)
     {
-        return array(
+        return [
             'code'    => $exception->getCode(),
             'message' => $exception->getMessage(),
             'line'    => $exception->getLine(),
             'file'    => $exception->getFile(),
-        );
+        ];
+    }
+
+    /**
+     * Filters the parameters.
+     *
+     * @param array $parameters The parameters.
+     *
+     * @return array The filtered parameters.
+     */
+    private function filterParameters(array $parameters)
+    {
+        return array_filter($parameters, function ($parameter) {
+            return !is_object($parameter) && !is_resource($parameter);
+        });
     }
 }

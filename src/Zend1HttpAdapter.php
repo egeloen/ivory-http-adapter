@@ -53,9 +53,10 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
         $this->client
             ->resetParameters(true)
             ->setConfig(array(
-                'httpversion'  => $internalRequest->getProtocolVersion(),
-                'timeout'      => $this->getConfiguration()->getTimeout(),
-                'maxredirects' => 0,
+                'httpversion'     => $internalRequest->getProtocolVersion(),
+                'timeout'         => $this->getConfiguration()->getTimeout(),
+                'request_timeout' => $this->getConfiguration()->getTimeout(),
+                'maxredirects'    => 0,
             ))
             ->setUri($uri = (string) $internalRequest->getUri())
             ->setMethod($internalRequest->getMethod())
