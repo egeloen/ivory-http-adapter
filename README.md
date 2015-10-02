@@ -1,5 +1,8 @@
 # README
 
+Before starting, be aware **this package is deprecated in favor of [php-http](https://github.com/php-http)**.
+That means bugfixes would be accepted but new features will not (except maybe for already opened PRs).
+
 [![Build Status](https://secure.travis-ci.org/egeloen/ivory-http-adapter.png?branch=master)](http://travis-ci.org/egeloen/ivory-http-adapter)
 [![Coverage Status](https://coveralls.io/repos/egeloen/ivory-http-adapter/badge.png?branch=master)](https://coveralls.io/r/egeloen/ivory-http-adapter?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/?branch=master)
@@ -9,6 +12,8 @@
 [![Latest Unstable Version](https://poser.pugx.org/egeloen/http-adapter/v/unstable.svg)](https://packagist.org/packages/egeloen/http-adapter)
 [![Total Downloads](https://poser.pugx.org/egeloen/http-adapter/downloads.svg)](https://packagist.org/packages/egeloen/http-adapter)
 [![License](https://poser.pugx.org/egeloen/http-adapter/license.svg)](https://packagist.org/packages/egeloen/http-adapter)
+
+## Introduction
 
 The library allows to issue HTTP requests with PHP 5.4.8+. The supported adapters are:
 
