@@ -11,6 +11,7 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use Guzzle\Common\Version;
 use Ivory\HttpAdapter\Guzzle3HttpAdapter;
 
 /**
@@ -25,7 +26,7 @@ class Guzzle3HttpAdapterTest extends AbstractHttpAdapterTest
      */
     protected function setUp()
     {
-        if (!function_exists('curl_init')) {
+        if (!function_exists('curl_init') || version_compare(Version::VERSION, '3.9.3', '<')) {
             $this->markTestSkipped();
         }
 

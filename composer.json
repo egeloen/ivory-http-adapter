@@ -28,7 +28,8 @@
         "react/http-client": "^0.4",
         "react/dns": "^0.4.1",
         "satooshi/php-coveralls": "^0.6",
-        "symfony/event-dispatcher": "^2.0",
+        "symfony/event-dispatcher": "^2.0|^3.0",
+        "symfony/phpunit-bridge": "^2.7|^3.0",
         "tedivm/stash": "^0.13",
         "zendframework/zendframework1": ">=1.12.9,<=1.12.14|^1.12.16",
         "zendframework/zend-http": "^2.3.4"
