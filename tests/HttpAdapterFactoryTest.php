@@ -152,6 +152,7 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
             array(HttpAdapterFactory::CAKE, 'Ivory\HttpAdapter\CakeHttpAdapter'),
             array(HttpAdapterFactory::FILE_GET_CONTENTS, 'Ivory\HttpAdapter\FileGetContentsHttpAdapter'),
             array(HttpAdapterFactory::FOPEN, 'Ivory\HttpAdapter\FopenHttpAdapter'),
+            array(HttpAdapterFactory::REQUESTS, 'Ivory\HttpAdapter\RequestsHttpAdapter'),
             array(HttpAdapterFactory::SOCKET, 'Ivory\HttpAdapter\SocketHttpAdapter'),
             array(HttpAdapterFactory::ZEND1, 'Ivory\HttpAdapter\Zend1HttpAdapter'),
         );

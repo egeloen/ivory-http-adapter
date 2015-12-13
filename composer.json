@@ -27,6 +27,7 @@
         "psr/log": "^1.0",
         "react/http-client": "^0.4",
         "react/dns": "^0.4.1",
+        "rmccue/requests": "dev-master",
         "satooshi/php-coveralls": "^0.6",
         "symfony/event-dispatcher": "^2.0|^3.0",
         "symfony/phpunit-bridge": "^2.7|^3.0",
@@ -47,13 +48,14 @@
         "guzzle/guzzle": "Allows you to use the Guzzle 3 adapter",
         "guzzlehttp/guzzle": "Allows you to use the Guzzle 4 adapter",
         "kriswallsmith/buzz": "Allows you to use the Buzz adapter",
-        "nategood/httpful": "Allows you to use the httpful adapter",
-        "zendframework/zendframework1": "Allows you to use the Zend 1 adapter",
-        "zendframework/zend-http": "Allows you to use the Zend 2 adapter",
+        "nategood/httpful": "Allows you to use the Httpful adapter",
         "psr/log": "Allows you to use the logger event subscriber",
+        "rmccue/requests": "Allows you to use the Requests adapter",
         "symfony/event-dispatcher": "Allows you to use the event lifecycle",
         "symfony/stopwatch": "Allows you to use the stopwatch http adapter and event subscriber",
-        "tedivm/stash": "Allows you to use the cache event subscriber"
+        "tedivm/stash": "Allows you to use the cache event subscriber",
+        "zendframework/zendframework1": "Allows you to use the Zend 1 adapter",
+        "zendframework/zend-http": "Allows you to use the Zend 2 adapter"
     },
     "autoload": {
         "psr-4": { "Ivory\\HttpAdapter\\": "src/" }

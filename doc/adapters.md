@@ -142,6 +142,16 @@ The React http adapter does not support all features. The limitations are:
  * HTTP 1.1 not supported.
  * Timeout not supported.
 
+## Requests
+
+``` php
+use Ivory\HttpAdapter\RequestsHttpAdapter;
+
+$requestsHttpAdapter = new RequestsHttpAdapter();
+// or
+$requestsHttpAdapter = new RequestsHttpAdapter(new \Requests_Transport_cURL());
+```
+
 ## Socket
 
 ``` php
