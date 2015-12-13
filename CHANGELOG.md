@@ -2,6 +2,7 @@
 
 ### 1.0.0 (????-??-??)
 
+ * eb597ef - Add Requests http adapter
  * 3a5232d - Add Symfony3 support
  * bc4c186 - Add caching support
  * b6e4bdf - [Socket] Fix https connection
