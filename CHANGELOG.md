@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 1.0.1 (????-??-??)
+### 1.0.1 (2016-05-06)
 
  * 3b1a38a - [Guzzle6] Removed unnecessary arguments pass
  * 6ada97d - [Travis] Fix build
