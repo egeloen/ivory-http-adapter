@@ -2,6 +2,7 @@
 
 ### 1.0.1 (????-??-??)
 
+ * 3b1a38a - [Guzzle6] Removed unnecessary arguments pass
  * 6ada97d - [Travis] Fix build
 
 ### 1.0.0 (2015-12-13)
