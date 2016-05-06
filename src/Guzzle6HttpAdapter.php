@@ -37,7 +37,7 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
      */
     public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
     {
-        parent::__construct($configuration, false);
+        parent::__construct($configuration);
 
         $this->client = $client ?: new Client();
     }
@@ -58,7 +58,7 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
         try {
             $response = $this->client->send(
                 $this->createRequest($internalRequest),
-                $this->createOptions($internalRequest)
+                $this->createOptions()
             );
         } catch (RequestException $e) {
             throw HttpAdapterException::cannotFetchUri(
