@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 1.0.1 (????-??-??)
+
+ * 6ada97d - [Travis] Fix build
+
 ### 1.0.0 (2015-12-13)
 
  * eb597ef - Add Requests http adapter
