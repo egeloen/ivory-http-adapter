@@ -57,7 +57,9 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         try {
+            $start = microtime(true);
             $response = $this->client->send($this->createRequest($internalRequest));
+            $totalTime = microtime(true) - $start;
         } catch (RequestException $e) {
             throw HttpAdapterException::cannotFetchUri(
                 $e->getRequest()->getUrl(),
@@ -75,7 +77,8 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
                     return $response->getBody()->detach();
                 },
                 $internalRequest->getMethod()
-            )
+            ),
+            array('duration' => $totalTime)
         );
     }
 

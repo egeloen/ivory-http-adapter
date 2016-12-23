@@ -63,10 +63,12 @@ class CakeHttpAdapter extends AbstractHttpAdapter
         $request->version($this->getConfiguration()->getProtocolVersion());
 
         try {
+            $start = microtime(true);
             $response = $this->client->send($request, array(
                 'timeout'  => $this->getConfiguration()->getTimeout(),
                 'redirect' => false,
             ));
+            $totalTime = microtime(true) - $start;
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
@@ -75,7 +77,8 @@ class CakeHttpAdapter extends AbstractHttpAdapter
             (integer) $response->statusCode(),
             $response->version(),
             $response->headers(),
-            $response->body()
+            $response->body(),
+            array('duration' => $totalTime)
         );
     }
 }

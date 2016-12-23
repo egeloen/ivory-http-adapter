@@ -42,7 +42,9 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             ),
         ));
 
+        $start = microtime(true);
         list($body, $headers) = $this->process($uri = (string) $internalRequest->getUri(), $context);
+        $totalTime = microtime(true) - $start;
 
         if ($body === false) {
             $error = error_get_last();
@@ -53,7 +55,8 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
             StatusCodeExtractor::extract($headers),
             ProtocolVersionExtractor::extract($headers),
             HeadersNormalizer::normalize($headers),
-            BodyNormalizer::normalize($body, $internalRequest->getMethod())
+            BodyNormalizer::normalize($body, $internalRequest->getMethod()),
+            array('duration' => $totalTime)
         );
     }
 

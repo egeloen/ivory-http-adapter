@@ -65,7 +65,9 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
             ->setRawBody($this->prepareBody($internalRequest));
 
         try {
+            $start = microtime(true);
             $response = $this->client->send();
+            $totalTime = microtime(true) - $start;
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
@@ -79,7 +81,8 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
                     return $response instanceof Stream ? $response->getStream() : $response->getBody();
                 },
                 $internalRequest->getMethod()
-            )
+            ),
+            array('duration' => $totalTime)
         );
     }
 }

@@ -599,7 +599,11 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
             $parameters['effective_uri'] = $options['effective_uri'];
         }
 
-        $this->assertSame($parameters, $response->getParameters());
+        $this->assertArrayHasKey('duration', $response->getParameters());
+
+        $params = $response->getParameters();
+        unset($params['duration']);
+        $this->assertSame($parameters, $params);
     }
 
     /**

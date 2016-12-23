@@ -83,7 +83,9 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
         $request->setContent($data);
 
         try {
+            $start = microtime(true);
             $response = $this->browser->send($request);
+            $totalTime = microtime(true) - $start;
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
@@ -92,7 +94,8 @@ class BuzzHttpAdapter extends AbstractCurlHttpAdapter
             $response->getStatusCode(),
             sprintf('%.1f', $response->getProtocolVersion()),
             HeadersNormalizer::normalize($response->getHeaders()),
-            BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod())
+            BodyNormalizer::normalize($response->getContent(), $internalRequest->getMethod()),
+            array('duration' => $totalTime)
         );
     }
 }

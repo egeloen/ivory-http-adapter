@@ -62,7 +62,9 @@ class PeclHttpAdapter extends AbstractHttpAdapter
         ));
 
         try {
+            $start = microtime(true);
             $this->client->reset()->enqueue($request)->send();
+            $totalTime = microtime(true) - $start;
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
@@ -73,7 +75,8 @@ class PeclHttpAdapter extends AbstractHttpAdapter
             $response->getResponseCode(),
             $response->getHttpVersion(),
             $response->getHeaders(),
-            $response->getBody()->getResource()
+            $response->getBody()->getResource(),
+            array('duration' => $totalTime)
         );
     }
 

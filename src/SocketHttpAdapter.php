@@ -53,7 +53,9 @@ class SocketHttpAdapter extends AbstractHttpAdapter
 
         stream_set_timeout($socket, $this->getConfiguration()->getTimeout());
         fwrite($socket, $this->prepareRequest($internalRequest));
+        $start = microtime(true);
         list($responseHeaders, $body) = $this->parseResponse($socket);
+        $totalTime = microtime(true) - $start;
         $hasTimeout = $this->detectTimeout($socket);
         fclose($socket);
 
@@ -69,7 +71,8 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             StatusCodeExtractor::extract($responseHeaders),
             ProtocolVersionExtractor::extract($responseHeaders),
             $responseHeaders = HeadersNormalizer::normalize($responseHeaders),
-            BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod())
+            BodyNormalizer::normalize($this->decodeBody($responseHeaders, $body), $internalRequest->getMethod()),
+            array('duration' => $totalTime)
         );
     }
 
