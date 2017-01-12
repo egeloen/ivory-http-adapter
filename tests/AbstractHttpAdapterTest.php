@@ -546,8 +546,8 @@ abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
     public function timeoutProvider()
     {
         return array(
-            array(0.5),
             array(1),
+            array(1.5),
         );
     }
 
