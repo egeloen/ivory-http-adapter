@@ -1,5 +1,4 @@
 language: php
-sudo: false
 
 php:
     - 5.4
@@ -34,7 +33,7 @@ install:
     - if [[ "$SYMFONY_VERSION" = *dev* ]]; then sed -i "s/\"MIT\"/\"MIT\",\"minimum-stability\":\"dev\"/g" composer.json; fi
     - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST = true ]]; then echo "--prefer-lowest --prefer-stable"; fi`
 
-script: bin/phpunit --configuration phpunit.travis.xml --coverage-clover build/clover.xml
+script: vendor/bin/phpunit --configuration phpunit.travis.xml --coverage-clover build/clover.xml
 
 after_success:
     - sed -i "/^disable_functions =.*$/d" ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini

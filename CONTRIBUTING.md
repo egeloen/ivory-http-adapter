@@ -44,7 +44,7 @@ it immediately. Before, you will need to add tests and update the doc. For the t
 To execute the tests, use the following command:
 
 ``` bash
-$ bin/phpunit
+$ vendor/bin/phpunit
 ```
 
 This command will only execute unit tests. The library is also shipped with integration tests which require a web 
@@ -52,7 +52,7 @@ server. To execute them, just start the built in PHP web server and execute test
 
 ``` bash
 $ php -S 127.0.0.1:10000 -t tests/Fixtures
-$ bin/phpunit --group integration
+$ vendor/bin/phpunit --group integration
 ```
 
 When you have fixed the bug, tested it and documented it, you can commit and push it with the following commands:

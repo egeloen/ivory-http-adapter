@@ -1,5 +1,4 @@
 # Composer
-/bin
 /composer.lock
 /vendor
 
