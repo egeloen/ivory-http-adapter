@@ -2,6 +2,7 @@
 
 ### 1.0.3 (????-??-??)
 
+ * 638a0a1 - [Gitignore] Remove coveralls.json
  * 99e0285 - [Scrutinizer] Fix code coverage configuration
  * 7490304 - [Scrutinizer] Add configuration
  * 6ec9b75 - [License] Happy new year
