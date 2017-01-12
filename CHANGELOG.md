@@ -2,6 +2,7 @@
 
 ### 1.0.3 (????-??-??)
 
+ * 4aff3cb - Remove .php_cs file
  * 638a0a1 - [Gitignore] Remove coveralls.json
  * 99e0285 - [Scrutinizer] Fix code coverage configuration
  * 7490304 - [Scrutinizer] Add configuration
