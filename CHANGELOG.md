@@ -2,6 +2,7 @@
 
 ### 1.0.3 (????-??-??)
 
+ * 7490304 - [Scrutinizer] Add configuration
  * 6ec9b75 - [License] Happy new year
 
 ### 1.0.2 (2017-01-12)
