@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\Timer;
 
 use Ivory\HttpAdapter\Event\Timer\Timer;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Timer test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class TimerTest extends \PHPUnit_Framework_TestCase
+class TimerTest extends AbstractTestCase  
 {
     /** @var \Ivory\HttpAdapter\Event\Timer\Timer */
     private $timer;
@@ -140,6 +141,6 @@ class TimerTest extends \PHPUnit_Framework_TestCase
      */
     private function createRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 }

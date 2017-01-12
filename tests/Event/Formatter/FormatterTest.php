@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\Formatter;
 
 use Ivory\HttpAdapter\Event\Formatter\Formatter;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Formatter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class FormatterTest extends \PHPUnit_Framework_TestCase
+class FormatterTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\Event\Formatter\Formatter */
     private $formatter;
@@ -91,7 +92,7 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
      */
     private function createRequestMock()
     {
-        $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        $request = $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
         $request
             ->expects($this->any())
             ->method('getProtocolVersion')
@@ -142,7 +143,7 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        $response = $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        $response = $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
         $response
             ->expects($this->any())
             ->method('getProtocolVersion')
@@ -183,7 +184,7 @@ class FormatterTest extends \PHPUnit_Framework_TestCase
      */
     private function createExceptionMock()
     {
-        $exception = $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        $exception = $this->createMock('Ivory\HttpAdapter\HttpAdapterException');
 
         $this->setPropertyValue($exception, 'code', 123);
         $this->setPropertyValue($exception, 'message', 'message');

@@ -11,12 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
+
 /**
  * Abstract cookie jar test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractCookieJarTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractCookieJarTest extends AbstractTestCase
 {
     /**
      * Creates a cookie factory mock.
@@ -25,7 +27,7 @@ abstract class AbstractCookieJarTest extends \PHPUnit_Framework_TestCase
      */
     protected function createCookieFactoryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface');
     }
 
     /**
@@ -38,7 +40,7 @@ abstract class AbstractCookieJarTest extends \PHPUnit_Framework_TestCase
      */
     protected function createCookieMock($name = true, $value = true)
     {
-        $cookie = $this->getMock('Ivory\HttpAdapter\Event\Cookie\CookieInterface');
+        $cookie = $this->createMock('Ivory\HttpAdapter\Event\Cookie\CookieInterface');
 
         if ($name) {
             $cookie

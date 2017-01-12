@@ -19,7 +19,7 @@ use Ivory\HttpAdapter\MockHttpAdapter;
  * @author GeLo <geloen.eric@gmail.com>
  * @author Timothée Barray <tim@amicalement-web.net>
  */
-class MockHttpAdapterTest extends \PHPUnit_Framework_TestCase
+class MockHttpAdapterTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\MockHttpAdapter */
     private $mockHttpAdapter;
@@ -106,7 +106,7 @@ class MockHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createInternalRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -114,6 +114,6 @@ class MockHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 }

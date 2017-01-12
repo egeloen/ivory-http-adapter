@@ -18,7 +18,7 @@ use Ivory\HttpAdapter\PsrHttpAdapterDecorator;
 /**
  * @author GeLo <geloen.eric@gmail.com>
  */
-class PsrHttpAdapterDecoratorTest extends \PHPUnit_Framework_TestCase
+class PsrHttpAdapterDecoratorTest extends AbstractTestCase
 {
     /** @var  \Ivory\HttpAdapter\PsrHttpAdapterDecorator */
     private $decorator;
@@ -32,7 +32,7 @@ class PsrHttpAdapterDecoratorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->decorator = new PsrHttpAdapterDecorator(
-            $this->httpAdapter = $this->getMock('Ivory\HttpAdapter\PsrHttpAdapterInterface')
+            $this->httpAdapter = $this->createMock('Ivory\HttpAdapter\PsrHttpAdapterInterface')
         );
     }
 
@@ -140,7 +140,7 @@ class PsrHttpAdapterDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     private function createConfigurationMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
+        return $this->createMock('Ivory\HttpAdapter\ConfigurationInterface');
     }
 
     /**
@@ -150,7 +150,7 @@ class PsrHttpAdapterDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     private function createInternalRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -160,7 +160,7 @@ class PsrHttpAdapterDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
@@ -170,7 +170,7 @@ class PsrHttpAdapterDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     private function createExceptionMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        return $this->createMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 
     /**
@@ -183,7 +183,7 @@ class PsrHttpAdapterDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     private function createMultiExceptionMock(array $responses, array $exceptions)
     {
-        $multiException = $this->getMock('Ivory\HttpAdapter\MultiHttpAdapterException');
+        $multiException = $this->createMock('Ivory\HttpAdapter\MultiHttpAdapterException');
 
         $multiException
             ->expects($this->any())

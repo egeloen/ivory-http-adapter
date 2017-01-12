@@ -18,7 +18,7 @@ use Ivory\HttpAdapter\MultiHttpAdapterException;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MultiHttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
+class MultiHttpAdapterExceptionTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\MultiHttpAdapterException */
     private $multiHttpAdapterException;
@@ -160,7 +160,7 @@ class MultiHttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
      */
     private function createExceptionMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        return $this->createMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 
     /**
@@ -170,7 +170,7 @@ class MultiHttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**

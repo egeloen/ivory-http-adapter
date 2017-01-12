@@ -34,11 +34,12 @@ install:
     - if [[ "$SYMFONY_VERSION" = *dev* ]]; then sed -i "s/\"MIT\"/\"MIT\",\"minimum-stability\":\"dev\"/g" composer.json; fi
     - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST = true ]]; then echo "--prefer-lowest --prefer-stable"; fi`
 
-script: bin/phpunit --configuration phpunit.travis.xml --coverage-clover clover.xml
+script: bin/phpunit --configuration phpunit.travis.xml --coverage-clover build/clover.xml
 
-after_script:
+after_success:
     - sed -i "/^disable_functions =.*$/d" ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-    - bin/coveralls -v
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - php ocular.phar code-coverage:upload --format=php-clover build/clover.xml
 
 matrix:
     include:

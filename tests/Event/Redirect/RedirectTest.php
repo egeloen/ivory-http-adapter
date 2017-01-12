@@ -15,13 +15,14 @@ use Ivory\HttpAdapter\Event\Redirect\Redirect;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Redirect test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RedirectTest extends \PHPUnit_Framework_TestCase
+class RedirectTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\Event\Redirect\Redirect */
     private $redirect;
@@ -227,7 +228,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $request
             ->expects($this->any())
             ->method('getBody')
-            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamInterface')));
+            ->will($this->returnValue($body = $this->createMock('Psr\Http\Message\StreamInterface')));
 
         $request
             ->expects($this->any())
@@ -348,7 +349,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $request
             ->expects($this->any())
             ->method('getBody')
-            ->will($this->returnValue($body = $this->getMock('Psr\Http\Message\StreamInterface')));
+            ->will($this->returnValue($body = $this->createMock('Psr\Http\Message\StreamInterface')));
 
         $response = $this->createResponseMock();
 
@@ -465,7 +466,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
      */
     private function createRequestMock($parent = null)
     {
-        $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        $request = $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
         $request
             ->expects($this->any())
             ->method('getUri')
@@ -495,7 +496,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
@@ -507,7 +508,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
      */
     private function createHttpAdapterMock(MessageFactoryInterface $messageFactory = null)
     {
-        $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        $httpAdapter = $this->createMock('Ivory\HttpAdapter\HttpAdapterInterface');
         $httpAdapter
             ->expects($this->any())
             ->method('getName')
@@ -516,7 +517,7 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
         $httpAdapter
             ->expects($this->any())
             ->method('getConfiguration')
-            ->will($this->returnValue($configuration = $this->getMock('Ivory\HttpAdapter\ConfigurationInterface')));
+            ->will($this->returnValue($configuration = $this->createMock('Ivory\HttpAdapter\ConfigurationInterface')));
 
         $configuration
             ->expects($this->any())
@@ -533,6 +534,6 @@ class RedirectTest extends \PHPUnit_Framework_TestCase
      */
     private function createMessageFactoryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }
 }

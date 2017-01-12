@@ -26,7 +26,10 @@ class Guzzle3HttpAdapterTest extends AbstractHttpAdapterTest
      */
     protected function setUp()
     {
-        if (!function_exists('curl_init') || version_compare(Version::VERSION, '3.9.3', '<')) {
+        if (!function_exists('curl_init')
+            || !class_exists('Guzzle\Common\Version')
+            || version_compare(Version::VERSION, '3.9.3', '<')
+        ) {
             $this->markTestSkipped();
         }
 

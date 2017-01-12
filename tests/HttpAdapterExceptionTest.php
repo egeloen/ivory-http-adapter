@@ -18,7 +18,7 @@ use Ivory\HttpAdapter\HttpAdapterException;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class HttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
+class HttpAdapterExceptionTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\HttpAdapterException */
     private $exception;
@@ -87,7 +87,7 @@ class HttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
      */
     private function createRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -97,6 +97,6 @@ class HttpAdapterExceptionTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 }

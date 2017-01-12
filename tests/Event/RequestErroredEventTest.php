@@ -81,7 +81,7 @@ class RequestErroredEventTest extends AbstractEventTest
      */
     private function createExceptionMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        return $this->createMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 
     /**
@@ -91,6 +91,6 @@ class RequestErroredEventTest extends AbstractEventTest
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 }

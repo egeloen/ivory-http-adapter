@@ -27,7 +27,7 @@ use Ivory\HttpAdapter\MultiHttpAdapterException;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
+class EventDispatcherHttpAdapterTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\EventDispatcherHttpAdapter */
     private $eventDispatcherHttpAdapter;
@@ -77,9 +77,13 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo(Events::REQUEST_CREATED),
                 $this->callback(function ($event) use ($httpAdapter, $internalRequest, $internalRequestOverride) {
-                    $result =  $event instanceof RequestCreatedEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getRequest() === $internalRequest;
+                    static $result = null;
+
+                    if ($result === null) {
+                        $result = $event instanceof RequestCreatedEvent
+                            && $event->getHttpAdapter() === $httpAdapter
+                            && $event->getRequest() === $internalRequest;
+                    }
 
                     $event->setRequest($internalRequestOverride);
 
@@ -172,10 +176,14 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo(Events::REQUEST_SENT),
                 $this->callback(function ($event) use ($httpAdapter, $internalRequest, $response, $responseOverride) {
-                    $result = $event instanceof RequestSentEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getRequest() === $internalRequest
-                        && $event->getResponse() === $response;
+                    static $result = null;
+
+                    if ($result === null) {
+                        $result = $event instanceof RequestSentEvent
+                            && $event->getHttpAdapter() === $httpAdapter
+                            && $event->getRequest() === $internalRequest
+                            && $event->getResponse() === $response;
+                    }
 
                     $event->setResponse($responseOverride);
 
@@ -253,9 +261,13 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo(Events::REQUEST_ERRORED),
                 $this->callback(function ($event) use ($httpAdapter, $exception, $exceptionOverride) {
-                    $result = $event instanceof RequestErroredEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getException() === $exception;
+                    static $result = null;
+
+                    if ($result === null) {
+                        $result = $event instanceof RequestErroredEvent
+                            && $event->getHttpAdapter() === $httpAdapter
+                            && $event->getException() === $exception;
+                    }
 
                     $event->setException($exceptionOverride);
 
@@ -353,9 +365,13 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo(Events::MULTI_REQUEST_CREATED),
                 $this->callback(function ($event) use ($httpAdapter, $internalRequests, $internalRequestsOverride) {
-                    $result =  $event instanceof MultiRequestCreatedEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getRequests() === $internalRequests;
+                    static $result = null;
+
+                    if ($result === null) {
+                        $result = $event instanceof MultiRequestCreatedEvent
+                            && $event->getHttpAdapter() === $httpAdapter
+                            && $event->getRequests() === $internalRequests;
+                    }
 
                     $event->setRequests($internalRequestsOverride);
 
@@ -383,10 +399,14 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo(Events::MULTI_REQUEST_SENT),
                 $this->callback(function ($event) use ($httpAdapter, $responses, $responsesOverride) {
-                    $result = $event instanceof MultiRequestSentEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getResponses() === $responses
-                        && !$event->hasExceptions();
+                    static $result = null;
+
+                    if ($result === null) {
+                        $result = $event instanceof MultiRequestSentEvent
+                            && $event->getHttpAdapter() === $httpAdapter
+                            && $event->getResponses() === $responses
+                            && !$event->hasExceptions();
+                    }
 
                     $event->setResponses($responsesOverride);
 
@@ -416,10 +436,14 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo(Events::MULTI_REQUEST_ERRORED),
                 $this->callback(function ($event) use ($httpAdapter, $exceptions, $responses) {
-                    $result = $event instanceof MultiRequestErroredEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getExceptions() === $exceptions
-                        && !$event->hasResponses();
+                    static $result = null;
+
+                    if ($result === null) {
+                        $result = $event instanceof MultiRequestErroredEvent
+                            && $event->getHttpAdapter() === $httpAdapter
+                            && $event->getExceptions() === $exceptions
+                            && !$event->hasResponses();
+                    }
 
                     $event->setExceptions(array());
                     $event->setResponses($responses);
@@ -450,10 +474,14 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->identicalTo(Events::MULTI_REQUEST_ERRORED),
                 $this->callback(function ($event) use ($httpAdapter, $exceptions, $exceptionsOverride) {
-                    $result = $event instanceof MultiRequestErroredEvent
-                        && $event->getHttpAdapter() === $httpAdapter
-                        && $event->getExceptions() === $exceptions
-                        && !$event->hasResponses();
+                    static $result = null;
+
+                    if ($result === null) {
+                        $result = $event instanceof MultiRequestErroredEvent
+                            && $event->getHttpAdapter() === $httpAdapter
+                            && $event->getExceptions() === $exceptions
+                            && !$event->hasResponses();
+                    }
 
                     $event->setExceptions($exceptionsOverride);
 
@@ -521,7 +549,7 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createHttpAdapterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\PsrHttpAdapterInterface');
+        return $this->createMock('Ivory\HttpAdapter\PsrHttpAdapterInterface');
     }
 
     /**
@@ -531,7 +559,7 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createEventDispatcherMock()
     {
-        return $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        return $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
     }
 
     /**
@@ -541,7 +569,7 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createInternalRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -551,7 +579,7 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
@@ -561,7 +589,7 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createExceptionMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        return $this->createMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 
     /**
@@ -574,7 +602,7 @@ class EventDispatcherHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createMultiExceptionMock(array $exceptions = array(), array $responses = array())
     {
-        $exception = $this->getMock('Ivory\HttpAdapter\MultiHttpAdapterException');
+        $exception = $this->createMock('Ivory\HttpAdapter\MultiHttpAdapterException');
 
         if (empty($exceptions)) {
             $exceptions[] = $this->createExceptionMock();

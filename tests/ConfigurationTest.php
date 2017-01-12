@@ -20,7 +20,7 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ConfigurationTest extends \PHPUnit_Framework_TestCase
+class ConfigurationTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\Configuration */
     private $configuration;
@@ -124,6 +124,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     private function createMessageFactoryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }
 }

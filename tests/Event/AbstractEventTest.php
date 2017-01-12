@@ -11,12 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
+
 /**
  * Abstract event test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractEventTest extends AbstractTestCase
 {
     /** @var mixed */
     protected $event;
@@ -62,6 +64,6 @@ abstract class AbstractEventTest extends \PHPUnit_Framework_TestCase
      */
     private function createHttpAdapterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        return $this->createMock('Ivory\HttpAdapter\HttpAdapterInterface');
     }
 }

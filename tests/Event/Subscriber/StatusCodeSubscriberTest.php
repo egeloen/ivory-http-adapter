@@ -187,6 +187,6 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
      */
     private function createStatusCodeMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface');
     }
 }

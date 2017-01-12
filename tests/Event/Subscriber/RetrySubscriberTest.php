@@ -259,6 +259,6 @@ class RetrySubscriberTest extends AbstractSubscriberTest
      */
     private function createRetryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Retry\RetryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Retry\RetryInterface');
     }
 }

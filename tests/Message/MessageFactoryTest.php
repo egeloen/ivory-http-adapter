@@ -13,13 +13,14 @@ namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\MessageFactory;
 use Ivory\HttpAdapter\Message\RequestInterface;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Message factory test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MessageFactoryTest extends \PHPUnit_Framework_TestCase
+class MessageFactoryTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Message\MessageFactory */
     private $messageFactory;
@@ -69,7 +70,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
             $headers = array('foo' => array('bar')),
-            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
+            $body = $this->createMock('Psr\Http\Message\StreamInterface'),
             $parameters = array('baz' => 'bat')
         );
 
@@ -192,7 +193,7 @@ class MessageFactoryTest extends \PHPUnit_Framework_TestCase
             $statusCode = 404,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
             $headers = array('foo' => array('bar')),
-            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
+            $body = $this->createMock('Psr\Http\Message\StreamInterface'),
             $parameters = array('baz' => 'bat')
         );
 

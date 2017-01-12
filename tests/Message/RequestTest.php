@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\Request;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Request test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\Message\Request */
     private $request;
@@ -63,7 +64,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request(
             $uri = 'http://egeloen.fr/',
             $method = Request::METHOD_POST,
-            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
+            $body = $this->createMock('Psr\Http\Message\StreamInterface'),
             $headers = array('foo' => array('bar')),
             $parameters = array('baz' => 'bat')
         );

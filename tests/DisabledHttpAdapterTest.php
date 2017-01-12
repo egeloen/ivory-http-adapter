@@ -24,7 +24,7 @@ use Ivory\HttpAdapter\HttpfulHttpAdapter;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class DisabledHttpAdapterTest extends \PHPUnit_Framework_TestCase
+class DisabledHttpAdapterTest extends AbstractTestCase
 {
     /**
      * @expectedException \Ivory\HttpAdapter\HttpAdapterException

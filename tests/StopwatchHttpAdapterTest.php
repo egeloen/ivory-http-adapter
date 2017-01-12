@@ -18,7 +18,7 @@ use Ivory\HttpAdapter\StopwatchHttpAdapter;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
+class StopwatchHttpAdapterTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\StopwatchHttpAdapter */
     private $stopwatchHttpAdapter;
@@ -126,7 +126,7 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createHttpAdapterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        return $this->createMock('Ivory\HttpAdapter\HttpAdapterInterface');
     }
 
     /**
@@ -136,7 +136,7 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createStopwatchMock()
     {
-        return $this->getMock('Symfony\Component\Stopwatch\Stopwatch');
+        return $this->createMock('Symfony\Component\Stopwatch\Stopwatch');
     }
 
     /**
@@ -146,7 +146,7 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createInternalRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -156,6 +156,6 @@ class StopwatchHttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 }

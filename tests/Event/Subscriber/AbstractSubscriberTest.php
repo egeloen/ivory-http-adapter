@@ -23,13 +23,14 @@ use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Abstract subscriber test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractSubscriberTest extends AbstractTestCase 
 {
     /**
      * Creates a pre send event.
@@ -143,7 +144,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function createHttpAdapterMock(ConfigurationInterface $configuration = null)
     {
-        $httpAdapter = $this->getMock('Ivory\HttpAdapter\HttpAdapterInterface');
+        $httpAdapter = $this->createMock('Ivory\HttpAdapter\HttpAdapterInterface');
         $httpAdapter
             ->expects($this->any())
             ->method('getName')
@@ -166,7 +167,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function createConfigurationMock(MessageFactoryInterface $messageFactory = null)
     {
-        $configuration = $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
+        $configuration = $this->createMock('Ivory\HttpAdapter\ConfigurationInterface');
         $configuration
             ->expects($this->any())
             ->method('getMessageFactory')
@@ -182,7 +183,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function createMessageFactoryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }
 
     /**
@@ -192,7 +193,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function createRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -202,7 +203,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
@@ -217,7 +218,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
         InternalRequestInterface $internalRequest = null,
         ResponseInterface $response = null
     ) {
-        $exception = $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        $exception = $this->createMock('Ivory\HttpAdapter\HttpAdapterException');
 
         if ($internalRequest === null) {
             $internalRequest = $this->createRequestMock();
@@ -258,7 +259,7 @@ abstract class AbstractSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     protected function createMultiExceptionMock(array $exceptions = [], array $responses = [])
     {
-        $exception = $this->getMock('Ivory\HttpAdapter\MultiHttpAdapterException');
+        $exception = $this->createMock('Ivory\HttpAdapter\MultiHttpAdapterException');
         $exception
             ->expects($this->any())
             ->method('hasExceptions')

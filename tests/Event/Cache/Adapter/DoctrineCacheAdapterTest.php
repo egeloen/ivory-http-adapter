@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\Cache\Adapter;
 
 use Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Doctrine cache adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class DoctrineCacheAdapterTest extends \PHPUnit_Framework_TestCase
+class DoctrineCacheAdapterTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter */
     private $doctrineCacheAdapter;
@@ -128,6 +129,6 @@ class DoctrineCacheAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createCacheMock()
     {
-        return $this->getMock('Doctrine\Common\Cache\Cache');
+        return $this->createMock('Doctrine\Common\Cache\Cache');
     }
 }

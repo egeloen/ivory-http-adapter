@@ -182,7 +182,7 @@ class HistorySubscriberTest extends AbstractSubscriberTest
      */
     private function createJournalMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\History\JournalInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\History\JournalInterface');
     }
 
     /**
@@ -192,6 +192,6 @@ class HistorySubscriberTest extends AbstractSubscriberTest
      */
     private function createTimerMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
     }
 }

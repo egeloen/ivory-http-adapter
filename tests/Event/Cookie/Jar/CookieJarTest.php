@@ -494,7 +494,7 @@ class CookieJarTest extends AbstractCookieJarTest
      */
     private function createRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -504,7 +504,7 @@ class CookieJarTest extends AbstractCookieJarTest
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
@@ -514,6 +514,6 @@ class CookieJarTest extends AbstractCookieJarTest
      */
     private function createUriMock()
     {
-        return $this->getMock('Psr\Http\Message\UriInterface');
+        return $this->createMock('Psr\Http\Message\UriInterface');
     }
 }

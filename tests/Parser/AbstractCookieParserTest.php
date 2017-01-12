@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Parser;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Abstract cookie parser test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractCookieParserTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractCookieParserTest extends AbstractTestCase
 {
     /**
      * Gets the parse provider.

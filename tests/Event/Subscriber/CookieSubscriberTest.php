@@ -205,6 +205,6 @@ class CookieSubscriberTest extends AbstractSubscriberTest
      */
     private function createCookieJarMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface');
     }
 }

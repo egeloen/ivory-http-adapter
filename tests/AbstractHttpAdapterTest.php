@@ -22,7 +22,7 @@ use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractHttpAdapterTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractHttpAdapterTest extends AbstractTestCase
 {
     /** @var string */
     private static $file;

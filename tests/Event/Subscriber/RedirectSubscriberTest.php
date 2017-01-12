@@ -34,7 +34,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
     protected function setUp()
     {
         $this->redirectSubscriber = new RedirectSubscriber(
-            $this->redirect = $this->getMock('Ivory\HttpAdapter\Event\Redirect\RedirectInterface')
+            $this->redirect = $this->createMock('Ivory\HttpAdapter\Event\Redirect\RedirectInterface')
         );
     }
 
