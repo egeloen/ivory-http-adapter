@@ -6,6 +6,3 @@
 # PHPUnit
 /phpunit.xml
 /build
-
-# Coveralls
-/coveralls.json
