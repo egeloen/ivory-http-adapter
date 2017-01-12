@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 1.0.3 (????-??-??)
+
+ * 6ec9b75 - [License] Happy new year
+
 ### 1.0.2 (2017-01-12)
 
  * a7617d0 - [Composer] Upgrade deps
