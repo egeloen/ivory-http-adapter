@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Normalizer;
 
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Headers normalizer test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class HeadersNormalizerTest extends \PHPUnit_Framework_TestCase
+class HeadersNormalizerTest extends AbstractTestCase
 {
     public function testNormalizeAsAssociativeWithStringHeaders()
     {

@@ -13,7 +13,6 @@ namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\StopwatchSubscriber;
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
  * Stopwatch subscriber test.
@@ -34,7 +33,7 @@ class StopwatchSubscriberTest extends AbstractSubscriberTest
     protected function setUp()
     {
         $this->stopwatchSubscriber = new StopwatchSubscriber(
-            $this->stopwatch = $this->getMock('Symfony\Component\Stopwatch\Stopwatch')
+            $this->stopwatch = $this->createMock('Symfony\Component\Stopwatch\Stopwatch')
         );
     }
 

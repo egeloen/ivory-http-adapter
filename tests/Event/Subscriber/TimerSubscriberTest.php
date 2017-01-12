@@ -72,6 +72,6 @@ class TimerSubscriberTest extends AbstractSubscriberTest
      */
     private function createTimerMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
     }
 }

@@ -4,7 +4,7 @@ Before starting, be aware **this package is deprecated in favor of [php-http](ht
 That means bugfixes would be accepted but new features will not (except maybe for already opened PRs).
 
 [![Build Status](https://secure.travis-ci.org/egeloen/ivory-http-adapter.png?branch=master)](http://travis-ci.org/egeloen/ivory-http-adapter)
-[![Coverage Status](https://coveralls.io/repos/egeloen/ivory-http-adapter/badge.png?branch=master)](https://coveralls.io/r/egeloen/ivory-http-adapter?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/egeloen/ivory-http-adapter/?branch=master)
 [![Dependency Status](http://www.versioneye.com/php/egeloen:http-adapter/badge.svg)](http://www.versioneye.com/php/egeloen:http-adapter)
 

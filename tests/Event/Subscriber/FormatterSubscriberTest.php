@@ -75,6 +75,6 @@ class FormatterSubscriberTest extends AbstractSubscriberTest
      */
     private function createFormatterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Formatter\FormatterInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Formatter\FormatterInterface');
     }
 }

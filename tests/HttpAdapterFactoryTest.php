@@ -18,7 +18,7 @@ use Ivory\HttpAdapter\HttpAdapterFactory;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
+class HttpAdapterFactoryTest extends AbstractTestCase
 {
     /**
      * @dataProvider httpAdapterProvider
@@ -159,8 +159,11 @@ class HttpAdapterFactoryTest extends \PHPUnit_Framework_TestCase
 
         if (function_exists('curl_init')) {
             $adapters[] = array(HttpAdapterFactory::CURL, 'Ivory\HttpAdapter\CurlHttpAdapter');
-            $adapters[] = array(HttpAdapterFactory::GUZZLE3, 'Ivory\HttpAdapter\Guzzle3HttpAdapter');
             $adapters[] = array(HttpAdapterFactory::HTTPFUL, 'Ivory\HttpAdapter\HttpfulHttpAdapter');
+
+            if (class_exists('Guzzle\Common\Version')) {
+                $adapters[] = array(HttpAdapterFactory::GUZZLE3, 'Ivory\HttpAdapter\Guzzle3HttpAdapter');
+            }
         }
 
         if (class_exists('GuzzleHttp\Adapter\Curl\CurlAdapter')) {

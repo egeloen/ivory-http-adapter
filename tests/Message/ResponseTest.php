@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\Response;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Response test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ResponseTest extends \PHPUnit_Framework_TestCase
+class ResponseTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\Message\Response */
     private $response;
@@ -60,7 +61,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function testInitialState()
     {
         $this->response = new Response(
-            $body = $this->getMock('Psr\Http\Message\StreamInterface'),
+            $body = $this->createMock('Psr\Http\Message\StreamInterface'),
             $statusCode = 302,
             $headers = array('foo' => array('bar')),
             $parameters = array('baz' => 'bat')

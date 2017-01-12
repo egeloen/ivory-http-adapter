@@ -5,8 +5,7 @@
 
 # PHPUnit
 /phpunit.xml
-/clover.xml
-/report
+/build
 
 # Coveralls
 /coveralls.json

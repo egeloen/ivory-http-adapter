@@ -11,12 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Message;
 
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
+
 /**
  * Message trait test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class MessageTraitTest extends \PHPUnit_Framework_TestCase
+class MessageTraitTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Message\MessageTrait */
     private $message;

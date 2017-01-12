@@ -13,13 +13,14 @@ namespace Ivory\Tests\HttpAdapter\Event\Cache\Adapter;
 
 use Ivory\HttpAdapter\Event\Cache\Cache;
 use Ivory\HttpAdapter\Message\RequestInterface;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Cache test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class CacheTest extends \PHPUnit_Framework_TestCase
+class CacheTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Event\Cache\Cache */
     private $cache;
@@ -361,7 +362,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     private function createCacheAdapterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface');
     }
 
     /**
@@ -371,7 +372,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     private function createFormatterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Formatter\FormatterInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Formatter\FormatterInterface');
     }
 
     /**
@@ -381,7 +382,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     private function createMessageFactoryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\MessageFactoryInterface');
     }
 
     /**
@@ -391,7 +392,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     private function createInternalRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -401,7 +402,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
@@ -411,6 +412,6 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     private function createExceptionMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\HttpAdapterException');
+        return $this->createMock('Ivory\HttpAdapter\HttpAdapterException');
     }
 }

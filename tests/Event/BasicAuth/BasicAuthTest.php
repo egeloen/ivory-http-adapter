@@ -13,13 +13,14 @@ namespace Ivory\Tests\HttpAdapter\Event\BasicAuth;
 
 use Ivory\HttpAdapter\Event\BasicAuth\BasicAuth;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Basic auth test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class BasicAuthTest extends \PHPUnit_Framework_TestCase
+class BasicAuthTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Event\BasicAuth\BasicAuth */
     private $basicAuth;
@@ -179,7 +180,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase
      */
     private function createRequestMock()
     {
-        $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        $request = $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
         $request
             ->expects($this->any())
             ->method('getUri')

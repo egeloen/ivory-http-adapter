@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\StatusCode;
 
 use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Status code test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class StatusCodeTest extends \PHPUnit_Framework_TestCase
+class StatusCodeTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\Event\StatusCode\StatusCode */
     private $statusCode;
@@ -72,7 +73,7 @@ class StatusCodeTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock($statusCode)
     {
-        $response = $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        $response = $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
         $response
             ->expects($this->any())
             ->method('getStatusCode')

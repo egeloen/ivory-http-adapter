@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\Retry;
 
 use Ivory\HttpAdapter\Event\Retry\Retry;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Retry test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RetryTest extends \PHPUnit_Framework_TestCase
+class RetryTest extends AbstractTestCase 
 {
     /** @var \Ivory\HttpAdapter\Event\Retry\Retry */
     private $retry;
@@ -163,7 +164,7 @@ class RetryTest extends \PHPUnit_Framework_TestCase
      */
     private function createStrategyMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface');
     }
 
     /**
@@ -173,6 +174,6 @@ class RetryTest extends \PHPUnit_Framework_TestCase
      */
     private function createRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 }

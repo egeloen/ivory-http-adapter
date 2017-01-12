@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\History;
 
 use Ivory\HttpAdapter\Event\History\Journal;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Journal test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class JournalTest extends \PHPUnit_Framework_TestCase
+class JournalTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Event\History\Journal */
     private $journal;
@@ -186,7 +187,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      */
     private function createRequestMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface');
     }
 
     /**
@@ -196,7 +197,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponseMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface');
+        return $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface');
     }
 
     /**
@@ -206,7 +207,7 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      */
     private function createJournalEntryFactoryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface');
     }
 
     /**
@@ -216,6 +217,6 @@ class JournalTest extends \PHPUnit_Framework_TestCase
      */
     private function createJournalEntryMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\History\JournalEntryInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\History\JournalEntryInterface');
     }
 }

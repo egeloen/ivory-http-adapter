@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Message\InternalRequest;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Internal request test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class InternalRequestTest extends \PHPUnit_Framework_TestCase
+class InternalRequestTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Message\InternalRequest */
     private $internalRequest;

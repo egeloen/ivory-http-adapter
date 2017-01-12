@@ -14,13 +14,14 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie;
 use Ivory\HttpAdapter\Event\Cookie\Cookie;
 use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Cookie test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class CookieTest extends \PHPUnit_Framework_TestCase
+class CookieTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Event\Cookie\Cookie */
     private $cookie;

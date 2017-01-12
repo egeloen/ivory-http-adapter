@@ -436,7 +436,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
      */
     private function createLoggerMock()
     {
-        return $this->getMock('Psr\Log\LoggerInterface');
+        return $this->createMock('Psr\Log\LoggerInterface');
     }
 
     /**
@@ -446,7 +446,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
      */
     private function createFormatterMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Formatter\FormatterInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Formatter\FormatterInterface');
     }
 
     /**
@@ -456,6 +456,6 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
      */
     private function createTimerMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Timer\TimerInterface');
     }
 }

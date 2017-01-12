@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\History;
 
 use Ivory\HttpAdapter\Event\History\JournalEntryFactory;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Journal entry factory test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class JournalEntryFactoryTest extends \PHPUnit_Framework_TestCase
+class JournalEntryFactoryTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Event\History\JournalEntryFactory */
     private $journalEntryFactory;
@@ -42,8 +43,8 @@ class JournalEntryFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreate()
     {
         $entry = $this->journalEntryFactory->create(
-            $request = $this->getMock('Ivory\HttpAdapter\Message\InternalRequestInterface'),
-            $response = $this->getMock('Ivory\HttpAdapter\Message\ResponseInterface')
+            $request = $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface'),
+            $response = $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface')
         );
 
         $this->assertSame($request, $entry->getRequest());

@@ -97,6 +97,6 @@ class BasicAuthSubscriberTest extends AbstractSubscriberTest
      */
     private function createBasicAuthMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface');
     }
 }

@@ -20,27 +20,21 @@
         "ext-curl": "*",
         "guzzle/guzzle": "^3.9.4@dev",
         "guzzlehttp/guzzle": "^4.1.4|^5.0|^6.0",
-        "kriswallsmith/buzz": "^0.13",
+        "kriswallsmith/buzz": "~0.13",
         "nategood/httpful": "^0.2.17",
-        "phpunit/phpunit": "^4.0",
-        "phpunit/phpunit-mock-objects": "dev-matcher-verify as 2.3.x-dev",
+        "phpunit/phpunit": "^4.0|^5.0",
+        "phpunit/phpunit-mock-objects": "^2.1|^3.0",
         "psr/log": "^1.0",
         "react/http-client": "^0.4",
         "react/dns": "^0.4.1",
-        "rmccue/requests": "dev-master",
-        "satooshi/php-coveralls": "^1.0",
+        "rmccue/requests": "^1.7",
         "symfony/event-dispatcher": "^2.0|^3.0",
         "symfony/phpunit-bridge": "^2.7|^3.0",
-        "tedivm/stash": "^0.13",
-        "zendframework/zendframework1": ">=1.12.9,<=1.12.14|^1.12.16",
+        "symfony/stopwatch": "^2.2|^3.0",
+        "tedivm/stash": "~0.13",
+        "zendframework/zendframework1": "^1.12.9",
         "zendframework/zend-http": "^2.3.4"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/egeloen/phpunit-mock-objects.git"
-        }
-    ],
     "suggest": {
         "doctrine/cache": "Allows you to use the cache event subscriber",
         "ext-curl": "Allows you to use the cURL adapter",

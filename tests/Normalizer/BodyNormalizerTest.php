@@ -13,13 +13,14 @@ namespace Ivory\Tests\HttpAdapter\Normalizer;
 
 use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Body normalizer test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class BodyNormalizerTest extends \PHPUnit_Framework_TestCase
+class BodyNormalizerTest extends AbstractTestCase 
 {
     public function testNormalizeWithResource()
     {
@@ -37,7 +38,7 @@ class BodyNormalizerTest extends \PHPUnit_Framework_TestCase
 
     public function testNormalizeWithStream()
     {
-        $body = $this->getMock('Ivory\HttpAdapter\Message\Stream\StreamInterface');
+        $body = $this->createMock('Psr\Http\Message\StreamInterface');
 
         $this->assertSame($body, BodyNormalizer::normalize($body, RequestInterface::METHOD_GET));
     }

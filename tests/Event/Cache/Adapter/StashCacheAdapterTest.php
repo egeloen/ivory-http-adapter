@@ -12,13 +12,14 @@
 namespace Ivory\Tests\HttpAdapter\Event\Cache\Adapter;
 
 use Ivory\HttpAdapter\Event\Cache\Adapter\StashCacheAdapter;
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
  * Stash cache adapter test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class StashCacheAdapterTest extends \PHPUnit_Framework_TestCase
+class StashCacheAdapterTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\Event\Cache\Adapter\StashCacheAdapter */
     private $stashCacheAdapter;
@@ -132,7 +133,9 @@ class StashCacheAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createPoolMock()
     {
-        return $this->getMock('Stash\Pool');
+        return $this->getMockBuilder('Stash\Pool')
+            ->setMethods(array('getItem', 'flush'))
+            ->getMock();
     }
 
     /**
@@ -140,6 +143,6 @@ class StashCacheAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createItemMock()
     {
-        return $this->getMock('Stash\Item');
+        return $this->createMock('Stash\Item');
     }
 }

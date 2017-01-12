@@ -11,12 +11,14 @@
 
 namespace Ivory\Tests\HttpAdapter\Parser;
 
+use Ivory\Tests\HttpAdapter\AbstractTestCase;
+
 /**
  * Abstract parser test.
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractHeadersParserTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractHeadersParserTest extends AbstractTestCase
 {
     /**
      * Gets the headers provider.

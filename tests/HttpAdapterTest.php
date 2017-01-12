@@ -19,7 +19,7 @@ use Ivory\HttpAdapter\MultiHttpAdapterException;
  *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class HttpAdapterTest extends \PHPUnit_Framework_TestCase
+class HttpAdapterTest extends AbstractTestCase
 {
     /** @var \Ivory\HttpAdapter\AbstractHttpAdapter|\PHPUnit_Framework_MockObject_MockObject */
     private $httpAdapter;
@@ -132,6 +132,6 @@ class HttpAdapterTest extends \PHPUnit_Framework_TestCase
      */
     private function createConfigurationMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\ConfigurationInterface');
+        return $this->createMock('Ivory\HttpAdapter\ConfigurationInterface');
     }
 }

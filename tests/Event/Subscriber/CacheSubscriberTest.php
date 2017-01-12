@@ -335,6 +335,6 @@ class CacheSubscriberTest extends AbstractSubscriberTest
      */
     private function createCacheMock()
     {
-        return $this->getMock('Ivory\HttpAdapter\Event\Cache\CacheInterface');
+        return $this->createMock('Ivory\HttpAdapter\Event\Cache\CacheInterface');
     }
 }
