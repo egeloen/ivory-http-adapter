@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### 1.0.2 (????-??-??)
+
+ * a7617d0 - [Composer] Upgrade deps
+ * 2e8a33a - Fix tests
+ * 9780bb2 - Fix docblock
+ 
 ### 1.0.1 (2016-05-06)
 
  * 3b1a38a - [Guzzle6] Removed unnecessary arguments pass
