@@ -32,7 +32,7 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
     /**
      * Creates a guzzle 6 http adapter.
      *
-     * @param \GuzzleHttp\ClientInterface|null               $client        The guzzle 4 client.
+     * @param \GuzzleHttp\ClientInterface|null               $client        The guzzle 6 client.
      * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
      */
     public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
