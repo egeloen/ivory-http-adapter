@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 1.0.2 (????-??-??)
+### 1.0.2 (2017-01-12)
 
  * a7617d0 - [Composer] Upgrade deps
  * 2e8a33a - Fix tests
