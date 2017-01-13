@@ -5,32 +5,32 @@ php:
     - 5.5
     - 5.6
     - 7.0
+    - 7.1
     - hhvm
+
+branches:
+    only: master
 
 env:
     global:
         - TEST_SERVER=http://127.0.0.1:10000/server.php
-        - SYMFONY_DEPRECATIONS_HELPER=weak
-        - SYMFONY_VERSION=2.3.*
+        - SYMFONY_DEPRECATIONS_HELPER=strict
         - GUZZLE_VERSION=6.*
         - COMPOSER_PREFER_LOWEST=false
         - ENABLE_CURL=true
 
 install:
-    - if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]] && [[ "$TRAVIS_PHP_VERSION" != "7.0" ]]; then printf "\n" | pecl install propro-1.0.2; fi
-    - if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]] && [[ "$TRAVIS_PHP_VERSION" != "7.0" ]]; then printf "\n" | pecl install raphf-1.1.2; fi
-    - if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]] && [[ "$TRAVIS_PHP_VERSION" != "7.0" ]]; then printf "\n" | pecl install pecl_http-2.5.6; fi
-    - if [[ "$TRAVIS_PHP_VERSION" = "7.0" ]]; then printf "\n" | pecl install propro; fi
-    - if [[ "$TRAVIS_PHP_VERSION" = "7.0" ]]; then printf "\n" | pecl install raphf; fi
-    - if [[ "$TRAVIS_PHP_VERSION" = "7.0" ]]; then printf "\n" | pecl install pecl_http; fi
+    - if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]] && [[ "$TRAVIS_PHP_VERSION" != 7.* ]]; then printf "\n" | pecl install propro-1.0.2; fi
+    - if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]] && [[ "$TRAVIS_PHP_VERSION" != 7.* ]]; then printf "\n" | pecl install raphf-1.1.2; fi
+    - if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]] && [[ "$TRAVIS_PHP_VERSION" != 7.* ]]; then printf "\n" | pecl install pecl_http-2.5.6; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = 7.* ]]; then printf "\n" | pecl install propro; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = 7.* ]]; then printf "\n" | pecl install raphf; fi
+    - if [[ "$TRAVIS_PHP_VERSION" = 7.* ]]; then printf "\n" | pecl install pecl_http; fi
     - if [[ "$ENABLE_CURL" = false ]]; then mkdir -p ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d; fi
     - if [[ "$ENABLE_CURL" = false ]]; then echo "disable_functions = curl_init" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
     - if [[ "$TRAVIS_PHP_VERSION" = "5.6" ]]; then echo "always_populate_raw_post_data = -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
     - php -S 127.0.0.1:10000 -t tests/Fixtures > /dev/null 2>&1 &
-    - composer require symfony/event-dispatcher:${SYMFONY_VERSION} --no-update --dev
-    - if [[ "$SYMFONY_VERSION" = 3\.* ]]; then composer remove --dev --no-update guzzle/guzzle; fi
     - if [[ "$GUZZLE_VERSION" != "6.*" ]]; then composer require guzzlehttp/guzzle:${GUZZLE_VERSION} --no-update --dev; fi
-    - if [[ "$SYMFONY_VERSION" = *dev* ]]; then sed -i "s/\"MIT\"/\"MIT\",\"minimum-stability\":\"dev\"/g" composer.json; fi
     - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST = true ]]; then echo "--prefer-lowest --prefer-stable"; fi`
 
 script: vendor/bin/phpunit --configuration phpunit.travis.xml --coverage-clover build/clover.xml
@@ -50,31 +50,8 @@ matrix:
           env: COMPOSER_PREFER_LOWEST=true
         - php: 5.6
           env: ENABLE_CURL=false
-        - php: 5.6
-          env: SYMFONY_VERSION=2.1.*
-        - php: 5.6
-          env: SYMFONY_VERSION=2.2.*
-        - php: 5.6
-          env: SYMFONY_VERSION=2.4.*
-        - php: 5.6
-          env: SYMFONY_VERSION=2.5.*
-        - php: 5.6
-          env: SYMFONY_VERSION=2.6.*
-        - php: 5.6
-          env: SYMFONY_VERSION=2.7.*
-        - php: 5.6
-          env: SYMFONY_VERSION=2.8.* SYMFONY_DEPRECATIONS_HELPER=strict
-        - php: 5.6
-          env: SYMFONY_VERSION=3.0.* SYMFONY_DEPRECATIONS_HELPER=strict
-        - php: 5.6
-          env: SYMFONY_VERSION=3.1.* SYMFONY_DEPRECATIONS_HELPER=strict
-        - php: 5.6
-          env: SYMFONY_VERSION=3.2.* SYMFONY_DEPRECATIONS_HELPER=strict
-        - php: 5.6
-          env: SYMFONY_VERSION=3.3.*@dev SYMFONY_DEPRECATIONS_HELPER=strict
     allow_failures:
         - php: hhvm
-        - env: SYMFONY_VERSION=3.3.*@dev SYMFONY_DEPRECATIONS_HELPER=strict
 
 notifications:
     email: geloen.eric@gmail.com
