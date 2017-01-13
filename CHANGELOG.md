@@ -2,6 +2,7 @@
 
 ### 1.0.3 (????-??-??)
 
+ * 0b38fb3 - [Travis] Simplify matrix
  * cdecb3b - Fix .gitattributes
  * 388c107 - Remove local bin directory
  * 4aff3cb - Remove .php_cs file
