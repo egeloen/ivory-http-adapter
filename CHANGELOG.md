@@ -2,6 +2,7 @@
 
 ### 1.0.3 (????-??-??)
 
+ * 0a96602 - Add PHP-CS-Fixer support
  * 0b38fb3 - [Travis] Simplify matrix
  * cdecb3b - Fix .gitattributes
  * 388c107 - Remove local bin directory
