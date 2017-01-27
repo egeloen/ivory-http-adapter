@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\FopenHttpAdapter;
 
 /**
- * Fopen http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class FopenHttpAdapterTest extends AbstractHttpAdapterTest

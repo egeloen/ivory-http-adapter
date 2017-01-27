@@ -12,20 +12,24 @@
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface;
 use Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Status code subscriber test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StatusCodeSubscriberTest extends AbstractSubscriberTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Subscriber\StatusCodeSubscriber */
+    /**
+     * @var StatusCodeSubscriber
+     */
     private $statusCodeSubscriber;
 
-    /** @var \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var StatusCodeInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $statusCode;
 
     /**
@@ -34,15 +38,6 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
     protected function setUp()
     {
         $this->statusCodeSubscriber = new StatusCodeSubscriber($this->statusCode = $this->createStatusCodeMock());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->statusCode);
-        unset($this->statusCodeSubscriber);
     }
 
     public function testDefaultState()
@@ -65,10 +60,10 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
         $events = StatusCodeSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
-        $this->assertSame(array('onRequestSent', 200), $events[Events::REQUEST_SENT]);
+        $this->assertSame(['onRequestSent', 200], $events[Events::REQUEST_SENT]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
-        $this->assertSame(array('onMultiRequestSent', 200), $events[Events::MULTI_REQUEST_SENT]);
+        $this->assertSame(['onMultiRequestSent', 200], $events[Events::MULTI_REQUEST_SENT]);
     }
 
     public function testRequestSentEventWithValidStatusCode()
@@ -103,15 +98,15 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiRequestSentEventWithValidStatusCode()
     {
-        $responses = array($response1 = $this->createResponseMock(), $response2 = $this->createResponseMock());
+        $responses = [$response1 = $this->createResponseMock(), $response2 = $this->createResponseMock()];
 
         $this->statusCode
             ->expects($this->exactly(count($responses)))
             ->method('validate')
-            ->will($this->returnValueMap(array(
-                array($response1, true),
-                array($response2, true),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, true],
+                [$response2, true],
+            ]));
 
         $this->statusCodeSubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent(null, $responses));
 
@@ -122,18 +117,18 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiRequestSentEventWithInvalidStatusCode()
     {
-        $responses = array(
+        $responses = [
             $response1 = $this->createResponseMock($this->createRequestMock(), false),
             $response2 = $this->createResponseMock($this->createRequestMock(), false),
-        );
+        ];
 
         $this->statusCode
             ->expects($this->exactly(count($responses)))
             ->method('validate')
-            ->will($this->returnValueMap(array(
-                array($response1, false),
-                array($response2, false),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, false],
+                [$response2, false],
+            ]));
 
         $this->statusCodeSubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent(null, $responses));
 
@@ -156,12 +151,10 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a response mock.
+     * @param InternalRequestInterface|null $internalRequest
+     * @param bool                          $valid
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $internalRequest The internal request.
-     * @param boolean                                                  $valid           TRUE if the status code is valid else FALSE.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function createResponseMock(InternalRequestInterface $internalRequest = null, $valid = true)
     {
@@ -181,9 +174,7 @@ class StatusCodeSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a status code mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface|\PHPUnit_Framework_MockObject_MockObject The status code mock.
+     * @return StatusCodeInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createStatusCodeMock()
     {

@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use GuzzleHttp\Ring\Client\CurlMultiHandler;
 
 /**
- * Guzzle 5 multi curl http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Guzzle5CurlMultiHttpAdapterTest extends AbstractGuzzle5CurlHttpAdapterTest

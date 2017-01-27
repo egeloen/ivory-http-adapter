@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\SocketHttpAdapter;
 
 /**
- * Socket http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class SocketHttpAdapterTest extends AbstractHttpAdapterTest

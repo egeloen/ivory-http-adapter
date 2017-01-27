@@ -16,19 +16,23 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Basic auth test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class BasicAuthTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\BasicAuth\BasicAuth */
+    /**
+     * @var BasicAuth
+     */
     private $basicAuth;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $username;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $password;
 
     /**
@@ -37,16 +41,6 @@ class BasicAuthTest extends AbstractTestCase
     protected function setUp()
     {
         $this->basicAuth = new BasicAuth($this->username = 'username', $this->password = 'password');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->password);
-        unset($this->username);
-        unset($this->basicAuth);
     }
 
     public function testDefaultState()
@@ -104,6 +98,8 @@ class BasicAuthTest extends AbstractTestCase
     }
 
     /**
+     * @param mixed $matcher
+     *
      * @dataProvider validMatcherProvider
      */
     public function testAuthenticateWithValidMatcher($matcher)
@@ -124,6 +120,8 @@ class BasicAuthTest extends AbstractTestCase
     }
 
     /**
+     * @param mixed $matcher
+     *
      * @dataProvider invalidMatcherProvider
      */
     public function testAuthenticateWithInvalidMatcher($matcher)
@@ -139,44 +137,38 @@ class BasicAuthTest extends AbstractTestCase
     }
 
     /**
-     * Gets the valid matcher provider.
-     *
-     * @return array The valid matcher provider.
+     * @return array
      */
     public function validMatcherProvider()
     {
-        return array(
-            array(null),
-            array('/^http:\/\/egeloen\.fr$/'),
-            array(
+        return [
+            [null],
+            ['/^http:\/\/egeloen\.fr$/'],
+            [
                 function (InternalRequestInterface $request) {
                     return $request->getUri() === 'http://egeloen.fr';
                 },
-            ),
-        );
+            ],
+        ];
     }
 
     /**
-     * Gets the invalid matcher provider.
-     *
-     * @return array The invalid matcher provider.
+     * @return array
      */
     public function invalidMatcherProvider()
     {
-        return array(
-            array('/^foo$/'),
-            array(
+        return [
+            ['/^foo$/'],
+            [
                 function (InternalRequestInterface $request) {
                     return $request->getUri() === 'foo';
                 },
-            ),
-        );
+            ],
+        ];
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject the request mock
      */
     private function createRequestMock()
     {

@@ -12,117 +12,91 @@
 namespace Ivory\HttpAdapter\Message;
 
 /**
- * Internal request interface.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface InternalRequestInterface extends RequestInterface
 {
     /**
-     * Gets the datas.
-     *
-     * @return array The datas.
+     * @return array
      */
     public function getDatas();
 
     /**
-     * Checks if there is the data.
+     * @param string $name
      *
-     * @param string $name The data name.
-     *
-     * @return boolean TRUE if there is the data else FALSE.
+     * @return bool
      */
     public function hasData($name);
 
     /**
-     * Gets the data.
+     * @param string $name
      *
-     * @param string $name The data name.
-     *
-     * @return mixed The data value.
+     * @return mixed
      */
     public function getData($name);
 
     /**
-     * Sets the data.
+     * @param string $name
+     * @param mixed  $value
      *
-     * @param string $name  The data name.
-     * @param mixed  $value The data value.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The new internal request.
+     * @return InternalRequestInterface
      */
     public function withData($name, $value);
 
     /**
-     * Adds the data.
+     * @param string $name
+     * @param mixed  $value
      *
-     * @param string $name  The data name.
-     * @param mixed  $value The data value.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The new internal request.
+     * @return InternalRequestInterface
      */
     public function withAddedData($name, $value);
 
     /**
-     * Removes a data.
+     * @param string $name
      *
-     * @param string $name The data name.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The new internal request.
+     * @return InternalRequestInterface
      */
     public function withoutData($name);
 
     /**
-     * Gets the files.
-     *
-     * @return array The files.
+     * @return array
      */
     public function getFiles();
 
     /**
-     * Checks if there is the file.
+     * @param string $name
      *
-     * @param string $name The file name.
-     *
-     * @return boolean TRUE if there is the file else FALSE.
+     * @return bool
      */
     public function hasFile($name);
 
     /**
-     * Gets a file.
+     * @param string $name
      *
-     * @param string $name The file name.
-     *
-     * @return string The file.
+     * @return string
      */
     public function getFile($name);
 
     /**
-     * Sets a file.
+     * @param string $name
+     * @param string $file
      *
-     * @param string $name The file name.
-     * @param string $file The file.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The new internal request.
+     * @return InternalRequestInterface
      */
     public function withFile($name, $file);
 
     /**
-     * Adds a file.
+     * @param string $name
+     * @param string $file
      *
-     * @param string $name The file name.
-     * @param string $file The file.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The new internal request.
+     * @return InternalRequestInterface
      */
     public function withAddedFile($name, $file);
 
     /**
-     * Removes a file.
+     * @param string $name
      *
-     * @param string $name The file name.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The new internal request.
+     * @return InternalRequestInterface
      */
     public function withoutFile($name);
 }

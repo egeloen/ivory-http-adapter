@@ -15,23 +15,19 @@ use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 use Ivory\HttpAdapter\Parser\HeadersParser;
 
 /**
- * Headers normalizer.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HeadersNormalizer extends AbstractUninstantiableAsset
 {
     /**
-     * Normalizes the headers.
+     * @param string|array $headers
+     * @param bool         $associative
      *
-     * @param string|array $headers     The headers.
-     * @param boolean      $associative TRUE if the headers should be an associative array else FALSE.
-     *
-     * @return array The normalized headers.
+     * @return array
      */
     public static function normalize($headers, $associative = true)
     {
-        $normalizedHeaders = array();
+        $normalizedHeaders = [];
 
         if (!$associative) {
             $headers = self::normalize($headers);
@@ -60,11 +56,9 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
     }
 
     /**
-     * Normalizes the header name.
+     * @param string $name
      *
-     * @param string $name The header name.
-     *
-     * @return string The normalized header name.
+     * @return string
      */
     public static function normalizeHeaderName($name)
     {
@@ -72,11 +66,9 @@ class HeadersNormalizer extends AbstractUninstantiableAsset
     }
 
     /**
-     * Normalizes the header value.
+     * @param array|string $value
      *
-     * @param array|string $value The header value.
-     *
-     * @return string The normalized header value.
+     * @return string
      */
     public static function normalizeHeaderValue($value)
     {

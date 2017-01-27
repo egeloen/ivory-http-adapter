@@ -11,22 +11,30 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\StopwatchHttpAdapter;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * Stopwatch http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StopwatchHttpAdapterTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\StopwatchHttpAdapter */
+    /**
+     * @var StopwatchHttpAdapter
+     */
     private $stopwatchHttpAdapter;
 
-    /** @var \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $httpAdapter;
 
-    /** @var \Symfony\Component\Stopwatch\Stopwatch|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var Stopwatch|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $stopwatch;
 
     /**
@@ -40,22 +48,16 @@ class StopwatchHttpAdapterTest extends AbstractTestCase
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->stopwatch);
-        unset($this->httpAdapter);
-        unset($this->stopwatchHttpAdapter);
-    }
-
     public function testInheritance()
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\PsrHttpAdapterDecorator', $this->stopwatchHttpAdapter);
     }
 
     /**
+     * @param string            $method
+     * @param array             $params
+     * @param ResponseInterface $result
+     *
      * @dataProvider watchProvider
      */
     public function testWatch($method, array $params, $result)
@@ -75,10 +77,13 @@ class StopwatchHttpAdapterTest extends AbstractTestCase
             ->method('stop')
             ->with($this->identicalTo('ivory.http_adapter'));
 
-        $this->assertSame($result, call_user_func_array(array($this->stopwatchHttpAdapter, $method), $params));
+        $this->assertSame($result, call_user_func_array([$this->stopwatchHttpAdapter, $method], $params));
     }
 
     /**
+     * @param string $method
+     * @param array  $params
+     *
      * @dataProvider watchProvider
      */
     public function testWatchException($method, array $params)
@@ -99,7 +104,7 @@ class StopwatchHttpAdapterTest extends AbstractTestCase
             ->with($this->identicalTo('ivory.http_adapter'));
 
         try {
-            call_user_func_array(array($this->stopwatchHttpAdapter, $method), $params);
+            call_user_func_array([$this->stopwatchHttpAdapter, $method], $params);
             $this->fail();
         } catch (\Exception $e) {
             $this->assertSame($exception, $e);
@@ -107,22 +112,18 @@ class StopwatchHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Gets the watch provider.
-     *
-     * @return array The watch provider.
+     * @return array
      */
     public function watchProvider()
     {
-        return array(
-            array('sendRequest', array($this->createInternalRequestMock()), $this->createResponseMock()),
-            array('sendRequests', array(array($this->createInternalRequestMock())), array($this->createResponseMock())),
-        );
+        return [
+            ['sendRequest', [$this->createInternalRequestMock()], $this->createResponseMock()],
+            ['sendRequests', [[$this->createInternalRequestMock()]], [$this->createResponseMock()]],
+        ];
     }
 
     /**
-     * Creates an http adapter mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
+     * @return HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createHttpAdapterMock()
     {
@@ -130,9 +131,7 @@ class StopwatchHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a stopwatch mock.
-     *
-     * @return \Symfony\Component\Stopwatch\Stopwatch|\PHPUnit_Framework_MockObject_MockObject The stopwatch mock.
+     * @return Stopwatch|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createStopwatchMock()
     {
@@ -140,9 +139,7 @@ class StopwatchHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createInternalRequestMock()
     {
@@ -150,9 +147,7 @@ class StopwatchHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {

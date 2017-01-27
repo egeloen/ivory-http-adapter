@@ -12,11 +12,10 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Buzz\Browser;
+use Buzz\Client\ClientInterface;
 use Ivory\HttpAdapter\BuzzHttpAdapter;
 
 /**
- * Abstract buzz http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractBuzzHttpAdapterTest extends AbstractHttpAdapterTest
@@ -35,9 +34,7 @@ abstract class AbstractBuzzHttpAdapterTest extends AbstractHttpAdapterTest
     }
 
     /**
-     * Creates the buzz client.
-     *
-     * @return \Buzz\Client\ClientInterface The buzz client.
+     * @return ClientInterface
      */
     abstract protected function createClient();
 }

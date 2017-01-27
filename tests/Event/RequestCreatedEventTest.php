@@ -12,15 +12,18 @@
 namespace Ivory\Tests\HttpAdapter\Event;
 
 use Ivory\HttpAdapter\Event\RequestCreatedEvent;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Pre send event test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RequestCreatedEventTest extends AbstractEventTest
 {
-    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $request;
 
     /**
@@ -31,16 +34,6 @@ class RequestCreatedEventTest extends AbstractEventTest
         $this->request = $this->createRequestMock();
 
         parent::setUp();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->request);
-
-        parent::tearDown();
     }
 
     public function testDefaultState()
@@ -86,9 +79,7 @@ class RequestCreatedEventTest extends AbstractEventTest
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {
@@ -96,9 +87,7 @@ class RequestCreatedEventTest extends AbstractEventTest
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -106,9 +95,7 @@ class RequestCreatedEventTest extends AbstractEventTest
     }
 
     /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
+     * @return HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createExceptionMock()
     {

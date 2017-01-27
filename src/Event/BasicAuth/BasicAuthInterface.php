@@ -14,67 +14,49 @@ namespace Ivory\HttpAdapter\Event\BasicAuth;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Basic auth.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface BasicAuthInterface
 {
     /**
-     * Gets the username.
-     *
-     * @return string The username.
+     * @return string
      */
     public function getUsername();
 
     /**
-     * Sets the username.
-     *
-     * @param string $username The username.
+     * @param string $username
      */
     public function setUsername($username);
 
     /**
-     * Gets the password.
-     *
-     * @return string The password.
+     * @return string
      */
     public function getPassword();
 
     /**
-     * Sets the password.
-     *
-     * @param string $password The password.
+     * @param string $password
      */
     public function setPassword($password);
 
     /**
-     * Checks if there is a matcher.
-     *
-     * @return boolean TRUE if there is a matcher else FALSE.
+     * @return bool
      */
     public function hasMatcher();
 
     /**
-     * Gets the matcher.
-     *
-     * @return string|callable|null The matcher.
+     * @return string|callable|null
      */
     public function getMatcher();
 
     /**
-     * Sets the matcher.
-     *
-     * @param string|callable|null $matcher The matcher.
+     * @param string|callable|null $matcher
      */
     public function setMatcher($matcher);
 
     /**
-     * Authenticates a request.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The authenticated internal request.
+     * @return InternalRequestInterface
      */
     public function authenticate(InternalRequestInterface $internalRequest);
 }

@@ -14,19 +14,17 @@ namespace Ivory\HttpAdapter\Event\Cache\Adapter;
 use Stash\Pool;
 
 /**
- * Stash cache adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StashCacheAdapter implements CacheAdapterInterface
 {
-    /** @var \Stash\Pool */
+    /**
+     * @var Pool
+     */
     private $pool;
 
     /**
-     * Creates a stash cache.
-     *
-     * @param \Stash\Pool $pool The stash pool.
+     * @param Pool $pool
      */
     public function __construct(Pool $pool)
     {

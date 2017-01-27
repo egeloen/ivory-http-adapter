@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy;
 
 /**
- * Exponential delayed retry strategy test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ExponentialDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy */
+    /**
+     * @var ExponentialDelayedRetryStrategy
+     */
     private $exponentialRetryStrategy;
 
     /**
@@ -30,14 +30,6 @@ class ExponentialDelayedRetryStrategyTest extends AbstractRetryStrategyTest
     protected function setUp()
     {
         $this->exponentialRetryStrategy = new ExponentialDelayedRetryStrategy();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->exponentialRetryStrategy);
     }
 
     public function testDefaultState()

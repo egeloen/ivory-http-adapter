@@ -15,19 +15,17 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Abstract event.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractEvent extends Event
 {
-    /** @var \Ivory\HttpAdapter\HttpAdapterInterface */
+    /**
+     * @var HttpAdapterInterface
+     */
     private $httpAdapter;
 
     /**
-     * Creates an event.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
+     * @param HttpAdapterInterface $httpAdapter
      */
     public function __construct(HttpAdapterInterface $httpAdapter)
     {
@@ -35,9 +33,7 @@ abstract class AbstractEvent extends Event
     }
 
     /**
-     * Gets the http adapter.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterInterface The http adapter.
+     * @return HttpAdapterInterface
      */
     public function getHttpAdapter()
     {

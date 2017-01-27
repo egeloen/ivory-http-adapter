@@ -11,19 +11,22 @@
 
 namespace Ivory\Tests\HttpAdapter\Event;
 
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Abstract event test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractEventTest extends AbstractTestCase
 {
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     protected $event;
 
-    /** @var \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     protected $httpAdapter;
 
     /**
@@ -35,15 +38,6 @@ abstract class AbstractEventTest extends AbstractTestCase
         $this->event = $this->createEvent();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->httpAdapter);
-        unset($this->event);
-    }
-
     public function testDefaultState()
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Event\AbstractEvent', $this->event);
@@ -51,16 +45,12 @@ abstract class AbstractEventTest extends AbstractTestCase
     }
 
     /**
-     * Creates the event.
-     *
-     * @return mixed The event.
+     * @return mixed
      */
     abstract protected function createEvent();
 
     /**
-     * Creates an http adapter mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
+     * @return HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createHttpAdapterMock()
     {

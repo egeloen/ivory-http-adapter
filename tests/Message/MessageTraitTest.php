@@ -11,16 +11,17 @@
 
 namespace Ivory\Tests\HttpAdapter\Message;
 
+use Ivory\HttpAdapter\Message\MessageTrait;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Message trait test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class MessageTraitTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Message\MessageTrait */
+    /**
+     * @var MessageTrait
+     */
     private $message;
 
     /**
@@ -29,14 +30,6 @@ class MessageTraitTest extends AbstractTestCase
     protected function setUp()
     {
         $this->message = $this->getObjectForTrait('Ivory\HttpAdapter\Message\MessageTrait');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->message);
     }
 
     public function testDefaultState()
@@ -52,7 +45,7 @@ class MessageTraitTest extends AbstractTestCase
         $this->assertNotSame($this->message, $message);
         $this->assertTrue($message->hasParameter($name));
         $this->assertSame($value, $message->getParameter($name));
-        $this->assertSame(array($name => $value), $message->getParameters());
+        $this->assertSame([$name => $value], $message->getParameters());
     }
 
     public function testWithAddedParameter()
@@ -62,8 +55,8 @@ class MessageTraitTest extends AbstractTestCase
 
         $this->assertNotSame($this->message, $message);
         $this->assertTrue($message->hasParameter($name));
-        $this->assertSame(array($value1, $value2), $message->getParameter($name));
-        $this->assertSame(array($name => array($value1, $value2)), $message->getParameters());
+        $this->assertSame([$value1, $value2], $message->getParameter($name));
+        $this->assertSame([$name => [$value1, $value2]], $message->getParameters());
     }
 
     public function testWithoutParameter()

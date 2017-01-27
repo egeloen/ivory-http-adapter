@@ -11,11 +11,11 @@
 
 namespace Ivory\HttpAdapter\Message;
 
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use Zend\Diactoros\Request as DiactorosRequest;
 
 /**
- * Request.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Request extends DiactorosRequest implements RequestInterface
@@ -23,18 +23,18 @@ class Request extends DiactorosRequest implements RequestInterface
     use MessageTrait;
 
     /**
-     * @param null|string|\Psr\Http\Message\UriInterface            $uri        The request uri.
-     * @param null|string                                           $method     The request method.
-     * @param string|resource|\Psr\Http\Message\StreamInterface $body       The request body.
-     * @param array                                                 $headers    The request headers.
-     * @param array                                                 $parameters The request parameters.
+     * @param string|UriInterface|null        $uri
+     * @param string|null                     $method
+     * @param string|resource|StreamInterface $body
+     * @param array                           $headers
+     * @param array                           $parameters
      */
     public function __construct(
         $uri = null,
         $method = null,
         $body = 'php://memory',
-        array $headers = array(),
-        array $parameters = array()
+        array $headers = [],
+        array $parameters = []
     ) {
         parent::__construct($uri, $method, $body, $headers);
 

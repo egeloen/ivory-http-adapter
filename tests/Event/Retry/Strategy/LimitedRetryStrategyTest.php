@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy;
 
 /**
- * Limited retry strategy test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class LimitedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy */
+    /**
+     * @var LimitedRetryStrategy
+     */
     private $limitedRetryStrategy;
 
     /**
@@ -30,14 +30,6 @@ class LimitedRetryStrategyTest extends AbstractRetryStrategyTest
     protected function setUp()
     {
         $this->limitedRetryStrategy = new LimitedRetryStrategy();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->limitedRetryStrategy);
     }
 
     public function testDefaultState()

@@ -14,19 +14,15 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Abstract curl http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
 {
     /**
-     * Creates a curl http adapter.
+     * @param ConfigurationInterface|null $configuration
+     * @param bool                        $checkExtension
      *
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration  The configuration.
-     * @param boolean                                        $checkExtension TRUE if the extension should be checked else FALSE.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the check extension is enabled and the curl extension is not loaded.
+     * @throws HttpAdapterException
      */
     public function __construct(ConfigurationInterface $configuration = null, $checkExtension = true)
     {
@@ -38,11 +34,9 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Prepares the protocol version.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return integer The prepared protocol version.
+     * @return int
      */
     protected function prepareProtocolVersion(InternalRequestInterface $internalRequest)
     {
@@ -52,11 +46,9 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Prepares the content.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return array|string The prepared content.
+     * @return array|string
      */
     protected function prepareContent(InternalRequestInterface $internalRequest)
     {
@@ -66,7 +58,7 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
             return $this->prepareBody($internalRequest);
         }
 
-        $content = array();
+        $content = [];
 
         foreach ($internalRequest->getDatas() as $name => $data) {
             $content = array_merge($content, $this->prepareRawContent($name, $data));
@@ -80,11 +72,9 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Creates a file.
+     * @param string $file
      *
-     * @param string $file The file.
-     *
-     * @return mixed The created file.
+     * @return mixed
      */
     protected function createFile($file)
     {
@@ -92,9 +82,7 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Checks if it is safe upload.
-     *
-     * @return boolean TRUE if it is safe upload else FALSE.
+     * @return bool
      */
     protected function isSafeUpload()
     {
@@ -102,18 +90,16 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Prepares the raw content.
+     * @param string       $name
+     * @param array|string $data
+     * @param bool         $isFile
      *
-     * @param string       $name   The name.
-     * @param array|string $data   The data.
-     * @param boolean      $isFile TRUE if the data is a file path else FALSE.
-     *
-     * @return array The prepared raw content.
+     * @return array
      */
     private function prepareRawContent($name, $data, $isFile = false)
     {
         if (is_array($data)) {
-            $preparedData = array();
+            $preparedData = [];
 
             foreach ($data as $subName => $subData) {
                 $preparedData = array_merge(
@@ -125,6 +111,6 @@ abstract class AbstractCurlHttpAdapter extends AbstractHttpAdapter
             return $preparedData;
         }
 
-        return array($name => $isFile ? $this->createFile($data) : $data);
+        return [$name => $isFile ? $this->createFile($data) : $data];
     }
 }

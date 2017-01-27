@@ -13,27 +13,25 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
-use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\Redirect\Redirect;
 use Ivory\HttpAdapter\Event\Redirect\RedirectInterface;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\MultiHttpAdapterException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Redirect subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RedirectSubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Redirect\RedirectInterface */
+    /**
+     * @var RedirectInterface
+     */
     private $redirect;
 
     /**
-     * Creates a redirect subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\Redirect\RedirectInterface $redirect The redirect.
+     * @param RedirectInterface $redirect
      */
     public function __construct(RedirectInterface $redirect = null)
     {
@@ -41,9 +39,7 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the redirect.
-     *
-     * @return \Ivory\HttpAdapter\Event\Redirect\RedirectInterface The redirect.
+     * @return RedirectInterface
      */
     public function getRedirect()
     {
@@ -51,9 +47,7 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
+     * @param RequestSentEvent $event
      */
     public function onRequestSent(RequestSentEvent $event)
     {
@@ -83,13 +77,11 @@ class RedirectSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
+     * @param MultiRequestSentEvent $event
      */
     public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
-        $redirectRequests = array();
+        $redirectRequests = [];
 
         foreach ($event->getResponses() as $response) {
             try {
@@ -130,9 +122,9 @@ class RedirectSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::REQUEST_SENT       => array('onRequestSent', 0),
-            Events::MULTI_REQUEST_SENT => array('onMultiRequestSent', 0),
-        );
+        return [
+            Events::REQUEST_SENT       => ['onRequestSent', 0],
+            Events::MULTI_REQUEST_SENT => ['onMultiRequestSent', 0],
+        ];
     }
 }

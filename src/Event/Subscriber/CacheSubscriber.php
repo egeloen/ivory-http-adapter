@@ -22,19 +22,17 @@ use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Cache subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CacheSubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Cache\CacheInterface */
+    /**
+     * @var CacheInterface
+     */
     private $cache;
 
     /**
-     * Creates a cache subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cache\CacheInterface $cache The cache
+     * @param CacheInterface $cache
      */
     public function __construct(CacheInterface $cache)
     {
@@ -42,9 +40,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the cache.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cache\CacheInterface The cache.
+     * @return CacheInterface
      */
     public function getCache()
     {
@@ -52,9 +48,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Sets the cache.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cache\CacheInterface $cache The cache.
+     * @param CacheInterface $cache
      */
     public function setCache(CacheInterface $cache)
     {
@@ -62,9 +56,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request created.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event
+     * @param RequestCreatedEvent $event
      */
     public function onRequestCreated(RequestCreatedEvent $event)
     {
@@ -79,9 +71,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request sent.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event
+     * @param RequestSentEvent $event
      */
     public function onRequestSent(RequestSentEvent $event)
     {
@@ -89,9 +79,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request errored.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestErroredEvent $event
+     * @param RequestErroredEvent $event
      */
     public function onRequestErrored(RequestErroredEvent $event)
     {
@@ -99,9 +87,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request created.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event
+     * @param MultiRequestCreatedEvent $event
      */
     public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
@@ -119,9 +105,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request sent.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event
+     * @param MultiRequestSentEvent $event
      */
     public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
@@ -131,9 +115,7 @@ class CacheSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request errored.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event
+     * @param MultiRequestErroredEvent $event
      */
     public function onMultiRequestErrored(MultiRequestErroredEvent $event)
     {

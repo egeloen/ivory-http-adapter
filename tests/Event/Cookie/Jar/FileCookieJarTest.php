@@ -15,16 +15,18 @@ use Ivory\HttpAdapter\Event\Cookie\Jar\FileCookieJar;
 use Ivory\Tests\HttpAdapter\Utility\PHPUnitUtility;
 
 /**
- * File cookie jar test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class FileCookieJarTest extends AbstractPersistentCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\FileCookieJar */
+    /**
+     * @var FileCookieJar
+     */
     protected $fileCookieJar;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $file;
 
     /**
@@ -42,15 +44,9 @@ class FileCookieJarTest extends AbstractPersistentCookieJarTest
      */
     protected function tearDown()
     {
-        unset($this->fileCookieJar);
-
         if (file_exists($this->file)) {
             unlink($this->file);
         }
-
-        unset($this->file);
-
-        parent::tearDown();
     }
 
     public function testDefaultState()

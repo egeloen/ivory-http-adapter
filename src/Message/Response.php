@@ -11,11 +11,10 @@
 
 namespace Ivory\HttpAdapter\Message;
 
+use Psr\Http\Message\StreamInterface;
 use Zend\Diactoros\Response as DiactorosResponse;
 
 /**
- * Response.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Response extends DiactorosResponse implements ResponseInterface
@@ -23,16 +22,16 @@ class Response extends DiactorosResponse implements ResponseInterface
     use MessageTrait;
 
     /**
-     * @param string|resource|\Psr\Http\Message\StreamInterface $body       The response body.
-     * @param integer                                           $status     The response status code.
-     * @param array                                             $headers    The response headers.
-     * @param array                                             $parameters The response parameters.
+     * @param string|resource|StreamInterface $body
+     * @param int                             $status
+     * @param array                           $headers
+     * @param array                           $parameters
      */
     public function __construct(
         $body = 'php://memory',
         $status = 200,
-        array $headers = array(),
-        array $parameters = array()
+        array $headers = [],
+        array $parameters = []
     ) {
         parent::__construct($body, $status, $headers);
 

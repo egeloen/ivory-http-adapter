@@ -12,30 +12,22 @@
 namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
 /**
- * Retry strategy chain.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface RetryStrategyChainInterface extends RetryStrategyInterface
 {
     /**
-     * Checks if there is a next chained retry strategy.
-     *
-     * @return boolean TRUE if there is a next chained retry strategy else FALSE.
+     * @return bool
      */
     public function hasNext();
 
     /**
-     * Gets the next chained retry strategy.
-     *
-     * @return \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null The next retry strategy chain.
+     * @return RetryStrategyChainInterface|null
      */
     public function getNext();
 
     /**
-     * Sets the next chained retry strategy.
-     *
-     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next The next retry strategy chain.
+     * @param RetryStrategyChainInterface|null $next
      */
     public function setNext(RetryStrategyChainInterface $next = null);
 }

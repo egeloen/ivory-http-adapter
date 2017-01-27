@@ -12,16 +12,17 @@
 namespace Ivory\Tests\HttpAdapter\Event\Timer;
 
 use Ivory\HttpAdapter\Event\Timer\Timer;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Timer test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class TimerTest extends AbstractTestCase  
+class TimerTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\Timer\Timer */
+    /**
+     * @var Timer
+     */
     private $timer;
 
     /**
@@ -30,14 +31,6 @@ class TimerTest extends AbstractTestCase
     protected function setUp()
     {
         $this->timer = new Timer();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->timer);
     }
 
     public function testStart()
@@ -82,10 +75,10 @@ class TimerTest extends AbstractTestCase
         $request
             ->expects($this->any())
             ->method('hasParameter')
-            ->will($this->returnValueMap(array(
-                array(Timer::START_TIME, true),
-                array(Timer::TIME, false),
-            )));
+            ->will($this->returnValueMap([
+                [Timer::START_TIME, true],
+                [Timer::TIME, false],
+            ]));
 
         $request
             ->expects($this->once())
@@ -120,10 +113,10 @@ class TimerTest extends AbstractTestCase
         $request
             ->expects($this->any())
             ->method('hasParameter')
-            ->will($this->returnValueMap(array(
-                array(Timer::START_TIME, true),
-                array(Timer::TIME, true),
-            )));
+            ->will($this->returnValueMap([
+                [Timer::START_TIME, true],
+                [Timer::TIME, true],
+            ]));
 
         $request
             ->expects($this->never())
@@ -135,9 +128,7 @@ class TimerTest extends AbstractTestCase
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {

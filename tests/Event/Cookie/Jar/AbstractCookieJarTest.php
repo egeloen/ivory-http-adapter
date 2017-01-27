@@ -11,19 +11,17 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
+use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
+use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Abstract cookie jar test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractCookieJarTest extends AbstractTestCase
 {
     /**
-     * Creates a cookie factory mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The cookie factory mock.
+     * @return CookieFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function createCookieFactoryMock()
     {
@@ -31,12 +29,10 @@ abstract class AbstractCookieJarTest extends AbstractTestCase
     }
 
     /**
-     * Creates a cookie mock.
+     * @param bool $name
+     * @param bool $value
      *
-     * @param boolean $name  TRUE if the cookie has a name else FALSE.
-     * @param boolean $value TRUE if the cookie has a value else FALSE.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The cookie mock.
+     * @return CookieInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function createCookieMock($name = true, $value = true)
     {
@@ -60,9 +56,7 @@ abstract class AbstractCookieJarTest extends AbstractTestCase
     }
 
     /**
-     * Creates an expired cookie mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The expired cookie mock.
+     * @return CookieInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function createExpiredCookieMock()
     {

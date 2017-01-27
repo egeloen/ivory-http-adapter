@@ -11,17 +11,22 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
+use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
+use Ivory\HttpAdapter\Event\Subscriber\AbstractFormatterSubscriber;
+
 /**
- * Formatter subscriber test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class FormatterSubscriberTest extends AbstractSubscriberTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Subscriber\AbstractFormatterSubscriber|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var AbstractFormatterSubscriber|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $formatterSubscriber;
 
-    /** @var \Zend\Log\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var FormatterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $formatter;
 
     /**
@@ -30,17 +35,8 @@ class FormatterSubscriberTest extends AbstractSubscriberTest
     protected function setUp()
     {
         $this->formatterSubscriber = $this->createFormatterSubscriberMockBuilder()
-            ->setConstructorArgs(array($this->formatter = $this->createFormatterMock()))
+            ->setConstructorArgs([$this->formatter = $this->createFormatterMock()])
             ->getMockForAbstractClass();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->formatter);
-        unset($this->formatterSubscriber);
     }
 
     public function testDefaultState()
@@ -59,9 +55,7 @@ class FormatterSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a formatter subscriber mock builder.
-     *
-     * @return \Ivory\HttpAdapter\Event\Subscriber\AbstractFormatterSubscriber|\PHPUnit_Framework_MockObject_MockObject The formatter subscriber mock builder.
+     * @return AbstractFormatterSubscriber|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createFormatterSubscriberMockBuilder()
     {
@@ -69,9 +63,7 @@ class FormatterSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a formatter mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject The formatter mock.
+     * @return FormatterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createFormatterMock()
     {

@@ -15,18 +15,14 @@ use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
- * Headers parser.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HeadersParser extends AbstractUninstantiableAsset
 {
     /**
-     * Parses the headers.
+     * @param array|string $headers
      *
-     * @param array|string $headers The headers.
-     *
-     * @return array The parsed headers.
+     * @return array
      */
     public static function parse($headers)
     {
@@ -36,14 +32,14 @@ class HeadersParser extends AbstractUninstantiableAsset
             return explode("\r\n", end($headers));
         }
 
-        $parsedHeaders = array();
+        $parsedHeaders = [];
 
         foreach ($headers as $name => $value) {
             $value = HeadersNormalizer::normalizeHeaderValue($value);
 
             if (is_int($name)) {
                 if (strpos($value, 'HTTP/') === 0) {
-                    $parsedHeaders = array($value);
+                    $parsedHeaders = [$value];
                 } else {
                     $parsedHeaders[] = $value;
                 }

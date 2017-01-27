@@ -11,11 +11,10 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * PSR http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface PsrHttpAdapterInterface
@@ -28,45 +27,35 @@ interface PsrHttpAdapterInterface
     const EXTRA_VERSION = 'DEV';
 
     /**
-     * Gets the configuration.
-     *
-     * @return \Ivory\HttpAdapter\ConfigurationInterface The configuration.
+     * @return ConfigurationInterface
      */
     public function getConfiguration();
 
     /**
-     * Sets the configuration.
-     *
-     * @param \Ivory\HttpAdapter\ConfigurationInterface $configuration The configuration.
+     * @param ConfigurationInterface $configuration
      */
     public function setConfiguration(ConfigurationInterface $configuration);
 
     /**
-     * Sends a PSR request.
+     * @param RequestInterface $request
      *
-     * @param \Psr\Http\Message\RequestInterface $request The request.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     public function sendRequest(RequestInterface $request);
 
     /**
-     * Sends PSR requests.
+     * @param array $requests
      *
-     * @param array $requests The requests.
+     * @throws MultiHttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred when you don't provide the error callable.
-     *
-     * @return array $responses The responses.
+     * @return array $responses
      */
     public function sendRequests(array $requests);
 
     /**
-     * Gets the name.
-     *
-     * @return string The name.
+     * @return string
      */
     public function getName();
 }

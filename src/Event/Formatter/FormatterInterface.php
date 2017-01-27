@@ -11,41 +11,33 @@
 
 namespace Ivory\HttpAdapter\Event\Formatter;
 
+use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
-use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
- * Formatter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface FormatterInterface
 {
     /**
-     * Formats the request.
+     * @param InternalRequestInterface $request
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return array The formatted request.
+     * @return array
      */
     public function formatRequest(InternalRequestInterface $request);
 
     /**
-     * Formats the response.
+     * @param ResponseInterface $response
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return array The formatted response.
+     * @return array
      */
     public function formatResponse(ResponseInterface $response);
 
     /**
-     * Formats the exception.
+     * @param HttpAdapterException $exception
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
-     *
-     * @return array The formatted exception.
+     * @return array
      */
     public function formatException(HttpAdapterException $exception);
 }

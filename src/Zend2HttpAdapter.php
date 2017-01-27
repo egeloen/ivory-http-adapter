@@ -17,20 +17,18 @@ use Zend\Http\Client;
 use Zend\Http\Response\Stream;
 
 /**
- * Zend 2 http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend2HttpAdapter extends AbstractHttpAdapter
 {
-    /** @var \Zend\Http\Client */
+    /**
+     * @var Client
+     */
     private $client;
 
     /**
-     * Creates a zend 2 http adapter.
-     *
-     * @param \Zend\Http\Client|null                         $client        The zend 2 client.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param \Zend\Http\Client|null      $client
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(Client $client = null, ConfigurationInterface $configuration = null)
     {
@@ -54,11 +52,11 @@ class Zend2HttpAdapter extends AbstractHttpAdapter
     {
         $this->client
             ->resetParameters(true)
-            ->setOptions(array(
+            ->setOptions([
                 'httpversion'  => $internalRequest->getProtocolVersion(),
                 'timeout'      => $this->getConfiguration()->getTimeout(),
                 'maxredirects' => 0,
-            ))
+            ])
             ->setUri($uri = (string) $internalRequest->getUri())
             ->setMethod($internalRequest->getMethod())
             ->setHeaders($this->prepareHeaders($internalRequest))

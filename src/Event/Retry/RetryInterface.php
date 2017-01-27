@@ -15,36 +15,27 @@ use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Retry.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface RetryInterface
 {
-    /** @const string The retry count parameter. */
     const RETRY_COUNT = 'retry_count';
 
     /**
-     * Gets the strategy.
-     *
-     * @return \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface The strategy.
+     * @return RetryStrategyInterface
      */
     public function getStrategy();
 
     /**
-     * Sets the strategy.
-     *
-     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface $strategy The strategy.
+     * @param RetryStrategyInterface $strategy
      */
     public function setStrategy(RetryStrategyInterface $strategy);
 
     /**
-     * Checks if it should retry a request.
+     * @param InternalRequestInterface $internalRequest
+     * @param bool                     $wait
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param boolean                                             $wait            TRUE if the delay should be considered else FALSE.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|boolean The retry request or FALSE if it should not retry it.
+     * @return InternalRequestInterface|bool
      */
     public function retry(InternalRequestInterface $internalRequest, $wait = true);
 }

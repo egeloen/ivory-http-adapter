@@ -11,24 +11,20 @@
 
 namespace Ivory\HttpAdapter\Event\Cookie\Jar;
 
+use Ivory\HttpAdapter\HttpAdapterException;
+
 /**
- * Persistent cookie jar.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface PersistentCookieJarInterface extends CookieJarInterface, \Serializable
 {
     /**
-     * Loads the cookie jar.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
+     * @throws HttpAdapterException
      */
     public function load();
 
     /**
-     * Saves the cookie jar.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
+     * @throws HttpAdapterException
      */
     public function save();
 }

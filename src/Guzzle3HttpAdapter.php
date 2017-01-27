@@ -19,20 +19,18 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Guzzle 3 http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
 {
-    /** @var \Guzzle\Http\ClientInterface */
+    /**
+     * @var ClientInterface
+     */
     private $client;
 
     /**
-     * Creates a guzzle 3 http adapter.
-     *
-     * @param \Guzzle\Http\ClientInterface|null              $client        The guzzle 3 client.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param ClientInterface|null        $client
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
     {
@@ -85,7 +83,7 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function sendInternalRequests(array $internalRequests, $success, $error)
     {
-        $requests = array();
+        $requests = [];
         foreach ($internalRequests as $internalRequest) {
             $requests[] = $this->createRequest($internalRequest, $success, $error);
         }
@@ -105,13 +103,11 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
     }
 
     /**
-     * Creates a request.
+     * @param InternalRequestInterface $internalRequest
+     * @param callable|null            $success
+     * @param callable|null            $error
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param callable|null                                       $success         The success callable.
-     * @param callable|null                                       $error           The error callable.
-     *
-     * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
+     * @return RequestInterface
      */
     private function createRequest(InternalRequestInterface $internalRequest, $success = null, $error = null)
     {
@@ -120,12 +116,12 @@ class Guzzle3HttpAdapter extends AbstractCurlHttpAdapter
             (string) $internalRequest->getUri(),
             $this->prepareHeaders($internalRequest),
             $this->prepareContent($internalRequest),
-            array(
+            [
                 'exceptions'      => false,
                 'allow_redirects' => false,
                 'timeout'         => $this->getConfiguration()->getTimeout(),
                 'connect_timeout' => $this->getConfiguration()->getTimeout(),
-            )
+            ]
         );
 
         $request->setProtocolVersion($internalRequest->getProtocolVersion());

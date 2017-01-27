@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\FileGetContentsHttpAdapter;
 
 /**
- * File get contents http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class FileGetContentsHttpAdapterTest extends AbstractHttpAdapterTest

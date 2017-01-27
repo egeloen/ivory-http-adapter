@@ -14,23 +14,23 @@ namespace Ivory\Tests\HttpAdapter\Parser;
 use Ivory\HttpAdapter\Parser\HeadersParser;
 
 /**
- * Headers parser test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HeadersParserTest extends AbstractHeadersParserTest
 {
     /**
+     * @param array|string $headers
+     *
      * @dataProvider headersProvider
      */
     public function testParse($headers)
     {
         $this->assertSame(
-            array(
+            [
                 'HTTP/1.1 200 OK',
                 'foo: bar',
                 'baz: bat, ban',
-            ),
+            ],
             HeadersParser::parse($headers)
         );
     }

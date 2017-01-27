@@ -18,19 +18,17 @@ use Ivory\HttpAdapter\Event\RequestCreatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Basic auth subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class BasicAuthSubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface */
+    /**
+     * @var BasicAuthInterface
+     */
     private $basicAuth;
 
     /**
-     * Creates a basic auth subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface $basicAuth The basic auth.
+     * @param BasicAuthInterface $basicAuth
      */
     public function __construct(BasicAuthInterface $basicAuth)
     {
@@ -38,9 +36,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the basic auth.
-     *
-     * @return \Ivory\HttpAdapter\Event\BasicAuth\BasicAuthInterface The basic auth.
+     * @return BasicAuthInterface
      */
     public function getBasicAuth()
     {
@@ -48,9 +44,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The request created event.
+     * @param RequestCreatedEvent $event
      */
     public function onRequestCreated(RequestCreatedEvent $event)
     {
@@ -58,9 +52,7 @@ class BasicAuthSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
+     * @param MultiRequestCreatedEvent $event
      */
     public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
@@ -75,9 +67,9 @@ class BasicAuthSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::REQUEST_CREATED       => array('onRequestCreated', 300),
-            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 300),
-        );
+        return [
+            Events::REQUEST_CREATED       => ['onRequestCreated', 300],
+            Events::MULTI_REQUEST_CREATED => ['onMultiRequestCreated', 300],
+        ];
     }
 }

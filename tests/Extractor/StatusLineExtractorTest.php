@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Extractor\StatusLineExtractor;
 use Ivory\Tests\HttpAdapter\Parser\AbstractHeadersParserTest;
 
 /**
- * Status line extractor test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StatusLineExtractorTest extends AbstractHeadersParserTest
 {
     /**
+     * @param array|string $headers
+     *
      * @dataProvider headersProvider
      */
     public function testExtract($headers)

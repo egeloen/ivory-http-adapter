@@ -12,8 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 /**
- * Requests curl http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RequestsCurlHttpAdapterTest extends AbstractRequestsHttpAdapterTest

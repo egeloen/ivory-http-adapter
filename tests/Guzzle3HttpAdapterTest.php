@@ -15,8 +15,6 @@ use Guzzle\Common\Version;
 use Ivory\HttpAdapter\Guzzle3HttpAdapter;
 
 /**
- * Guzzle 3 http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Guzzle3HttpAdapterTest extends AbstractHttpAdapterTest

@@ -11,96 +11,86 @@
 
 namespace Ivory\HttpAdapter\Message;
 
+use Guzzle\Stream\StreamInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Psr\Http\Message\UriInterface;
+
 /**
- * Message factory interface.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface MessageFactoryInterface
 {
     /**
-     * Checks if there is a base uri.
-     *
-     * @return boolean TRUE if there is a base uri else FALSE.
+     * @return bool
      */
     public function hasBaseUri();
 
     /**
-     * Gets the base uri.
-     *
-     * @return null|\Psr\Http\Message\UriInterface The base uri.
+     * @return UriInterface|null
      */
     public function getBaseUri();
 
     /**
-     * Sets the base uri.
+     * @param string|UriInterface|null $baseUri
      *
-     * @param null|string|\Psr\Http\Message\UriInterface $baseUri The base uri.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the base uri is invalid.
+     * @throws HttpAdapterException
      */
     public function setBaseUri($baseUri);
 
     /**
-     * Creates a request.
+     * @param string|object                        $uri
+     * @param string                               $method
+     * @param string                               $protocolVersion
+     * @param array                                $headers
+     * @param resource|string|StreamInterface|null $body
+     * @param array                                $parameters
      *
-     * @param string|object                                          $uri             The uri.
-     * @param string                                                 $method          The method.
-     * @param string                                                 $protocolVersion The protocol version.
-     * @param array                                                  $headers         The headers.
-     * @param resource|string|\Psr\Http\Message\StreamInterface|null $body            The body.
-     * @param array                                                  $parameters      The parameters.
-     *
-     * @return \Ivory\HttpAdapter\Message\RequestInterface The request.
+     * @return RequestInterface
      */
     public function createRequest(
         $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
-        array $headers = array(),
+        array $headers = [],
         $body = null,
-        array $parameters = array()
+        array $parameters = []
     );
 
     /**
-     * Creates an internal request.
+     * @param string|object $uri
+     * @param string        $method
+     * @param string        $protocolVersion
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
+     * @param array         $parameters
      *
-     * @param string|object $uri             The uri.
-     * @param string        $method          The method.
-     * @param string        $protocolVersion The protocol version.
-     * @param array         $headers         The headers.
-     * @param array|string  $datas           The datas.
-     * @param array         $files           The files.
-     * @param array         $parameters      The parameters.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The internal request.
+     * @return InternalRequestInterface
      */
     public function createInternalRequest(
         $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
-        array $headers = array(),
-        $datas = array(),
-        array $files = array(),
-        array $parameters = array()
+        array $headers = [],
+        $datas = [],
+        array $files = [],
+        array $parameters = []
     );
 
     /**
-     * Creates a response.
+     * @param int                                  $statusCode
+     * @param string                               $protocolVersion
+     * @param array                                $headers
+     * @param resource|string|StreamInterface|null $body
+     * @param array                                $parameters
      *
-     * @param integer                                                $statusCode      The status code.
-     * @param string                                                 $protocolVersion The protocol version.
-     * @param array                                                  $headers         The headers.
-     * @param resource|string|\Psr\Http\Message\StreamInterface|null $body            The body.
-     * @param array                                                  $parameters      The parameters.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     public function createResponse(
         $statusCode = 200,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
-        array $headers = array(),
+        array $headers = [],
         $body = null,
-        array $parameters = array()
+        array $parameters = []
     );
 }

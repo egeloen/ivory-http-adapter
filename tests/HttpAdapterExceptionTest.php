@@ -12,15 +12,17 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Http adapter exception test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HttpAdapterExceptionTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\HttpAdapterException */
+    /**
+     * @var HttpAdapterException
+     */
     private $exception;
 
     /**
@@ -29,14 +31,6 @@ class HttpAdapterExceptionTest extends AbstractTestCase
     protected function setUp()
     {
         $this->exception = new HttpAdapterException();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->exception);
     }
 
     public function testDefaultState()
@@ -81,9 +75,7 @@ class HttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {
@@ -91,9 +83,7 @@ class HttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {

@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\Event\Retry\Strategy\LinearDelayedRetryStrategy;
 
 /**
- * Linear delayed retry strategy test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class LinearDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\LinearDelayedRetryStrategy */
+    /**
+     * @var LinearDelayedRetryStrategy
+     */
     private $linearDelayedRetryStrategy;
 
     /**
@@ -32,14 +32,6 @@ class LinearDelayedRetryStrategyTest extends AbstractRetryStrategyTest
         $this->linearDelayedRetryStrategy = new LinearDelayedRetryStrategy();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->linearDelayedRetryStrategy);
-    }
-
     public function testDefaultState()
     {
         $this->assertInstanceOf(
@@ -47,7 +39,7 @@ class LinearDelayedRetryStrategyTest extends AbstractRetryStrategyTest
             $this->linearDelayedRetryStrategy
         );
 
-        $this->assertSame(5, $this->linearDelayedRetryStrategy->getDelay());
+        $this->assertSame(5.0, $this->linearDelayedRetryStrategy->getDelay());
 
         $this->assertFalse($this->linearDelayedRetryStrategy->hasNext());
         $this->assertNull($this->linearDelayedRetryStrategy->getNext());
@@ -79,7 +71,7 @@ class LinearDelayedRetryStrategyTest extends AbstractRetryStrategyTest
             ->method('getParameter')
             ->with($this->identicalTo(RetryInterface::RETRY_COUNT));
 
-        $this->assertSame(0, $this->linearDelayedRetryStrategy->delay($request));
+        $this->assertSame(0.0, $this->linearDelayedRetryStrategy->delay($request));
     }
 
     public function testDelayWithRetryCount()

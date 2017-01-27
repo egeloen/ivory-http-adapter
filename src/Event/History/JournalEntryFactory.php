@@ -15,8 +15,6 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * {@inheritdoc}
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class JournalEntryFactory implements JournalEntryFactoryInterface

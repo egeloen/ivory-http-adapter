@@ -12,27 +12,35 @@
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
 use Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Psr\Log\LoggerInterface;
 
 /**
- * Logger subscriber test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class LoggerSubscriberTest extends AbstractSubscriberTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Subscriber\LoggerSubscriber */
+    /**
+     * @var LoggerSubscriber
+     */
     private $loggerSubscriber;
 
-    /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $logger;
 
-    /** @var \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var FormatterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $formatter;
 
-    /** @var \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var TimerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $timer;
 
     /**
@@ -45,17 +53,6 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             $this->formatter = $this->createFormatterMock(),
             $this->timer = $this->createTimerMock()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->timer);
-        unset($this->formatter);
-        unset($this->logger);
-        unset($this->loggerSubscriber);
     }
 
     public function testDefaultState()
@@ -89,22 +86,22 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $events = LoggerSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::REQUEST_CREATED, $events);
-        $this->assertSame(array('onRequestCreated', 100), $events[Events::REQUEST_CREATED]);
+        $this->assertSame(['onRequestCreated', 100], $events[Events::REQUEST_CREATED]);
 
         $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
-        $this->assertSame(array('onRequestSent', 100), $events[Events::REQUEST_SENT]);
+        $this->assertSame(['onRequestSent', 100], $events[Events::REQUEST_SENT]);
 
         $this->assertArrayHasKey(Events::REQUEST_ERRORED, $events);
-        $this->assertSame(array('onRequestErrored', 100), $events[Events::REQUEST_ERRORED]);
+        $this->assertSame(['onRequestErrored', 100], $events[Events::REQUEST_ERRORED]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
-        $this->assertSame(array('onMultiRequestCreated', 100), $events[Events::MULTI_REQUEST_CREATED]);
+        $this->assertSame(['onMultiRequestCreated', 100], $events[Events::MULTI_REQUEST_CREATED]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
-        $this->assertSame(array('onMultiRequestSent', 100), $events[Events::MULTI_REQUEST_SENT]);
+        $this->assertSame(['onMultiRequestSent', 100], $events[Events::MULTI_REQUEST_SENT]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_ERRORED, $events);
-        $this->assertSame(array('onMultiResponseErrored', 100), $events[Events::MULTI_REQUEST_ERRORED]);
+        $this->assertSame(['onMultiResponseErrored', 100], $events[Events::MULTI_REQUEST_ERRORED]);
     }
 
     public function testRequestSentEvent()
@@ -138,11 +135,11 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->method('debug')
             ->with(
                 $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
-                $this->identicalTo(array(
+                $this->identicalTo([
                     'adapter'  => 'http_adapter',
                     'request'  => $formattedRequest,
                     'response' => $formattedResponse,
-                ))
+                ])
             );
 
         $this->loggerSubscriber->onRequestCreated($requestCreatedEvent = $this->createRequestCreatedEvent(null, $request));
@@ -194,12 +191,12 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
             ->method('error')
             ->with(
                 $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
-                $this->identicalTo(array(
+                $this->identicalTo([
                     'adapter'   => 'http_adapter',
                     'exception' => $formattedException,
                     'request'   => $formattedRequest,
                     'response'  => $formattedResponse,
-                ))
+                ])
             );
 
         $this->loggerSubscriber->onRequestCreated($event = $this->createRequestCreatedEvent(null, $request));
@@ -210,65 +207,65 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiRequestSentEvent()
     {
-        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
+        $requests = [$request1 = $this->createRequestMock(), $request2 = $this->createRequestMock()];
 
         $this->timer
             ->expects($this->exactly(count($requests)))
             ->method('start')
-            ->will($this->returnValueMap(array(
-                array($request1, $startedRequest1 = $this->createRequestMock()),
-                array($request2, $startedRequest2 = $this->createRequestMock()),
-            )));
+            ->will($this->returnValueMap([
+                [$request1, $startedRequest1 = $this->createRequestMock()],
+                [$request2, $startedRequest2 = $this->createRequestMock()],
+            ]));
 
-        $responses = array(
+        $responses = [
             $response1 = $this->createResponseMock($startedRequest1),
             $response2 = $this->createResponseMock($startedRequest2),
-        );
+        ];
 
         $this->timer
             ->expects($this->exactly(count($responses)))
             ->method('stop')
-            ->will($this->returnValueMap(array(
-                array($startedRequest1, $stoppedRequest1 = $this->createRequestMock()),
-                array($startedRequest2, $stoppedRequest2 = $this->createRequestMock()),
-            )));
+            ->will($this->returnValueMap([
+                [$startedRequest1, $stoppedRequest1 = $this->createRequestMock()],
+                [$startedRequest2, $stoppedRequest2 = $this->createRequestMock()],
+            ]));
 
         $this->formatter
             ->expects($this->exactly(count($responses)))
             ->method('formatRequest')
-            ->will($this->returnValueMap(array(
-                array($stoppedRequest1, $formattedRequest1 = 'request1'),
-                array($stoppedRequest2, $formattedRequest2 = 'request2'),
-            )));
+            ->will($this->returnValueMap([
+                [$stoppedRequest1, $formattedRequest1 = 'request1'],
+                [$stoppedRequest2, $formattedRequest2 = 'request2'],
+            ]));
 
         $this->formatter
             ->expects($this->exactly(count($responses)))
             ->method('formatResponse')
-            ->will($this->returnValueMap(array(
-                array($response1, $formattedResponse1 = 'response1'),
-                array($response2, $formattedResponse2 = 'response2'),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, $formattedResponse1 = 'response1'],
+                [$response2, $formattedResponse2 = 'response2'],
+            ]));
 
         $this->logger
             ->expects($this->exactly(count($responses)))
             ->method('debug')
             ->withConsecutive(
-                array(
+                [
                     $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
-                    array(
+                    [
                         'adapter'  => 'http_adapter',
                         'request'  => $formattedRequest1,
                         'response' => $formattedResponse1,
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     $this->matchesRegularExpression('/^Send "GET http:\/\/egeloen\.fr" in [0-9]+\.[0-9]{2} ms\.$/'),
-                    array(
+                    [
                         'adapter'  => 'http_adapter',
                         'request'  => $formattedRequest2,
                         'response' => $formattedResponse2,
-                    ),
-                )
+                    ],
+                ]
             );
 
         $response1
@@ -286,26 +283,26 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->loggerSubscriber->onMultiRequestCreated($requestCreatedEvent = $this->createMultiRequestCreatedEvent(null, $requests));
         $this->loggerSubscriber->onMultiRequestSent($requestSentEvent = $this->createMultiRequestSentEvent(null, $responses));
 
-        $this->assertSame(array($startedRequest1, $startedRequest2), $requestCreatedEvent->getRequests());
-        $this->assertSame(array($stoppedResponse1, $stoppedResponse2), $requestSentEvent->getResponses());
+        $this->assertSame([$startedRequest1, $startedRequest2], $requestCreatedEvent->getRequests());
+        $this->assertSame([$stoppedResponse1, $stoppedResponse2], $requestSentEvent->getResponses());
     }
 
     public function testMultiRequestErroredEvent()
     {
-        $requests = array(
+        $requests = [
             $request1 = $this->createRequestMock(),
             $request2 = $this->createRequestMock(),
-        );
+        ];
 
         $this->timer
             ->expects($this->exactly(count($requests)))
             ->method('start')
-            ->will($this->returnValueMap(array(
-                array($request1, $startedRequest1 = $this->createRequestMock()),
-                array($request2, $startedRequest2 = $this->createRequestMock()),
-            )));
+            ->will($this->returnValueMap([
+                [$request1, $startedRequest1 = $this->createRequestMock()],
+                [$request2, $startedRequest2 = $this->createRequestMock()],
+            ]));
 
-        $exceptions = array(
+        $exceptions = [
             $exception1 = $this->createExceptionMock(
                 $startedRequest1,
                 $response1 = $this->createResponseMock($request1)
@@ -314,62 +311,62 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
                 $startedRequest2,
                 $response2 = $this->createResponseMock($request2)
             ),
-        );
+        ];
 
         $this->timer
             ->expects($this->exactly(count($exceptions)))
             ->method('stop')
-            ->will($this->returnValueMap(array(
-                array($startedRequest1, $stoppedRequest1 = $this->createRequestMock()),
-                array($startedRequest2, $stoppedRequest2 = $this->createRequestMock()),
-            )));
+            ->will($this->returnValueMap([
+                [$startedRequest1, $stoppedRequest1 = $this->createRequestMock()],
+                [$startedRequest2, $stoppedRequest2 = $this->createRequestMock()],
+            ]));
 
         $this->formatter
             ->expects($this->exactly(count($exceptions)))
             ->method('formatRequest')
-            ->will($this->returnValueMap(array(
-                array($stoppedRequest1, $formattedRequest1 = 'request1'),
-                array($stoppedRequest2, $formattedRequest2 = 'request2'),
-            )));
+            ->will($this->returnValueMap([
+                [$stoppedRequest1, $formattedRequest1 = 'request1'],
+                [$stoppedRequest2, $formattedRequest2 = 'request2'],
+            ]));
 
         $this->formatter
             ->expects($this->exactly(count($exceptions)))
             ->method('formatResponse')
-            ->will($this->returnValueMap(array(
-                array($response1, $formattedResponse1 = 'response1'),
-                array($response2, $formattedResponse2 = 'response2'),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, $formattedResponse1 = 'response1'],
+                [$response2, $formattedResponse2 = 'response2'],
+            ]));
 
         $this->formatter
             ->expects($this->exactly(count($exceptions)))
             ->method('formatException')
-            ->will($this->returnValueMap(array(
-                array($exception1, $formattedException1 = 'exception1'),
-                array($exception2, $formattedException2 = 'exception1'),
-            )));
+            ->will($this->returnValueMap([
+                [$exception1, $formattedException1 = 'exception1'],
+                [$exception2, $formattedException2 = 'exception1'],
+            ]));
 
         $this->logger
             ->expects($this->exactly(count($exceptions)))
             ->method('error')
             ->withConsecutive(
-                array(
+                [
                     $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
-                    $this->identicalTo(array(
+                    $this->identicalTo([
                         'adapter'   => 'http_adapter',
                         'exception' => $formattedException1,
                         'request'   => $formattedRequest1,
                         'response'  => $formattedResponse1,
-                    )),
-                ),
-                array(
+                    ]),
+                ],
+                [
                     $this->identicalTo('Unable to send "GET http://egeloen.fr".'),
-                    $this->identicalTo(array(
+                    $this->identicalTo([
                         'adapter'   => 'http_adapter',
                         'exception' => $formattedException2,
                         'request'   => $formattedRequest2,
                         'response'  => $formattedResponse2,
-                    )),
-                )
+                    ]),
+                ]
             );
 
         $exception1
@@ -385,7 +382,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
         $this->loggerSubscriber->onMultiRequestCreated($event = $this->createMultiRequestCreatedEvent(null, $requests));
         $this->loggerSubscriber->onMultiResponseErrored($this->createMultiRequestErroredEvent(null, $exceptions));
 
-        $this->assertSame(array($startedRequest1, $startedRequest2), $event->getRequests());
+        $this->assertSame([$startedRequest1, $startedRequest2], $event->getRequests());
     }
 
     /**
@@ -430,9 +427,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a logger mock.
-     *
-     * @return \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject The logger mock.
+     * @return LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createLoggerMock()
     {
@@ -440,9 +435,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a formatter mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject The formatter mock.
+     * @return FormatterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createFormatterMock()
     {
@@ -450,9 +443,7 @@ class LoggerSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a timer mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject The timer mock.
+     * @return TimerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createTimerMock()
     {

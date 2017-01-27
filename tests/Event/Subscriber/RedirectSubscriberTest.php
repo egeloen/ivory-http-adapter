@@ -12,20 +12,23 @@
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\Redirect\RedirectInterface;
 use Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Redirect subscriber test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RedirectSubscriberTest extends AbstractSubscriberTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Subscriber\RedirectSubscriber */
+    /**
+     * @var RedirectSubscriber
+     */
     private $redirectSubscriber;
 
-    /** @var \Ivory\HttpAdapter\Event\Redirect\RedirectInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var RedirectInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $redirect;
 
     /**
@@ -36,15 +39,6 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirectSubscriber = new RedirectSubscriber(
             $this->redirect = $this->createMock('Ivory\HttpAdapter\Event\Redirect\RedirectInterface')
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->redirect);
-        unset($this->redirectSubscriber);
     }
 
     public function testDefaultState()
@@ -64,10 +58,10 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $events = RedirectSubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
-        $this->assertSame(array('onRequestSent', 0), $events[Events::REQUEST_SENT]);
+        $this->assertSame(['onRequestSent', 0], $events[Events::REQUEST_SENT]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
-        $this->assertSame(array('onMultiRequestSent', 0), $events[Events::MULTI_REQUEST_SENT]);
+        $this->assertSame(['onMultiRequestSent', 0], $events[Events::MULTI_REQUEST_SENT]);
     }
 
     public function testRequestSentEventWithRedirectResponse()
@@ -161,17 +155,17 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiRequestSentEventWithRedirectResponse()
     {
-        $responses = array(
+        $responses = [
             $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
             $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
-        );
+        ];
 
-        $redirectRequests = array(
+        $redirectRequests = [
             $redirectRequest1 = $this->createRequestMock(),
             $redirectRequest2 = $this->createRequestMock(),
-        );
+        ];
 
-        $redirectResponses = array($this->createResponseMock(), $this->createResponseMock());
+        $redirectResponses = [$this->createResponseMock(), $this->createResponseMock()];
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
@@ -183,10 +177,10 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirect
             ->expects($this->exactly(count($responses)))
             ->method('createRedirectRequest')
-            ->will($this->returnValueMap(array(
-                array($response1, $request1, $httpAdapter, $redirectRequest1),
-                array($response2, $request2, $httpAdapter, $redirectRequest2),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, $request1, $httpAdapter, $redirectRequest1],
+                [$response2, $request2, $httpAdapter, $redirectRequest2],
+            ]));
 
         $this->redirectSubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent($httpAdapter, $responses));
 
@@ -196,17 +190,17 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
     public function testMultiRequestSentEventWithRedirectResponseThrowException()
     {
-        $responses = array(
+        $responses = [
             $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
             $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
-        );
+        ];
 
-        $redirectRequests = array(
+        $redirectRequests = [
             $redirectRequest1 = $this->createRequestMock(),
             $redirectRequest2 = $this->createRequestMock(),
-        );
+        ];
 
-        $exceptions = array($this->createExceptionMock(), $this->createExceptionMock());
+        $exceptions = [$this->createExceptionMock(), $this->createExceptionMock()];
 
         $httpAdapter = $this->createHttpAdapterMock();
         $httpAdapter
@@ -218,10 +212,10 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
         $this->redirect
             ->expects($this->exactly(count($responses)))
             ->method('createRedirectRequest')
-            ->will($this->returnValueMap(array(
-                array($response1, $request1, $httpAdapter, $redirectRequest1),
-                array($response2, $request2, $httpAdapter, $redirectRequest2),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, $request1, $httpAdapter, $redirectRequest1],
+                [$response2, $request2, $httpAdapter, $redirectRequest2],
+            ]));
 
         $this->redirectSubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent($httpAdapter, $responses));
 
@@ -233,41 +227,41 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
     public function testMultiRequestSentEventWithoutRedirectResponse()
     {
         $httpAdapter = $this->createHttpAdapterMock();
-        $responses = array(
+        $responses = [
             $response1 = $this->createResponseMock($request1 = $this->createRequestMock()),
             $response2 = $this->createResponseMock($request2 = $this->createRequestMock()),
-        );
+        ];
 
         $this->redirect
             ->expects($this->exactly(count($responses)))
             ->method('createRedirectRequest')
-            ->will($this->returnValueMap(array(
-                array($response1, $request1, $httpAdapter, false),
-                array($response2, $request2, $httpAdapter, false),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, $request1, $httpAdapter, false],
+                [$response2, $request2, $httpAdapter, false],
+            ]));
 
         $this->redirect
             ->expects($this->exactly(count($responses)))
             ->method('prepareResponse')
-            ->will($this->returnValueMap(array(
-                array($response1, $request1, $preparedResponse1 = $this->createResponseMock()),
-                array($response2, $request2, $preparedResponse2 = $this->createResponseMock()),
-            )));
+            ->will($this->returnValueMap([
+                [$response1, $request1, $preparedResponse1 = $this->createResponseMock()],
+                [$response2, $request2, $preparedResponse2 = $this->createResponseMock()],
+            ]));
 
         $this->redirectSubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent($httpAdapter, $responses));
 
         $this->assertFalse($event->hasExceptions());
         $this->assertTrue($event->hasResponses());
-        $this->assertSame(array($preparedResponse1, $preparedResponse2), $event->getResponses());
+        $this->assertSame([$preparedResponse1, $preparedResponse2], $event->getResponses());
     }
 
     public function testMultiRequestSentEventWithMaxRedirectReachedThrowException()
     {
         $httpAdapter = $this->createHttpAdapterMock();
-        $responses = array(
+        $responses = [
             $this->createResponseMock($request1 = $this->createRequestMock()),
             $this->createResponseMock($request2 = $this->createRequestMock()),
-        );
+        ];
 
         $this->redirect
             ->expects($this->exactly(count($responses)))
@@ -278,7 +272,7 @@ class RedirectSubscriberTest extends AbstractSubscriberTest
 
         $this->assertFalse($event->hasResponses());
         $this->assertTrue($event->hasExceptions());
-        $this->assertSame(array($exception, $exception), $event->getExceptions());
+        $this->assertSame([$exception, $exception], $event->getExceptions());
     }
 
     /**

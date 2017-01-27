@@ -14,28 +14,26 @@ namespace Ivory\HttpAdapter\Event\Subscriber;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface;
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
-use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
-use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\RequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Cookie subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CookieSubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface */
+    /**
+     * @var CookieJarInterface
+     */
     private $cookieJar;
 
     /**
-     * Creates a cookie subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface|null $cookieJar The cookie jar.
+     * @param CookieJarInterface|null $cookieJar
      */
     public function __construct(CookieJarInterface $cookieJar = null)
     {
@@ -43,9 +41,7 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the cookie jar.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJarInterface The cookie jar.
+     * @return CookieJarInterface
      */
     public function getCookieJar()
     {
@@ -53,9 +49,7 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The request created event.
+     * @param RequestCreatedEvent $event
      */
     public function onRequestCreated(RequestCreatedEvent $event)
     {
@@ -63,9 +57,7 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
+     * @param RequestSentEvent $event
      */
     public function onRequestSent(RequestSentEvent $event)
     {
@@ -73,9 +65,7 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request errored event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestErroredEvent $event The request errored event.
+     * @param RequestErroredEvent $event
      */
     public function onRequestErrored(RequestErroredEvent $event)
     {
@@ -85,9 +75,7 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
+     * @param MultiRequestCreatedEvent $event
      */
     public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
@@ -98,9 +86,7 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
+     * @param MultiRequestSentEvent $event
      */
     public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
@@ -110,9 +96,7 @@ class CookieSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request errored event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event The multi request errored event.
+     * @param MultiRequestErroredEvent $event
      */
     public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
@@ -128,13 +112,13 @@ class CookieSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::REQUEST_CREATED       => array('onRequestCreated', 300),
-            Events::REQUEST_SENT          => array('onRequestSent', 300),
-            Events::REQUEST_ERRORED       => array('onRequestErrored', 300),
-            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 300),
-            Events::MULTI_REQUEST_SENT    => array('onMultiRequestSent', 300),
-            Events::MULTI_REQUEST_ERRORED => array('onMultiResponseErrored', 300),
-        );
+        return [
+            Events::REQUEST_CREATED       => ['onRequestCreated', 300],
+            Events::REQUEST_SENT          => ['onRequestSent', 300],
+            Events::REQUEST_ERRORED       => ['onRequestErrored', 300],
+            Events::MULTI_REQUEST_CREATED => ['onMultiRequestCreated', 300],
+            Events::MULTI_REQUEST_SENT    => ['onMultiRequestSent', 300],
+            Events::MULTI_REQUEST_ERRORED => ['onMultiResponseErrored', 300],
+        ];
     }
 }

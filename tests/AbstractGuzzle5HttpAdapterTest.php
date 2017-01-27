@@ -15,8 +15,6 @@ use GuzzleHttp\Client;
 use Ivory\HttpAdapter\Guzzle5HttpAdapter;
 
 /**
- * Abstract guzzle 5 http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractGuzzle5HttpAdapterTest extends AbstractHttpAdapterTest
@@ -43,13 +41,11 @@ abstract class AbstractGuzzle5HttpAdapterTest extends AbstractHttpAdapterTest
      */
     protected function createHttpAdapter()
     {
-        return new Guzzle5HttpAdapter(new Client(array('handler' => $this->createHandler())));
+        return new Guzzle5HttpAdapter(new Client(['handler' => $this->createHandler()]));
     }
 
     /**
-     * Creates a guzzle 5 handler.
-     *
-     * @return object The guzzle 5 handler.
+     * @return object
      */
     abstract protected function createHandler();
 }

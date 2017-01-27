@@ -15,21 +15,19 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
- * Abstract http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractHttpAdapter implements HttpAdapterInterface
 {
     use HttpAdapterTrait;
 
-    /** @var \Ivory\HttpAdapter\ConfigurationInterface */
+    /**
+     * @var ConfigurationInterface
+     */
     private $configuration;
 
     /**
-     * Creates an http adapter.
-     *
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(ConfigurationInterface $configuration = null)
     {
@@ -53,14 +51,12 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     }
 
     /**
-     * Prepares the headers.
+     * @param InternalRequestInterface $internalRequest
+     * @param bool                     $associative
+     * @param bool                     $contentType
+     * @param bool                     $contentLength
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param boolean                                             $associative     TRUE if the prepared headers should be associative else FALSE.
-     * @param boolean                                             $contentType     TRUE if the content type header should be prepared else FALSE.
-     * @param boolean                                             $contentLength   TRUE if the content length header should be prepared else FALSE.
-     *
-     * @return array The prepared headers.
+     * @return array the prepared headers
      */
     protected function prepareHeaders(
         InternalRequestInterface &$internalRequest,
@@ -111,11 +107,9 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     }
 
     /**
-     * Prepares the body.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return string The prepared body.
+     * @return string
      */
     protected function prepareBody(InternalRequestInterface $internalRequest)
     {
@@ -147,12 +141,10 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     }
 
     /**
-     * Prepares the name.
+     * @param string $name
+     * @param string $subName
      *
-     * @param string $name    The name.
-     * @param string $subName The sub name.
-     *
-     * @return string The prepared name.
+     * @return string
      */
     protected function prepareName($name, $subName)
     {
@@ -160,13 +152,11 @@ abstract class AbstractHttpAdapter implements HttpAdapterInterface
     }
 
     /**
-     * Prepares the raw body.
+     * @param string       $name
+     * @param array|string $data
+     * @param bool         $isFile
      *
-     * @param string       $name   The name.
-     * @param array|string $data   The data.
-     * @param boolean      $isFile TRUE if the data is a file path else FALSE.
-     *
-     * @return string The formatted raw body.
+     * @return string
      */
     private function prepareRawBody($name, $data, $isFile = false)
     {

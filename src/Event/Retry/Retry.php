@@ -11,25 +11,23 @@
 
 namespace Ivory\HttpAdapter\Event\Retry;
 
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Event\Retry\Strategy\ExponentialDelayedRetryStrategy;
 use Ivory\HttpAdapter\Event\Retry\Strategy\LimitedRetryStrategy;
 use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Retry.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Retry implements RetryInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface */
+    /**
+     * @var RetryStrategyInterface
+     */
     private $strategy;
 
     /**
-     * Creates a retry.
-     *
-     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface|null $strategy The strategy.
+     * @param RetryStrategyInterface|null $strategy
      */
     public function __construct(RetryStrategyInterface $strategy = null)
     {

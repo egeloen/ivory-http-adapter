@@ -14,15 +14,16 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\Configuration;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 
 /**
- * Configuration test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ConfigurationTest extends AbstractTestCase 
+class ConfigurationTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Configuration */
+    /**
+     * @var Configuration
+     */
     private $configuration;
 
     /**
@@ -31,14 +32,6 @@ class ConfigurationTest extends AbstractTestCase
     protected function setUp()
     {
         $this->configuration = new Configuration();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->configuration);
     }
 
     public function testDefaultState()
@@ -118,9 +111,7 @@ class ConfigurationTest extends AbstractTestCase
     }
 
     /**
-     * Creates a message factory mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
+     * @return MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createMessageFactoryMock()
     {

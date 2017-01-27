@@ -14,18 +14,14 @@ namespace Ivory\HttpAdapter\Extractor;
 use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 
 /**
- * Protocol version extractor.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ProtocolVersionExtractor extends AbstractUninstantiableAsset
 {
     /**
-     * Extracts the protocol version.
+     * @param array|string $headers
      *
-     * @param array|string $headers The headers.
-     *
-     * @return string The extracted protocol version.
+     * @return string
      */
     public static function extract($headers)
     {

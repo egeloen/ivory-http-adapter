@@ -14,13 +14,13 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 
 /**
- * Abstract persistent cookie jar test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $cookies;
 
     /**
@@ -28,21 +28,11 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
      */
     protected function setUp()
     {
-        $this->cookies = array($this->createNamedCookieMock('foo'), $this->createNamedCookieMock('bar'));
+        $this->cookies = [$this->createNamedCookieMock('foo'), $this->createNamedCookieMock('bar')];
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->cookies);
-    }
-
-    /**
-     * Gets the serialized.
-     *
-     * @return string The serialized.
+     * @return string
      */
     protected function getSerialized()
     {
@@ -52,9 +42,7 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
     }
 
     /**
-     * Asserts serialize.
-     *
-     * @param string $serialized The serialized.
+     * @param string $serialized
      */
     protected function assertSerialize($serialized)
     {
@@ -62,15 +50,13 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
     }
 
     /**
-     * Asserts the cookies.
-     *
-     * @param array $cookies The cookies.
+     * @param array $cookies
      */
     protected function assertCookies(array $cookies)
     {
         $this->assertCount(2, $cookies);
 
-        foreach (array(0, 1) as $index) {
+        foreach ([0, 1] as $index) {
             $this->assertArrayHasKey($index, $cookies);
             $this->assertSame($this->cookies[$index]->getName(), $cookies[$index]->getName());
             $this->assertSame($this->cookies[$index]->getValue(), $cookies[$index]->getValue());
@@ -80,11 +66,9 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
     }
 
     /**
-     * Creates a named cookie mock.
+     * @param string $name
      *
-     * @param string $name The name.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface|\PHPUnit_Framework_MockObject_MockObject The named cookie mock.
+     * @return CookieInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createNamedCookieMock($name)
     {
@@ -102,13 +86,13 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
         $cookie
             ->expects($this->any())
             ->method('getAttributes')
-            ->will($this->returnValue(array(
+            ->will($this->returnValue([
                 CookieInterface::ATTR_DOMAIN  => 'egeloen.fr',
                 CookieInterface::ATTR_PATH    => '/',
                 CookieInterface::ATTR_SECURE  => false,
                 CookieInterface::ATTR_EXPIRES => date('D, d M Y H:i:s e', time() + 100),
                 CookieInterface::ATTR_MAX_AGE => 100,
-            )));
+            ]));
 
         $cookie
             ->expects($this->any())
@@ -118,12 +102,12 @@ abstract class AbstractPersistentCookieJarTest extends AbstractCookieJarTest
         $cookie
             ->expects($this->any())
             ->method('toArray')
-            ->will($this->returnValue(array(
+            ->will($this->returnValue([
                 'name'       => $cookie->getName(),
                 'value'      => $cookie->getValue(),
                 'attributes' => $cookie->getAttributes(),
                 'created_at' => $cookie->getCreatedAt(),
-            )));
+            ]));
 
         return $cookie;
     }

@@ -15,17 +15,13 @@ use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 
 /**
- * Abstract persistent cookie jar.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractPersistentCookieJar extends CookieJar implements PersistentCookieJarInterface
 {
     /**
-     * Creates a persistent cookie jar.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface|null $cookieFactory The cookie factory.
-     * @param boolean                                                     $load          TRUE if it should load the cookies else FALSE.
+     * @param CookieFactoryInterface|null $cookieFactory
+     * @param bool                        $load
      */
     public function __construct(CookieFactoryInterface $cookieFactory = null, $load = true)
     {
@@ -37,7 +33,7 @@ abstract class AbstractPersistentCookieJar extends CookieJar implements Persiste
     }
 
     /**
-     * Destructs the persistent cookie jar.
+     * {@inheritdoc}
      */
     public function __destruct()
     {

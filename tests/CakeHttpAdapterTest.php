@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\CakeHttpAdapter;
 
 /**
- * Cake http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CakeHttpAdapterTest extends AbstractHttpAdapterTest

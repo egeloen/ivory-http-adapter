@@ -12,8 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 /**
- * Fopen http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class FopenHttpAdapter extends AbstractStreamHttpAdapter
@@ -31,7 +29,7 @@ class FopenHttpAdapter extends AbstractStreamHttpAdapter
      */
     protected function process($uri, $context)
     {
-        $http_response_header = array();
+        $http_response_header = [];
         $resource = @fopen($uri, 'rb', false, $context);
 
         if (is_resource($resource)) {
@@ -42,6 +40,6 @@ class FopenHttpAdapter extends AbstractStreamHttpAdapter
             $copy = $resource;
         }
 
-        return array($copy, $http_response_header);
+        return [$copy, $http_response_header];
     }
 }

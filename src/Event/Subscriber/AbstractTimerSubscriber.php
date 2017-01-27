@@ -16,19 +16,17 @@ use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Abstract timer subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractTimerSubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Timer\TimerInterface */
+    /**
+     * @var TimerInterface
+     */
     private $timer;
 
     /**
-     * Creates a timer subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface|null $timer The timer.
+     * @param TimerInterface|null $timer
      */
     public function __construct(TimerInterface $timer = null)
     {
@@ -36,9 +34,7 @@ abstract class AbstractTimerSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the timer.
-     *
-     * @return \Ivory\HttpAdapter\Event\Timer\TimerInterface The timer.
+     * @return TimerInterface
      */
     public function getTimer()
     {

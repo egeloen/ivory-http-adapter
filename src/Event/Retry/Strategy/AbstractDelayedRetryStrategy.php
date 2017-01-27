@@ -12,22 +12,20 @@
 namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 
 /**
- * Abstract delayed retry strategy.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractDelayedRetryStrategy extends AbstractRetryStrategyChain
 {
-    /** @var float */
+    /**
+     * @var float
+     */
     private $delay;
 
     /**
-     * Creates a delayed retry strategy.
-     *
-     * @param float                                                                    $delay The delay.
-     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next  The next retry strategy chain.
+     * @param float                            $delay
+     * @param RetryStrategyChainInterface|null $next
      */
-    public function __construct($delay = 5, RetryStrategyChainInterface $next = null)
+    public function __construct($delay = 5.0, RetryStrategyChainInterface $next = null)
     {
         parent::__construct($next);
 
@@ -35,9 +33,7 @@ abstract class AbstractDelayedRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Gets the delay.
-     *
-     * @return float The delay.
+     * @return float
      */
     public function getDelay()
     {
@@ -45,9 +41,7 @@ abstract class AbstractDelayedRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Sets the delay.
-     *
-     * @param float $delay The delay.
+     * @param float $delay
      */
     public function setDelay($delay)
     {

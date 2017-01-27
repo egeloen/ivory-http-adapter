@@ -11,20 +11,23 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
+use Ivory\HttpAdapter\Event\Cache\CacheInterface;
 use Ivory\HttpAdapter\Event\Events;
 use Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber;
 
 /**
- * Cache subscriber test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CacheSubscriberTest extends AbstractSubscriberTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Subscriber\CacheSubscriber */
+    /**
+     * @var CacheSubscriber
+     */
     private $cacheSubscriber;
 
-    /** @var \Ivory\HttpAdapter\Event\Cache\CacheInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var CacheInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $cache;
 
     /**
@@ -34,15 +37,6 @@ class CacheSubscriberTest extends AbstractSubscriberTest
     {
         $this->cache = $this->createCacheMock();
         $this->cacheSubscriber = new CacheSubscriber($this->cache);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->cache);
-        unset($this->cacheSubscriber);
     }
 
     public function testDefaultState()
@@ -224,7 +218,7 @@ class CacheSubscriberTest extends AbstractSubscriberTest
             ->method('getResponse')
             ->will($this->returnValueMap([
                 [$request1, $messageFactory, $response1 = $this->createResponseMock()],
-                [$request2, $messageFactory, $response2 = $this->createResponseMock()]
+                [$request2, $messageFactory, $response2 = $this->createResponseMock()],
             ]));
 
         $this->cacheSubscriber->onMultiRequestCreated(
@@ -256,7 +250,7 @@ class CacheSubscriberTest extends AbstractSubscriberTest
             ->method('getException')
             ->will($this->returnValueMap([
                 [$request1, $messageFactory, $exception1 = $this->createExceptionMock($request1)],
-                [$request2, $messageFactory, $exception2 = $this->createExceptionMock($request2)]
+                [$request2, $messageFactory, $exception2 = $this->createExceptionMock($request2)],
             ]));
 
         $this->cacheSubscriber->onMultiRequestCreated(
@@ -329,9 +323,7 @@ class CacheSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a cache mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cache\CacheInterface|\PHPUnit_Framework_MockObject_MockObject The cache mock.
+     * @return CacheInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createCacheMock()
     {

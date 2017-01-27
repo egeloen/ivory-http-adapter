@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Message\Request;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Request test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RequestTest extends AbstractTestCase 
+class RequestTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Message\Request */
+    /**
+     * @var Request
+     */
     private $request;
 
     /**
@@ -30,14 +30,6 @@ class RequestTest extends AbstractTestCase
     protected function setUp()
     {
         $this->request = new Request();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->request);
     }
 
     public function testInheritance()
@@ -65,11 +57,11 @@ class RequestTest extends AbstractTestCase
             $uri = 'http://egeloen.fr/',
             $method = Request::METHOD_POST,
             $body = $this->createMock('Psr\Http\Message\StreamInterface'),
-            $headers = array('foo' => array('bar')),
-            $parameters = array('baz' => 'bat')
+            $headers = ['foo' => ['bar']],
+            $parameters = ['baz' => 'bat']
         );
 
-        $headers['Host'] = array('egeloen.fr');
+        $headers['Host'] = ['egeloen.fr'];
 
         $this->assertSame($uri, (string) $this->request->getUri());
         $this->assertSame($method, $this->request->getMethod());

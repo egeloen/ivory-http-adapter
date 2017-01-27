@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
 use Ivory\Tests\HttpAdapter\Parser\AbstractHeadersParserTest;
 
 /**
- * Protocol version extractor test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ProtocolVersionExtractorTest extends AbstractHeadersParserTest
 {
     /**
+     * @param array|string$headers
+     *
      * @dataProvider headersProvider
      */
     public function testExtract($headers)

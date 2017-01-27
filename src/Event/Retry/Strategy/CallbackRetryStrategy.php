@@ -14,24 +14,24 @@ namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Callback retry strategy.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CallbackRetryStrategy extends AbstractRetryStrategyChain
 {
-    /** @var callable|null */
+    /**
+     * @var callable|null
+     */
     private $verifyCallback;
 
-    /** @var callable|null */
+    /**
+     * @var callable|null
+     */
     private $delayCallback;
 
     /**
-     * Creates a callback retry strategy.
-     *
-     * @param callable|null                                                            $verifyCallback The verify callback.
-     * @param callable|null                                                            $delayCallback  The delay callback.
-     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next           The next retry strategy chain.
+     * @param callable|null                    $verifyCallback
+     * @param callable|null                    $delayCallback
+     * @param RetryStrategyChainInterface|null $next
      */
     public function __construct($verifyCallback = null, $delayCallback = null, RetryStrategyChainInterface $next = null)
     {
@@ -42,9 +42,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Checks if there is a verify callback.
-     *
-     * @return boolean TRUE if there is a verify callback else FALSE.
+     * @return bool
      */
     public function hasVerifyCallback()
     {
@@ -52,9 +50,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Gets the verify callback.
-     *
-     * @return callable|null The verify callback.
+     * @return callable|null
      */
     public function getVerifyCallback()
     {
@@ -62,9 +58,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Sets the verify callback.
-     *
-     * @param callable|null $verifyCallback The verify callback.
+     * @param callable|null $verifyCallback
      */
     public function setVerifyCallback($verifyCallback)
     {
@@ -72,9 +66,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Checks if there is a delay callback.
-     *
-     * @return boolean TRUE if there is a delay callback else FALSE.
+     * @return bool
      */
     public function hasDelayCallback()
     {
@@ -82,9 +74,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Gets the delay callback.
-     *
-     * @return callable|null The delay callback.
+     * @return callable|null
      */
     public function getDelayCallback()
     {
@@ -92,9 +82,7 @@ class CallbackRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Sets the delay callback.
-     *
-     * @param callable|null $delayCallback The delay callback.
+     * @param callable|null $delayCallback
      */
     public function setDelayCallback($delayCallback)
     {

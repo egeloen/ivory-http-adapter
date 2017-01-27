@@ -11,51 +11,41 @@
 
 namespace Ivory\HttpAdapter\Event\Cache;
 
+use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
-use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
- * Cache.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface CacheInterface
 {
     /**
-     * Gets a response.
+     * @param InternalRequestInterface $internalRequest
+     * @param MessageFactoryInterface  $messageFactory
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface  $messageFactory
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|null
+     * @return ResponseInterface|null
      */
     public function getResponse(InternalRequestInterface $internalRequest, MessageFactoryInterface $messageFactory);
 
     /**
-     * Gets an exception.
+     * @param InternalRequestInterface $internalRequest
+     * @param MessageFactoryInterface  $messageFactory
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface  $messageFactory
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|null
+     * @return HttpAdapterException|null
      */
     public function getException(InternalRequestInterface $internalRequest, MessageFactoryInterface $messageFactory);
 
     /**
-     * Saves a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest
+     * @param ResponseInterface        $response
+     * @param InternalRequestInterface $internalRequest
      */
     public function saveResponse(ResponseInterface $response, InternalRequestInterface $internalRequest);
 
     /**
-     * Saves an exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException             $exception
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest
+     * @param HttpAdapterException     $exception
+     * @param InternalRequestInterface $internalRequest
      */
     public function saveException(HttpAdapterException $exception, InternalRequestInterface $internalRequest);
 }

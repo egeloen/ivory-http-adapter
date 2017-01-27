@@ -11,36 +11,41 @@
 
 namespace Ivory\HttpAdapter\Message;
 
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+
 /**
- * Internal request.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class InternalRequest extends Request implements InternalRequestInterface
 {
-    /** @var array */
-    private $datas = array();
-
-    /** @var array */
-    private $files = array();
+    /**
+     * @var array
+     */
+    private $datas = [];
 
     /**
-     * @param null|string|\Psr\Http\Message\UriInterface        $uri        The internal request uri.
-     * @param null|string                                       $method     The internal request method.
-     * @param string|resource|\Psr\Http\Message\StreamInterface $body       The internal request body.
-     * @param array                                             $datas      The internal request datas.
-     * @param array                                             $files      The internal request files.
-     * @param array                                             $headers    The internal request headers.
-     * @param array                                             $parameters The internal request parameters.
+     * @var array
+     */
+    private $files = [];
+
+    /**
+     * @param null|string|UriInterface        $uri
+     * @param null|string                     $method
+     * @param string|resource|StreamInterface $body
+     * @param array                           $datas
+     * @param array                           $files
+     * @param array                           $headers
+     * @param array                           $parameters
      */
     public function __construct(
         $uri = null,
         $method = null,
         $body = 'php://memory',
-        array $datas = array(),
-        array $files = array(),
-        array $headers = array(),
-        array $parameters = array()
+        array $datas = [],
+        array $files = [],
+        array $headers = [],
+        array $parameters = []
     ) {
         parent::__construct($uri, $method, $body, $headers, $parameters);
 

@@ -14,13 +14,13 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\HttpAdapterFactory;
 
 /**
- * Http adapter factory test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HttpAdapterFactoryTest extends AbstractTestCase
 {
     /**
+     * @param string $name
+     *
      * @dataProvider httpAdapterProvider
      */
     public function testCapable($name)
@@ -34,6 +34,9 @@ class HttpAdapterFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @param string $name
+     * @param string $class
+     *
      * @dataProvider httpAdapterProvider
      */
     public function testCreate($name, $class)
@@ -111,6 +114,9 @@ class HttpAdapterFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @param array|string $preferred
+     * @param string       $class
+     *
      * @dataProvider guessProvider
      */
     public function testGuess($preferred, $class)
@@ -126,11 +132,11 @@ class HttpAdapterFactoryTest extends AbstractTestCase
     {
         $providers = array_merge(
             $this->httpAdapterProvider(),
-            array(
-                array(HttpAdapterFactory::CURL),
-                array(HttpAdapterFactory::GUZZLE3),
-                array(HttpAdapterFactory::HTTPFUL),
-            )
+            [
+                [HttpAdapterFactory::CURL],
+                [HttpAdapterFactory::GUZZLE3],
+                [HttpAdapterFactory::HTTPFUL],
+            ]
         );
 
         foreach ($providers as $provider) {
@@ -141,62 +147,58 @@ class HttpAdapterFactoryTest extends AbstractTestCase
     }
 
     /**
-     * Gets the http adapter provider.
-     *
-     * @return array The http adapter provider.
+     * @return array
      */
     public function httpAdapterProvider()
     {
-        $adapters = array(
-            array(HttpAdapterFactory::BUZZ, 'Ivory\HttpAdapter\BuzzHttpAdapter'),
-            array(HttpAdapterFactory::CAKE, 'Ivory\HttpAdapter\CakeHttpAdapter'),
-            array(HttpAdapterFactory::FILE_GET_CONTENTS, 'Ivory\HttpAdapter\FileGetContentsHttpAdapter'),
-            array(HttpAdapterFactory::FOPEN, 'Ivory\HttpAdapter\FopenHttpAdapter'),
-            array(HttpAdapterFactory::REQUESTS, 'Ivory\HttpAdapter\RequestsHttpAdapter'),
-            array(HttpAdapterFactory::SOCKET, 'Ivory\HttpAdapter\SocketHttpAdapter'),
-            array(HttpAdapterFactory::ZEND1, 'Ivory\HttpAdapter\Zend1HttpAdapter'),
-        );
+        $adapters = [
+            [HttpAdapterFactory::BUZZ, 'Ivory\HttpAdapter\BuzzHttpAdapter'],
+            [HttpAdapterFactory::CAKE, 'Ivory\HttpAdapter\CakeHttpAdapter'],
+            [HttpAdapterFactory::FILE_GET_CONTENTS, 'Ivory\HttpAdapter\FileGetContentsHttpAdapter'],
+            [HttpAdapterFactory::FOPEN, 'Ivory\HttpAdapter\FopenHttpAdapter'],
+            [HttpAdapterFactory::REQUESTS, 'Ivory\HttpAdapter\RequestsHttpAdapter'],
+            [HttpAdapterFactory::SOCKET, 'Ivory\HttpAdapter\SocketHttpAdapter'],
+            [HttpAdapterFactory::ZEND1, 'Ivory\HttpAdapter\Zend1HttpAdapter'],
+        ];
 
         if (function_exists('curl_init')) {
-            $adapters[] = array(HttpAdapterFactory::CURL, 'Ivory\HttpAdapter\CurlHttpAdapter');
-            $adapters[] = array(HttpAdapterFactory::HTTPFUL, 'Ivory\HttpAdapter\HttpfulHttpAdapter');
+            $adapters[] = [HttpAdapterFactory::CURL, 'Ivory\HttpAdapter\CurlHttpAdapter'];
+            $adapters[] = [HttpAdapterFactory::HTTPFUL, 'Ivory\HttpAdapter\HttpfulHttpAdapter'];
 
             if (class_exists('Guzzle\Common\Version')) {
-                $adapters[] = array(HttpAdapterFactory::GUZZLE3, 'Ivory\HttpAdapter\Guzzle3HttpAdapter');
+                $adapters[] = [HttpAdapterFactory::GUZZLE3, 'Ivory\HttpAdapter\Guzzle3HttpAdapter'];
             }
         }
 
         if (class_exists('GuzzleHttp\Adapter\Curl\CurlAdapter')) {
-            $adapters[] = array(HttpAdapterFactory::GUZZLE4, 'Ivory\HttpAdapter\Guzzle4HttpAdapter');
+            $adapters[] = [HttpAdapterFactory::GUZZLE4, 'Ivory\HttpAdapter\Guzzle4HttpAdapter'];
         }
 
         if (class_exists('GuzzleHttp\Ring\Client\CurlHandler')) {
-            $adapters[] = array(HttpAdapterFactory::GUZZLE5, 'Ivory\HttpAdapter\Guzzle5HttpAdapter');
+            $adapters[] = [HttpAdapterFactory::GUZZLE5, 'Ivory\HttpAdapter\Guzzle5HttpAdapter'];
         }
 
         if (class_exists('GuzzleHttp\Handler\CurlHandler')) {
-            $adapters[] = array(HttpAdapterFactory::GUZZLE6, 'Ivory\HttpAdapter\Guzzle6HttpAdapter');
+            $adapters[] = [HttpAdapterFactory::GUZZLE6, 'Ivory\HttpAdapter\Guzzle6HttpAdapter'];
         }
 
         if (class_exists('http\Client')) {
-            $adapters[] = array(HttpAdapterFactory::PECL_HTTP, 'Ivory\HttpAdapter\PeclHttpAdapter');
+            $adapters[] = [HttpAdapterFactory::PECL_HTTP, 'Ivory\HttpAdapter\PeclHttpAdapter'];
         }
 
         if (class_exists('React\HttpClient\Factory')) {
-            $adapters[] = array(HttpAdapterFactory::REACT, 'Ivory\HttpAdapter\ReactHttpAdapter');
+            $adapters[] = [HttpAdapterFactory::REACT, 'Ivory\HttpAdapter\ReactHttpAdapter'];
         }
 
         if (class_exists('Zend\Http\Client')) {
-            $adapters[] = array(HttpAdapterFactory::ZEND2, 'Ivory\HttpAdapter\Zend2HttpAdapter');
+            $adapters[] = [HttpAdapterFactory::ZEND2, 'Ivory\HttpAdapter\Zend2HttpAdapter'];
         }
 
         return $adapters;
     }
 
     /**
-     * Gets the guess provider.
-     *
-     * @return array The guess provider.
+     * @return array
      */
     public function guessProvider()
     {
@@ -216,11 +218,11 @@ class HttpAdapterFactoryTest extends AbstractTestCase
 
         return array_merge(
             $this->httpAdapterProvider(),
-            array(
-                array(array(), $httpAdapter),
-                array('foo', $httpAdapter),
-                array(array('foo', HttpAdapterFactory::SOCKET), 'Ivory\HttpAdapter\SocketHttpAdapter'),
-            )
+            [
+                [[], $httpAdapter],
+                ['foo', $httpAdapter],
+                [['foo', HttpAdapterFactory::SOCKET], 'Ivory\HttpAdapter\SocketHttpAdapter'],
+            ]
         );
     }
 }

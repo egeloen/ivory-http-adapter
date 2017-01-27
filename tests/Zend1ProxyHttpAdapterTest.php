@@ -12,8 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 /**
- * Zend 1 proxy http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend1ProxyHttpAdapterTest extends AbstractZend1HttpAdapterTest

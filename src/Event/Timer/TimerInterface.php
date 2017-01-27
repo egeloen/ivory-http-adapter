@@ -14,33 +14,24 @@ namespace Ivory\HttpAdapter\Event\Timer;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Timer.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface TimerInterface
 {
-    /** @const string The start time parameter */
     const START_TIME = 'start_time';
-
-    /** @const string The time parameter */
     const TIME = 'time';
 
     /**
-     * Starts the timer.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The started internal request.
+     * @return InternalRequestInterface
      */
     public function start(InternalRequestInterface $internalRequest);
 
     /**
-     * Stops the timer.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The stopped internal request.
+     * @return InternalRequestInterface
      */
     public function stop(InternalRequestInterface $internalRequest);
 }

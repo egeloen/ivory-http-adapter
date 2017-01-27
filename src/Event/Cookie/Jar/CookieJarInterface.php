@@ -17,112 +17,81 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Cookie jar.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface CookieJarInterface extends \Countable, \IteratorAggregate
 {
     /**
-     * Gets the cookie factory.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface The cookie factory.
+     * @return CookieFactoryInterface
      */
     public function getCookieFactory();
 
     /**
-     * Sets the cookie factory.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface $cookieFactory The cookie factory.
+     * @param CookieFactoryInterface $cookieFactory
      */
     public function setCookieFactory(CookieFactoryInterface $cookieFactory);
 
-    /**
-     * Cleans the cookies.
-     */
     public function clean();
 
     /**
-     * Clears the cookies.
-     *
-     * @param string|null $domain The domain.
-     * @param string|null $path   The path.
-     * @param string|null $name   The name.
+     * @param string|null $domain
+     * @param string|null $path
+     * @param string|null $name
      */
     public function clear($domain = null, $path = null, $name = null);
 
     /**
-     * Checks if there are cookies.
-     *
-     * @return boolean TRUE if there are cookies else FALSE.
+     * @return bool
      */
     public function hasCookies();
 
     /**
-     * Gets the cookies.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] The cookies.
+     * @return CookieFactoryInterface[]
      */
     public function getCookies();
 
     /**
-     * Sets the cookies.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] $cookies The cookies.
+     * @param CookieFactoryInterface[] $cookies
      */
     public function setCookies(array $cookies);
 
     /**
-     * Adds the cookies.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] $cookies The cookies.
+     * @param CookieFactoryInterface[] $cookies
      */
     public function addCookies(array $cookies);
 
     /**
-     * Removes the cookies.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface[] $cookies The cookies.
+     * @param CookieFactoryInterface[] $cookies
      */
     public function removeCookies(array $cookies);
 
     /**
-     * Checks if there is the cookie.
+     * @param CookieInterface $cookie
      *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieInterface $cookie The cookie.
-     *
-     * @return boolean TRUE if there is a cookie else FALSE.
+     * @return bool
      */
     public function hasCookie(CookieInterface $cookie);
 
     /**
-     * Adds a cookie.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieInterface $cookie The cookie.
+     * @param CookieInterface $cookie
      */
     public function addCookie(CookieInterface $cookie);
 
     /**
-     * Removes a cookie.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieInterface $cookie The cookie.
+     * @param CookieInterface $cookie
      */
     public function removeCookie(CookieInterface $cookie);
 
     /**
-     * Populates the cookies in the request.
+     * @param InternalRequestInterface $request
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The populated request.
+     * @return InternalRequestInterface
      */
     public function populate(InternalRequestInterface $request);
 
     /**
-     * Extracts the cookies from the request/response.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
+     * @param InternalRequestInterface $request
+     * @param ResponseInterface        $response
      */
     public function extract(InternalRequestInterface $request, ResponseInterface $response);
 }

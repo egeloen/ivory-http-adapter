@@ -14,16 +14,18 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 use Ivory\HttpAdapter\Event\Cookie\Jar\SessionCookieJar;
 
 /**
- * Session cookie jar test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class SessionCookieJarTest extends AbstractPersistentCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\SessionCookieJar */
+    /**
+     * @var SessionCookieJar
+     */
     private $sessionCookieJar;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $key;
 
     /**
@@ -34,17 +36,6 @@ class SessionCookieJarTest extends AbstractPersistentCookieJarTest
         parent::setUp();
 
         $this->sessionCookieJar = new SessionCookieJar($this->key = 'foo');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        unset($this->key);
-        unset($this->sessionCookieJar);
     }
 
     public function testDefaultState()

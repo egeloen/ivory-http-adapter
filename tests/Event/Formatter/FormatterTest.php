@@ -12,16 +12,19 @@
 namespace Ivory\Tests\HttpAdapter\Event\Formatter;
 
 use Ivory\HttpAdapter\Event\Formatter\Formatter;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Formatter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class FormatterTest extends AbstractTestCase 
+class FormatterTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\Formatter\Formatter */
+    /**
+     * @var Formatter
+     */
     private $formatter;
 
     /**
@@ -32,27 +35,19 @@ class FormatterTest extends AbstractTestCase
         $this->formatter = new Formatter();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->formatter);
-    }
-
     public function testFormatRequest()
     {
         $this->assertSame(
-            array(
+            [
                 'protocol_version' => '1.1',
                 'uri'              => 'http://egeloen.fr',
                 'method'           => 'GET',
-                'headers'          => array('foo' => 'bar'),
+                'headers'          => ['foo' => 'bar'],
                 'body'             => 'foo=bar',
-                'datas'            => array('baz' => 'bat'),
-                'files'            => array('bit' => __FILE__),
-                'parameters'       => array('ban' => 'bor'),
-            ),
+                'datas'            => ['baz' => 'bat'],
+                'files'            => ['bit' => __FILE__],
+                'parameters'       => ['ban' => 'bor'],
+            ],
             $this->formatter->formatRequest($this->createRequestMock())
         );
     }
@@ -60,14 +55,14 @@ class FormatterTest extends AbstractTestCase
     public function testFormatResponse()
     {
         $this->assertSame(
-            array(
+            [
                 'protocol_version' => '1.1',
                 'status_code'      => 200,
                 'reason_phrase'    => 'OK',
-                'headers'          => array('bal' => 'bol'),
+                'headers'          => ['bal' => 'bol'],
                 'body'             => 'body',
-                'parameters'       => array('bil' => 'bob'),
-            ),
+                'parameters'       => ['bil' => 'bob'],
+            ],
             $this->formatter->formatResponse($this->createResponseMock())
         );
     }
@@ -75,20 +70,18 @@ class FormatterTest extends AbstractTestCase
     public function testFormatException()
     {
         $this->assertSame(
-            array(
-                'code' => 123,
+            [
+                'code'    => 123,
                 'message' => 'message',
-                'line' => 234,
-                'file' => __FILE__,
-            ),
+                'line'    => 234,
+                'file'    => __FILE__,
+            ],
             $this->formatter->formatException($this->createExceptionMock())
         );
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {
@@ -111,7 +104,7 @@ class FormatterTest extends AbstractTestCase
         $request
             ->expects($this->any())
             ->method('getHeaders')
-            ->will($this->returnValue(array('foo' => 'bar')));
+            ->will($this->returnValue(['foo' => 'bar']));
 
         $request
             ->expects($this->any())
@@ -121,25 +114,23 @@ class FormatterTest extends AbstractTestCase
         $request
             ->expects($this->any())
             ->method('getDatas')
-            ->will($this->returnValue(array('baz' => 'bat')));
+            ->will($this->returnValue(['baz' => 'bat']));
 
         $request
             ->expects($this->any())
             ->method('getFiles')
-            ->will($this->returnValue(array('bit' => __FILE__)));
+            ->will($this->returnValue(['bit' => __FILE__]));
 
         $request
             ->expects($this->any())
             ->method('getParameters')
-            ->will($this->returnValue(array('ban' => 'bor')));
+            ->will($this->returnValue(['ban' => 'bor']));
 
         return $request;
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response interface.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -162,7 +153,7 @@ class FormatterTest extends AbstractTestCase
         $response
             ->expects($this->any())
             ->method('getHeaders')
-            ->will($this->returnValue(array('bal' => 'bol')));
+            ->will($this->returnValue(['bal' => 'bol']));
 
         $response
             ->expects($this->any())
@@ -172,15 +163,13 @@ class FormatterTest extends AbstractTestCase
         $response
             ->expects($this->any())
             ->method('getParameters')
-            ->will($this->returnValue(array('bil' => 'bob')));
+            ->will($this->returnValue(['bil' => 'bob']));
 
         return $response;
     }
 
     /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     * @return HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createExceptionMock()
     {
@@ -195,11 +184,9 @@ class FormatterTest extends AbstractTestCase
     }
 
     /**
-     * Sets a property value.
-     *
-     * @param object $object   The object.
-     * @param string $property The property.
-     * @param mixed  $value    The value.
+     * @param object $object
+     * @param string $property
+     * @param mixed  $value
      */
     private function setPropertyValue($object, $property, $value)
     {

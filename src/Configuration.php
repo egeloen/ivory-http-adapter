@@ -16,37 +16,47 @@ use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\MessageInterface;
 
 /**
- * {@inheritdoc}
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Configuration implements ConfigurationInterface
 {
-    /** @var \Ivory\HttpAdapter\Message\MessageFactoryInterface */
+    /**
+     * @var MessageFactoryInterface
+     */
     private $messageFactory;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $protocolVersion = MessageInterface::PROTOCOL_VERSION_1_1;
 
-    /** @var boolean */
+    /**
+     * @var bool
+     */
     private $keepAlive = false;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $encodingType;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $boundary;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     private $timeout = 10;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $userAgent;
 
     /**
-     * Creates an http adapter.
-     *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
+     * @param MessageFactoryInterface|null $messageFactory
      */
     public function __construct(MessageFactoryInterface $messageFactory = null)
     {

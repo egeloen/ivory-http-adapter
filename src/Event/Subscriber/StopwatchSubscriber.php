@@ -12,11 +12,11 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
-use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
 use Ivory\HttpAdapter\Event\RequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
 use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
@@ -24,19 +24,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * Stopwatch subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StopwatchSubscriber implements EventSubscriberInterface
 {
-    /** @var \Symfony\Component\Stopwatch\Stopwatch */
+    /**
+     * @var Stopwatch
+     */
     private $stopwatch;
 
     /**
-     * Creates a stopwatch event subscriber.
-     *
-     * @param \Symfony\Component\Stopwatch\Stopwatch $stopwatch The stopwatch.
+     * @param Stopwatch $stopwatch
      */
     public function __construct(Stopwatch $stopwatch)
     {
@@ -44,9 +42,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the stopwatch.
-     *
-     * @return \Symfony\Component\Stopwatch\Stopwatch The stopwatch.
+     * @return Stopwatch
      */
     public function getStopwatch()
     {
@@ -54,9 +50,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The event.
+     * @param RequestCreatedEvent $event
      */
     public function onRequestCreated(RequestCreatedEvent $event)
     {
@@ -64,9 +58,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The event.
+     * @param RequestSentEvent $event
      */
     public function onRequestSent(RequestSentEvent $event)
     {
@@ -76,9 +68,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request errored event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestErroredEvent $event The event.
+     * @param RequestErroredEvent $event
      */
     public function onRequestErrored(RequestErroredEvent $event)
     {
@@ -86,9 +76,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
+     * @param MultiRequestCreatedEvent $event
      */
     public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
@@ -98,9 +86,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
+     * @param MultiRequestSentEvent $event
      */
     public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
@@ -112,9 +98,7 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request errored event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event The multi request errored event.
+     * @param MultiRequestErroredEvent $event
      */
     public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
@@ -147,12 +131,10 @@ class StopwatchSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the stopwatch name.
+     * @param HttpAdapterInterface     $httpAdapter
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return string The stopwatch name.
+     * @return string
      */
     private function getStopwatchName(HttpAdapterInterface $httpAdapter, InternalRequestInterface $internalRequest)
     {

@@ -15,20 +15,18 @@ use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Limited retry strategy.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class LimitedRetryStrategy extends AbstractRetryStrategyChain
 {
-    /** @var integer */
+    /**
+     * @var int
+     */
     private $limit;
 
     /**
-     * Creates a limited retry strategy.
-     *
-     * @param integer                                                                  $limit The limit.
-     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next  The next retry strategy chain.
+     * @param int                              $limit
+     * @param RetryStrategyChainInterface|null $next
      */
     public function __construct($limit = 3, RetryStrategyChainInterface $next = null)
     {
@@ -38,9 +36,7 @@ class LimitedRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Gets the limit.
-     *
-     * @return integer The limit.
+     * @return int
      */
     public function getLimit()
     {
@@ -48,9 +44,7 @@ class LimitedRetryStrategy extends AbstractRetryStrategyChain
     }
 
     /**
-     * Sets the limit.
-     *
-     * @param integer $limit The limit.
+     * @param int $limit
      */
     public function setLimit($limit)
     {

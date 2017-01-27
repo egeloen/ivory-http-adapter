@@ -1,6 +1,6 @@
 {
     "name": "egeloen/http-adapter",
-    "description": "Issue HTTP request for PHP 5.3+.",
+    "description": "Issue HTTP request for PHP 5.4.8+.",
     "keywords": [ "http", "http-adapter", "http-client", "psr-7" ],
     "type": "library",
     "license": "MIT",
@@ -11,13 +11,14 @@
         }
     ],
     "require": {
-        "php": ">=5.4.8",
+        "php": "^5.4.8|^7.0",
         "zendframework/zend-diactoros": "^1.1"
     },
     "require-dev": {
         "cakephp/cakephp": "^3.0.3",
         "doctrine/cache": "^1.4",
         "ext-curl": "*",
+        "friendsofphp/php-cs-fixer": "^2.0",
         "guzzle/guzzle": "^3.9.4@dev",
         "guzzlehttp/guzzle": "^4.1.4|^5.0|^6.0",
         "kriswallsmith/buzz": "~0.13",

@@ -14,8 +14,6 @@ namespace Ivory\HttpAdapter\Message;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 /**
- * Response interface.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface ResponseInterface extends PsrResponseInterface, MessageInterface

@@ -12,16 +12,17 @@
 namespace Ivory\Tests\HttpAdapter\Event\StatusCode;
 
 use Ivory\HttpAdapter\Event\StatusCode\StatusCode;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Status code test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class StatusCodeTest extends AbstractTestCase 
+class StatusCodeTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\StatusCode\StatusCode */
+    /**
+     * @var StatusCode
+     */
     private $statusCode;
 
     /**
@@ -33,14 +34,9 @@ class StatusCodeTest extends AbstractTestCase
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->statusCode);
-    }
-
-    /**
+     * @param int  $statusCode
+     * @param bool $expected
+     *
      * @dataProvider validateProvider
      */
     public function testValidate($statusCode, $expected)
@@ -49,27 +45,23 @@ class StatusCodeTest extends AbstractTestCase
     }
 
     /**
-     * Gets the validate provider.
-     *
-     * @return array The validate provider.
+     * @return array
      */
     public function validateProvider()
     {
-        return array(
-            array(100, true),
-            array(200, true),
-            array(300, true),
-            array(400, false),
-            array(500, false),
-        );
+        return [
+            [100, true],
+            [200, true],
+            [300, true],
+            [400, false],
+            [500, false],
+        ];
     }
 
     /**
-     * Creates a response mock.
+     * @param int $statusCode
      *
-     * @param integer $statusCode The status code.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock($statusCode)
     {

@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\RequestsHttpAdapter;
 
 /**
- * Requests http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractRequestsHttpAdapterTest extends AbstractHttpAdapterTest
@@ -34,9 +32,7 @@ abstract class AbstractRequestsHttpAdapterTest extends AbstractHttpAdapterTest
     }
 
     /**
-     * Creates a transport.
-     *
-     * @return \Requests_Transport The transport.
+     * @return \Requests_Transport
      */
     abstract protected function createTransport();
 }

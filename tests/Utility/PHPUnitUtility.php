@@ -12,16 +12,12 @@
 namespace Ivory\Tests\HttpAdapter\Utility;
 
 /**
- * PHPUnit utility.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class PHPUnitUtility
 {
     /**
-     * Gets the uri.
-     *
-     * @return string|boolean The uri or FALSE if there is none.
+     * @return string|bool
      */
     public static function getUri()
     {
@@ -29,12 +25,10 @@ class PHPUnitUtility
     }
 
     /**
-     * Gets the file.
+     * @param bool        $tmp
+     * @param string|null $name
      *
-     * @param boolean     $tmp  TRUE if the file should be in the "/tmp" directory else FALSE.
-     * @param string|null $name The name.
-     *
-     * @return string The file.
+     * @return string
      */
     public static function getFile($tmp = true, $name = null)
     {

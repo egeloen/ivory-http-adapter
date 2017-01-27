@@ -16,8 +16,6 @@ use Ivory\HttpAdapter\Message\Request;
 use Ivory\HttpAdapter\ReactHttpAdapter;
 
 /**
- * React http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ReactHttpAdapterTest extends AbstractHttpAdapterTest
@@ -33,7 +31,6 @@ class ReactHttpAdapterTest extends AbstractHttpAdapterTest
 
         parent::setUp();
 
-        // ReactPHP is only compatible with the HTTP 1.0 protocol version.
         $this->defaultOptions['protocol_version'] = Request::PROTOCOL_VERSION_1_0;
     }
 
@@ -43,12 +40,12 @@ class ReactHttpAdapterTest extends AbstractHttpAdapterTest
     }
 
     /**
+     * @param float $timeout
+     *
      * @dataProvider timeoutProvider
      */
     public function testSendWithTimeoutExceeded($timeout)
     {
-        // ReactPHP does not allow to control timeout
-        // https://github.com/reactphp/socket-client/pull/17
         $this->markTestSkipped();
     }
 
@@ -65,12 +62,11 @@ class ReactHttpAdapterTest extends AbstractHttpAdapterTest
      */
     protected function assertRequest(
         $method,
-        array $headers = array(),
-        array $data = array(),
-        array $files = array(),
+        array $headers = [],
+        array $data = [],
+        array $files = [],
         $protocolVersion = MessageInterface::PROTOCOL_VERSION_1_0
     ) {
-        // ReactPHP is only compatible with the HTTP 1.0 protocol version.
         parent::assertRequest($method, $headers, $data, $files, $protocolVersion);
     }
 }

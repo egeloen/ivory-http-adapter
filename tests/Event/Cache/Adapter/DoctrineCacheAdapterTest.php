@@ -11,20 +11,23 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Cache\Adapter;
 
+use Doctrine\Common\Cache\Cache;
 use Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Doctrine cache adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class DoctrineCacheAdapterTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\Cache\Adapter\DoctrineCacheAdapter */
+    /**
+     * @var DoctrineCacheAdapter
+     */
     private $doctrineCacheAdapter;
 
-    /** @var \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var Cache|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $cache;
 
     /**
@@ -34,15 +37,6 @@ class DoctrineCacheAdapterTest extends AbstractTestCase
     {
         $this->cache = $this->createCacheMock();
         $this->doctrineCacheAdapter = new DoctrineCacheAdapter($this->cache);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->cache);
-        unset($this->doctrineCacheAdapter);
     }
 
     public function testDefaultState()
@@ -123,9 +117,7 @@ class DoctrineCacheAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a cache mock.
-     *
-     * @return \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject The cache mock.
+     * @return Cache|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createCacheMock()
     {

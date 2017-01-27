@@ -12,8 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 /**
- * File get contents http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class FileGetContentsHttpAdapter extends AbstractStreamHttpAdapter
@@ -31,8 +29,8 @@ class FileGetContentsHttpAdapter extends AbstractStreamHttpAdapter
      */
     protected function process($uri, $context)
     {
-        $http_response_header = array();
+        $http_response_header = [];
 
-        return array(@file_get_contents($uri, false, $context), $http_response_header);
+        return [@file_get_contents($uri, false, $context), $http_response_header];
     }
 }

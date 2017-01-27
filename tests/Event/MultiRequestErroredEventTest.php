@@ -12,15 +12,17 @@
 namespace Ivory\Tests\HttpAdapter\Event;
 
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Multi exception event test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class MultiRequestErroredEventTest extends AbstractEventTest
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private $exceptions;
 
     /**
@@ -28,19 +30,9 @@ class MultiRequestErroredEventTest extends AbstractEventTest
      */
     protected function setUp()
     {
-        $this->exceptions = array($this->createExceptionMock());
+        $this->exceptions = [$this->createExceptionMock()];
 
         parent::setUp();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->exceptions);
-
-        parent::tearDown();
     }
 
     public function testDefaultState()
@@ -53,22 +45,22 @@ class MultiRequestErroredEventTest extends AbstractEventTest
 
     public function testSetExceptions()
     {
-        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
+        $this->event->setExceptions($exceptions = [$this->createExceptionMock()]);
 
         $this->assertExceptions($exceptions);
     }
 
     public function testAddExceptions()
     {
-        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
-        $this->event->addExceptions($newExceptions = array($this->createExceptionMock()));
+        $this->event->setExceptions($exceptions = [$this->createExceptionMock()]);
+        $this->event->addExceptions($newExceptions = [$this->createExceptionMock()]);
 
         $this->assertExceptions(array_merge($exceptions, $newExceptions));
     }
 
     public function testRemoveExceptions()
     {
-        $this->event->setExceptions($exceptions = array($this->createExceptionMock()));
+        $this->event->setExceptions($exceptions = [$this->createExceptionMock()]);
         $this->event->removeExceptions($exceptions);
 
         $this->assertNoExceptions();
@@ -76,7 +68,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
 
     public function testClearExceptions()
     {
-        $this->event->setExceptions(array($this->createExceptionMock()));
+        $this->event->setExceptions([$this->createExceptionMock()]);
         $this->event->clearExceptions();
 
         $this->assertNoExceptions();
@@ -99,22 +91,22 @@ class MultiRequestErroredEventTest extends AbstractEventTest
 
     public function testSetResponses()
     {
-        $this->event->setResponses($responses = array($this->createResponseMock()));
+        $this->event->setResponses($responses = [$this->createResponseMock()]);
 
         $this->assertResponses($responses);
     }
 
     public function testAddResponses()
     {
-        $this->event->setResponses($responses = array($this->createResponseMock()));
-        $this->event->addResponses($newResponses = array($this->createResponseMock()));
+        $this->event->setResponses($responses = [$this->createResponseMock()]);
+        $this->event->addResponses($newResponses = [$this->createResponseMock()]);
 
         $this->assertResponses(array_merge($responses, $newResponses));
     }
 
     public function testRemoveResponses()
     {
-        $this->event->setResponses($responses = array($this->createResponseMock()));
+        $this->event->setResponses($responses = [$this->createResponseMock()]);
         $this->event->removeResponses($responses);
 
         $this->assertNoResponses();
@@ -122,7 +114,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
 
     public function testClearResponses()
     {
-        $this->event->setResponses(array($this->createResponseMock()));
+        $this->event->setResponses([$this->createResponseMock()]);
         $this->event->clearResponses();
 
         $this->assertNoResponses();
@@ -152,9 +144,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     * @return HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createExceptionMock()
     {
@@ -162,9 +152,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -172,9 +160,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Asserts there are the exceptions.
-     *
-     * @param array $exceptions The exceptions.
+     * @param array $exceptions
      */
     private function assertExceptions(array $exceptions)
     {
@@ -186,9 +172,6 @@ class MultiRequestErroredEventTest extends AbstractEventTest
         }
     }
 
-    /**
-     * Asserts there are no exceptions.
-     */
     private function assertNoExceptions()
     {
         $this->assertFalse($this->event->hasExceptions());
@@ -196,9 +179,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Asserts there is an exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
+     * @param HttpAdapterException $exception
      */
     private function assertException($exception)
     {
@@ -207,9 +188,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Asserts there is no exception.
-     *
-     * @param string $exception The exception.
+     * @param string $exception
      */
     private function assertNoException($exception)
     {
@@ -217,9 +196,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Asserts there are the responses.
-     *
-     * @param array $responses The responses.
+     * @param array $responses
      */
     private function assertResponses(array $responses)
     {
@@ -231,9 +208,6 @@ class MultiRequestErroredEventTest extends AbstractEventTest
         }
     }
 
-    /**
-     * Asserts there are no responses.
-     */
     private function assertNoResponses()
     {
         $this->assertFalse($this->event->hasResponses());
@@ -241,9 +215,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Asserts there is a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     private function assertResponse($response)
     {
@@ -252,9 +224,7 @@ class MultiRequestErroredEventTest extends AbstractEventTest
     }
 
     /**
-     * Asserts there is no response.
-     *
-     * @param string $response The response.
+     * @param string $response
      */
     private function assertNoResponse($response)
     {

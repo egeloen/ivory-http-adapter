@@ -14,19 +14,17 @@ namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Abstract retry strategy chain.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface */
+    /**
+     * @var RetryStrategyChainInterface
+     */
     private $next;
 
     /**
-     * Creates a chained retry strategy.
-     *
-     * @param \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|null $next The next chained retry strategy.
+     * @param RetryStrategyChainInterface|null $next
      */
     public function __construct(RetryStrategyChainInterface $next = null)
     {
@@ -86,11 +84,9 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
     }
 
     /**
-     * Does the retry verification.
+     * @param InternalRequestInterface $request
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return boolean TRUE if it should retry to send the request else FALSE.
+     * @return bool
      */
     protected function doVerify(InternalRequestInterface $request)
     {
@@ -98,11 +94,9 @@ abstract class AbstractRetryStrategyChain implements RetryStrategyChainInterface
     }
 
     /**
-     * Does the retry delay.
+     * @param InternalRequestInterface $request
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return integer The delay before retrying to send the request.
+     * @return int
      */
     protected function doDelay(InternalRequestInterface $request)
     {

@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Zend\Http\Client\Adapter\Socket;
 
 /**
- * Zend 2 socket http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend2SocketHttpAdapterTest extends AbstractZend2HttpAdapterTest

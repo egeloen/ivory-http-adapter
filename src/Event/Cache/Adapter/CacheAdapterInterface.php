@@ -12,47 +12,37 @@
 namespace Ivory\HttpAdapter\Event\Cache\Adapter;
 
 /**
- * Cache adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface CacheAdapterInterface
 {
     /**
-     * Checks if an entry exists.
+     * @param string $id
      *
-     * @param string $id The identifier.
-     *
-     * @return boolean TRUE if a entry exists else FALSE.
+     * @return bool
      */
     public function has($id);
 
     /**
-     * Gets an entry.
+     * @param string $id
      *
-     * @param string $id The identifier.
-     *
-     * @return mixed The data.
+     * @return mixed
      */
     public function get($id);
 
     /**
-     * Sets an entry.
+     * @param string $id
+     * @param mixed  $data
+     * @param int    $lifeTime
      *
-     * @param string $id       The identifier.
-     * @param mixed  $data     The data.
-     * @param int    $lifeTime The lifetime.
-     *
-     * @return boolean TRUE if the entry was saved else FALSE.
+     * @return bool
      */
     public function set($id, $data, $lifeTime = 0);
 
     /**
-     * Removes an entry.
+     * @param string $id
      *
-     * @param string $id The identifier.
-     *
-     * @return boolean TRUE if the entry was deleted else FALSE.
+     * @return bool
      */
     public function remove($id);
 }

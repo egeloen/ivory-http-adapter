@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Message\InternalRequest;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Internal request test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class InternalRequestTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Message\InternalRequest */
+    /**
+     * @var InternalRequest
+     */
     private $internalRequest;
 
     /**
@@ -30,14 +30,6 @@ class InternalRequestTest extends AbstractTestCase
     protected function setUp()
     {
         $this->internalRequest = new InternalRequest();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->internalRequest);
     }
 
     public function testInheritance()
@@ -63,13 +55,13 @@ class InternalRequestTest extends AbstractTestCase
             $uri = 'http://egeloen.fr/',
             $method = InternalRequest::METHOD_POST,
             'php://memory',
-            $datas = array('baz' => 'bat'),
-            $files = array('bot' => 'ban'),
-            $headers = array('foo' => array('bar')),
-            $parameters = array('bip' => 'pog')
+            $datas = ['baz' => 'bat'],
+            $files = ['bot' => 'ban'],
+            $headers = ['foo' => ['bar']],
+            $parameters = ['bip' => 'pog']
         );
 
-        $headers['Host'] = array('egeloen.fr');
+        $headers['Host'] = ['egeloen.fr'];
 
         $this->assertSame($uri, (string) $this->internalRequest->getUri());
         $this->assertSame($method, $this->internalRequest->getMethod());
@@ -88,7 +80,7 @@ class InternalRequestTest extends AbstractTestCase
         $this->assertNotSame($internalRequest, $this->internalRequest);
         $this->assertTrue($internalRequest->hasData($name));
         $this->assertSame($value, $internalRequest->getData($name));
-        $this->assertSame(array($name => $value), $internalRequest->getDatas());
+        $this->assertSame([$name => $value], $internalRequest->getDatas());
     }
 
     public function testWithAddedData()
@@ -98,8 +90,8 @@ class InternalRequestTest extends AbstractTestCase
 
         $this->assertNotSame($internalRequest, $this->internalRequest);
         $this->assertTrue($internalRequest->hasData($name));
-        $this->assertSame(array($value1, $value2), $internalRequest->getData($name));
-        $this->assertSame(array($name => array($value1, $value2)), $internalRequest->getDatas());
+        $this->assertSame([$value1, $value2], $internalRequest->getData($name));
+        $this->assertSame([$name => [$value1, $value2]], $internalRequest->getDatas());
     }
 
     public function testWithoutData()
@@ -121,7 +113,7 @@ class InternalRequestTest extends AbstractTestCase
         $this->assertNotSame($internalRequest, $this->internalRequest);
         $this->assertTrue($internalRequest->hasFile($name));
         $this->assertSame($value, $internalRequest->getFile($name));
-        $this->assertSame(array($name => $value), $internalRequest->getFiles());
+        $this->assertSame([$name => $value], $internalRequest->getFiles());
     }
 
     public function testWithAddedFile()
@@ -131,8 +123,8 @@ class InternalRequestTest extends AbstractTestCase
 
         $this->assertNotSame($internalRequest, $this->internalRequest);
         $this->assertTrue($internalRequest->hasFile($name));
-        $this->assertSame(array($value1, $value2), $internalRequest->getFile($name));
-        $this->assertSame(array($name => array($value1, $value2)), $internalRequest->getFiles());
+        $this->assertSame([$value1, $value2], $internalRequest->getFile($name));
+        $this->assertSame([$name => [$value1, $value2]], $internalRequest->getFiles());
     }
 
     public function testWithoutFile()

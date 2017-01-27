@@ -11,19 +11,27 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use Ivory\HttpAdapter\ConfigurationInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\MultiHttpAdapterException;
 use Ivory\HttpAdapter\PsrHttpAdapterDecorator;
+use Ivory\HttpAdapter\PsrHttpAdapterInterface;
 
 /**
  * @author GeLo <geloen.eric@gmail.com>
  */
 class PsrHttpAdapterDecoratorTest extends AbstractTestCase
 {
-    /** @var  \Ivory\HttpAdapter\PsrHttpAdapterDecorator */
+    /**
+     * @var PsrHttpAdapterDecorator
+     */
     private $decorator;
 
-    /** @var \Ivory\HttpAdapter\PsrHttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var PsrHttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $httpAdapter;
 
     /**
@@ -34,15 +42,6 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
         $this->decorator = new PsrHttpAdapterDecorator(
             $this->httpAdapter = $this->createMock('Ivory\HttpAdapter\PsrHttpAdapterInterface')
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->decorator);
-        unset($this->httpAdapter);
     }
 
     public function testGetConfiguration()
@@ -107,8 +106,8 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
         $this->httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($requests = array($this->createInternalRequestMock())))
-            ->will($this->returnValue($responses = array($this->createResponseMock())));
+            ->with($this->identicalTo($requests = [$this->createInternalRequestMock()]))
+            ->will($this->returnValue($responses = [$this->createResponseMock()]));
 
         $this->assertSame($responses, $this->decorator->sendRequests($requests));
     }
@@ -118,10 +117,10 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
         $this->httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($requests = array($this->createInternalRequestMock())))
+            ->with($this->identicalTo($requests = [$this->createInternalRequestMock()]))
             ->will($this->throwException($exception = $this->createMultiExceptionMock(
-                $responses = array($this->createResponseMock()),
-                $exceptions = array($this->createExceptionMock())
+                $responses = [$this->createResponseMock()],
+                $exceptions = [$this->createExceptionMock()]
             )));
 
         try {
@@ -134,9 +133,7 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
     }
 
     /**
-     * Creates a configuration mock.
-     *
-     * @return \Ivory\HttpAdapter\ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject The configuration mock.
+     * @return ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createConfigurationMock()
     {
@@ -144,9 +141,7 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
     }
 
     /**
-     * Creates an internal request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The internal request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createInternalRequestMock()
     {
@@ -154,9 +149,7 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -164,9 +157,7 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
     }
 
     /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     * @return HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createExceptionMock()
     {
@@ -174,12 +165,10 @@ class PsrHttpAdapterDecoratorTest extends AbstractTestCase
     }
 
     /**
-     * Creates a multi exception mock.
+     * @param array $responses
+     * @param array $exceptions
      *
-     * @param array $responses  The responses.
-     * @param array $exceptions The exceptions.
-     *
-     * @return \Ivory\HttpAdapter\MultiHttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The mutli exception mock.
+     * @return MultiHttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createMultiExceptionMock(array $responses, array $exceptions)
     {

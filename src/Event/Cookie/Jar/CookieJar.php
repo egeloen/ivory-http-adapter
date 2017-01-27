@@ -11,29 +11,29 @@
 
 namespace Ivory\HttpAdapter\Event\Cookie\Jar;
 
-use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
 use Ivory\HttpAdapter\Event\Cookie\CookieFactory;
+use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * {@inheritdoc}
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CookieJar implements CookieJarInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface */
+    /**
+     * @var CookieFactoryInterface
+     */
     private $cookieFactory;
 
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieInterface[] */
-    private $cookies = array();
+    /**
+     * @var CookieInterface[]
+     */
+    private $cookies = [];
 
     /**
-     * Creates a cookie jar.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface|null $cookieFactory The cookie factory.
+     * @param CookieFactoryInterface|null $cookieFactory
      */
     public function __construct(CookieFactoryInterface $cookieFactory = null)
     {

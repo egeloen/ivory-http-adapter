@@ -12,8 +12,8 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\RequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
 use Ivory\HttpAdapter\Event\Retry\Retry;
 use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
@@ -21,19 +21,17 @@ use Ivory\HttpAdapter\MultiHttpAdapterException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Retry subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RetrySubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\RetryInterface */
+    /**
+     * @var RetryInterface
+     */
     private $retry;
 
     /**
-     * Creates a retry subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\Retry\RetryInterface|null $retry The retry.
+     * @param RetryInterface|null $retry
      */
     public function __construct(RetryInterface $retry = null)
     {
@@ -41,9 +39,7 @@ class RetrySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the retry.
-     *
-     * @return \Ivory\HttpAdapter\Event\Retry\RetryInterface The retry.
+     * @return RetryInterface
      */
     public function getRetry()
     {
@@ -51,7 +47,7 @@ class RetrySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param RequestErroredEvent $event
      */
     public function onRequestErrored(RequestErroredEvent $event)
     {
@@ -69,13 +65,11 @@ class RetrySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request errored event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event The multi request errored event.
+     * @param MultiRequestErroredEvent $event
      */
     public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
-        $retryRequests = array();
+        $retryRequests = [];
 
         foreach ($event->getExceptions() as $exception) {
             if (($request = $this->retry->retry($exception->getRequest(), false)) !== false) {
@@ -101,9 +95,9 @@ class RetrySubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::REQUEST_ERRORED       => array('onRequestErrored', 0),
-            Events::MULTI_REQUEST_ERRORED => array('onMultiResponseErrored', 0),
-        );
+        return [
+            Events::REQUEST_ERRORED       => ['onRequestErrored', 0],
+            Events::MULTI_REQUEST_ERRORED => ['onMultiResponseErrored', 0],
+        ];
     }
 }

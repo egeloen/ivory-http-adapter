@@ -20,20 +20,18 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Guzzle 6 http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Guzzle6HttpAdapter extends AbstractHttpAdapter
 {
-    /** @var \GuzzleHttp\ClientInterface */
+    /**
+     * @var ClientInterface
+     */
     private $client;
 
     /**
-     * Creates a guzzle 6 http adapter.
-     *
-     * @param \GuzzleHttp\ClientInterface|null               $client        The guzzle 6 client.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param ClientInterface|null        $client
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
     {
@@ -69,7 +67,7 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
-            (integer) $response->getStatusCode(),
+            (int) $response->getStatusCode(),
             $response->getProtocolVersion(),
             $response->getHeaders(),
             BodyNormalizer::normalize(
@@ -86,17 +84,17 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
      */
     protected function sendInternalRequests(array $internalRequests, $success, $error)
     {
-        $requests = array();
+        $requests = [];
         foreach ($internalRequests as $key => $internalRequest) {
             $requests[$key] = $this->createRequest($internalRequest);
         }
 
         $httpAdapter = $this;
 
-        $pool = new Pool($this->client, $requests, array_merge($this->createOptions(), array(
+        $pool = new Pool($this->client, $requests, array_merge($this->createOptions(), [
             'fulfilled' => function ($response, $index) use ($success, $internalRequests, $httpAdapter) {
                 $response = $httpAdapter->getConfiguration()->getMessageFactory()->createResponse(
-                    (integer) $response->getStatusCode(),
+                    (int) $response->getStatusCode(),
                     $response->getProtocolVersion(),
                     $response->getHeaders(),
                     BodyNormalizer::normalize(
@@ -110,7 +108,7 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
                 $response = $response->withParameter('request', $internalRequests[$index]);
                 call_user_func($success, $response);
             },
-            'rejected' => function ($exception, $index)  use ($error, $internalRequests, $httpAdapter) {
+            'rejected' => function ($exception, $index) use ($error, $internalRequests, $httpAdapter) {
                 $exception = HttpAdapterException::cannotFetchUri(
                     $exception->getRequest()->getUri(),
                     $httpAdapter->getName(),
@@ -120,15 +118,15 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
                 $exception->setRequest($internalRequests[$index]);
                 call_user_func($error, $exception);
             },
-        )));
+        ]));
 
         $pool->promise()->wait();
     }
 
     /**
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest
+     * @param InternalRequestInterface $internalRequest
      *
-     * @return \GuzzleHttp\Psr7\Request
+     * @return Request
      */
     private function createRequest(InternalRequestInterface $internalRequest)
     {
@@ -146,11 +144,11 @@ class Guzzle6HttpAdapter extends AbstractHttpAdapter
      */
     private function createOptions()
     {
-        return array(
+        return [
             'http_errors'     => false,
             'allow_redirects' => false,
             'timeout'         => $this->getConfiguration()->getTimeout(),
             'connect_timeout' => $this->getConfiguration()->getTimeout(),
-        );
+        ];
     }
 }

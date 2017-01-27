@@ -16,20 +16,18 @@ use Cake\Network\Http\Request;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Cake http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CakeHttpAdapter extends AbstractHttpAdapter
 {
-    /** @var \Cake\Network\Http\Client */
+    /**
+     * @var Client
+     */
     private $client;
 
     /**
-     * Creates a Cake http adapter.
-     *
-     * @param \Cake\Network\Http\Client|null                 $client        The Cake client.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param Client|null                 $client
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(Client $client = null, ConfigurationInterface $configuration = null)
     {
@@ -63,16 +61,16 @@ class CakeHttpAdapter extends AbstractHttpAdapter
         $request->version($this->getConfiguration()->getProtocolVersion());
 
         try {
-            $response = $this->client->send($request, array(
+            $response = $this->client->send($request, [
                 'timeout'  => $this->getConfiguration()->getTimeout(),
                 'redirect' => false,
-            ));
+            ]);
         } catch (\Exception $e) {
             throw HttpAdapterException::cannotFetchUri($uri, $this->getName(), $e->getMessage());
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
-            (integer) $response->statusCode(),
+            (int) $response->statusCode(),
             $response->version(),
             $response->headers(),
             $response->body()
