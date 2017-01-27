@@ -20,8 +20,6 @@ use Ivory\HttpAdapter\Guzzle3HttpAdapter;
 use Ivory\HttpAdapter\HttpfulHttpAdapter;
 
 /**
- * Disabled http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class DisabledHttpAdapterTest extends AbstractTestCase
@@ -40,7 +38,7 @@ class DisabledHttpAdapterTest extends AbstractTestCase
             $this->markTestSkipped();
         }
 
-        $this->setExpectedException('\Ivory\HttpAdapter\HttpAdapterException');
+        $this->expectException('\Ivory\HttpAdapter\HttpAdapterException');
         new BuzzHttpAdapter(new Browser(new Curl()));
     }
 
@@ -50,7 +48,7 @@ class DisabledHttpAdapterTest extends AbstractTestCase
             $this->markTestSkipped();
         }
 
-        $this->setExpectedException('\Ivory\HttpAdapter\HttpAdapterException');
+        $this->expectException('\Ivory\HttpAdapter\HttpAdapterException');
         new CurlHttpAdapter();
     }
 
@@ -60,7 +58,7 @@ class DisabledHttpAdapterTest extends AbstractTestCase
             $this->markTestSkipped();
         }
 
-        $this->setExpectedException('\Ivory\HttpAdapter\HttpAdapterException');
+        $this->expectException('\Ivory\HttpAdapter\HttpAdapterException');
         new Guzzle3HttpAdapter();
     }
 
@@ -70,7 +68,7 @@ class DisabledHttpAdapterTest extends AbstractTestCase
             $this->markTestSkipped();
         }
 
-        $this->setExpectedException('\Ivory\HttpAdapter\HttpAdapterException');
+        $this->expectException('\Ivory\HttpAdapter\HttpAdapterException');
         new HttpfulHttpAdapter();
     }
 }

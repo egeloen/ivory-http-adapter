@@ -14,21 +14,17 @@ namespace Ivory\HttpAdapter\Extractor;
 use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 
 /**
- * Status code extractor.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StatusCodeExtractor extends AbstractUninstantiableAsset
 {
     /**
-     * Extracts the status code.
+     * @param array|string $headers
      *
-     * @param array|string $headers The headers.
-     *
-     * @return integer The extracted status code.
+     * @return int
      */
     public static function extract($headers)
     {
-        return (integer) substr(StatusLineExtractor::extract($headers), 9, 3);
+        return (int) substr(StatusLineExtractor::extract($headers), 9, 3);
     }
 }

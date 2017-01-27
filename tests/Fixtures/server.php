@@ -44,13 +44,13 @@ if ($redirect) {
 
 fwrite(
     $file,
-    json_encode(array(
+    json_encode([
         'SERVER' => $_SERVER,
         'GET'    => $_GET,
         'POST'   => $_POST,
         'FILES'  => $_FILES,
         'INPUT'  => file_get_contents('php://input'),
-    ))
+    ])
 );
 
 fflush($file);

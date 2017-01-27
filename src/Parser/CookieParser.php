@@ -14,18 +14,14 @@ namespace Ivory\HttpAdapter\Parser;
 use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 
 /**
- * Cookie parser.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CookieParser extends AbstractUninstantiableAsset
 {
     /**
-     * Parses a cookie header.
+     * @param string $header
      *
-     * @param string $header The cookie header.
-     *
-     * @return array The parsed cookie header (0 => name, 1 => value, 2 => attributes).
+     * @return array
      */
     public static function parse($header)
     {
@@ -42,7 +38,7 @@ class CookieParser extends AbstractUninstantiableAsset
             list($value, $header) = explode(';', $header, 2);
         }
 
-        $attributes = array();
+        $attributes = [];
         foreach (array_map('trim', explode(';', $header)) as $pair) {
             if (empty($pair)) {
                 continue;
@@ -61,6 +57,6 @@ class CookieParser extends AbstractUninstantiableAsset
         $name = trim($name);
         $value = trim($value);
 
-        return array(!empty($name) ? $name : null, !empty($value) ? $value : null, $attributes);
+        return [!empty($name) ? $name : null, !empty($value) ? $value : null, $attributes];
     }
 }

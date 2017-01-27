@@ -15,20 +15,17 @@ use Ivory\HttpAdapter\Extractor\ProtocolVersionExtractor;
 use Ivory\HttpAdapter\Extractor\StatusCodeExtractor;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
- * Curl http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CurlHttpAdapter extends AbstractCurlHttpAdapter
 {
     /**
-     * Creates a curl http adapter.
-     *
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(ConfigurationInterface $configuration = null)
     {
@@ -70,12 +67,12 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     {
         $curlMulti = curl_multi_init();
 
-        $contexts = array();
+        $contexts = [];
         foreach ($internalRequests as $internalRequest) {
-            $contexts[] = array(
+            $contexts[] = [
                 'curl'    => $curl = $this->createCurl($internalRequest),
                 'request' => $internalRequest,
-            );
+            ];
 
             curl_multi_add_handle($curlMulti, $curl);
         }
@@ -107,11 +104,9 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     }
 
     /**
-     * Creates a curl resource.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return resource The curl resource.
+     * @return resource
      */
     private function createCurl(InternalRequestInterface $internalRequest)
     {
@@ -161,10 +156,8 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     }
 
     /**
-     * Configures a timeout.
-     *
-     * @param resource $curl The curl resource.
-     * @param string   $type The timeout type.
+     * @param resource $curl
+     * @param string   $type
      */
     private function configureTimeout($curl, $type)
     {
@@ -176,15 +169,13 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     }
 
     /**
-     * Creates a response.
+     * @param resource                 $curl
+     * @param string|bool|null         $data
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param resource                                            $curl            The curl resource.
-     * @param string|boolean|null                                 $data            The data.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     private function createResponse($curl, $data, InternalRequestInterface $internalRequest)
     {
@@ -207,12 +198,10 @@ class CurlHttpAdapter extends AbstractCurlHttpAdapter
     }
 
     /**
-     * Resolves the internal request.
+     * @param resource $curl
+     * @param array    $contexts
      *
-     * @param resource $curl     The curl resource.
-     * @param array    $contexts The contexts.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The internal request.
+     * @return InternalRequestInterface
      */
     private function resolveInternalRequest($curl, array $contexts)
     {

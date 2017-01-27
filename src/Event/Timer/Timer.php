@@ -14,8 +14,6 @@ namespace Ivory\HttpAdapter\Event\Timer;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Timer.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Timer implements TimerInterface
@@ -46,9 +44,7 @@ class Timer implements TimerInterface
     }
 
     /**
-     * Gets the time.
-     *
-     * @return float The time.
+     * @return float
      */
     private function getTime()
     {

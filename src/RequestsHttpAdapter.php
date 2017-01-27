@@ -14,20 +14,18 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Requests http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RequestsHttpAdapter extends AbstractHttpAdapter
 {
-    /** @var \Requests_Transport */
+    /**
+     * @var \Requests_Transport
+     */
     private $transport;
 
     /**
-     * Creates a requests http adapter.
-     *
-     * @param \Requests_Transport|null                       $transport     The transport.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration
+     * @param \Requests_Transport|null    $transport
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(\Requests_Transport $transport = null, ConfigurationInterface $configuration = null)
     {
@@ -49,13 +47,13 @@ class RequestsHttpAdapter extends AbstractHttpAdapter
      */
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $options = array(
+        $options = [
             'timeout'          => $this->getConfiguration()->getTimeout(),
             'connect_timeout'  => $this->getConfiguration()->getTimeout(),
             'protocol_version' => (float) $this->getConfiguration()->getProtocolVersion(),
             'follow_redirects' => 0,
             'data_format'      => 'body',
-        );
+        ];
 
         if ($this->transport !== null) {
             $options['transport'] = $this->transport;

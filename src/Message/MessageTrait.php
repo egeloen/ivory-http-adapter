@@ -12,17 +12,17 @@
 namespace Ivory\HttpAdapter\Message;
 
 /**
- * Message trait.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 trait MessageTrait
 {
-    /** @var array */
-    private $parameters = array();
+    /**
+     * @var array
+     */
+    private $parameters = [];
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function getParameters()
     {
@@ -30,7 +30,9 @@ trait MessageTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     *
+     * @return bool
      */
     public function hasParameter($name)
     {
@@ -38,7 +40,9 @@ trait MessageTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     *
+     * @return mixed
      */
     public function getParameter($name)
     {
@@ -46,7 +50,10 @@ trait MessageTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return object
      */
     public function withParameter($name, $value)
     {
@@ -57,7 +64,10 @@ trait MessageTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return object
      */
     public function withAddedParameter($name, $value)
     {
@@ -70,7 +80,9 @@ trait MessageTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     *
+     * @return object
      */
     public function withoutParameter($name)
     {

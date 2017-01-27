@@ -14,8 +14,6 @@ namespace Ivory\HttpAdapter\Event\Retry\Strategy;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Constant delayed retry strategy.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ConstantDelayedRetryStrategy extends AbstractDelayedRetryStrategy

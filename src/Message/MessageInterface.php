@@ -14,69 +14,52 @@ namespace Ivory\HttpAdapter\Message;
 use Psr\Http\Message\MessageInterface as PsrMessageInterface;
 
 /**
- * Message interface.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface MessageInterface extends PsrMessageInterface
 {
-    /** @const string The protocol version 1.0. */
     const PROTOCOL_VERSION_1_0 = '1.0';
-
-    /** @const string The protocol version 1.1. */
     const PROTOCOL_VERSION_1_1 = '1.1';
 
     /**
-     * Gets the parameters.
-     *
-     * @return array The parameters.
+     * @return array
      */
     public function getParameters();
 
     /**
-     * Checks if there is a parameter.
+     * @param string $name
      *
-     * @param string $name The parameter name.
-     *
-     * @return boolean TRUE if there is the parameter else FALSE.
+     * @return bool
      */
     public function hasParameter($name);
 
     /**
-     * Gets a parameter.
+     * @param string $name
      *
-     * @param string $name The parameter name.
-     *
-     * @return mixed The parameter value.
+     * @return mixed
      */
     public function getParameter($name);
 
     /**
-     * Sets a parameter.
+     * @param string $name
+     * @param mixed  $value
      *
-     * @param string $name  The parameter name.
-     * @param mixed  $value The parameter value.
-     *
-     * @return \Ivory\HttpAdapter\Message\MessageInterface The new message.
+     * @return MessageInterface
      */
     public function withParameter($name, $value);
 
     /**
-     * Adds a parameter.
+     * @param string $name
+     * @param mixed  $value
      *
-     * @param string $name  The parameter name.
-     * @param mixed  $value The parameter value.
-     *
-     * @return \Ivory\HttpAdapter\Message\MessageInterface The new message.
+     * @return MessageInterface
      */
     public function withAddedParameter($name, $value);
 
     /**
-     * Removes a parameter.
+     * @param string $name
      *
-     * @param string $name The parameter value.
-     *
-     * @return \Ivory\HttpAdapter\Message\MessageInterface The new message.
+     * @return MessageInterface
      */
     public function withoutParameter($name);
 }

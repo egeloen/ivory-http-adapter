@@ -21,14 +21,14 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
  */
 class PeclHttpAdapter extends AbstractHttpAdapter
 {
-    /** @var \http\Client */
+    /**
+     * @var Client
+     */
     private $client;
 
     /**
-     * Creates a pecl http adapter.
-     *
-     * @param \http\Client                              $client
-     * @param \Ivory\HttpAdapter\ConfigurationInterface $configuration
+     * @param Client                 $client
+     * @param ConfigurationInterface $configuration
      */
     public function __construct(Client $client = null, ConfigurationInterface $configuration = null)
     {
@@ -56,10 +56,10 @@ class PeclHttpAdapter extends AbstractHttpAdapter
             ? \http\Client\Curl\HTTP_VERSION_1_0
             : \http\Client\Curl\HTTP_VERSION_1_1;
 
-        $request->setOptions(array(
+        $request->setOptions([
             'protocol' => $httpVersion,
             'timeout'  => $this->getConfiguration()->getTimeout(),
-        ));
+        ]);
 
         try {
             $this->client->reset()->enqueue($request)->send();

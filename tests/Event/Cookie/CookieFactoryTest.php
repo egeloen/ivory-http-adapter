@@ -16,13 +16,13 @@ use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\Tests\HttpAdapter\Parser\AbstractCookieParserTest;
 
 /**
- * Cookie factory test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CookieFactoryTest extends AbstractCookieParserTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\CookieFactory */
+    /**
+     * @var CookieFactory
+     */
     private $cookieFactory;
 
     /**
@@ -33,26 +33,18 @@ class CookieFactoryTest extends AbstractCookieParserTest
         $this->cookieFactory = new CookieFactory();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->cookieFactory);
-    }
-
     public function testCreate()
     {
         $cookie = $this->cookieFactory->create(
             $name = 'foo',
             $value = 'bar',
-            $attributes = array(
+            $attributes = [
                 CookieInterface::ATTR_DOMAIN  => 'egeloen.fr',
                 CookieInterface::ATTR_PATH    => '/',
                 CookieInterface::ATTR_SECURE  => false,
                 CookieInterface::ATTR_EXPIRES => date('D, d M Y H:i:s e', time() + 100),
                 CookieInterface::ATTR_MAX_AGE => 100,
-            ),
+            ],
             $createdAt = time()
         );
 
@@ -64,9 +56,14 @@ class CookieFactoryTest extends AbstractCookieParserTest
     }
 
     /**
+     * @param string $header
+     * @param string $name
+     * @param string $value
+     * @param array  $attributes
+     *
      * @dataProvider parseProvider
      */
-    public function testParse($header, $name, $value, array $attributes = array())
+    public function testParse($header, $name, $value, array $attributes = [])
     {
         $before = time();
         $cookie = $this->cookieFactory->parse($header);

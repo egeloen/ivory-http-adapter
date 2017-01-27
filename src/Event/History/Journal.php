@@ -15,25 +15,27 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * {@inheritdoc}
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Journal implements JournalInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface */
+    /**
+     * @var JournalEntryFactoryInterface
+     */
     private $journalEntryFactory;
 
-    /** @var array */
-    private $entries = array();
+    /**
+     * @var array
+     */
+    private $entries = [];
 
-    /** @var integer */
+    /**
+     * @var int
+     */
     private $limit = 10;
 
     /**
-     * Creates a journal.
-     *
-     * @param \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface|null $journalEntryFactory The journal entry factory.
+     * @param JournalEntryFactoryInterface|null $journalEntryFactory
      */
     public function __construct(JournalEntryFactoryInterface $journalEntryFactory = null)
     {
@@ -41,9 +43,7 @@ class Journal implements JournalInterface
     }
 
     /**
-     * Gets the journal entry factory.
-     *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface The journal entry factory.
+     * @return JournalEntryFactoryInterface
      */
     public function getJournalEntryFactory()
     {
@@ -51,9 +51,7 @@ class Journal implements JournalInterface
     }
 
     /**
-     * Sets the journal entry factory.
-     *
-     * @param \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface $journalEntryFactory The journal entry factory.
+     * @param JournalEntryFactoryInterface $journalEntryFactory
      */
     public function setJournalEntryFactory(JournalEntryFactoryInterface $journalEntryFactory)
     {
@@ -73,7 +71,7 @@ class Journal implements JournalInterface
      */
     public function clear()
     {
-        $this->entries = array();
+        $this->entries = [];
     }
 
     /**

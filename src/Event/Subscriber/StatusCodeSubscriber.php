@@ -23,19 +23,17 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Status code subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StatusCodeSubscriber implements EventSubscriberInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface */
+    /**
+     * @var StatusCodeInterface
+     */
     private $statusCode;
 
     /**
-     * Creates a status code subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface|null $statusCode The status code.
+     * @param StatusCodeInterface|null $statusCode
      */
     public function __construct(StatusCodeInterface $statusCode = null)
     {
@@ -43,9 +41,7 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Gets the status code.
-     *
-     * @return \Ivory\HttpAdapter\Event\StatusCode\StatusCodeInterface The status code.
+     * @return StatusCodeInterface
      */
     public function getStatusCode()
     {
@@ -53,9 +49,7 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
+     * @param RequestSentEvent $event
      */
     public function onRequestSent(RequestSentEvent $event)
     {
@@ -69,9 +63,7 @@ class StatusCodeSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * On multi request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
+     * @param MultiRequestSentEvent $event
      */
     public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
@@ -93,20 +85,18 @@ class StatusCodeSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::REQUEST_SENT       => array('onRequestSent', 200),
-            Events::MULTI_REQUEST_SENT => array('onMultiRequestSent', 200),
-        );
+        return [
+            Events::REQUEST_SENT       => ['onRequestSent', 200],
+            Events::MULTI_REQUEST_SENT => ['onMultiRequestSent', 200],
+        ];
     }
 
     /**
-     * Creates a status code exception.
+     * @param ResponseInterface        $response
+     * @param InternalRequestInterface $internalRequest
+     * @param HttpAdapterInterface     $httpAdapter
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The status code exception.
+     * @return HttpAdapterException
      */
     private function createStatusCodeException(
         ResponseInterface $response,

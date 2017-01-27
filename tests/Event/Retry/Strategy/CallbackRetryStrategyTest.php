@@ -14,13 +14,13 @@ namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 use Ivory\HttpAdapter\Event\Retry\Strategy\CallbackRetryStrategy;
 
 /**
- * Callback retry strategy test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\CallbackRetryStrategy */
+    /**
+     * @var CallbackRetryStrategy
+     */
     private $callbackRetryStrategy;
 
     /**
@@ -29,14 +29,6 @@ class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
     protected function setUp()
     {
         $this->callbackRetryStrategy = new CallbackRetryStrategy();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->callbackRetryStrategy);
     }
 
     public function testDefaultState()
@@ -59,8 +51,12 @@ class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
     public function testInitialState()
     {
         $this->callbackRetryStrategy = new CallbackRetryStrategy(
-            $verifyCallback = function () { return false; },
-            $delayCallback = function () { return 1; },
+            $verifyCallback = function () {
+                return false;
+            },
+            $delayCallback = function () {
+                return 1;
+            },
             $next = $this->createRetryStrategyChainMock()
         );
 
@@ -76,7 +72,9 @@ class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
 
     public function testSetVerifyCallback()
     {
-        $this->callbackRetryStrategy->setVerifyCallback($verifyCallback = function () { return false; });
+        $this->callbackRetryStrategy->setVerifyCallback($verifyCallback = function () {
+            return false;
+        });
 
         $this->assertTrue($this->callbackRetryStrategy->hasVerifyCallback());
         $this->assertSame($verifyCallback, $this->callbackRetryStrategy->getVerifyCallback());
@@ -84,7 +82,9 @@ class CallbackRetryStrategyTest extends AbstractRetryStrategyTest
 
     public function testSetDelayCallback()
     {
-        $this->callbackRetryStrategy->setDelayCallback($delayCallback = function () { return 1; });
+        $this->callbackRetryStrategy->setDelayCallback($delayCallback = function () {
+            return 1;
+        });
 
         $this->assertTrue($this->callbackRetryStrategy->hasDelayCallback());
         $this->assertSame($delayCallback, $this->callbackRetryStrategy->getDelayCallback());

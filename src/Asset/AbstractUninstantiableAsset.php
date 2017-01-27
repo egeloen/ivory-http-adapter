@@ -12,15 +12,11 @@
 namespace Ivory\HttpAdapter\Asset;
 
 /**
- * Abstract uninstantiable asset.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractUninstantiableAsset
 {
     /**
-     * Disabled constructor.
-     *
      * @codeCoverageIgnore
      */
     final private function __construct()

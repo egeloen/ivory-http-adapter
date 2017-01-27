@@ -12,22 +12,22 @@
 namespace Ivory\HttpAdapter\Message;
 
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
+use Psr\Http\Message\StreamInterface;
 use Zend\Diactoros\Stream;
 use Zend\Diactoros\Uri;
-use Psr\Http\Message\StreamInterface;
 
 /**
- * Message factory.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class MessageFactory implements MessageFactoryInterface
 {
-    /** @var null|\Zend\Diactoros\Uri */
+    /**
+     * @var Uri|null
+     */
     private $baseUri;
 
     /**
-     * @param string $baseUri The base uri.
+     * @param string $baseUri
      */
     public function __construct($baseUri = null)
     {
@@ -69,9 +69,9 @@ class MessageFactory implements MessageFactoryInterface
         $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
-        array $headers = array(),
+        array $headers = [],
         $body = null,
-        array $parameters = array()
+        array $parameters = []
     ) {
         return (new Request(
             $this->createUri($uri),
@@ -89,16 +89,16 @@ class MessageFactory implements MessageFactoryInterface
         $uri,
         $method = RequestInterface::METHOD_GET,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
-        array $headers = array(),
-        $datas = array(),
-        array $files = array(),
-        array $parameters = array()
+        array $headers = [],
+        $datas = [],
+        array $files = [],
+        array $parameters = []
     ) {
         $body = null;
 
         if (!is_array($datas)) {
             $body = $this->createStream($datas);
-            $datas = $files = array();
+            $datas = $files = [];
         }
 
         return (new InternalRequest(
@@ -118,9 +118,9 @@ class MessageFactory implements MessageFactoryInterface
     public function createResponse(
         $statusCode = 200,
         $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_1,
-        array $headers = array(),
+        array $headers = [],
         $body = null,
-        array $parameters = array()
+        array $parameters = []
     ) {
         return (new Response(
             $this->createStream($body),
@@ -131,11 +131,9 @@ class MessageFactory implements MessageFactoryInterface
     }
 
     /**
-     * Creates an uri.
+     * @param string $uri
      *
-     * @param string $uri The uri.
-     *
-     * @return string The created uri.
+     * @return string
      */
     private function createUri($uri)
     {
@@ -147,11 +145,9 @@ class MessageFactory implements MessageFactoryInterface
     }
 
     /**
-     * Creates a stream.
+     * @param resource|string|StreamInterface|null $body
      *
-     * @param null|resource|string|\Psr\Http\Message\StreamInterface|null $body The body.
-     *
-     * @return \Psr\Http\Message\StreamInterface The stream.
+     * @return StreamInterface
      */
     private function createStream($body)
     {

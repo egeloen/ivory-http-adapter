@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Zend\Http\Client\Adapter\Curl;
 
 /**
- * Zend 2 curl http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend2CurlHttpAdapterTest extends AbstractZend2HttpAdapterTest

@@ -16,8 +16,6 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Formatter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Formatter implements FormatterInterface
@@ -68,11 +66,9 @@ class Formatter implements FormatterInterface
     }
 
     /**
-     * Filters the parameters.
+     * @param array $parameters
      *
-     * @param array $parameters The parameters.
-     *
-     * @return array The filtered parameters.
+     * @return array
      */
     private function filterParameters(array $parameters)
     {

@@ -16,20 +16,18 @@ use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 
 /**
- * Abstract formatter subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractFormatterSubscriber extends AbstractTimerSubscriber
 {
-    /** @var \Ivory\HttpAdapter\Event\Formatter\FormatterInterface */
+    /**
+     * @var FormatterInterface
+     */
     private $formatter;
 
     /**
-     * Creates a formatter subscriber.
-     *
-     * @param \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|null $formatter The formatter.
-     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface|null         $timer     The timer.
+     * @param FormatterInterface|null $formatter
+     * @param TimerInterface|null     $timer
      */
     public function __construct(FormatterInterface $formatter = null, TimerInterface $timer = null)
     {
@@ -39,9 +37,7 @@ abstract class AbstractFormatterSubscriber extends AbstractTimerSubscriber
     }
 
     /**
-     * Gets the formatter.
-     *
-     * @return \Ivory\HttpAdapter\Event\Formatter\FormatterInterface The formatter.
+     * @return FormatterInterface
      */
     public function getFormatter()
     {

@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Buzz\Client\Curl;
 
 /**
- * Buzz curl http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class BuzzCurlHttpAdapterTest extends AbstractBuzzHttpAdapterTest

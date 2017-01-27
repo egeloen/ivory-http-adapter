@@ -11,17 +11,19 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use Ivory\HttpAdapter\AbstractHttpAdapter;
+use Ivory\HttpAdapter\ConfigurationInterface;
 use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\MultiHttpAdapterException;
 
 /**
- * Http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HttpAdapterTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\AbstractHttpAdapter|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var AbstractHttpAdapter|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $httpAdapter;
 
     /**
@@ -62,14 +64,6 @@ class HttpAdapterTest extends AbstractTestCase
         $this->assertRegExp('/.?/', HttpAdapterInterface::EXTRA_VERSION);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->httpAdapter);
-    }
-
     public function testDefaultState()
     {
         $this->assertInstanceOf('Ivory\HttpAdapter\Configuration', $this->httpAdapter->getConfiguration());
@@ -78,7 +72,7 @@ class HttpAdapterTest extends AbstractTestCase
     public function testInitialState()
     {
         $this->httpAdapter = $this->createHttpAdapterMockBuilder()
-            ->setConstructorArgs(array($configuration = $this->createConfigurationMock()))
+            ->setConstructorArgs([$configuration = $this->createConfigurationMock()])
             ->getMockForAbstractClass();
 
         $this->assertSame($configuration, $this->httpAdapter->getConfiguration());
@@ -94,7 +88,7 @@ class HttpAdapterTest extends AbstractTestCase
     public function testSendRequestsWithInvalidRequests()
     {
         try {
-            $this->httpAdapter->sendRequests(array(true));
+            $this->httpAdapter->sendRequests([true]);
             $this->fail();
         } catch (MultiHttpAdapterException $e) {
             $this->assertFalse($e->hasResponses());
@@ -116,9 +110,7 @@ class HttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates an http adapter mock builder.
-     *
-     * @return \PHPUnit_Framework_MockObject_MockBuilder The http adapter mock builder.
+     * @return AbstractHttpAdapter|\PHPUnit_Framework_MockObject_MockBuilder
      */
     private function createHttpAdapterMockBuilder()
     {
@@ -126,9 +118,7 @@ class HttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a configuration mock.
-     *
-     * @return \Ivory\HttpAdapter\ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject The configuration mock.
+     * @return ConfigurationInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createConfigurationMock()
     {

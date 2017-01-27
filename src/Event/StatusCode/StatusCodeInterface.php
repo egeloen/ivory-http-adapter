@@ -14,18 +14,14 @@ namespace Ivory\HttpAdapter\Event\StatusCode;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Status code.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface StatusCodeInterface
 {
     /**
-     * Validates a status code.
+     * @param ResponseInterface $response
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return boolean TRUE if the status code is valid else FALSE.
+     * @return bool
      */
     public function validate(ResponseInterface $response);
 }

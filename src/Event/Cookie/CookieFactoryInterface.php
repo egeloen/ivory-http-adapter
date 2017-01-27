@@ -12,30 +12,24 @@
 namespace Ivory\HttpAdapter\Event\Cookie;
 
 /**
- * Cookie factory.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface CookieFactoryInterface
 {
     /**
-     * Creates a cookie.
+     * @param string $name
+     * @param string $value
+     * @param array  $attributes
+     * @param int    $createdAt
      *
-     * @param string  $name       The name.
-     * @param string  $value      The value.
-     * @param array   $attributes The attributes.
-     * @param integer $createdAt  The creation date (unix timestamp).
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface The cookie.
+     * @return CookieInterface
      */
     public function create($name, $value, array $attributes, $createdAt);
 
     /**
-     * Parses a cookie.
+     * @param string $header
      *
-     * @param string $header The header.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\CookieInterface The parsed cookie.
+     * @return CookieInterface
      */
     public function parse($header);
 }

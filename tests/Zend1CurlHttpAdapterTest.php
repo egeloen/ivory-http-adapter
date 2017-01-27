@@ -12,8 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 /**
- * Zend 1 curl http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend1CurlHttpAdapterTest extends AbstractZend1HttpAdapterTest

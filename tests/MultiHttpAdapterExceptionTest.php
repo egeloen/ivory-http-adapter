@@ -11,16 +11,18 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\MultiHttpAdapterException;
 
 /**
- * Multi http adapter exception test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class MultiHttpAdapterExceptionTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\MultiHttpAdapterException */
+    /**
+     * @var MultiHttpAdapterException
+     */
     private $multiHttpAdapterException;
 
     /**
@@ -29,14 +31,6 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     protected function setUp()
     {
         $this->multiHttpAdapterException = new MultiHttpAdapterException();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->multiHttpAdapterException);
     }
 
     public function testDefaultState()
@@ -53,8 +47,8 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     public function testInitialState()
     {
         $this->multiHttpAdapterException = new MultiHttpAdapterException(
-            $exceptions = array($this->createExceptionMock()),
-            $responses = array($this->createResponseMock())
+            $exceptions = [$this->createExceptionMock()],
+            $responses = [$this->createResponseMock()]
         );
 
         $this->assertExceptions($exceptions);
@@ -63,22 +57,22 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
 
     public function testSetExceptions()
     {
-        $this->multiHttpAdapterException->setExceptions($exceptions = array($this->createExceptionMock()));
+        $this->multiHttpAdapterException->setExceptions($exceptions = [$this->createExceptionMock()]);
 
         $this->assertExceptions($exceptions);
     }
 
     public function testAddExceptions()
     {
-        $this->multiHttpAdapterException->setExceptions($exceptions = array($this->createExceptionMock()));
-        $this->multiHttpAdapterException->addExceptions($newExceptions = array($this->createExceptionMock()));
+        $this->multiHttpAdapterException->setExceptions($exceptions = [$this->createExceptionMock()]);
+        $this->multiHttpAdapterException->addExceptions($newExceptions = [$this->createExceptionMock()]);
 
         $this->assertExceptions(array_merge($exceptions, $newExceptions));
     }
 
     public function testRemoveExceptions()
     {
-        $this->multiHttpAdapterException->setExceptions($exceptions = array($this->createExceptionMock()));
+        $this->multiHttpAdapterException->setExceptions($exceptions = [$this->createExceptionMock()]);
         $this->multiHttpAdapterException->removeExceptions($exceptions);
 
         $this->assertNoExceptions();
@@ -86,7 +80,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
 
     public function testClearExceptions()
     {
-        $this->multiHttpAdapterException->setExceptions(array($this->createExceptionMock()));
+        $this->multiHttpAdapterException->setExceptions([$this->createExceptionMock()]);
         $this->multiHttpAdapterException->clearExceptions();
 
         $this->assertNoExceptions();
@@ -109,22 +103,22 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
 
     public function testSetResponses()
     {
-        $this->multiHttpAdapterException->setResponses($responses = array($this->createResponseMock()));
+        $this->multiHttpAdapterException->setResponses($responses = [$this->createResponseMock()]);
 
         $this->assertResponses($responses);
     }
 
     public function testAddResponses()
     {
-        $this->multiHttpAdapterException->setResponses($responses = array($this->createResponseMock()));
-        $this->multiHttpAdapterException->addResponses($newResponses = array($this->createResponseMock()));
+        $this->multiHttpAdapterException->setResponses($responses = [$this->createResponseMock()]);
+        $this->multiHttpAdapterException->addResponses($newResponses = [$this->createResponseMock()]);
 
         $this->assertResponses(array_merge($responses, $newResponses));
     }
 
     public function testRemoveResponses()
     {
-        $this->multiHttpAdapterException->setResponses($responses = array($this->createResponseMock()));
+        $this->multiHttpAdapterException->setResponses($responses = [$this->createResponseMock()]);
         $this->multiHttpAdapterException->removeResponses($responses);
 
         $this->assertNoResponses();
@@ -132,7 +126,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
 
     public function testClearResponses()
     {
-        $this->multiHttpAdapterException->setResponses(array($this->createResponseMock()));
+        $this->multiHttpAdapterException->setResponses([$this->createResponseMock()]);
         $this->multiHttpAdapterException->clearResponses();
 
         $this->assertNoResponses();
@@ -154,9 +148,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     * @return HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createExceptionMock()
     {
@@ -164,9 +156,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -174,9 +164,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Asserts there are the exceptions.
-     *
-     * @param array $exceptions The exceptions.
+     * @param array $exceptions
      */
     private function assertExceptions(array $exceptions)
     {
@@ -188,9 +176,6 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
         }
     }
 
-    /**
-     * Asserts there are no exceptions.
-     */
     private function assertNoExceptions()
     {
         $this->assertFalse($this->multiHttpAdapterException->hasExceptions());
@@ -198,9 +183,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Asserts there is an exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
+     * @param HttpAdapterException $exception
      */
     private function assertException($exception)
     {
@@ -209,9 +192,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Asserts there is no exception.
-     *
-     * @param string $exception The exception.
+     * @param string $exception
      */
     private function assertNoException($exception)
     {
@@ -219,9 +200,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Asserts there are the responses.
-     *
-     * @param array $responses The responses.
+     * @param array $responses
      */
     private function assertResponses(array $responses)
     {
@@ -233,9 +212,6 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
         }
     }
 
-    /**
-     * Asserts there are no responses.
-     */
     private function assertNoResponses()
     {
         $this->assertFalse($this->multiHttpAdapterException->hasResponses());
@@ -243,9 +219,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Asserts there is a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     private function assertResponse($response)
     {
@@ -254,9 +228,7 @@ class MultiHttpAdapterExceptionTest extends AbstractTestCase
     }
 
     /**
-     * Asserts there is no response.
-     *
-     * @param string $response The response.
+     * @param string $response
      */
     private function assertNoResponse($response)
     {

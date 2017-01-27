@@ -11,13 +11,12 @@
 
 namespace Ivory\Tests\HttpAdapter;
 
+use GuzzleHttp\Adapter\AdapterInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\MessageFactory;
 use Ivory\HttpAdapter\Guzzle4HttpAdapter;
 
 /**
- * Abstract guzzle 4 http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractGuzzle4HttpAdapterTest extends AbstractHttpAdapterTest
@@ -44,20 +43,16 @@ abstract class AbstractGuzzle4HttpAdapterTest extends AbstractHttpAdapterTest
      */
     protected function createHttpAdapter()
     {
-        return new Guzzle4HttpAdapter(new Client(array('adapter' => $this->createAdapter())));
+        return new Guzzle4HttpAdapter(new Client(['adapter' => $this->createAdapter()]));
     }
 
     /**
-     * Creates a guzzle 4 adapter.
-     *
-     * @return \GuzzleHttp\Adapter\AdapterInterface The guzzle 4 adapter.
+     * @return AdapterInterface
      */
     abstract protected function createAdapter();
 
     /**
-     * Creates a message factory.
-     *
-     * @return \GuzzleHttp\Message\MessageFactory The message factory.
+     * @return MessageFactory
      */
     protected function createMessageFactory()
     {

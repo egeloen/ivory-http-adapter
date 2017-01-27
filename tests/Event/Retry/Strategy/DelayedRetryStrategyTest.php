@@ -11,14 +11,16 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
+use Ivory\HttpAdapter\Event\Retry\Strategy\AbstractDelayedRetryStrategy;
+
 /**
- * Delayed retry strategy test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\AbstractDelayedRetryStrategy */
+    /**
+     * @var AbstractDelayedRetryStrategy
+     */
     private $delayedRetryStrategy;
 
     /**
@@ -29,14 +31,6 @@ class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
         $this->delayedRetryStrategy = $this->createDelayedRetryStrategyMockBuilder()->getMockForAbstractClass();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->delayedRetryStrategy);
-    }
-
     public function testDefaultState()
     {
         $this->assertInstanceOf(
@@ -44,7 +38,7 @@ class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
             $this->delayedRetryStrategy
         );
 
-        $this->assertSame(5, $this->delayedRetryStrategy->getDelay());
+        $this->assertSame(5.0, $this->delayedRetryStrategy->getDelay());
 
         $this->assertFalse($this->delayedRetryStrategy->hasNext());
         $this->assertNull($this->delayedRetryStrategy->getNext());
@@ -53,7 +47,7 @@ class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
     public function testInitialState()
     {
         $this->delayedRetryStrategy = $this->createDelayedRetryStrategyMockBuilder()
-            ->setConstructorArgs(array($delay = 10, $next = $this->createRetryStrategyChainMock()))
+            ->setConstructorArgs([$delay = 10, $next = $this->createRetryStrategyChainMock()])
             ->getMockForAbstractClass();
 
         $this->assertSame($delay, $this->delayedRetryStrategy->getDelay());
@@ -70,9 +64,7 @@ class DelayedRetryStrategyTest extends AbstractRetryStrategyTest
     }
 
     /**
-     * Creates a delayed retry strategy mock builder.
-     *
-     * @return \PHPUnit_Framework_MockObject_MockBuilder The delayed retry strategy mock builder.
+     * @return AbstractDelayedRetryStrategy|\PHPUnit_Framework_MockObject_MockBuilder
      */
     private function createDelayedRetryStrategyMockBuilder()
     {

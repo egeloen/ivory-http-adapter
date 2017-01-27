@@ -11,14 +11,16 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
+use Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar;
+
 /**
- * Persistent cookie jar test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $persistentCookieJar;
 
     /**
@@ -29,16 +31,6 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
         parent::setUp();
 
         $this->persistentCookieJar = $this->createPersistentCookieJarMock();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        unset($this->persistentCookieJar);
     }
 
     public function testDefaultState()
@@ -59,7 +51,7 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
     public function testInitialState()
     {
         $this->persistentCookieJar = $this->createPersistentCookieJarMockBuilder()
-            ->setConstructorArgs(array($cookieFactory = $this->createCookieFactoryMock(), false))
+            ->setConstructorArgs([$cookieFactory = $this->createCookieFactoryMock(), false])
             ->getMockForAbstractClass();
 
         $this->assertSame($cookieFactory, $this->persistentCookieJar->getCookieFactory());
@@ -90,9 +82,7 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
     }
 
     /**
-     * Creates a persistent cookie jar mock builder.
-     *
-     * @return \PHPUnit_Framework_MockObject_MockBuilder The persistent cookie jar mock builder.
+     * @return AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockBuilder
      */
     private function createPersistentCookieJarMockBuilder()
     {
@@ -100,9 +90,7 @@ class PersistentCookieJarTest extends AbstractPersistentCookieJarTest
     }
 
     /**
-     * Creates a persistent cookie jar mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cookie\Jar\AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject The persistent cookie jar mock.
+     * @return AbstractPersistentCookieJar|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createPersistentCookieJarMock()
     {

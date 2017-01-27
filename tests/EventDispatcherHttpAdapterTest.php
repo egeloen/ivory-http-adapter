@@ -12,30 +12,38 @@
 namespace Ivory\Tests\HttpAdapter;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
-use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
-use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\RequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\EventDispatcherHttpAdapter;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\MultiHttpAdapterException;
+use Ivory\HttpAdapter\PsrHttpAdapterInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Event dispatcher http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class EventDispatcherHttpAdapterTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\EventDispatcherHttpAdapter */
+    /**
+     * @var EventDispatcherHttpAdapter
+     */
     private $eventDispatcherHttpAdapter;
 
-    /** @var \Ivory\HttpAdapter\PsrHttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var PsrHttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $httpAdapter;
 
-    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $eventDispatcher;
 
     /**
@@ -47,16 +55,6 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
             $this->httpAdapter = $this->createHttpAdapterMock(),
             $this->eventDispatcher = $this->createEventDispatcherMock()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->eventDispatcher);
-        unset($this->httpAdapter);
-        unset($this->eventDispatcherHttpAdapter);
     }
 
     public function testSendRequestDispatchRequestCreatedEvent()
@@ -110,7 +108,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
             ->with(
                 $this->identicalTo(Events::REQUEST_CREATED),
                 $this->callback(function ($event) use ($httpAdapter, $internalRequest, $response) {
-                    $result =  $event instanceof RequestCreatedEvent
+                    $result = $event instanceof RequestCreatedEvent
                         && $event->getHttpAdapter() === $httpAdapter
                         && $event->getRequest() === $internalRequest;
 
@@ -139,7 +137,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
             ->with(
                 $this->identicalTo(Events::REQUEST_CREATED),
                 $this->callback(function ($event) use ($httpAdapter, $internalRequest, $exception) {
-                    $result =  $event instanceof RequestCreatedEvent
+                    $result = $event instanceof RequestCreatedEvent
                         && $event->getHttpAdapter() === $httpAdapter
                         && $event->getRequest() === $internalRequest;
 
@@ -349,15 +347,15 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     public function testSendRequestsDispatchMultiRequestCreatedEvent()
     {
         $httpAdapter = $this->eventDispatcherHttpAdapter;
-        $internalRequests = array($this->createInternalRequestMock());
+        $internalRequests = [$this->createInternalRequestMock()];
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($internalRequestsOverride = array(
-                $internalRequestOverride = $this->createInternalRequestMock(), )
+            ->with($this->identicalTo($internalRequestsOverride = [
+                $internalRequestOverride = $this->createInternalRequestMock(), ]
             ))
-            ->will($this->returnValue($responses = array($response = $this->createResponseMock())));
+            ->will($this->returnValue($responses = [$response = $this->createResponseMock()]));
 
         $this->eventDispatcher
             ->expects($this->at(0))
@@ -385,13 +383,13 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     public function testSendRequestsDispatchMultiRequestSentEvent()
     {
         $httpAdapter = $this->eventDispatcherHttpAdapter;
-        $responsesOverride = array($this->createResponseMock());
+        $responsesOverride = [$this->createResponseMock()];
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($internalRequests = array($this->createInternalRequestMock())))
-            ->will($this->returnValue($responses = array($this->createResponseMock())));
+            ->with($this->identicalTo($internalRequests = [$this->createInternalRequestMock()]))
+            ->will($this->returnValue($responses = [$this->createResponseMock()]));
 
         $this->eventDispatcher
             ->expects($this->at(1))
@@ -420,14 +418,14 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     public function testSendRequestsDispatchMultiRequestErroredEventAndReturnResponses()
     {
         $httpAdapter = $this->eventDispatcherHttpAdapter;
-        $responses = array($this->createResponseMock());
+        $responses = [$this->createResponseMock()];
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($internalRequests = array($this->createInternalRequestMock())))
+            ->with($this->identicalTo($internalRequests = [$this->createInternalRequestMock()]))
             ->will($this->throwException($this->createMultiExceptionMock(
-                $exceptions = array($this->createExceptionMock())
+                $exceptions = [$this->createExceptionMock()]
             )));
 
         $this->eventDispatcher
@@ -445,7 +443,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
                             && !$event->hasResponses();
                     }
 
-                    $event->setExceptions(array());
+                    $event->setExceptions([]);
                     $event->setResponses($responses);
 
                     return $result;
@@ -458,14 +456,14 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     public function testSendRequestsDispatchMultiRequestErroredEventWhenDoSendThrowException()
     {
         $httpAdapter = $this->eventDispatcherHttpAdapter;
-        $exceptionsOverride = array($this->createExceptionMock());
+        $exceptionsOverride = [$this->createExceptionMock()];
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($internalRequests = array($this->createInternalRequestMock())))
+            ->with($this->identicalTo($internalRequests = [$this->createInternalRequestMock()]))
             ->will($this->throwException($this->createMultiExceptionMock(
-                $exceptions = array($this->createExceptionMock())
+                $exceptions = [$this->createExceptionMock()]
             )));
 
         $this->eventDispatcher
@@ -501,13 +499,13 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     public function testSendRequestsDispatchMultiRequestErroredEventWhenMultiRequestSentEventHasExceptions()
     {
         $httpAdapter = $this->eventDispatcherHttpAdapter;
-        $exceptions = array($this->createExceptionMock());
+        $exceptions = [$this->createExceptionMock()];
 
         $this->httpAdapter
             ->expects($this->once())
             ->method('sendRequests')
-            ->with($this->identicalTo($internalRequests = array($this->createInternalRequestMock())))
-            ->will($this->returnValue($responses = array($this->createResponseMock())));
+            ->with($this->identicalTo($internalRequests = [$this->createInternalRequestMock()]))
+            ->will($this->returnValue($responses = [$this->createResponseMock()]));
 
         $this->eventDispatcher
             ->expects($this->at(1))
@@ -543,9 +541,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates an http adapter mock.
-     *
-     * @return \Ivory\HttpAdapter\PsrHttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
+     * @return PsrHttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createHttpAdapterMock()
     {
@@ -553,9 +549,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates an event dispatcher mock.
-     *
-     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject The event dispatcher mock.
+     * @return EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createEventDispatcherMock()
     {
@@ -563,9 +557,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates an internal request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The internal request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createInternalRequestMock()
     {
@@ -573,9 +565,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -583,9 +573,7 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     * @return HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createExceptionMock()
     {
@@ -593,14 +581,12 @@ class EventDispatcherHttpAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a multi exception mock.
+     * @param array $exceptions
+     * @param array $responses
      *
-     * @param array $exceptions The exceptions.
-     * @param array $responses  The responses.
-     *
-     * @return \Ivory\HttpAdapter\MultiHttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The multi exception mock.
+     * @return MultiHttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function createMultiExceptionMock(array $exceptions = array(), array $responses = array())
+    private function createMultiExceptionMock(array $exceptions = [], array $responses = [])
     {
         $exception = $this->createMock('Ivory\HttpAdapter\MultiHttpAdapterException');
 

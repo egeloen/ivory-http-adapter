@@ -14,19 +14,17 @@ namespace Ivory\HttpAdapter\Event\Cache\Adapter;
 use Doctrine\Common\Cache\Cache;
 
 /**
- * Doctrine cache adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class DoctrineCacheAdapter implements CacheAdapterInterface
 {
-    /** @var \Doctrine\Common\Cache\Cache */
+    /**
+     * @var Cache
+     */
     private $cache;
 
     /**
-     * Creates a doctrine cache.
-     *
-     * @param \Doctrine\Common\Cache\Cache $cache The doctrine cache.
+     * @param Cache $cache
      */
     public function __construct(Cache $cache)
     {

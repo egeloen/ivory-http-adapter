@@ -15,31 +15,28 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Mock http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  * @author Timothée Barray <tim@amicalement-web.net>
  */
 class MockHttpAdapter extends AbstractHttpAdapter
 {
-    /** @var array */
-    private $queuedResponses = array();
-
-    /** @var array */
-    private $receivedRequests = array();
+    /**
+     * @var array
+     */
+    private $queuedResponses = [];
 
     /**
-     * Clears the requests stack and the response queue.
+     * @var array
      */
+    private $receivedRequests = [];
+
     public function reset()
     {
-        $this->receivedRequests = array();
-        $this->queuedResponses = array();
+        $this->receivedRequests = [];
+        $this->queuedResponses = [];
     }
 
     /**
-     * Gets all requests sent.
-     *
      * @return array
      */
     public function getReceivedRequests()
@@ -48,8 +45,6 @@ class MockHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Gets currently queued responses.
-     *
      * @return array
      */
     public function getQueuedResponses()
@@ -58,10 +53,6 @@ class MockHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Appends a response to the queue.
-     *
-     * Next request sent will get the first response of the queue.
-     *
      * @param ResponseInterface $response
      */
     public function appendResponse(ResponseInterface $response)

@@ -14,25 +14,25 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Multi http adapter exception.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class MultiHttpAdapterException extends \Exception
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private $exceptions;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $responses;
 
     /**
-     * Creates a multi http adapter exception.
-     *
-     * @param array $exceptions The exceptions.
-     * @param array $responses  The responses.
+     * @param array $exceptions
+     * @param array $responses
      */
-    public function __construct(array $exceptions = array(), array $responses = array())
+    public function __construct(array $exceptions = [], array $responses = [])
     {
         parent::__construct('An error occurred when sending multiple requests.');
 
@@ -40,18 +40,13 @@ class MultiHttpAdapterException extends \Exception
         $this->setResponses($responses);
     }
 
-    /**
-     * Clears the exceptions.
-     */
     public function clearExceptions()
     {
-        $this->exceptions = array();
+        $this->exceptions = [];
     }
 
     /**
-     * Checks if there are exceptions.
-     *
-     * @return boolean TRUE if there are exceptions else FALSE.
+     * @return bool
      */
     public function hasExceptions()
     {
@@ -59,9 +54,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the exceptions.
-     *
-     * @return array The exceptions.
+     * @return array
      */
     public function getExceptions()
     {
@@ -69,9 +62,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Sets the exceptions.
-     *
-     * @param array $exceptions The exceptions.
+     * @param array $exceptions
      */
     public function setExceptions(array $exceptions)
     {
@@ -80,9 +71,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Adds the exceptions.
-     *
-     * @param array $exceptions The exceptions.
+     * @param array $exceptions
      */
     public function addExceptions(array $exceptions)
     {
@@ -92,9 +81,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Removes the exceptions.
-     *
-     * @param array $exceptions The exceptions.
+     * @param array $exceptions
      */
     public function removeExceptions(array $exceptions)
     {
@@ -104,11 +91,9 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Checks if there is an exception.
+     * @param HttpAdapterException $exception
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
-     *
-     * @return boolean TRUE if there is the exception else FALSE.
+     * @return bool
      */
     public function hasException(HttpAdapterException $exception)
     {
@@ -116,9 +101,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Adds an exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
+     * @param HttpAdapterException $exception
      */
     public function addException(HttpAdapterException $exception)
     {
@@ -126,9 +109,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Removes an exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
+     * @param HttpAdapterException $exception
      */
     public function removeException(HttpAdapterException $exception)
     {
@@ -136,18 +117,13 @@ class MultiHttpAdapterException extends \Exception
         $this->exceptions = array_values($this->exceptions);
     }
 
-    /**
-     * Clears the responses.
-     */
     public function clearResponses()
     {
-        $this->responses = array();
+        $this->responses = [];
     }
 
     /**
-     * Checks if there are exceptions.
-     *
-     * @return boolean TRUE if there are exceptions else FALSE.
+     * @return bool
      */
     public function hasResponses()
     {
@@ -155,9 +131,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the responses.
-     *
-     * @return array The responses.
+     * @return array
      */
     public function getResponses()
     {
@@ -165,9 +139,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Sets the responses.
-     *
-     * @param array $responses The responses.
+     * @param array $responses
      */
     public function setResponses(array $responses)
     {
@@ -176,9 +148,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Adds the responses.
-     *
-     * @param array $responses The responses.
+     * @param array
      */
     public function addResponses(array $responses)
     {
@@ -188,9 +158,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Removes the responses.
-     *
-     * @param array $responses The responses.
+     * @param array $responses
      */
     public function removeResponses(array $responses)
     {
@@ -200,11 +168,9 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Checks if there is a response.
+     * @param ResponseInterface $response
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return boolean TRUE if there is the response else FALSE.
+     * @return bool
      */
     public function hasResponse(ResponseInterface $response)
     {
@@ -212,9 +178,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Adds a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     public function addResponse(ResponseInterface $response)
     {
@@ -222,9 +186,7 @@ class MultiHttpAdapterException extends \Exception
     }
 
     /**
-     * Removes a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     public function removeResponse(ResponseInterface $response)
     {

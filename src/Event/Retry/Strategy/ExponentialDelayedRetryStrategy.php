@@ -15,8 +15,6 @@ use Ivory\HttpAdapter\Event\Retry\RetryInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Exponential retry strategy.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ExponentialDelayedRetryStrategy extends AbstractRetryStrategyChain

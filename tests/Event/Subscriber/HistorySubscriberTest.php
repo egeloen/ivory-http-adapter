@@ -12,23 +12,29 @@
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
+use Ivory\HttpAdapter\Event\History\JournalInterface;
 use Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber;
+use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * History subscriber test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HistorySubscriberTest extends AbstractSubscriberTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Subscriber\HistorySubscriber */
+    /**
+     * @var HistorySubscriber
+     */
     private $historySubscriber;
 
-    /** @var \Ivory\HttpAdapter\Event\History\JournalInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var JournalInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $journal;
 
-    /** @var \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var TimerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $timer;
 
     /**
@@ -40,16 +46,6 @@ class HistorySubscriberTest extends AbstractSubscriberTest
             $this->journal = $this->createJournalMock(),
             $this->timer = $this->createTimerMock()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->timer);
-        unset($this->journal);
-        unset($this->historySubscriber);
     }
 
     public function testDefaultState()
@@ -72,16 +68,16 @@ class HistorySubscriberTest extends AbstractSubscriberTest
         $events = HistorySubscriber::getSubscribedEvents();
 
         $this->assertArrayHasKey(Events::REQUEST_CREATED, $events);
-        $this->assertSame(array('onRequestCreated', 100), $events[Events::REQUEST_CREATED]);
+        $this->assertSame(['onRequestCreated', 100], $events[Events::REQUEST_CREATED]);
 
         $this->assertArrayHasKey(Events::REQUEST_SENT, $events);
-        $this->assertSame(array('onRequestSent', 100), $events[Events::REQUEST_SENT]);
+        $this->assertSame(['onRequestSent', 100], $events[Events::REQUEST_SENT]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_CREATED, $events);
-        $this->assertSame(array('onMultiRequestCreated', 100), $events[Events::MULTI_REQUEST_CREATED]);
+        $this->assertSame(['onMultiRequestCreated', 100], $events[Events::MULTI_REQUEST_CREATED]);
 
         $this->assertArrayHasKey(Events::MULTI_REQUEST_SENT, $events);
-        $this->assertSame(array('onMultiRequestSent', 100), $events[Events::MULTI_REQUEST_SENT]);
+        $this->assertSame(['onMultiRequestSent', 100], $events[Events::MULTI_REQUEST_SENT]);
     }
 
     public function testRequestSentEvent()
@@ -114,33 +110,33 @@ class HistorySubscriberTest extends AbstractSubscriberTest
 
     public function testMultiRequestSentEvent()
     {
-        $requests = array($request1 = $this->createRequestMock(), $request2 = $this->createRequestMock());
+        $requests = [$request1 = $this->createRequestMock(), $request2 = $this->createRequestMock()];
 
         $this->timer
             ->expects($this->exactly(count($requests)))
             ->method('start')
-            ->will($this->returnValueMap(array(
-                array($request1, $startedRequest1 = $this->createRequestMock()),
-                array($request2, $startedRequest2 = $this->createRequestMock()),
-            )));
+            ->will($this->returnValueMap([
+                [$request1, $startedRequest1 = $this->createRequestMock()],
+                [$request2, $startedRequest2 = $this->createRequestMock()],
+            ]));
 
-        $responses = array(
+        $responses = [
             $response1 = $this->createResponseMock($startedRequest1),
             $response2 = $this->createResponseMock($startedRequest2),
-        );
+        ];
 
         $this->timer
             ->expects($this->exactly(count($responses)))
             ->method('stop')
-            ->will($this->returnValueMap(array(
-                array($startedRequest1, $stoppedRequest1 = $this->createRequestMock()),
-                array($startedRequest2, $stoppedRequest2 = $this->createRequestMock()),
-            )));
+            ->will($this->returnValueMap([
+                [$startedRequest1, $stoppedRequest1 = $this->createRequestMock()],
+                [$startedRequest2, $stoppedRequest2 = $this->createRequestMock()],
+            ]));
 
         $this->journal
             ->expects($this->exactly(count($responses)))
             ->method('record')
-            ->withConsecutive(array($stoppedRequest1, $response1), array($stoppedRequest2, $response2));
+            ->withConsecutive([$stoppedRequest1, $response1], [$stoppedRequest2, $response2]);
 
         $response1
             ->expects($this->once())
@@ -157,7 +153,7 @@ class HistorySubscriberTest extends AbstractSubscriberTest
         $this->historySubscriber->onMultiRequestCreated($this->createMultiRequestCreatedEvent(null, $requests));
         $this->historySubscriber->onMultiRequestSent($event = $this->createMultiRequestSentEvent(null, $responses));
 
-        $this->assertSame(array($stoppedResponse1, $stoppedResponse2), $event->getResponses());
+        $this->assertSame([$stoppedResponse1, $stoppedResponse2], $event->getResponses());
     }
 
     /**
@@ -176,9 +172,7 @@ class HistorySubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a journal mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\History\JournalInterface|\PHPUnit_Framework_MockObject_MockObject The journal mock.
+     * @return JournalInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createJournalMock()
     {
@@ -186,9 +180,7 @@ class HistorySubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a timer mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject The timer mock.
+     * @return TimerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createTimerMock()
     {

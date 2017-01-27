@@ -15,22 +15,22 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Http adapter exception.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HttpAdapterException extends \Exception
 {
-    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|null */
+    /**
+     * @var InternalRequestInterface|null
+     */
     private $request;
 
-    /** @var \Ivory\HttpAdapter\Message\ResponseInterface|null */
+    /**
+     * @var ResponseInterface|null
+     */
     private $response;
 
     /**
-     * Checks if there is a request.
-     *
-     * @return boolean TRUE if there is a request else FALSE.
+     * @return bool
      */
     public function hasRequest()
     {
@@ -38,9 +38,7 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|null The request.
+     * @return InternalRequestInterface|null
      */
     public function getRequest()
     {
@@ -48,9 +46,7 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Sets the request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $request The request.
+     * @param InternalRequestInterface|null $request
      */
     public function setRequest(InternalRequestInterface $request = null)
     {
@@ -58,9 +54,7 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Checks if there is a response.
-     *
-     * @return boolean TRUE if there is a response else FALSE.
+     * @return bool
      */
     public function hasResponse()
     {
@@ -68,9 +62,7 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the response.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|null The response.
+     * @return ResponseInterface|null
      */
     public function getResponse()
     {
@@ -78,9 +70,7 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Sets the response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null $response The response.
+     * @param ResponseInterface|null $response
      */
     public function setResponse(ResponseInterface $response = null)
     {
@@ -88,13 +78,11 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "CANNOT FETCH URI" exception.
+     * @param string $uri
+     * @param string $adapter
+     * @param string $error
      *
-     * @param string $uri     The uri.
-     * @param string $adapter The adapter name.
-     * @param string $error   The error.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT FETCH URI" exception.
+     * @return HttpAdapterException
      */
     public static function cannotFetchUri($uri, $adapter, $error)
     {
@@ -107,11 +95,9 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "CANNOT LOAD COOKIE JAR" exception.
+     * @param string $error
      *
-     * @param string $error The error.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT LOAD COOKIE JAR" exception.
+     * @return HttpAdapterException
      */
     public static function cannotLoadCookieJar($error)
     {
@@ -119,11 +105,9 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "CANNOT SAVE COOKIE JAR" exception.
+     * @param string $error
      *
-     * @param string $error The error.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "CANNOT SAVE COOKIE JAR" exception.
+     * @return HttpAdapterException
      */
     public static function cannotSaveCookieJar($error)
     {
@@ -131,11 +115,9 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "HTTP ADAPTER DOES NOT EXIST" exception.
+     * @param string $name
      *
-     * @param string $name The name.
-     *
-     * @return HttpAdapterException The "HTTP ADAPTER DOES NOT EXIST" exception.
+     * @return HttpAdapterException
      */
     public static function httpAdapterDoesNotExist($name)
     {
@@ -143,11 +125,9 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "HTTP ADAPTER IS NOT USABLE" exception.
+     * @param string $name
      *
-     * @param string $name The name.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "HTTP ADAPTER IS NOT USABLE" exception.
+     * @return HttpAdapterException
      */
     public static function httpAdapterIsNotUsable($name)
     {
@@ -155,9 +135,7 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "HTTP ADAPTERS ARE NOT USABLE" exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "HTTP ADAPTERS ARE NOT USABLE" exception.
+     * @return HttpAdapterException
      */
     public static function httpAdaptersAreNotUsable()
     {
@@ -165,11 +143,9 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "HTTP ADAPTER MUST IMPLEMENT INTERFACE" exception.
+     * @param string $class
      *
-     * @param string $class The class.
-     *
-     * @return HttpAdapterException The "HTTP ADAPTER MUST IMPLEMENT INTERFACE" exception.
+     * @return HttpAdapterException
      */
     public static function httpAdapterMustImplementInterface($class)
     {
@@ -177,12 +153,10 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "DOES NOT SUPPORT SUB ADAPTER" exception.
+     * @param string $adapter
+     * @param string $subAdapter
      *
-     * @param string $adapter    The adapter name.
-     * @param string $subAdapter The sub adapter name.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "DOES NOT SUPPORT SUB ADAPTER" exception.
+     * @return HttpAdapterException
      */
     public static function doesNotSupportSubAdapter($adapter, $subAdapter)
     {
@@ -190,12 +164,10 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "EXTENSION IS NOT LOADED" exception.
+     * @param string $extension
+     * @param string $adapter
      *
-     * @param string $extension The extension name.
-     * @param string $adapter   The adapter name.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "EXTENSION IS NOT LOADED" exception.
+     * @return HttpAdapterException
      */
     public static function extensionIsNotLoaded($extension, $adapter)
     {
@@ -203,13 +175,11 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "MAX REDIRECTS EXCEEDED" exception.
+     * @param string $uri
+     * @param int    $maxRedirects
+     * @param string $adapter
      *
-     * @param string  $uri          The uri.
-     * @param integer $maxRedirects The max redirects.
-     * @param string  $adapter      The adapter name.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "MAX REDIRECTS EXCEEDED" exception.
+     * @return HttpAdapterException
      */
     public static function maxRedirectsExceeded($uri, $maxRedirects, $adapter)
     {
@@ -217,11 +187,9 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "REQUEST IS NOT VALID" exception.
+     * @param mixed $request
      *
-     * @param mixed $request The request.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "REQUEST IS NOT VALID" exception.
+     * @return HttpAdapterException
      */
     public static function requestIsNotValid($request)
     {
@@ -232,13 +200,11 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "STREAM IS NOT VALID" exception.
+     * @param mixed  $stream
+     * @param string $wrapper
+     * @param string $expected
      *
-     * @param mixed  $stream   The stream.
-     * @param string $wrapper  The wrapper.
-     * @param string $expected The expected.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "STREAM IS NOT VALID" exception.
+     * @return HttpAdapterException
      */
     public static function streamIsNotValid($stream, $wrapper, $expected)
     {
@@ -251,13 +217,11 @@ class HttpAdapterException extends \Exception
     }
 
     /**
-     * Gets the "TIMEOUT EXCEEDED" exception.
+     * @param string $uri
+     * @param float  $timeout
+     * @param string $adapter
      *
-     * @param string $uri     The uri.
-     * @param float  $timeout The timeout.
-     * @param string $adapter The adapter name.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The "TIMEOUT EXCEEDED" exception.
+     * @return HttpAdapterException
      */
     public static function timeoutExceeded($uri, $timeout, $adapter)
     {

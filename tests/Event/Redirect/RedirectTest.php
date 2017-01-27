@@ -13,18 +13,20 @@ namespace Ivory\Tests\HttpAdapter\Event\Redirect;
 
 use Ivory\HttpAdapter\Event\Redirect\Redirect;
 use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Redirect test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RedirectTest extends AbstractTestCase 
+class RedirectTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\Redirect\Redirect */
+    /**
+     * @var Redirect
+     */
     private $redirect;
 
     /**
@@ -33,14 +35,6 @@ class RedirectTest extends AbstractTestCase
     protected function setUp()
     {
         $this->redirect = new Redirect();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->redirect);
     }
 
     public function testDefaultState()
@@ -81,6 +75,8 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
+     * @param int $statusCode
+     *
      * @dataProvider validStatusCodeProvider
      */
     public function testCreateRedirectRequestWithoutRedirectResponse($statusCode)
@@ -105,6 +101,9 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
+     * @param int $redirectCount
+     * @param int $max
+     *
      * @dataProvider maxRedirectReachedProvider
      */
     public function testCreateRedirectRequestWithMaxRedirectReachedReturnFalse($redirectCount, $max)
@@ -139,6 +138,9 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
+     * @param int $redirectCount
+     * @param int $max
+     *
      * @dataProvider maxRedirectReachedProvider
      */
     public function testCreateRedirectRequestWithMaxRedirectReachedThrowException($redirectCount, $max)
@@ -165,10 +167,10 @@ class RedirectTest extends AbstractTestCase
         $request
             ->expects($this->exactly(2))
             ->method('getParameter')
-            ->will($this->returnValueMap(array(
-                array(Redirect::REDIRECT_COUNT, $redirectCount),
-                array(Redirect::PARENT_REQUEST, $rootRequest = $this->createRequestMock()),
-            )));
+            ->will($this->returnValueMap([
+                [Redirect::REDIRECT_COUNT, $redirectCount],
+                [Redirect::PARENT_REQUEST, $rootRequest = $this->createRequestMock()],
+            ]));
 
         $this->redirect->setThrowException(true);
         $this->redirect->setMax($max);
@@ -187,6 +189,10 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
+     * @param int  $statusCode
+     * @param bool $strict
+     * @param bool $clear
+     *
      * @dataProvider redirectStatusCodeProvider
      */
     public function testCreateRedirectRequestWithRedirectResponse($statusCode, $strict = false, $clear = true)
@@ -223,7 +229,7 @@ class RedirectTest extends AbstractTestCase
         $request
             ->expects($this->any())
             ->method('getHeaders')
-            ->will($this->returnValue($headers = array('header' => array('foo'))));
+            ->will($this->returnValue($headers = ['header' => ['foo']]));
 
         $request
             ->expects($this->any())
@@ -233,17 +239,17 @@ class RedirectTest extends AbstractTestCase
         $request
             ->expects($this->any())
             ->method('getDatas')
-            ->will($this->returnValue($datas = array('data' => 'foo')));
+            ->will($this->returnValue($datas = ['data' => 'foo']));
 
         $request
             ->expects($this->any())
             ->method('getFiles')
-            ->will($this->returnValue($files = array('file' => 'foo')));
+            ->will($this->returnValue($files = ['file' => 'foo']));
 
         $request
             ->expects($this->any())
             ->method('getParameters')
-            ->will($this->returnValue($parameters = array('parameter' => 'foo')));
+            ->will($this->returnValue($parameters = ['parameter' => 'foo']));
 
         $messageFactory = $this->createMessageFactoryMock();
         $messageFactory
@@ -254,8 +260,8 @@ class RedirectTest extends AbstractTestCase
                 $this->identicalTo($clear ? InternalRequestInterface::METHOD_GET : $method),
                 $this->identicalTo($protocolVersion),
                 $this->identicalTo($headers),
-                $this->identicalTo($clear ? array() : $datas),
-                $this->identicalTo($clear ? array() : $files),
+                $this->identicalTo($clear ? [] : $datas),
+                $this->identicalTo($clear ? [] : $files),
                 $this->identicalTo($parameters)
             )
             ->will($this->returnValue($redirectRequest = $this->createRequestMock()));
@@ -264,10 +270,10 @@ class RedirectTest extends AbstractTestCase
             $redirectRequest
                 ->expects($this->exactly(2))
                 ->method('withoutHeader')
-                ->will($this->returnValueMap(array(
-                    array('Content-Type', $redirectRequest),
-                    array('Content-Length', $redirectRequest),
-                )));
+                ->will($this->returnValueMap([
+                    ['Content-Type', $redirectRequest],
+                    ['Content-Length', $redirectRequest],
+                ]));
         } else {
             $redirectRequest
                 ->expects($this->once())
@@ -279,10 +285,10 @@ class RedirectTest extends AbstractTestCase
         $redirectRequest
             ->expects($this->exactly(2))
             ->method('withParameter')
-            ->will($this->returnValueMap(array(
-                array(Redirect::PARENT_REQUEST, $request, $redirectRequest),
-                array(Redirect::REDIRECT_COUNT, 1, $redirectRequest),
-            )));
+            ->will($this->returnValueMap([
+                [Redirect::PARENT_REQUEST, $request, $redirectRequest],
+                [Redirect::REDIRECT_COUNT, 1, $redirectRequest],
+            ]));
 
         $this->redirect->setStrict($strict);
 
@@ -311,10 +317,10 @@ class RedirectTest extends AbstractTestCase
         $response
             ->expects($this->exactly(2))
             ->method('withParameter')
-            ->will($this->returnValueMap(array(
-                array(Redirect::REDIRECT_COUNT, $redirectCount, $response),
-                array(Redirect::EFFECTIVE_URI, $uri, $response),
-            )));
+            ->will($this->returnValueMap([
+                [Redirect::REDIRECT_COUNT, $redirectCount, $response],
+                [Redirect::EFFECTIVE_URI, $uri, $response],
+            ]));
 
         $this->redirect->prepareResponse($response, $request);
     }
@@ -323,12 +329,12 @@ class RedirectTest extends AbstractTestCase
     {
         $request = $this->createRequestMock();
 
-        $headers = array('X-Foo' => 'Bar');
+        $headers = ['X-Foo' => 'Bar'];
 
         $request
             ->expects($this->any())
             ->method('getHeaders')
-            ->will($this->returnValue(array_merge($headers, array('Host' => 'egeloen.fr'))));
+            ->will($this->returnValue(array_merge($headers, ['Host' => 'egeloen.fr'])));
 
         $request
             ->expects($this->any())
@@ -344,7 +350,7 @@ class RedirectTest extends AbstractTestCase
         $request
             ->expects($this->any())
             ->method('getParameters')
-            ->will($this->returnValue($parameters = array()));
+            ->will($this->returnValue($parameters = []));
 
         $request
             ->expects($this->any())
@@ -376,8 +382,8 @@ class RedirectTest extends AbstractTestCase
                 $this->identicalTo(InternalRequestInterface::METHOD_GET),
                 $this->identicalTo($protocolVersion),
                 $this->identicalTo($headers),
-                $this->identicalTo(array()),
-                $this->identicalTo(array()),
+                $this->identicalTo([]),
+                $this->identicalTo([]),
                 $this->identicalTo($parameters)
             )
             ->will($this->returnValue($redirectRequest = $this->createRequestMock()));
@@ -385,18 +391,18 @@ class RedirectTest extends AbstractTestCase
         $redirectRequest
             ->expects($this->exactly(2))
             ->method('withoutHeader')
-            ->will($this->returnValueMap(array(
-                array('Content-Type', $redirectRequest),
-                array('Content-Length', $redirectRequest),
-            )));
+            ->will($this->returnValueMap([
+                ['Content-Type', $redirectRequest],
+                ['Content-Length', $redirectRequest],
+            ]));
 
         $redirectRequest
             ->expects($this->exactly(2))
             ->method('withParameter')
-            ->will($this->returnValueMap(array(
-                array(Redirect::PARENT_REQUEST, $request, $redirectRequest),
-                array(Redirect::REDIRECT_COUNT, 1, $redirectRequest),
-            )));
+            ->will($this->returnValueMap([
+                [Redirect::PARENT_REQUEST, $request, $redirectRequest],
+                [Redirect::REDIRECT_COUNT, 1, $redirectRequest],
+            ]));
 
         $this->redirect->setStrict(false);
 
@@ -406,63 +412,55 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
-     * Gets the valid status code provider.
-     *
-     * @return array The valid status code provider.
+     * @return array
      */
     public function validStatusCodeProvider()
     {
-        return array(
-            array(100),
-            array(200),
-            array(400),
-            array(500),
-        );
+        return [
+            [100],
+            [200],
+            [400],
+            [500],
+        ];
     }
 
     /**
-     * Gets the redirect status code provider.
-     *
-     * @return array The redirect status code provider.
+     * @return array
      */
     public function redirectStatusCOdeProvider()
     {
-        return array(
-            array(300),
-            array(301),
-            array(302),
-            array(303),
-            array(304, false, false),
-            array(305, false, false),
-            array(300, true, false),
-            array(301, true, false),
-            array(302, true, false),
-            array(303, true),
-            array(304, false, false),
-            array(305, false, false),
-        );
+        return [
+            [300],
+            [301],
+            [302],
+            [303],
+            [304, false, false],
+            [305, false, false],
+            [300, true, false],
+            [301, true, false],
+            [302, true, false],
+            [303, true],
+            [304, false, false],
+            [305, false, false],
+        ];
     }
 
     /**
-     * Gets the max redirect reached  provider.
-     *
-     * @return array The max redirect reached provider.
+     * @return array
      */
     public function maxRedirectReachedProvider()
     {
-        return array(
-            array(5, 5),
-            array(6, 5),
-            array(10, 5),
-        );
+        return [
+            [5, 5],
+            [6, 5],
+            [10, 5],
+        ];
     }
 
     /**
-     * Creates a request mock.
+     * @param InternalRequestInterface|null $parent
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface|null $parent The parent request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock($parent = null)
     {
@@ -490,9 +488,7 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -500,11 +496,9 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
-     * Creates an http adapter mock.
+     * @param MessageFactoryInterface|null $messageFactory
      *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface|null $messageFactory The message factory.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The http adapter mock.
+     * @return HttpAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createHttpAdapterMock(MessageFactoryInterface $messageFactory = null)
     {
@@ -528,9 +522,7 @@ class RedirectTest extends AbstractTestCase
     }
 
     /**
-     * Creates a message factory mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
+     * @return MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createMessageFactoryMock()
     {

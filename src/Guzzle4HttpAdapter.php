@@ -11,6 +11,7 @@
 
 namespace Ivory\HttpAdapter;
 
+use Guzzle\Http\Message\RequestInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Event\CompleteEvent;
@@ -21,20 +22,18 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Guzzle 4 http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
 {
-    /** @var \GuzzleHttp\ClientInterface */
+    /**
+     * @var ClientInterface
+     */
     private $client;
 
     /**
-     * Creates a guzzle 5 http adapter.
-     *
-     * @param \GuzzleHttp\ClientInterface|null               $client        The guzzle 4 client.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param ClientInterface|null        $client
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(ClientInterface $client = null, ConfigurationInterface $configuration = null)
     {
@@ -67,7 +66,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
-            (integer) $response->getStatusCode(),
+            (int) $response->getStatusCode(),
             $response->getProtocolVersion(),
             $response->getHeaders(),
             BodyNormalizer::normalize(
@@ -84,7 +83,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
      */
     protected function sendInternalRequests(array $internalRequests, $success, $error)
     {
-        $requests = array();
+        $requests = [];
         foreach ($internalRequests as $internalRequest) {
             $requests[] = $this->createRequest($internalRequest, $success, $error);
         }
@@ -103,20 +102,18 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
     }
 
     /**
-     * Creates a request.
+     * @param InternalRequestInterface $internalRequest
+     * @param callable|null            $success
+     * @param callable|null            $error
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param callable|null                                       $success         The success callable.
-     * @param callable|null                                       $error           The error callable.
-     *
-     * @return \GuzzleHttp\Message\RequestInterface The request.
+     * @return RequestInterface the request
      */
     private function createRequest(InternalRequestInterface $internalRequest, $success = null, $error = null)
     {
         $request = $this->client->createRequest(
             $internalRequest->getMethod(),
             (string) $internalRequest->getUri(),
-            array(
+            [
                 'exceptions'      => false,
                 'allow_redirects' => false,
                 'timeout'         => $this->getConfiguration()->getTimeout(),
@@ -124,7 +121,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
                 'version'         => $internalRequest->getProtocolVersion(),
                 'headers'         => $this->prepareHeaders($internalRequest),
                 'body'            => $this->prepareContent($internalRequest),
-            )
+            ]
         );
 
         if (is_callable($success)) {
@@ -134,7 +131,7 @@ class Guzzle4HttpAdapter extends AbstractCurlHttpAdapter
                 'complete',
                 function (CompleteEvent $event) use ($success, $internalRequest, $messageFactory) {
                     $response = $messageFactory->createResponse(
-                        (integer) $event->getResponse()->getStatusCode(),
+                        (int) $event->getResponse()->getStatusCode(),
                         $event->getResponse()->getProtocolVersion(),
                         $event->getResponse()->getHeaders(),
                         BodyNormalizer::normalize(

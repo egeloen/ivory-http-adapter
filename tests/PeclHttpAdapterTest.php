@@ -36,9 +36,7 @@ class PeclHttpAdapterTest extends AbstractHttpAdapterTest
     }
 
     /**
-     * Creates the http adapter.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterInterface The created http adapter.
+     * {@inheritdoc}
      */
     protected function createHttpAdapter()
     {

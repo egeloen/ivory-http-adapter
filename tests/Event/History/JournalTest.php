@@ -12,16 +12,20 @@
 namespace Ivory\Tests\HttpAdapter\Event\History;
 
 use Ivory\HttpAdapter\Event\History\Journal;
+use Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface;
+use Ivory\HttpAdapter\Event\History\JournalEntryInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Journal test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class JournalTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\History\Journal */
+    /**
+     * @var Journal
+     */
     private $journal;
 
     /**
@@ -30,14 +34,6 @@ class JournalTest extends AbstractTestCase
     protected function setUp()
     {
         $this->journal = new Journal();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->journal);
     }
 
     public function testDefaultState()
@@ -72,37 +68,37 @@ class JournalTest extends AbstractTestCase
 
     public function testSetEntries()
     {
-        $this->journal->setEntries(array($this->createJournalEntryMock()));
-        $this->journal->setEntries(array(
+        $this->journal->setEntries([$this->createJournalEntryMock()]);
+        $this->journal->setEntries([
             $entry1 = $this->createJournalEntryMock(),
             $entry2 = $this->createJournalEntryMock(),
-        ));
+        ]);
 
         $this->assertTrue($this->journal->hasEntries());
-        $this->assertSame(array($entry1, $entry2), $this->journal->getEntries());
+        $this->assertSame([$entry1, $entry2], $this->journal->getEntries());
 
         $this->assertCount(2, $this->journal);
-        $this->assertSame(array($entry2, $entry1), iterator_to_array($this->journal));
+        $this->assertSame([$entry2, $entry1], iterator_to_array($this->journal));
     }
 
     public function testAddEntries()
     {
-        $this->journal->setEntries(array($entry1 = $this->createJournalEntryMock()));
-        $this->journal->addEntries(array(
+        $this->journal->setEntries([$entry1 = $this->createJournalEntryMock()]);
+        $this->journal->addEntries([
             $entry2 = $this->createJournalEntryMock(),
             $entry3 = $this->createJournalEntryMock(),
-        ));
+        ]);
 
         $this->assertTrue($this->journal->hasEntries());
-        $this->assertSame(array($entry1, $entry2, $entry3), $this->journal->getEntries());
+        $this->assertSame([$entry1, $entry2, $entry3], $this->journal->getEntries());
 
         $this->assertCount(3, $this->journal);
-        $this->assertSame(array($entry3, $entry2, $entry1), iterator_to_array($this->journal));
+        $this->assertSame([$entry3, $entry2, $entry1], iterator_to_array($this->journal));
     }
 
     public function testRemoveEntries()
     {
-        $this->journal->setEntries($entries = array($this->createJournalEntryMock()));
+        $this->journal->setEntries($entries = [$this->createJournalEntryMock()]);
         $this->journal->removeEntries($entries);
 
         $this->assertFalse($this->journal->hasEntries());
@@ -118,19 +114,19 @@ class JournalTest extends AbstractTestCase
 
         $this->assertTrue($this->journal->hasEntries());
         $this->assertTrue($this->journal->hasEntry($entry));
-        $this->assertSame(array($entry), $this->journal->getEntries());
+        $this->assertSame([$entry], $this->journal->getEntries());
 
         $this->assertCount(1, $this->journal);
-        $this->assertSame(array($entry), iterator_to_array($this->journal));
+        $this->assertSame([$entry], iterator_to_array($this->journal));
     }
 
     public function testAddEntryExceedLimit()
     {
         $this->journal->addEntry($this->createJournalEntryMock());
 
-        $entries = array();
+        $entries = [];
 
-        for ($i = 0; $i < $this->journal->getLimit(); $i++) {
+        for ($i = 0; $i < $this->journal->getLimit(); ++$i) {
             $this->journal->addEntry($entries[] = $this->createJournalEntryMock());
         }
 
@@ -170,7 +166,7 @@ class JournalTest extends AbstractTestCase
 
     public function testClear()
     {
-        $this->journal->setEntries(array($this->createJournalEntryMock()));
+        $this->journal->setEntries([$this->createJournalEntryMock()]);
         $this->journal->clear();
 
         $this->assertFalse($this->journal->hasEntries());
@@ -181,9 +177,7 @@ class JournalTest extends AbstractTestCase
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {
@@ -191,9 +185,7 @@ class JournalTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -201,9 +193,7 @@ class JournalTest extends AbstractTestCase
     }
 
     /**
-     * Creates a journal entry factory mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry factory mock.
+     * @return JournalEntryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createJournalEntryFactoryMock()
     {
@@ -211,9 +201,7 @@ class JournalTest extends AbstractTestCase
     }
 
     /**
-     * Creates a journal entry mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface|\PHPUnit_Framework_MockObject_MockObject The journal entry mock.
+     * @return JournalEntryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createJournalEntryMock()
     {

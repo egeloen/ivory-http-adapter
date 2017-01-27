@@ -12,13 +12,13 @@
 namespace Ivory\HttpAdapter\Event\Subscriber;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\RequestErroredEvent;
 use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
-use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
-use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\RequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\Timer\TimerInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\HttpAdapterInterface;
@@ -27,21 +27,19 @@ use Ivory\HttpAdapter\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Logger subscriber.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class LoggerSubscriber extends AbstractFormatterSubscriber
 {
-    /** @var \Psr\Log\LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**
-     * Creates a logger subscriber.
-     *
-     * @param \Psr\Log\LoggerInterface                                   $logger    The logger.
-     * @param \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|null $formatter The formatter.
-     * @param \Ivory\HttpAdapter\Event\Timer\TimerInterface|null         $timer     The timer.
+     * @param LoggerInterface         $logger
+     * @param FormatterInterface|null $formatter
+     * @param TimerInterface|null     $timer
      */
     public function __construct(
         LoggerInterface $logger,
@@ -54,9 +52,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     }
 
     /**
-     * Gets the logger.
-     *
-     * @return \Psr\Log\LoggerInterface The logger.
+     * @return LoggerInterface
      */
     public function getLogger()
     {
@@ -64,9 +60,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     }
 
     /**
-     * On request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestCreatedEvent $event The request created event.
+     * @param RequestCreatedEvent $event
      */
     public function onRequestCreated(RequestCreatedEvent $event)
     {
@@ -74,9 +68,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     }
 
     /**
-     * On request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestSentEvent $event The request sent event.
+     * @param RequestSentEvent $event
      */
     public function onRequestSent(RequestSentEvent $event)
     {
@@ -84,9 +76,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     }
 
     /**
-     * On request errored event.
-     *
-     * @param \Ivory\HttpAdapter\Event\RequestErroredEvent $event The request errored event.
+     * @param RequestErroredEvent $event
      */
     public function onRequestErrored(RequestErroredEvent $event)
     {
@@ -94,9 +84,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     }
 
     /**
-     * On multi request created event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestCreatedEvent $event The multi request created event.
+     * @param MultiRequestCreatedEvent $event
      */
     public function onMultiRequestCreated(MultiRequestCreatedEvent $event)
     {
@@ -107,9 +95,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     }
 
     /**
-     * On multi request sent event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestSentEvent $event The multi request sent event.
+     * @param MultiRequestSentEvent $event
      */
     public function onMultiRequestSent(MultiRequestSentEvent $event)
     {
@@ -122,9 +108,7 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
     }
 
     /**
-     * On multi request errored event.
-     *
-     * @param \Ivory\HttpAdapter\Event\MultiRequestErroredEvent $event The multi request errored event.
+     * @param MultiRequestErroredEvent $event
      */
     public function onMultiResponseErrored(MultiRequestErroredEvent $event)
     {
@@ -138,24 +122,22 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            Events::REQUEST_CREATED       => array('onRequestCreated', 100),
-            Events::REQUEST_SENT          => array('onRequestSent', 100),
-            Events::REQUEST_ERRORED       => array('onRequestErrored', 100),
-            Events::MULTI_REQUEST_CREATED => array('onMultiRequestCreated', 100),
-            Events::MULTI_REQUEST_SENT    => array('onMultiRequestSent', 100),
-            Events::MULTI_REQUEST_ERRORED => array('onMultiResponseErrored', 100),
-        );
+        return [
+            Events::REQUEST_CREATED       => ['onRequestCreated', 100],
+            Events::REQUEST_SENT          => ['onRequestSent', 100],
+            Events::REQUEST_ERRORED       => ['onRequestErrored', 100],
+            Events::MULTI_REQUEST_CREATED => ['onMultiRequestCreated', 100],
+            Events::MULTI_REQUEST_SENT    => ['onMultiRequestSent', 100],
+            Events::MULTI_REQUEST_ERRORED => ['onMultiResponseErrored', 100],
+        ];
     }
 
     /**
-     * Logs debug.
+     * @param HttpAdapterInterface     $httpAdapter
+     * @param InternalRequestInterface $request
+     * @param ResponseInterface        $response
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response    The response.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The logged request.
+     * @return InternalRequestInterface
      */
     private function debug(
         HttpAdapterInterface $httpAdapter,
@@ -171,23 +153,21 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
                 (string) $request->getUri(),
                 $request->getParameter(TimerInterface::TIME)
             ),
-            array(
+            [
                 'adapter'  => $httpAdapter->getName(),
                 'request'  => $this->getFormatter()->formatRequest($request),
                 'response' => $this->getFormatter()->formatResponse($response),
-            )
+            ]
         );
 
         return $request;
     }
 
     /**
-     * Logs error.
+     * @param HttpAdapterInterface $httpAdapter
+     * @param HttpAdapterException $exception
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception   The exception.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The logged request.
+     * @return InternalRequestInterface
      */
     private function error(HttpAdapterInterface $httpAdapter, HttpAdapterException $exception)
     {
@@ -199,14 +179,14 @@ class LoggerSubscriber extends AbstractFormatterSubscriber
                 $exception->getRequest()->getMethod(),
                 (string) $exception->getRequest()->getUri()
             ),
-            array(
+            [
                 'adapter'   => $httpAdapter->getName(),
                 'exception' => $this->getFormatter()->formatException($exception),
                 'request'   => $this->getFormatter()->formatRequest($request),
                 'response'  => $exception->hasResponse()
                     ? $this->getFormatter()->formatResponse($exception->getResponse())
                     : null,
-            )
+            ]
         );
 
         return $request;

@@ -16,13 +16,13 @@ use Ivory\HttpAdapter\Message\RequestInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Message factory test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class MessageFactoryTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Message\MessageFactory */
+    /**
+     * @var MessageFactory
+     */
     private $messageFactory;
 
     /**
@@ -31,14 +31,6 @@ class MessageFactoryTest extends AbstractTestCase
     protected function setUp()
     {
         $this->messageFactory = new MessageFactory();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->messageFactory);
     }
 
     public function testInitialState()
@@ -58,7 +50,7 @@ class MessageFactoryTest extends AbstractTestCase
         $this->assertInstanceOf('Ivory\HttpAdapter\Message\Request', $request);
         $this->assertSame($uri, (string) $request->getUri());
         $this->assertSame(RequestInterface::METHOD_GET, $request->getMethod());
-        $this->assertSame(array('Host' => array('egeloen.fr')), $request->getHeaders());
+        $this->assertSame(['Host' => ['egeloen.fr']], $request->getHeaders());
         $this->assertEmpty((string) $request->getBody());
         $this->assertEmpty($request->getParameters());
     }
@@ -69,12 +61,12 @@ class MessageFactoryTest extends AbstractTestCase
             $uri = 'http://egeloen.fr/',
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
-            $headers = array('foo' => array('bar')),
+            $headers = ['foo' => ['bar']],
             $body = $this->createMock('Psr\Http\Message\StreamInterface'),
-            $parameters = array('baz' => 'bat')
+            $parameters = ['baz' => 'bat']
         );
 
-        $headers['Host'] = array('egeloen.fr');
+        $headers['Host'] = ['egeloen.fr'];
 
         $this->assertSame($uri, (string) $request->getUri());
         $this->assertSame($method, $request->getMethod());
@@ -92,7 +84,7 @@ class MessageFactoryTest extends AbstractTestCase
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame(RequestInterface::METHOD_GET, $internalRequest->getMethod());
         $this->assertSame(RequestInterface::PROTOCOL_VERSION_1_1, $internalRequest->getProtocolVersion());
-        $this->assertSame(array('Host' => array('egeloen.fr')), $internalRequest->getHeaders());
+        $this->assertSame(['Host' => ['egeloen.fr']], $internalRequest->getHeaders());
         $this->assertEmpty((string) $internalRequest->getBody());
         $this->assertEmpty($internalRequest->getDatas());
         $this->assertEmpty($internalRequest->getFiles());
@@ -105,13 +97,13 @@ class MessageFactoryTest extends AbstractTestCase
             $uri = 'http://egeloen.fr/',
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
-            $headers = array('foo' => array('bar')),
-            $datas = array('baz' => 'bat'),
-            $files = array('bot' => 'ban'),
-            $parameters = array('bip' => 'pog')
+            $headers = ['foo' => ['bar']],
+            $datas = ['baz' => 'bat'],
+            $files = ['bot' => 'ban'],
+            $parameters = ['bip' => 'pog']
         );
 
-        $headers['Host'] = array('egeloen.fr');
+        $headers['Host'] = ['egeloen.fr'];
 
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame($method, $internalRequest->getMethod());
@@ -129,13 +121,13 @@ class MessageFactoryTest extends AbstractTestCase
             $uri = 'http://egeloen.fr/',
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
-            $headers = array('foo' => array('bar')),
+            $headers = ['foo' => ['bar']],
             $datas = 'baz=bat',
-            array(),
-            $parameters = array('bip' => 'pog')
+            [],
+            $parameters = ['bip' => 'pog']
         );
 
-        $headers['Host'] = array('egeloen.fr');
+        $headers['Host'] = ['egeloen.fr'];
 
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame($method, $internalRequest->getMethod());
@@ -156,13 +148,13 @@ class MessageFactoryTest extends AbstractTestCase
             $uri = 'http://egeloen.fr/',
             $method = RequestInterface::METHOD_POST,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
-            $headers = array('foo' => array('bar')),
+            $headers = ['foo' => ['bar']],
             $resource,
-            array(),
-            $parameters = array('bip' => 'pog')
+            [],
+            $parameters = ['bip' => 'pog']
         );
 
-        $headers['Host'] = array('egeloen.fr');
+        $headers['Host'] = ['egeloen.fr'];
 
         $this->assertSame($uri, (string) $internalRequest->getUri());
         $this->assertSame($method, $internalRequest->getMethod());
@@ -192,9 +184,9 @@ class MessageFactoryTest extends AbstractTestCase
         $response = $this->messageFactory->createResponse(
             $statusCode = 404,
             $protocolVersion = RequestInterface::PROTOCOL_VERSION_1_0,
-            $headers = array('foo' => array('bar')),
+            $headers = ['foo' => ['bar']],
             $body = $this->createMock('Psr\Http\Message\StreamInterface'),
-            $parameters = array('baz' => 'bat')
+            $parameters = ['baz' => 'bat']
         );
 
         $this->assertSame($protocolVersion, $response->getProtocolVersion());

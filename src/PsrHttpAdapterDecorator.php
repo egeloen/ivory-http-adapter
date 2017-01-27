@@ -14,32 +14,19 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * PSR http adapter decorator.
- *
- * This decorator only decorates the PSR http adapter interface even if it implements the full http adapter interface.
- * This is done by design in order to inform you to use the final methods involved in the process.
- *
- * Concretely, that means it will never call the methods defined in the full http adapter interface but will always
- * call the methods defined in the PSR http adapter interface with your inputs converted into PSR requests in all
- * cases.
- *
- * In conclusion, if you want to decorate an http adapter, always implement the PSR http adapter interface or even
- * better use the http adapter template. Basically, the methods defined in the full http adapter interface are just
- * proxy ones to the PSR http adapter interface...
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class PsrHttpAdapterDecorator implements HttpAdapterInterface
 {
     use HttpAdapterTrait;
 
-    /** @var \Ivory\HttpAdapter\PsrHttpAdapterInterface */
+    /**
+     * @var PsrHttpAdapterInterface
+     */
     private $httpAdapter;
 
     /**
-     * Creates a PSR http adapter decorator.
-     *
-     * @param \Ivory\HttpAdapter\PsrHttpAdapterInterface $httpAdapter
+     * @param PsrHttpAdapterInterface $httpAdapter
      */
     public function __construct(PsrHttpAdapterInterface $httpAdapter)
     {
@@ -83,7 +70,7 @@ class PsrHttpAdapterDecorator implements HttpAdapterInterface
      */
     protected function sendInternalRequests(array $internalRequests, $success, $error)
     {
-        $exceptions = array();
+        $exceptions = [];
 
         try {
             $responses = $this->doSendInternalRequests($internalRequests);
@@ -102,11 +89,11 @@ class PsrHttpAdapterDecorator implements HttpAdapterInterface
     }
 
     /**
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
+     * @throws HttpAdapterException
      *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     protected function doSendInternalRequest(InternalRequestInterface $internalRequest)
     {
@@ -114,11 +101,11 @@ class PsrHttpAdapterDecorator implements HttpAdapterInterface
     }
 
     /**
-     * @param array $internalRequests The internal requests.
+     * @param array $internalRequests
      *
-     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred.
+     * @throws MultiHttpAdapterException
      *
-     * @return array The responses.
+     * @return array
      */
     protected function doSendInternalRequests(array $internalRequests)
     {

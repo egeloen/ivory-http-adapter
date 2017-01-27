@@ -14,31 +14,35 @@ namespace Ivory\HttpAdapter\Event\Cookie;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * {@inheritdoc}
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Cookie implements CookieInterface
 {
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $name;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $value;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $attributes;
 
-    /** @var integer */
+    /**
+     * @var int
+     */
     private $createdAt;
 
     /**
-     * Creates a cookie.
-     *
-     * @param string|null $name       The name.
-     * @param string|null $value      The value.
-     * @param array       $attributes The attributes.
-     * @param integer     $createdAt  The creation date (unix timestamp).
+     * @param string|null $name
+     * @param string|null $value
+     * @param array       $attributes
+     * @param int         $createdAt
      */
     public function __construct($name, $value, array $attributes, $createdAt)
     {
@@ -101,7 +105,7 @@ class Cookie implements CookieInterface
      */
     public function clearAttributes()
     {
-        $this->attributes = array();
+        $this->attributes = [];
     }
 
     /**
@@ -290,12 +294,12 @@ class Cookie implements CookieInterface
      */
     public function toArray()
     {
-        return array(
+        return [
             'name'       => $this->name,
             'value'      => $this->value,
             'attributes' => $this->attributes,
             'created_at' => $this->createdAt,
-        );
+        ];
     }
 
     /**
@@ -307,11 +311,9 @@ class Cookie implements CookieInterface
     }
 
     /**
-     * Fixes the attribute.
+     * @param string $attribute
      *
-     * @param string $attribute The attribute.
-     *
-     * @return string The fixes attribute.
+     * @return string
      */
     private function fixAttribute($attribute)
     {

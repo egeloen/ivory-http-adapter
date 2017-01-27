@@ -15,23 +15,23 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * {@inheritdoc}
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class JournalEntry implements JournalEntryInterface
 {
-    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
+    /**
+     * @var \Ivory\HttpAdapter\Message\InternalRequestInterface
+     */
     private $request;
 
-    /** @var \Ivory\HttpAdapter\Message\ResponseInterface */
+    /**
+     * @var \Ivory\HttpAdapter\Message\ResponseInterface
+     */
     private $response;
 
     /**
-     * Creates a journal entry.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
+     * @param InternalRequestInterface $request
+     * @param ResponseInterface        $response
      */
     public function __construct(InternalRequestInterface $request, ResponseInterface $response)
     {

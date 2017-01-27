@@ -16,80 +16,136 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Http adapter trait.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 trait HttpAdapterTrait
 {
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function get($uri, array $headers = array())
+    public function get($uri, array $headers = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_GET, $headers);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function head($uri, array $headers = array())
+    public function head($uri, array $headers = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_HEAD, $headers);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function trace($uri, array $headers = array())
+    public function trace($uri, array $headers = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_TRACE, $headers);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function post($uri, array $headers = array(), $datas = array(), array $files = array())
+    public function post($uri, array $headers = [], $datas = [], array $files = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_POST, $headers, $datas, $files);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function put($uri, array $headers = array(), $datas = array(), array $files = array())
+    public function put($uri, array $headers = [], $datas = [], array $files = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_PUT, $headers, $datas, $files);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function patch($uri, array $headers = array(), $datas = array(), array $files = array())
+    public function patch($uri, array $headers = [], $datas = [], array $files = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_PATCH, $headers, $datas, $files);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function delete($uri, array $headers = array(), $datas = array(), array $files = array())
+    public function delete($uri, array $headers = [], $datas = [], array $files = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_DELETE, $headers, $datas, $files);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function options($uri, array $headers = array(), $datas = array(), array $files = array())
+    public function options($uri, array $headers = [], $datas = [], array $files = [])
     {
         return $this->send($uri, InternalRequestInterface::METHOD_OPTIONS, $headers, $datas, $files);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|object $uri
+     * @param string        $method
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
-    public function send($uri, $method, array $headers = array(), $datas = array(), array $files = array())
+    public function send($uri, $method, array $headers = [], $datas = [], array $files = [])
     {
         return $this->sendRequest($this->getConfiguration()->getMessageFactory()->createInternalRequest(
             $uri,
@@ -102,7 +158,11 @@ trait HttpAdapterTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param RequestInterface $request
+     *
+     * @throws HttpAdapterException
+     *
+     * @return ResponseInterface
      */
     public function sendRequest(RequestInterface $request)
     {
@@ -126,20 +186,24 @@ trait HttpAdapterTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $requests
+     *
+     * @throws MultiHttpAdapterException
+     *
+     * @return array
      */
     public function sendRequests(array $requests)
     {
-        $responses = $exceptions = array();
+        $responses = $exceptions = [];
 
         foreach ($requests as $index => &$request) {
             if (is_string($request)) {
-                $request = array($request);
+                $request = [$request];
             }
 
             if (is_array($request)) {
                 $request = call_user_func_array(
-                    array($this->getConfiguration()->getMessageFactory(), 'createInternalRequest'),
+                    [$this->getConfiguration()->getMessageFactory(), 'createInternalRequest'],
                     $request
                 );
             }
@@ -176,26 +240,22 @@ trait HttpAdapterTrait
     }
 
     /**
-     * Sends an internal request.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     abstract protected function sendInternalRequest(InternalRequestInterface $internalRequest);
 
     /**
-     * Sends internal requests.
+     * @param array    $internalRequests
+     * @param callable $success
+     * @param callable $error
      *
-     * @param array    $internalRequests The internal requests.
-     * @param callable $success          The success callable.
-     * @param callable $error            The error callable.
+     * @throws MultiHttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\MultiHttpAdapterException If an error occurred.
-     *
-     * @return array The responses.
+     * @return array
      */
     protected function sendInternalRequests(array $internalRequests, $success, $error)
     {

@@ -18,8 +18,6 @@ use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
- * Abstract stream http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
@@ -29,8 +27,8 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
      */
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
-        $context = stream_context_create(array(
-            'http' => array(
+        $context = stream_context_create([
+            'http' => [
                 'follow_location'  => false,
                 'max_redirects'    => 1,
                 'ignore_errors'    => true,
@@ -39,8 +37,8 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
                 'method'           => $internalRequest->getMethod(),
                 'header'           => $this->prepareHeaders($internalRequest, false),
                 'content'          => $this->prepareBody($internalRequest),
-            ),
-        ));
+            ],
+        ]);
 
         list($body, $headers) = $this->process($uri = (string) $internalRequest->getUri(), $context);
 
@@ -58,12 +56,10 @@ abstract class AbstractStreamHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Processes the uri/context.
+     * @param string   $uri
+     * @param resource $context
      *
-     * @param string   $uri     The uri.
-     * @param resource $context The context.
-     *
-     * @return array The processed uri/context (0 => body, 1 => headers).
+     * @return array
      */
     abstract protected function process($uri, $context);
 }

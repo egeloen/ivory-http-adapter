@@ -12,8 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 /**
- * Zend 1 socket http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend1SocketHttpAdapterTest extends AbstractZend1HttpAdapterTest

@@ -13,15 +13,18 @@ namespace Ivory\Tests\HttpAdapter\Event\Cookie\Jar;
 
 use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
- * Cookie jar test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CookieJarTest extends AbstractCookieJarTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Cookie\Jar\CookieJar */
+    /**
+     * @var CookieJar
+     */
     private $cookieJar;
 
     /**
@@ -30,14 +33,6 @@ class CookieJarTest extends AbstractCookieJarTest
     protected function setUp()
     {
         $this->cookieJar = new CookieJar();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->cookieJar);
     }
 
     public function testDefaultState()
@@ -488,9 +483,7 @@ class CookieJarTest extends AbstractCookieJarTest
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {
@@ -498,9 +491,7 @@ class CookieJarTest extends AbstractCookieJarTest
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -508,9 +499,7 @@ class CookieJarTest extends AbstractCookieJarTest
     }
 
     /**
-     * Creates an uri mock.
-     *
-     * @return \Psr\Http\Message\UriInterface|\PHPUnit_Framework_MockObject_MockObject The uri mock.
+     * @return UriInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createUriMock()
     {

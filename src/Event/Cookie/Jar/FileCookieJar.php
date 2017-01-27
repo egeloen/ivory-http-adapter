@@ -15,20 +15,18 @@ use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 
 /**
- * File cookie jar.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class FileCookieJar extends AbstractPersistentCookieJar
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $file;
 
     /**
-     * Creates a file cookie jar.
-     *
-     * @param string                                                      $file          The file.
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface|null $cookieFactory The cookie factory.
+     * @param string                      $file
+     * @param CookieFactoryInterface|null $cookieFactory
      */
     public function __construct($file, CookieFactoryInterface $cookieFactory = null)
     {
@@ -38,9 +36,7 @@ class FileCookieJar extends AbstractPersistentCookieJar
     }
 
     /**
-     * Gets the file.
-     *
-     * @return string The file.
+     * @return string
      */
     public function getFile()
     {
@@ -48,9 +44,7 @@ class FileCookieJar extends AbstractPersistentCookieJar
     }
 
     /**
-     * Sets the file.
-     *
-     * @param string $file The file.
+     * @param string $file
      */
     public function setFile($file)
     {

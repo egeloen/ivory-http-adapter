@@ -14,8 +14,6 @@ namespace Ivory\HttpAdapter\Event\Cookie;
 use Ivory\HttpAdapter\Parser\CookieParser;
 
 /**
- * Cookie factory.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CookieFactory implements CookieFactoryInterface

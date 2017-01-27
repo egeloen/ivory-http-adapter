@@ -12,28 +12,28 @@
 namespace Ivory\HttpAdapter;
 
 use Ivory\HttpAdapter\Event\Events;
-use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
 use Ivory\HttpAdapter\Event\MultiRequestErroredEvent;
 use Ivory\HttpAdapter\Event\MultiRequestSentEvent;
-use Ivory\HttpAdapter\Event\MultiRequestCreatedEvent;
-use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Event\RequestCreatedEvent;
+use Ivory\HttpAdapter\Event\RequestErroredEvent;
+use Ivory\HttpAdapter\Event\RequestSentEvent;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Event dispatcher http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class EventDispatcherHttpAdapter extends PsrHttpAdapterDecorator
 {
-    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface */
+    /**
+     * @var EventDispatcherInterface
+     */
     private $eventDispatcher;
 
     /**
-     * @param \Ivory\HttpAdapter\PsrHttpAdapterInterface                  $httpAdapter
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @param PsrHttpAdapterInterface  $httpAdapter
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(PsrHttpAdapterInterface $httpAdapter, EventDispatcherInterface $eventDispatcher)
     {

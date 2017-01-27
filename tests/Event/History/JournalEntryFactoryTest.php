@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Event\History\JournalEntryFactory;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Journal entry factory test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class JournalEntryFactoryTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\History\JournalEntryFactory */
+    /**
+     * @var JournalEntryFactory
+     */
     private $journalEntryFactory;
 
     /**
@@ -30,14 +30,6 @@ class JournalEntryFactoryTest extends AbstractTestCase
     protected function setUp()
     {
         $this->journalEntryFactory = new JournalEntryFactory();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->journalEntryFactory);
     }
 
     public function testCreate()

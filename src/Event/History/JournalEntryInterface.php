@@ -15,37 +15,27 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Journal entry.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface JournalEntryInterface
 {
     /**
-     * Gets the request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The request.
+     * @return InternalRequestInterface
      */
     public function getRequest();
 
     /**
-     * Sets the request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param InternalRequestInterface $request
      */
     public function setRequest(InternalRequestInterface $request);
 
     /**
-     * Gets the response.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     public function getResponse();
 
     /**
-     * Sets the response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     public function setResponse(ResponseInterface $response);
 }

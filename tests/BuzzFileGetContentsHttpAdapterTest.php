@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Buzz\Client\FileGetContents;
 
 /**
- * Buzz file get contents http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class BuzzFileGetContentsHttpAdapterTest extends AbstractBuzzHttpAdapterTest

@@ -14,141 +14,100 @@ namespace Ivory\HttpAdapter;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 
 /**
- * Configuration interface.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface ConfigurationInterface
 {
-    /** @const string The url encoded encoding type. */
     const ENCODING_TYPE_URLENCODED = 'application/x-www-form-urlencoded';
-
-    /** @const string The form data encoding type. */
     const ENCODING_TYPE_FORMDATA = 'multipart/form-data';
 
     /**
-     * Gets the message factory.
-     *
-     * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface The message factory.
+     * @return MessageFactoryInterface
      */
     public function getMessageFactory();
 
     /**
-     * Sets the message factory.
-     *
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
+     * @param MessageFactoryInterface $messageFactory
      */
     public function setMessageFactory(MessageFactoryInterface $messageFactory);
 
     /**
-     * Gets the protocol version.
-     *
-     * @return string The protocol version.
+     * @return string
      */
     public function getProtocolVersion();
 
     /**
-     * Sets the protocol version.
-     *
-     * @param string $protocolVersion The protocol version.
+     * @param string $protocolVersion
      */
     public function setProtocolVersion($protocolVersion);
 
     /**
-     * Checks if it is kept alive.
-     *
-     * @return boolean TRUE if it is kept alive.
+     * @return bool
      */
     public function getKeepAlive();
 
     /**
-     * Sets if it is kept alive.
-     *
-     * @param boolean $keepAlive TRUE if it is kept alive else FALSE.
+     * @param bool $keepAlive
      */
     public function setKeepAlive($keepAlive);
 
     /**
-     * Checks if there is an encoding type.
-     *
-     * @return boolean TRUE if there is an encoding type else FALSE.
+     * @return bool
      */
     public function hasEncodingType();
 
     /**
-     * Gets the encoding type.
-     *
-     * @return string|null The encoding type.
+     * @return string|null
      */
     public function getEncodingType();
 
     /**
-     * Sets the encoding type.
-     *
-     * @param string|null $encodingType The encoding type.
+     * @param string|null $encodingType
      */
     public function setEncodingType($encodingType);
 
     /**
-     * Gets the boundary.
-     *
-     * @return string The boundary.
+     * @return string
      */
     public function getBoundary();
 
     /**
-     * Sets the boundary.
-     *
-     * @param string $boundary The boundary.
+     * @param string $boundary
      */
     public function setBoundary($boundary);
 
     /**
-     * Gets the timeout (in seconds).
-     *
-     * @return float The timeout.
+     * @return float
      */
     public function getTimeout();
 
     /**
-     * Sets the timeout (in seconds).
-     *
-     * @param float $timeout The timeout.
+     * @param float $timeout
      */
     public function setTimeout($timeout);
 
     /**
-     * Gets the user agent.
-     *
-     * @return string The user agent.
+     * @return string
      */
     public function getUserAgent();
 
     /**
-     * Sets the user agent.
-     *
-     * @param string $userAgent The user agent.
+     * @param string $userAgent
      */
     public function setUserAgent($userAgent);
 
     /**
-     * Checks if there is a base uri.
-     *
-     * @return boolean TRUE if there is a base uri else FALSE.
+     * @return bool
      */
     public function hasBaseUri();
 
     /**
-     * Gets the base uri.
-     *
-     * @return string The base uri.
+     * @return string
      */
     public function getBaseUri();
 
     /**
-     * Sets the base uri.
-     *
-     * @param string $baseUri The base uri.
+     * @param string $baseUri
      */
     public function setBaseUri($baseUri);
 }

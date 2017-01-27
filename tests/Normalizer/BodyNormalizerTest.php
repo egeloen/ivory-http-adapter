@@ -16,11 +16,9 @@ use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Body normalizer test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class BodyNormalizerTest extends AbstractTestCase 
+class BodyNormalizerTest extends AbstractTestCase
 {
     public function testNormalizeWithResource()
     {

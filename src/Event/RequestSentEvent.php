@@ -17,27 +17,29 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Request sent event.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RequestSentEvent extends AbstractEvent
 {
-    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface */
+    /**
+     * @var InternalRequestInterface
+     */
     private $request;
 
-    /** @var \Ivory\HttpAdapter\Message\ResponseInterface|null */
+    /**
+     * @var ResponseInterface|null
+     */
     private $response;
 
-    /** @var \Ivory\HttpAdapter\HttpAdapterException|null */
+    /**
+     * @var HttpAdapterException|null
+     */
     private $exception;
 
     /**
-     * Creates a request sent event.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter The http adapter.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request     The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response    The response.
+     * @param HttpAdapterInterface     $httpAdapter
+     * @param InternalRequestInterface $request
+     * @param ResponseInterface        $response
      */
     public function __construct(
         HttpAdapterInterface $httpAdapter,
@@ -51,9 +53,7 @@ class RequestSentEvent extends AbstractEvent
     }
 
     /**
-     * Gets the request.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface The request.
+     * @return InternalRequestInterface
      */
     public function getRequest()
     {
@@ -61,9 +61,7 @@ class RequestSentEvent extends AbstractEvent
     }
 
     /**
-     * Sets the request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param InternalRequestInterface $request
      */
     public function setRequest(InternalRequestInterface $request)
     {
@@ -71,9 +69,7 @@ class RequestSentEvent extends AbstractEvent
     }
 
     /**
-     * Gets the response.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|null
+     * @return ResponseInterface|null
      */
     public function getResponse()
     {
@@ -81,9 +77,7 @@ class RequestSentEvent extends AbstractEvent
     }
 
     /**
-     * Sets the response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface|null $response
+     * @param ResponseInterface|null $response
      */
     public function setResponse(ResponseInterface $response = null)
     {
@@ -91,9 +85,7 @@ class RequestSentEvent extends AbstractEvent
     }
 
     /**
-     * Checks if there is an exception.
-     *
-     * @return boolean TRUE if there is an exception else FALSE.
+     * @return bool
      */
     public function hasException()
     {
@@ -101,9 +93,7 @@ class RequestSentEvent extends AbstractEvent
     }
 
     /**
-     * Gets the exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|null
+     * @return HttpAdapterException|null
      */
     public function getException()
     {
@@ -111,9 +101,7 @@ class RequestSentEvent extends AbstractEvent
     }
 
     /**
-     * Sets the exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException|null $exception
+     * @param HttpAdapterException|null $exception
      */
     public function setException(HttpAdapterException $exception = null)
     {

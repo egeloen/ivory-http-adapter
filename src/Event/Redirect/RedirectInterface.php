@@ -11,80 +11,58 @@
 
 namespace Ivory\HttpAdapter\Event\Redirect;
 
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
-use Ivory\HttpAdapter\HttpAdapterInterface;
 
 /**
- * Redirect.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface RedirectInterface
 {
-    /** @const string The parent request parameter. */
     const PARENT_REQUEST = 'parent_request';
-
-    /** @const string The redirect count parameter.  */
     const REDIRECT_COUNT = 'redirect_count';
-
-    /** @const string The effective uri parameter. */
     const EFFECTIVE_URI = 'effective_uri';
 
     /**
-     * Gets the maximum number of redirects.
-     *
-     * @return integer The maximum number of redirects.
+     * @return int
      */
     public function getMax();
 
     /**
-     * Sets the maximum number of redirects.
-     *
-     * @param integer $max The maximum number of redirects.
+     * @param int $max
      */
     public function setMax($max);
 
     /**
-     * Checks if it follows strictly the RFC.
-     *
-     * @return boolean TRUE if it follows strictly the RFC else FALSE.
+     * @return bool
      */
     public function isStrict();
 
     /**
-     * Sets if it follows strictly the RFC.
-     *
-     * @param boolean $strict TRUE if it follows strictly the RFC else FALSE.
+     * @param bool $strict
      */
     public function setStrict($strict);
 
     /**
-     * Checks if it throws an exception when the max redirects is exceeded.
-     *
-     * @return boolean TRUE if it throws an exception when the max redirects is exceeded else FALSE.
+     * @return bool
      */
     public function getThrowException();
 
     /**
-     * Sets if it throws an exception when the max redirects is exceeded.
-     *
-     * @param boolean $throwException TRUE if it throws an exception when the max redirects is exceeded else FALSE.
+     * @param bool $throwException
      */
     public function setThrowException($throwException);
 
     /**
-     * Creates a redirect request.
+     * @param ResponseInterface        $response
+     * @param InternalRequestInterface $internalRequest
+     * @param HttpAdapterInterface     $httpAdapter
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface             $httpAdapter     The http adapter.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the max redirect is reached and it uses exceptions.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|false The redirect request of FALSE if the response
-     *                                                                   is not a redirect one or the max redirect is
-     *                                                                   reached and the it doesn't use exceptions.
+     * @return InternalRequestInterface|false
      */
     public function createRedirectRequest(
         ResponseInterface $response,
@@ -93,12 +71,10 @@ interface RedirectInterface
     );
 
     /**
-     * Prepares a response.
+     * @param ResponseInterface        $response
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response        The response.
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The prepared response.
+     * @return ResponseInterface
      */
     public function prepareResponse(ResponseInterface $response, InternalRequestInterface $internalRequest);
 }

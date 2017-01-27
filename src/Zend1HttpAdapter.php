@@ -15,8 +15,6 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Zend 1 http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend1HttpAdapter extends AbstractHttpAdapter
@@ -25,10 +23,8 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
     private $client;
 
     /**
-     * Creates a zend 1 http adapter.
-     *
-     * @param \Zend_Http_Client|null                         $client        The zend 1 client.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param \Zend_Http_Client|null      $client
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(\Zend_Http_Client $client = null, ConfigurationInterface $configuration = null)
     {
@@ -52,12 +48,12 @@ class Zend1HttpAdapter extends AbstractHttpAdapter
     {
         $this->client
             ->resetParameters(true)
-            ->setConfig(array(
+            ->setConfig([
                 'httpversion'     => $internalRequest->getProtocolVersion(),
                 'timeout'         => $this->getConfiguration()->getTimeout(),
                 'request_timeout' => $this->getConfiguration()->getTimeout(),
                 'maxredirects'    => 0,
-            ))
+            ])
             ->setUri($uri = (string) $internalRequest->getUri())
             ->setMethod($internalRequest->getMethod())
             ->setHeaders($this->prepareHeaders($internalRequest))

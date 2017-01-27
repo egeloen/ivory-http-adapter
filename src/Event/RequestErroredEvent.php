@@ -16,23 +16,23 @@ use Ivory\HttpAdapter\HttpAdapterInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Request errored event.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RequestErroredEvent extends AbstractEvent
 {
-    /** @var \Ivory\HttpAdapter\HttpAdapterException */
+    /**
+     * @var HttpAdapterException
+     */
     private $exception;
 
-    /** @var \Ivory\HttpAdapter\Message\ResponseInterface|null */
+    /**
+     * @var ResponseInterface|null
+     */
     private $response;
 
     /**
-     * Creates a request errored event.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception   The exception.
+     * @param HttpAdapterInterface $httpAdapter
+     * @param HttpAdapterException $exception
      */
     public function __construct(HttpAdapterInterface $httpAdapter, HttpAdapterException $exception)
     {
@@ -42,9 +42,7 @@ class RequestErroredEvent extends AbstractEvent
     }
 
     /**
-     * Gets the exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The exception.
+     * @return HttpAdapterException
      */
     public function getException()
     {
@@ -52,9 +50,7 @@ class RequestErroredEvent extends AbstractEvent
     }
 
     /**
-     * Sets the exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
+     * @param HttpAdapterException $exception
      */
     public function setException(HttpAdapterException $exception)
     {
@@ -62,9 +58,7 @@ class RequestErroredEvent extends AbstractEvent
     }
 
     /**
-     * Checks if there is a response.
-     *
-     * @return boolean TRUE if there is a response else FALSE.
+     * @return bool
      */
     public function hasResponse()
     {
@@ -72,9 +66,7 @@ class RequestErroredEvent extends AbstractEvent
     }
 
     /**
-     * Gets the response.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface|null
      */
     public function getResponse()
     {
@@ -82,9 +74,7 @@ class RequestErroredEvent extends AbstractEvent
     }
 
     /**
-     * Sets the response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     public function setResponse(ResponseInterface $response)
     {

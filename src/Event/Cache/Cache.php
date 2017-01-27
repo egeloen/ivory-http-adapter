@@ -11,40 +11,44 @@
 
 namespace Ivory\HttpAdapter\Event\Cache;
 
+use Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface;
 use Ivory\HttpAdapter\Event\Formatter\Formatter;
 use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
-use Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface;
 
 /**
- * Cache.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Cache implements CacheInterface
 {
-    /** @var \Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface */
+    /**
+     * @var CacheAdapterInterface
+     */
     private $adapter;
 
-    /** @var \Ivory\HttpAdapter\Event\Formatter\FormatterInterface */
+    /**
+     * @var FormatterInterface
+     */
     private $formatter;
 
-    /** @var integer|null */
+    /**
+     * @var int|null
+     */
     private $lifetime;
 
-    /** @var boolean */
+    /**
+     * @var bool
+     */
     private $cacheException;
 
     /**
-     * Creates a cache.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface  $adapter        The adapter.
-     * @param \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|null    $formatter      The formatter.
-     * @param integer|null                                                  $lifetime       The lifetime.
-     * @param boolean                                                       $cacheException TRUE if the exceptions should be cached else FALSE.
+     * @param CacheAdapterInterface   $adapter
+     * @param FormatterInterface|null $formatter
+     * @param int|null                $lifetime
+     * @param bool                    $cacheException
      */
     public function __construct(
         CacheAdapterInterface $adapter,
@@ -59,9 +63,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Gets the adapter.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface The adapter.
+     * @return CacheAdapterInterface
      */
     public function getAdapter()
     {
@@ -69,9 +71,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Sets the adapter.
-     *
-     * @param \Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface $adapter The adapter.
+     * @param CacheAdapterInterface $adapter
      */
     public function setAdapter(CacheAdapterInterface $adapter)
     {
@@ -79,9 +79,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Gets the formatter.
-     *
-     * @return \Ivory\HttpAdapter\Event\Formatter\FormatterInterface The formatter.
+     * @return FormatterInterface
      */
     public function getFormatter()
     {
@@ -89,9 +87,7 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Sets the formatter.
-     *
-     * @param \Ivory\HttpAdapter\Event\Formatter\FormatterInterface $formatter The formatter.
+     * @param FormatterInterface $formatter
      */
     public function setFormatter(FormatterInterface $formatter)
     {
@@ -99,21 +95,17 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Gets the lifetime.
-     *
-     * @return integer|null The life time.
+     * @return int|null
      */
-    public function getlifetime()
+    public function getLifetime()
     {
         return $this->lifetime;
     }
 
     /**
-     * Sets the lifetime.
-     *
-     * @param integer|null $lifetime The life time.
+     * @param int|null $lifetime
      */
-    public function setlifetime($lifetime = null)
+    public function setLifetime($lifetime = null)
     {
         $this->lifetime = $lifetime;
     }
@@ -180,12 +172,10 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Gets the adapter identifier.
+     * @param InternalRequestInterface $internalRequest
+     * @param string                   $context
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     * @param string                                              $context         The context.
-     *
-     * @return string The adapter identifier.
+     * @return string
      */
     private function getIdentifier(InternalRequestInterface $internalRequest, $context)
     {
@@ -193,11 +183,9 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Serializes an internal request.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return string The serialized internal request.
+     * @return string
      */
     private function serializeInternalRequest(InternalRequestInterface $internalRequest)
     {
@@ -208,11 +196,9 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Serializes a response.
+     * @param ResponseInterface $response
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return string The serialized response.
+     * @return string
      */
     private function serializeResponse(ResponseInterface $response)
     {
@@ -220,11 +206,9 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Serializes an exception.
+     * @param HttpAdapterException $exception
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
-     *
-     * @return string The serialized exception.
+     * @return string
      */
     private function serializeException(HttpAdapterException $exception)
     {
@@ -232,12 +216,10 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Unserializes a response.
+     * @param string                  $serialized
+     * @param MessageFactoryInterface $messageFactory
      *
-     * @param string                                             $serialized The cached response.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     private function unserializeResponse($serialized, MessageFactoryInterface $messageFactory)
     {
@@ -245,11 +227,9 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Unserializes an exception.
+     * @param string $serialized
      *
-     * @param string $serialized The cached exception.
-     *s
-     * @return \Ivory\HttpAdapter\HttpAdapterException The exception.
+     * @return HttpAdapterException
      */
     private function unserializeException($serialized)
     {
@@ -257,12 +237,10 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Creates a response.
+     * @param array                   $unserialized
+     * @param MessageFactoryInterface $messageFactory
      *
-     * @param array                                              $unserialized   The unserialized response.
-     * @param \Ivory\HttpAdapter\Message\MessageFactoryInterface $messageFactory The message factory.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
     private function createResponse(array $unserialized, MessageFactoryInterface $messageFactory)
     {
@@ -276,11 +254,9 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Creates an exception.
+     * @param array $unserialized
      *
-     * @param array $unserialized The unserialized exception.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException The exception.
+     * @return HttpAdapterException
      */
     private function createException(array $unserialized)
     {
@@ -288,11 +264,9 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Serializes data.
+     * @param array $data
      *
-     * @param array $data The data.
-     *
-     * @return string The serialized data.
+     * @return string
      */
     private function serialize(array $data)
     {
@@ -300,11 +274,9 @@ class Cache implements CacheInterface
     }
 
     /**
-     * Unserializes data.
+     * @param string $data
      *
-     * @param string $data The serialized data.
-     *
-     * @return array The unserialized data.
+     * @return array
      */
     private function unserialize($data)
     {

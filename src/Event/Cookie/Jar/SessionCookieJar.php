@@ -14,20 +14,18 @@ namespace Ivory\HttpAdapter\Event\Cookie\Jar;
 use Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface;
 
 /**
- * Session cookie jar.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class SessionCookieJar extends AbstractPersistentCookieJar
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $key;
 
     /**
-     * Creates a session cookie jar.
-     *
-     * @param string                                                      $key           The key.
-     * @param \Ivory\HttpAdapter\Event\Cookie\CookieFactoryInterface|null $cookieFactory The cookie factory.
+     * @param string                      $key
+     * @param CookieFactoryInterface|null $cookieFactory
      */
     public function __construct($key, CookieFactoryInterface $cookieFactory = null)
     {
@@ -37,9 +35,7 @@ class SessionCookieJar extends AbstractPersistentCookieJar
     }
 
     /**
-     * Gets the key.
-     *
-     * @return string The key.
+     * @return string
      */
     public function getKey()
     {
@@ -47,9 +43,7 @@ class SessionCookieJar extends AbstractPersistentCookieJar
     }
 
     /**
-     * Sets the key.
-     *
-     * @param string $key The key.
+     * @param string $key
      */
     public function setKey($key)
     {

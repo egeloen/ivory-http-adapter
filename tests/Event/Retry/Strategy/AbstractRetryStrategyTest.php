@@ -11,19 +11,17 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
+use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Abstract retry strategy test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-abstract class AbstractRetryStrategyTest extends AbstractTestCase 
+abstract class AbstractRetryStrategyTest extends AbstractTestCase
 {
     /**
-     * Creates a retry strategy chain mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyChainInterface|\PHPUnit_Framework_MockObject_MockObject The retry strategy chain mock.
+     * @return RetryStrategyChainInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function createRetryStrategyChainMock()
     {
@@ -31,9 +29,7 @@ abstract class AbstractRetryStrategyTest extends AbstractTestCase
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function createRequestMock()
     {

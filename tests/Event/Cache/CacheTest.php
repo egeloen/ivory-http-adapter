@@ -11,24 +11,34 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Cache\Adapter;
 
+use Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface;
 use Ivory\HttpAdapter\Event\Cache\Cache;
+use Ivory\HttpAdapter\Event\Formatter\FormatterInterface;
+use Ivory\HttpAdapter\HttpAdapterException;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\MessageFactoryInterface;
 use Ivory\HttpAdapter\Message\RequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Cache test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CacheTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\Cache\Cache */
+    /**
+     * @var Cache
+     */
     private $cache;
 
-    /** @var \Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var CacheAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $adapter;
 
-    /** @var \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var FormatterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $formatter;
 
     /**
@@ -39,16 +49,6 @@ class CacheTest extends AbstractTestCase
         $this->adapter = $this->createCacheAdapterMock();
         $this->formatter = $this->createFormatterMock();
         $this->cache = new Cache($this->adapter, $this->formatter);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->formatter);
-        unset($this->adapter);
-        unset($this->cache);
     }
 
     public function testDefaultState()
@@ -356,9 +356,7 @@ class CacheTest extends AbstractTestCase
     }
 
     /**
-     * Creates a cache adapter mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Cache\Adapter\CacheAdapterInterface|\PHPUnit_Framework_MockObject_MockObject The cache adapter mock.
+     * @return CacheAdapterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createCacheAdapterMock()
     {
@@ -366,9 +364,7 @@ class CacheTest extends AbstractTestCase
     }
 
     /**
-     * Creates a formatter mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Formatter\FormatterInterface|\PHPUnit_Framework_MockObject_MockObject The formatter mock.
+     * @return FormatterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createFormatterMock()
     {
@@ -376,9 +372,7 @@ class CacheTest extends AbstractTestCase
     }
 
     /**
-     * Creates a message factory mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject The message factory mock.
+     * @return MessageFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createMessageFactoryMock()
     {
@@ -386,9 +380,7 @@ class CacheTest extends AbstractTestCase
     }
 
     /**
-     * Creates an internal request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The internal request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createInternalRequestMock()
     {
@@ -396,9 +388,7 @@ class CacheTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {
@@ -406,9 +396,7 @@ class CacheTest extends AbstractTestCase
     }
 
     /**
-     * Creates an exception mock.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject The exception mock.
+     * @return HttpAdapterException|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createExceptionMock()
     {

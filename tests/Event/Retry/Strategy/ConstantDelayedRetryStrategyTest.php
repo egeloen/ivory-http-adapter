@@ -14,13 +14,13 @@ namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 use Ivory\HttpAdapter\Event\Retry\Strategy\ConstantDelayedRetryStrategy;
 
 /**
- * Constant delayed retry strategy test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ConstantDelayedRetryStrategyTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\ConstantDelayedRetryStrategy */
+    /**
+     * @var ConstantDelayedRetryStrategy
+     */
     private $constantDelayedRetryStrategy;
 
     /**
@@ -31,14 +31,6 @@ class ConstantDelayedRetryStrategyTest extends AbstractRetryStrategyTest
         $this->constantDelayedRetryStrategy = new ConstantDelayedRetryStrategy();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->constantDelayedRetryStrategy);
-    }
-
     public function testDefaultState()
     {
         $this->assertInstanceOf(
@@ -46,7 +38,7 @@ class ConstantDelayedRetryStrategyTest extends AbstractRetryStrategyTest
             $this->constantDelayedRetryStrategy
         );
 
-        $this->assertSame(5, $this->constantDelayedRetryStrategy->getDelay());
+        $this->assertSame(5.0, $this->constantDelayedRetryStrategy->getDelay());
 
         $this->assertFalse($this->constantDelayedRetryStrategy->hasNext());
         $this->assertNull($this->constantDelayedRetryStrategy->getNext());

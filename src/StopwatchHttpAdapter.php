@@ -15,20 +15,18 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * Stopwatch http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StopwatchHttpAdapter extends PsrHttpAdapterDecorator
 {
-    /** @var \Symfony\Component\Stopwatch\Stopwatch */
+    /**
+     * @var Stopwatch\Stopwatch
+     */
     private $stopwatch;
 
     /**
-     * Creates a stopwatch http adapter.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
-     * @param \Symfony\Component\Stopwatch\Stopwatch  $stopwatch   The stopwatch.
+     * @param HttpAdapterInterface $httpAdapter
+     * @param Stopwatch            $stopwatch
      */
     public function __construct(HttpAdapterInterface $httpAdapter, Stopwatch $stopwatch)
     {

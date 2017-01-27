@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Zend\Http\Client\Adapter\Proxy;
 
 /**
- * Zend 2 proxy http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Zend2ProxyHttpAdapterTest extends AbstractZend2HttpAdapterTest

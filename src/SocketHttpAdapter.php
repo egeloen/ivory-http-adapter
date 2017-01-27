@@ -18,8 +18,6 @@ use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
- * Socket http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class SocketHttpAdapter extends AbstractHttpAdapter
@@ -74,11 +72,9 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Prepares the request.
+     * @param InternalRequestInterface $internalRequest
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $internalRequest The internal request.
-     *
-     * @return string The prepared request.
+     * @return string
      */
     private function prepareRequest(InternalRequestInterface $internalRequest)
     {
@@ -94,11 +90,9 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Parses the response.
+     * @param resource $socket
      *
-     * @param resource $socket The socket.
-     *
-     * @return array The response (0 => headers, 1 => body).
+     * @return array
      */
     private function parseResponse($socket)
     {
@@ -118,16 +112,14 @@ class SocketHttpAdapter extends AbstractHttpAdapter
             }
         }
 
-        return array($headers, $body);
+        return [$headers, $body];
     }
 
     /**
-     * Decodes the body.
+     * @param array  $headers
+     * @param string $body
      *
-     * @param array  $headers The headers.
-     * @param string $body    The body.
-     *
-     * @return string The decoded body.
+     * @return string
      */
     private function decodeBody(array $headers, $body)
     {
@@ -148,11 +140,9 @@ class SocketHttpAdapter extends AbstractHttpAdapter
     }
 
     /**
-     * Detects a timeout.
+     * @param resource $socket
      *
-     * @param resource $socket The socket.
-     *
-     * @return boolean TRUE if the socket has timeout else FALSE.
+     * @return bool
      */
     private function detectTimeout($socket)
     {

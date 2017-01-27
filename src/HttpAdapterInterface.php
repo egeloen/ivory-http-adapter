@@ -11,131 +11,113 @@
 
 namespace Ivory\HttpAdapter;
 
+use Ivory\HttpAdapter\Message\ResponseInterface;
+
 /**
- * Http adapter interface.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface HttpAdapterInterface extends PsrHttpAdapterInterface
 {
     /**
-     * Sends a GET request.
+     * @param string|object $uri
+     * @param array         $headers
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function get($uri, array $headers = array());
+    public function get($uri, array $headers = []);
 
     /**
-     * Sends an HEAD request.
+     * @param string|object $uri
+     * @param array         $headers
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function head($uri, array $headers = array());
+    public function head($uri, array $headers = []);
 
     /**
-     * Sends a TRACE request.
+     * @param string|object $uri
+     * @param array         $headers
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function trace($uri, array $headers = array());
+    public function trace($uri, array $headers = []);
 
     /**
-     * Sends a POST request.
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
-     * @param array|string  $datas   The datas.
-     * @param array         $files   The files.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function post($uri, array $headers = array(), $datas = array(), array $files = array());
+    public function post($uri, array $headers = [], $datas = [], array $files = []);
 
     /**
-     * Sends a PUT request.
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
-     * @param array|string  $datas   The datas.
-     * @param array         $files   The files.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function put($uri, array $headers = array(), $datas = array(), array $files = array());
+    public function put($uri, array $headers = [], $datas = [], array $files = []);
 
     /**
-     * Sends a PATCH request.
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
-     * @param array|string  $datas   The datas.
-     * @param array         $files   The files.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function patch($uri, array $headers = array(), $datas = array(), array $files = array());
+    public function patch($uri, array $headers = [], $datas = [], array $files = []);
 
     /**
-     * Sends a DELETE request.
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
-     * @param array|string  $datas   The datas.
-     * @param array         $files   The files.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function delete($uri, array $headers = array(), $datas = array(), array $files = array());
+    public function delete($uri, array $headers = [], $datas = [], array $files = []);
 
     /**
-     * Sends an OPTIONS request.
+     * @param string|object $uri
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
      *
-     * @param string|object $uri     The uri.
-     * @param array         $headers The headers.
-     * @param array|string  $datas   The datas.
-     * @param array         $files   The files.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function options($uri, array $headers = array(), $datas = array(), array $files = array());
+    public function options($uri, array $headers = [], $datas = [], array $files = []);
 
     /**
-     * Sends a request.
+     * @param string|object $uri
+     * @param string        $method
+     * @param array         $headers
+     * @param array|string  $datas
+     * @param array         $files
      *
-     * @param string|object $uri     The uri.
-     * @param string        $method  The method.
-     * @param array         $headers The headers.
-     * @param array|string  $datas   The datas.
-     * @param array         $files   The files.
+     * @throws HttpAdapterException
      *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If an error occurred.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface The response.
+     * @return ResponseInterface
      */
-    public function send($uri, $method, array $headers = array(), $datas = array(), array $files = array());
+    public function send($uri, $method, array $headers = [], $datas = [], array $files = []);
 }

@@ -19,8 +19,6 @@ use React\HttpClient\Factory as HttpClientFactory;
 use React\HttpClient\Response;
 
 /**
- * React http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class ReactHttpAdapter extends AbstractHttpAdapter
@@ -72,7 +70,7 @@ class ReactHttpAdapter extends AbstractHttpAdapter
         }
 
         return $this->getConfiguration()->getMessageFactory()->createResponse(
-            (integer) $response->getCode(),
+            (int) $response->getCode(),
             $response->getVersion(),
             $response->getHeaders(),
             BodyNormalizer::normalize($body, $internalRequest->getMethod())

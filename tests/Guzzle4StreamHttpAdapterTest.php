@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use GuzzleHttp\Adapter\StreamAdapter;
 
 /**
- * Guzzle 4 stream http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Guzzle4StreamHttpAdapterTest extends AbstractGuzzle4HttpAdapterTest

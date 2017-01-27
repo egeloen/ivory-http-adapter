@@ -11,33 +11,35 @@
 
 namespace Ivory\HttpAdapter\Event\Redirect;
 
-use Ivory\HttpAdapter\Message\InternalRequestInterface;
-use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\HttpAdapter\HttpAdapterException;
 use Ivory\HttpAdapter\HttpAdapterInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Redirect.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Redirect implements RedirectInterface
 {
-    /** @var integer */
+    /**
+     * @var int
+     */
     private $max;
 
-    /** @var boolean */
+    /**
+     * @var bool
+     */
     private $strict;
 
-    /** @var boolean */
+    /**
+     * @var bool
+     */
     private $throwException;
 
     /**
-     * Creates a redirect subscriber.
-     *
-     * @param integer $max            The maximum number of redirects.
-     * @param boolean $strict         TRUE if it follows strictly the RFC else FALSE.
-     * @param boolean $throwException TRUE if it throws an exception when the max redirects is exceeded else FALSE.
+     * @param int  $max
+     * @param bool $strict
+     * @param bool $throwException
      */
     public function __construct($max = 5, $strict = false, $throwException = true)
     {
@@ -140,8 +142,8 @@ class Redirect implements RedirectInterface
             $strict ? InternalRequestInterface::METHOD_GET : $internalRequest->getMethod(),
             $internalRequest->getProtocolVersion(),
             $headers,
-            $strict ? array() : $internalRequest->getDatas(),
-            $strict ? array() : $internalRequest->getFiles(),
+            $strict ? [] : $internalRequest->getDatas(),
+            $strict ? [] : $internalRequest->getFiles(),
             $internalRequest->getParameters()
         );
 

@@ -11,14 +11,16 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Retry\Strategy;
 
+use Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain;
+
 /**
- * Retry strategy chain test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class RetryStrategyChainTest extends AbstractRetryStrategyTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\AbstractRetryStrategyChain|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var AbstractRetryStrategyChain|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $retryStrategyChain;
 
     /**
@@ -27,14 +29,6 @@ class RetryStrategyChainTest extends AbstractRetryStrategyTest
     protected function setUp()
     {
         $this->retryStrategyChain = $this->createRetryStrategyChainMockBuilder()->getMockForAbstractClass();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->retryStrategyChain);
     }
 
     public function testDefaultState()
@@ -46,7 +40,7 @@ class RetryStrategyChainTest extends AbstractRetryStrategyTest
     public function testInitialState()
     {
         $this->retryStrategyChain = $this->createRetryStrategyChainMockBuilder()
-            ->setConstructorArgs(array($next = $this->createRetryStrategyChainMock()))
+            ->setConstructorArgs([$next = $this->createRetryStrategyChainMock()])
             ->getMockForAbstractClass();
 
         $this->assertTrue($this->retryStrategyChain->hasNext());
@@ -126,9 +120,7 @@ class RetryStrategyChainTest extends AbstractRetryStrategyTest
     }
 
     /**
-     * Creates a retry strategy chain mock builder.
-     *
-     * @return \PHPUnit_Framework_MockObject_MockBuilder The retry strategy chain mock builder.
+     * @return AbstractRetryStrategyChain|\PHPUnit_Framework_MockObject_MockBuilder
      */
     private function createRetryStrategyChainMockBuilder()
     {

@@ -12,19 +12,23 @@
 namespace Ivory\Tests\HttpAdapter\Event\Retry;
 
 use Ivory\HttpAdapter\Event\Retry\Retry;
+use Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Retry test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class RetryTest extends AbstractTestCase 
+class RetryTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\Retry\Retry */
+    /**
+     * @var Retry
+     */
     private $retry;
 
-    /** @var \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var RetryStrategyInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $strategy;
 
     /**
@@ -33,15 +37,6 @@ class RetryTest extends AbstractTestCase
     protected function setUp()
     {
         $this->retry = new Retry($this->strategy = $this->createStrategyMock());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->strategy);
-        unset($this->retry);
     }
 
     public function testDefaultState()
@@ -158,9 +153,7 @@ class RetryTest extends AbstractTestCase
     }
 
     /**
-     * Creates a strategy mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Retry\Strategy\RetryStrategyInterface|\PHPUnit_Framework_MockObject_MockObject The strategy mock.
+     * @return RetryStrategyInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createStrategyMock()
     {
@@ -168,9 +161,7 @@ class RetryTest extends AbstractTestCase
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {

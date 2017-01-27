@@ -12,8 +12,6 @@
 namespace Ivory\Tests\HttpAdapter;
 
 /**
- * Abstract guzzle 5 curl http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractGuzzle5CurlHttpAdapterTest extends AbstractGuzzle5HttpAdapterTest

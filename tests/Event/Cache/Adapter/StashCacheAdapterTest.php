@@ -13,18 +13,22 @@ namespace Ivory\Tests\HttpAdapter\Event\Cache\Adapter;
 
 use Ivory\HttpAdapter\Event\Cache\Adapter\StashCacheAdapter;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
+use Stash\Item;
+use Stash\Pool;
 
 /**
- * Stash cache adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StashCacheAdapterTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\Cache\Adapter\StashCacheAdapter */
+    /**
+     * @var StashCacheAdapter
+     */
     private $stashCacheAdapter;
 
-    /** @var \Stash\Pool|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var Pool|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $pool;
 
     /**
@@ -34,15 +38,6 @@ class StashCacheAdapterTest extends AbstractTestCase
     {
         $this->pool = $this->createPoolMock();
         $this->stashCacheAdapter = new StashCacheAdapter($this->pool);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->pool);
-        unset($this->stashCacheAdapter);
     }
 
     public function testDefaultState()
@@ -127,19 +122,17 @@ class StashCacheAdapterTest extends AbstractTestCase
     }
 
     /**
-     * Creates a pool mock.
-     *
-     * @return \Stash\Pool|\PHPUnit_Framework_MockObject_MockObject The pool mock.
+     * @return Pool|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createPoolMock()
     {
         return $this->getMockBuilder('Stash\Pool')
-            ->setMethods(array('getItem', 'flush'))
+            ->setMethods(['getItem', 'flush'])
             ->getMock();
     }
 
     /**
-     * @return \Stash\Item|\PHPUnit_Framework_MockObject_MockObject
+     * @return Item|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createItemMock()
     {

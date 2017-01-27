@@ -12,8 +12,6 @@
 namespace Ivory\HttpAdapter;
 
 /**
- * Guzzle 5 http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class Guzzle5HttpAdapter extends Guzzle4HttpAdapter

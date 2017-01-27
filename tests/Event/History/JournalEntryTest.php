@@ -12,22 +12,28 @@
 namespace Ivory\Tests\HttpAdapter\Event\History;
 
 use Ivory\HttpAdapter\Event\History\JournalEntry;
+use Ivory\HttpAdapter\Message\InternalRequestInterface;
+use Ivory\HttpAdapter\Message\ResponseInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Journal entry test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class JournalEntryTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Event\History\JournalEntry */
+    /**
+     * @var JournalEntry
+     */
     private $journalEntry;
 
-    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $request;
 
-    /** @var \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $response;
 
     /**
@@ -39,16 +45,6 @@ class JournalEntryTest extends AbstractTestCase
             $this->request = $this->createMock('Ivory\HttpAdapter\Message\InternalRequestInterface'),
             $this->response = $this->createMock('Ivory\HttpAdapter\Message\ResponseInterface')
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->journalEntry);
-        unset($this->request);
-        unset($this->response);
     }
 
     public function testDefaultState()
@@ -72,9 +68,7 @@ class JournalEntryTest extends AbstractTestCase
     }
 
     /**
-     * Creates a request mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject The request mock.
+     * @return InternalRequestInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createRequestMock()
     {
@@ -82,9 +76,7 @@ class JournalEntryTest extends AbstractTestCase
     }
 
     /**
-     * Creates a response mock.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface|\PHPUnit_Framework_MockObject_MockObject The response mock.
+     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResponseMock()
     {

@@ -19,22 +19,20 @@ use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 
 /**
- * Buzz http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class BuzzHttpAdapter extends AbstractCurlHttpAdapter
 {
-    /** @var \Buzz\Browser */
+    /**
+     * @var Browser
+     */
     private $browser;
 
     /**
-     * Creates a buzz http adapter.
+     * @param Browser|null                $browser
+     * @param ConfigurationInterface|null $configuration
      *
-     * @param \Buzz\Browser|null                             $browser       The buzz browser.
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
-     *
-     * @throws \Ivory\HttpAdapter\HttpAdapterException If the browser client is multi curl.
+     * @throws HttpAdapterException
      */
     public function __construct(Browser $browser = null, ConfigurationInterface $configuration = null)
     {

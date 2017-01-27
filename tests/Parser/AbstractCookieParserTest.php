@@ -15,82 +15,78 @@ use Ivory\HttpAdapter\Event\Cookie\CookieInterface;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Abstract cookie parser test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractCookieParserTest extends AbstractTestCase
 {
     /**
-     * Gets the parse provider.
-     *
-     * @return array The parse provider.
+     * @return array
      */
     public function parseProvider()
     {
-        return array(
-            array('', null, null),
-            array(' ', null, null),
-            array('=', null, null),
-            array(' = ', null, null),
-            array(';', null, null),
-            array(' ; ', null, null),
-            array('=;', null, null),
-            array(' = ; ', null, null),
-            array('foo=', 'foo', null),
-            array(' foo = ', 'foo', null),
-            array('foo=bar', 'foo', 'bar'),
-            array(' foo = bar ', 'foo', 'bar'),
-            array('foo=bar;domain=egeloen.fr', 'foo', 'bar', array(CookieInterface::ATTR_DOMAIN => 'egeloen.fr')),
-            array(
+        return [
+            ['', null, null],
+            [' ', null, null],
+            ['=', null, null],
+            [' = ', null, null],
+            [';', null, null],
+            [' ; ', null, null],
+            ['=;', null, null],
+            [' = ; ', null, null],
+            ['foo=', 'foo', null],
+            [' foo = ', 'foo', null],
+            ['foo=bar', 'foo', 'bar'],
+            [' foo = bar ', 'foo', 'bar'],
+            ['foo=bar;domain=egeloen.fr', 'foo', 'bar', [CookieInterface::ATTR_DOMAIN => 'egeloen.fr']],
+            [
                 ' foo = bar ; domain = egeloen.fr ',
                 'foo',
                 'bar',
-                array(CookieInterface::ATTR_DOMAIN => 'egeloen.fr'),
-            ),
-            array('foo=bar;path=/path', 'foo', 'bar', array(CookieInterface::ATTR_PATH => '/path')),
-            array(' foo = bar ; path = /path ', 'foo', 'bar', array(CookieInterface::ATTR_PATH => '/path')),
-            array('foo=bar;secure', 'foo', 'bar', array(CookieInterface::ATTR_SECURE => true)),
-            array(' foo = bar ; secure ', 'foo', 'bar', array(CookieInterface::ATTR_SECURE => true)),
-            array(
+                [CookieInterface::ATTR_DOMAIN => 'egeloen.fr'],
+            ],
+            ['foo=bar;path=/path', 'foo', 'bar', [CookieInterface::ATTR_PATH => '/path']],
+            [' foo = bar ; path = /path ', 'foo', 'bar', [CookieInterface::ATTR_PATH => '/path']],
+            ['foo=bar;secure', 'foo', 'bar', [CookieInterface::ATTR_SECURE => true]],
+            [' foo = bar ; secure ', 'foo', 'bar', [CookieInterface::ATTR_SECURE => true]],
+            [
                 'foo=bar;expires=Fri, 15 aug 2014 12:34:56 UTC',
                 'foo',
                 'bar',
-                array(CookieInterface::ATTR_EXPIRES => 'Fri, 15 aug 2014 12:34:56 UTC'),
-            ),
-            array(
+                [CookieInterface::ATTR_EXPIRES => 'Fri, 15 aug 2014 12:34:56 UTC'],
+            ],
+            [
                 ' foo = bar ; expires = Fri, 15 aug 2014 12:34:56 UTC ',
                 'foo',
                 'bar',
-                array(CookieInterface::ATTR_EXPIRES => 'Fri, 15 aug 2014 12:34:56 UTC'),
-            ),
-            array('foo=bar;max-age=123', 'foo', 'bar', array(CookieInterface::ATTR_MAX_AGE => '123')),
-            array(' foo = bar ; max-age = 123', 'foo', 'bar', array(CookieInterface::ATTR_MAX_AGE => '123')),
-            array(
+                [CookieInterface::ATTR_EXPIRES => 'Fri, 15 aug 2014 12:34:56 UTC'],
+            ],
+            ['foo=bar;max-age=123', 'foo', 'bar', [CookieInterface::ATTR_MAX_AGE => '123']],
+            [' foo = bar ; max-age = 123', 'foo', 'bar', [CookieInterface::ATTR_MAX_AGE => '123']],
+            [
                 'foo=bar;domain=egeloen.fr;path=/path;secure;expires=Fri, 15 aug 2014 12:34:56 UTC;max-age=123',
                 'foo',
                 'bar',
-                array(
+                [
                     CookieInterface::ATTR_DOMAIN  => 'egeloen.fr',
                     CookieInterface::ATTR_PATH    => '/path',
                     CookieInterface::ATTR_SECURE  => true,
                     CookieInterface::ATTR_EXPIRES => 'Fri, 15 aug 2014 12:34:56 UTC',
                     CookieInterface::ATTR_MAX_AGE => '123',
-                ),
-            ),
-            array(
+                ],
+            ],
+            [
                 ' foo = bar ; domain = egeloen.fr ; path = /path ; secure ;'.
                 ' expires = Fri, 15 aug 2014 12:34:56 UTC ; max-age = 123',
                 'foo',
                 'bar',
-                array(
+                [
                     CookieInterface::ATTR_DOMAIN  => 'egeloen.fr',
                     CookieInterface::ATTR_PATH    => '/path',
                     CookieInterface::ATTR_SECURE  => true,
                     CookieInterface::ATTR_EXPIRES => 'Fri, 15 aug 2014 12:34:56 UTC',
                     CookieInterface::ATTR_MAX_AGE => '123',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 }

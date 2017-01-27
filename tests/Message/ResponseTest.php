@@ -15,13 +15,13 @@ use Ivory\HttpAdapter\Message\Response;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Response test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
-class ResponseTest extends AbstractTestCase 
+class ResponseTest extends AbstractTestCase
 {
-    /** @var \Ivory\HttpAdapter\Message\Response */
+    /**
+     * @var Response
+     */
     private $response;
 
     /**
@@ -30,14 +30,6 @@ class ResponseTest extends AbstractTestCase
     protected function setUp()
     {
         $this->response = new Response();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->response);
     }
 
     public function testInheritance()
@@ -63,8 +55,8 @@ class ResponseTest extends AbstractTestCase
         $this->response = new Response(
             $body = $this->createMock('Psr\Http\Message\StreamInterface'),
             $statusCode = 302,
-            $headers = array('foo' => array('bar')),
-            $parameters = array('baz' => 'bat')
+            $headers = ['foo' => ['bar']],
+            $parameters = ['baz' => 'bat']
         );
 
         $this->assertSame($statusCode, $this->response->getStatusCode());

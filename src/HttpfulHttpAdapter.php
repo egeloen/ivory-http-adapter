@@ -18,16 +18,12 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Normalizer\BodyNormalizer;
 
 /**
- * Httpful http adapter.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
 {
     /**
-     * Creates an httpful http adapter.
-     *
-     * @param \Ivory\HttpAdapter\ConfigurationInterface|null $configuration The configuration.
+     * @param ConfigurationInterface|null $configuration
      */
     public function __construct(ConfigurationInterface $configuration = null)
     {
@@ -48,7 +44,8 @@ class HttpfulHttpAdapter extends AbstractCurlHttpAdapter
     protected function sendInternalRequest(InternalRequestInterface $internalRequest)
     {
         $request = Request::init($internalRequest->getMethod())
-            ->whenError(function () {})
+            ->whenError(function () {
+            })
             ->addOnCurlOption(CURLOPT_HTTP_VERSION, $this->prepareProtocolVersion($internalRequest))
             ->timeout($this->getConfiguration()->getTimeout())
             ->uri($uri = (string) $internalRequest->getUri())

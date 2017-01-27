@@ -14,27 +14,29 @@ namespace Ivory\HttpAdapter\Event\BasicAuth;
 use Ivory\HttpAdapter\Message\InternalRequestInterface;
 
 /**
- * Basic auth.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class BasicAuth implements BasicAuthInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $username;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $password;
 
-    /** @var string|callable|null */
+    /**
+     * @var string|callable|null
+     */
     private $matcher;
 
     /**
-     * Creates a basic auth subscriber.
-     *
-     * @param string               $username The username.
-     * @param string               $password The password.
-     * @param string|callable|null $matcher  The matcher.
+     * @param string               $username
+     * @param string               $password
+     * @param string|callable|null $matcher
      */
     public function __construct($username, $password, $matcher = null)
     {
@@ -115,11 +117,9 @@ class BasicAuth implements BasicAuthInterface
     }
 
     /**
-     * Checks if the request matches the matcher.
+     * @param InternalRequestInterface $request
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return boolean TRUE if the request matches the matcher else FALSE.
+     * @return bool
      */
     private function match(InternalRequestInterface $request)
     {

@@ -12,18 +12,14 @@
 namespace Ivory\Tests\HttpAdapter;
 
 /**
- * Abstract test case.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Creates a mock.
+     * @param string $originalClassName
      *
-     * @param string $originalClassName The original class name.
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject The mock.
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
     protected function createMock($originalClassName)
     {
@@ -32,5 +28,17 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         }
 
         return $this->getMock($originalClassName);
+    }
+
+    /**
+     * @param string $exception
+     */
+    public function expectException($exception)
+    {
+        if (is_callable('parent::expectException')) {
+            parent::expectException($exception);
+        }
+
+        $this->setExpectedException($exception);
     }
 }

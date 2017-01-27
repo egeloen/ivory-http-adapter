@@ -14,8 +14,6 @@ namespace Ivory\HttpAdapter\Event\StatusCode;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Status code.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StatusCode implements StatusCodeInterface

@@ -15,19 +15,15 @@ use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 use Ivory\HttpAdapter\Message\RequestInterface;
 
 /**
- * Body normalizer.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class BodyNormalizer extends AbstractUninstantiableAsset
 {
     /**
-     * Normalizes the body.
+     * @param mixed  $body
+     * @param string $method
      *
-     * @param mixed  $body   The body.
-     * @param string $method The method.
-     *
-     * @return mixed The normalized body.
+     * @return mixed
      */
     public static function normalize($body, $method)
     {

@@ -11,17 +11,22 @@
 
 namespace Ivory\Tests\HttpAdapter\Event\Subscriber;
 
+use Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber;
+use Ivory\HttpAdapter\Event\Timer\TimerInterface;
+
 /**
- * Timer subscriber test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class TimerSubscriberTest extends AbstractSubscriberTest
 {
-    /** @var \Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var AbstractTimerSubscriber|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $timerSubscriber;
 
-    /** @var \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /**
+     * @var TimerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $timer;
 
     /**
@@ -30,17 +35,8 @@ class TimerSubscriberTest extends AbstractSubscriberTest
     protected function setUp()
     {
         $this->timerSubscriber = $this->createTimerSubscriberMockBuilder()
-            ->setConstructorArgs(array($this->timer = $this->createTimerMock()))
+            ->setConstructorArgs([$this->timer = $this->createTimerMock()])
             ->getMockForAbstractClass();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        unset($this->timer);
-        unset($this->timerSubscriber);
     }
 
     public function testDefaultState()
@@ -56,9 +52,7 @@ class TimerSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a timer subscriber mock builder.
-     *
-     * @return \Ivory\HttpAdapter\Event\Subscriber\AbstractTimerSubscriber|\PHPUnit_Framework_MockObject_MockObject The timer subscriber mock builder.
+     * @return AbstractTimerSubscriber|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createTimerSubscriberMockBuilder()
     {
@@ -66,9 +60,7 @@ class TimerSubscriberTest extends AbstractSubscriberTest
     }
 
     /**
-     * Creates a timer mock.
-     *
-     * @return \Ivory\HttpAdapter\Event\Timer\TimerInterface|\PHPUnit_Framework_MockObject_MockObject The timer mock.
+     * @return TimerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createTimerMock()
     {

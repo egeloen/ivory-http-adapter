@@ -15,18 +15,14 @@ use Ivory\HttpAdapter\Asset\AbstractUninstantiableAsset;
 use Ivory\HttpAdapter\Parser\HeadersParser;
 
 /**
- * Status line extractor.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class StatusLineExtractor extends AbstractUninstantiableAsset
 {
     /**
-     * Extracts the status line.
+     * @param array|string $headers
      *
-     * @param array|string $headers The headers.
-     *
-     * @return string The extracted status line.
+     * @return string
      */
     public static function extract($headers)
     {

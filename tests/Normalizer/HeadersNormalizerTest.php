@@ -15,8 +15,6 @@ use Ivory\HttpAdapter\Normalizer\HeadersNormalizer;
 use Ivory\Tests\HttpAdapter\AbstractTestCase;
 
 /**
- * Headers normalizer test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class HeadersNormalizerTest extends AbstractTestCase
@@ -24,7 +22,7 @@ class HeadersNormalizerTest extends AbstractTestCase
     public function testNormalizeAsAssociativeWithStringHeaders()
     {
         $this->assertSame(
-            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'),
+            ['fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'],
             HeadersNormalizer::normalize($this->getStringHeaders())
         );
     }
@@ -32,7 +30,7 @@ class HeadersNormalizerTest extends AbstractTestCase
     public function testNormalizeAsNotAssociativeWithStringHeaders()
     {
         $this->assertSame(
-            array('fOo: bar, bot', 'Baz: bat, ban', 'Date: Fri, 15 aug 2014 12:34:56 UTC'),
+            ['fOo: bar, bot', 'Baz: bat, ban', 'Date: Fri, 15 aug 2014 12:34:56 UTC'],
             HeadersNormalizer::normalize($this->getStringHeaders(), false)
         );
     }
@@ -40,7 +38,7 @@ class HeadersNormalizerTest extends AbstractTestCase
     public function testNormalizeAsAssociativeWithSubAssociativeArrayHeaders()
     {
         $this->assertSame(
-            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'),
+            ['fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'],
             HeadersNormalizer::normalize($this->getSubAssociativeHeaders())
         );
     }
@@ -48,7 +46,7 @@ class HeadersNormalizerTest extends AbstractTestCase
     public function testNormalizeAsAssociativeWithAssociativeArrayHeaders()
     {
         $this->assertSame(
-            array('fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'),
+            ['fOo' => 'bar, bot', 'Baz' => 'bat, ban', 'Date' => 'Fri, 15 aug 2014 12:34:56 UTC'],
             HeadersNormalizer::normalize($this->getAssociativeHeaders())
         );
     }
@@ -56,7 +54,7 @@ class HeadersNormalizerTest extends AbstractTestCase
     public function testNormalizeAsNotAssociativeWithIndexedArrayHeaders()
     {
         $this->assertSame(
-            array('fOo: bar, bot', 'Baz: bat, ban', 'Date: Fri, 15 aug 2014 12:34:56 UTC'),
+            ['fOo: bar, bot', 'Baz: bat, ban', 'Date: Fri, 15 aug 2014 12:34:56 UTC'],
             HeadersNormalizer::normalize($this->getIndexedHeaders(), false)
         );
     }
@@ -73,13 +71,11 @@ class HeadersNormalizerTest extends AbstractTestCase
 
     public function testNormalizeHeaderValueWithArray()
     {
-        $this->assertSame('foo, bar', HeadersNormalizer::normalizeHeaderValue(array(' foo ', ' bar ')));
+        $this->assertSame('foo, bar', HeadersNormalizer::normalizeHeaderValue([' foo ', ' bar ']));
     }
 
     /**
-     * Gets the string headers.
-     *
-     * @return string The string headers.
+     * @return string
      */
     private function getStringHeaders()
     {
@@ -87,13 +83,11 @@ class HeadersNormalizerTest extends AbstractTestCase
     }
 
     /**
-     * Gets the indexed headers.
-     *
-     * @return array The indexed headers.
+     * @return array
      */
     private function getIndexedHeaders()
     {
-        $headers = array();
+        $headers = [];
 
         foreach ($this->getAssociativeHeaders() as $name => $value) {
             $headers[] = is_int($name) ? $value : $name.': '.$value;
@@ -103,13 +97,11 @@ class HeadersNormalizerTest extends AbstractTestCase
     }
 
     /**
-     * Gets the associative headers.
-     *
-     * @return array The associative headers.
+     * @return array
      */
     private function getAssociativeHeaders()
     {
-        $headers = array();
+        $headers = [];
 
         foreach ($this->getSubAssociativeHeaders() as $name => $value) {
             if (is_int($name)) {
@@ -123,18 +115,16 @@ class HeadersNormalizerTest extends AbstractTestCase
     }
 
     /**
-     * Gets the sub associative headers.
-     *
-     * @return array The sub associative headers.
+     * @return array
      */
     private function getSubAssociativeHeaders()
     {
-        return array(
+        return [
             'HTTP/1.1 200 OK',
-            ' fOo '  => array(' bar '),
-            'fOo'    => array(' bot '),
-            ' Baz '  => array(' bat ', ' ban '),
-            ' Date ' => array(' Fri, 15 aug 2014 12:34:56 UTC '),
-        );
+            ' fOo '  => [' bar '],
+            'fOo'    => [' bot '],
+            ' Baz '  => [' bat ', ' ban '],
+            ' Date ' => [' Fri, 15 aug 2014 12:34:56 UTC '],
+        ];
     }
 }

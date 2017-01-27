@@ -14,17 +14,20 @@ namespace Ivory\Tests\HttpAdapter\Parser;
 use Ivory\HttpAdapter\Parser\CookieParser;
 
 /**
- * Cookie parser test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class CookieParserTest extends AbstractCookieParserTest
 {
     /**
+     * @param string $header
+     * @param string $name
+     * @param mixed  $value
+     * @param array  $attributes
+     *
      * @dataProvider parseProvider
      */
-    public function testParse($header, $name, $value, array $attributes = array())
+    public function testParse($header, $name, $value, array $attributes = [])
     {
-        $this->assertSame(array($name, $value, $attributes), CookieParser::parse($header));
+        $this->assertSame([$name, $value, $attributes], CookieParser::parse($header));
     }
 }

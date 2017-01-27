@@ -14,8 +14,6 @@ namespace Ivory\Tests\HttpAdapter;
 use Ivory\HttpAdapter\Zend1HttpAdapter;
 
 /**
- * Abstract zend 1 http adapter test.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 abstract class AbstractZend1HttpAdapterTest extends AbstractHttpAdapterTest
@@ -37,9 +35,7 @@ abstract class AbstractZend1HttpAdapterTest extends AbstractHttpAdapterTest
     }
 
     /**
-     * Creates a zend 1 adapter.
-     *
-     * @return \Zend_Http_Client_Adapter_Interface The zend 1 adapter.
+     * @return \Zend_Http_Client_Adapter_Interface
      */
     abstract protected function createAdapter();
 }

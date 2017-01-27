@@ -15,19 +15,15 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Journal entry factory.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 interface JournalEntryFactoryInterface
 {
     /**
-     * Creates a journal entry.
+     * @param InternalRequestInterface $request
+     * @param ResponseInterface        $response
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request  The request.
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface        $response The response.
-     *
-     * @return \Ivory\HttpAdapter\Event\History\JournalEntryInterface The journal entry.
+     * @return JournalEntryInterface
      */
     public function create(InternalRequestInterface $request, ResponseInterface $response);
 }

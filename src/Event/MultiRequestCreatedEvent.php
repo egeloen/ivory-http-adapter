@@ -17,26 +17,28 @@ use Ivory\HttpAdapter\Message\InternalRequestInterface;
 use Ivory\HttpAdapter\Message\ResponseInterface;
 
 /**
- * Multi request created event.
- *
  * @author GeLo <geloen.eric@gmail.com>
  */
 class MultiRequestCreatedEvent extends AbstractEvent
 {
-    /** @var \Ivory\HttpAdapter\Message\InternalRequestInterface[] */
+    /**
+     * @var InternalRequestInterface[]
+     */
     private $requests;
 
-    /** @var \Ivory\HttpAdapter\Message\ResponseInterface[] */
+    /**
+     * @var ResponseInterface[]
+     */
     private $responses = [];
 
-    /** @var \Ivory\HttpAdapter\HttpAdapterException[] */
+    /**
+     * @var HttpAdapterException[]
+     */
     private $exceptions = [];
 
     /**
-     * Creates a multi request created event.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterInterface $httpAdapter The http adapter.
-     * @param array                                   $requests    The requests.
+     * @param HttpAdapterInterface $httpAdapter
+     * @param array                $requests
      */
     public function __construct(HttpAdapterInterface $httpAdapter, array $requests)
     {
@@ -45,18 +47,13 @@ class MultiRequestCreatedEvent extends AbstractEvent
         $this->setRequests($requests);
     }
 
-    /**
-     * Clears the requests.
-     */
     public function clearRequests()
     {
         $this->requests = [];
     }
 
     /**
-     * Checks if there are requests.
-     *
-     * @return boolean TRUE if there are requests else FALSE.
+     * @return bool
      */
     public function hasRequests()
     {
@@ -64,9 +61,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Gets the requests.
-     *
-     * @return \Ivory\HttpAdapter\Message\InternalRequestInterface[] The requests.
+     * @return InternalRequestInterface[]
      */
     public function getRequests()
     {
@@ -74,9 +69,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Sets the requests.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface[] $requests The requests.
+     * @param InternalRequestInterface[] $requests
      */
     public function setRequests(array $requests)
     {
@@ -85,9 +78,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Adds the requests.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface[] $requests The requests.
+     * @param InternalRequestInterface[] $requests
      */
     public function addRequests(array $requests)
     {
@@ -97,9 +88,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Removes the requests.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface[] $requests The requests.
+     * @param InternalRequestInterface[] $requests
      */
     public function removeRequests(array $requests)
     {
@@ -109,11 +98,9 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Checks if there is a request.
+     * @param InternalRequestInterface $request
      *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
-     *
-     * @return boolean TRUE if there is the request else FALSE.
+     * @return bool
      */
     public function hasRequest(InternalRequestInterface $request)
     {
@@ -121,9 +108,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Adds a request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param InternalRequestInterface $request
      */
     public function addRequest(InternalRequestInterface $request)
     {
@@ -131,9 +116,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Removes a request.
-     *
-     * @param \Ivory\HttpAdapter\Message\InternalRequestInterface $request The request.
+     * @param InternalRequestInterface $request
      */
     public function removeRequest(InternalRequestInterface $request)
     {
@@ -141,18 +124,13 @@ class MultiRequestCreatedEvent extends AbstractEvent
         $this->requests = array_values($this->requests);
     }
 
-    /**
-     * Clears the responses.
-     */
     public function clearResponses()
     {
         $this->responses = [];
     }
 
     /**
-     * Checks if there are responses.
-     *
-     * @return boolean TRUE if there are responses else FALSE.
+     * @return bool
      */
     public function hasResponses()
     {
@@ -160,9 +138,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Gets the responses.
-     *
-     * @return \Ivory\HttpAdapter\Message\ResponseInterface[] The responses.
+     * @return ResponseInterface[]
      */
     public function getResponses()
     {
@@ -170,9 +146,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Sets the responses.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses The responses.
+     * @param ResponseInterface[] $responses
      */
     public function setResponses(array $responses)
     {
@@ -181,9 +155,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Adds the responses.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses The responses.
+     * @param ResponseInterface[] $responses
      */
     public function addResponses(array $responses)
     {
@@ -193,9 +165,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Removes the responses.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface[] $responses The responses.
+     * @param ResponseInterface[] $responses
      */
     public function removeResponses(array $responses)
     {
@@ -205,11 +175,9 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Checks if there is a response.
+     * @param ResponseInterface $response
      *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
-     *
-     * @return boolean TRUE if there is the response else FALSE.
+     * @return bool
      */
     public function hasResponse(ResponseInterface $response)
     {
@@ -217,9 +185,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Adds a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     public function addResponse(ResponseInterface $response)
     {
@@ -227,9 +193,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Removes a response.
-     *
-     * @param \Ivory\HttpAdapter\Message\ResponseInterface $response The response.
+     * @param ResponseInterface $response
      */
     public function removeResponse(ResponseInterface $response)
     {
@@ -237,18 +201,13 @@ class MultiRequestCreatedEvent extends AbstractEvent
         $this->responses = array_values($this->responses);
     }
 
-    /**
-     * Clears the exceptions.
-     */
     public function clearExceptions()
     {
         $this->exceptions = [];
     }
 
     /**
-     * Checks if there are exceptions.
-     *
-     * @return boolean TRUE if there are exceptions else FALSE.
+     * @return bool
      */
     public function hasExceptions()
     {
@@ -256,9 +215,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Gets the exceptions.
-     *
-     * @return \Ivory\HttpAdapter\HttpAdapterException[] The exceptions.
+     * @return HttpAdapterException[]
      */
     public function getExceptions()
     {
@@ -266,9 +223,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Sets the exceptions.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException[] $exceptions The exceptions.
+     * @param HttpAdapterException[] $exceptions
      */
     public function setExceptions(array $exceptions)
     {
@@ -277,9 +232,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Adds the exceptions.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException[] $exceptions The exceptions.
+     * @param HttpAdapterException[] $exceptions
      */
     public function addExceptions(array $exceptions)
     {
@@ -289,9 +242,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Removes the exceptions.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException[] $exceptions The exceptions.
+     * @param HttpAdapterException[] $exceptions
      */
     public function removeExceptions(array $exceptions)
     {
@@ -301,11 +252,9 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Checks if there is an exception.
+     * @param HttpAdapterException $exception
      *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
-     *
-     * @return boolean TRUE if there is the exception else FALSE.
+     * @return bool
      */
     public function hasException(HttpAdapterException $exception)
     {
@@ -313,9 +262,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Adds an exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception
+     * @param HttpAdapterException $exception
      */
     public function addException(HttpAdapterException $exception)
     {
@@ -323,9 +270,7 @@ class MultiRequestCreatedEvent extends AbstractEvent
     }
 
     /**
-     * Removes an exception.
-     *
-     * @param \Ivory\HttpAdapter\HttpAdapterException $exception The exception.
+     * @param HttpAdapterException $exception
      */
     public function removeException(HttpAdapterException $exception)
     {
