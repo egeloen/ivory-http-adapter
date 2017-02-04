@@ -29,7 +29,7 @@ install:
     - if [[ "$ENABLE_CURL" = false ]]; then mkdir -p ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d; fi
     - if [[ "$ENABLE_CURL" = false ]]; then echo "disable_functions = curl_init" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
     - if [[ "$TRAVIS_PHP_VERSION" = "5.6" ]]; then echo "always_populate_raw_post_data = -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
-    - php -S 127.0.0.1:10000 -t tests/Fixtures > /dev/null 2>&1 &
+    - php -S 127.0.0.1 -t tests/Fixtures > /dev/null 2>&1 &
     - if [[ "$GUZZLE_VERSION" != "6.*" ]]; then composer require guzzlehttp/guzzle:${GUZZLE_VERSION} --no-update --dev; fi
     - composer remove --no-update --dev friendsofphp/php-cs-fixer
     - composer update --prefer-source `if [[ $COMPOSER_PREFER_LOWEST = true ]]; then echo "--prefer-lowest --prefer-stable"; fi`

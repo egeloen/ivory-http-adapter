@@ -31,6 +31,11 @@ class ReactHttpAdapterTest extends AbstractHttpAdapterTest
 
         parent::setUp();
 
+        // FIXME - https://github.com/reactphp/http-client/issues/11
+        if (strpos($_SERVER['TEST_SERVER'], 'http://server') === 0) {
+            $this->markTestSkipped();
+        }
+
         $this->defaultOptions['protocol_version'] = Request::PROTOCOL_VERSION_1_0;
     }
 

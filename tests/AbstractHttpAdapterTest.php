@@ -43,6 +43,10 @@ abstract class AbstractHttpAdapterTest extends AbstractTestCase
      */
     public static function setUpBeforeClass()
     {
+        if (!isset($_SERVER['TEST_SERVER']) || @file_get_contents($_SERVER['TEST_SERVER']) === false) {
+            self::markTestSkipped();
+        }
+
         self::$file = PHPUnitUtility::getFile(true, 'ivory-http-adapter.log');
     }
 
