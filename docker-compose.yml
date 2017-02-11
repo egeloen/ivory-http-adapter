@@ -3,11 +3,9 @@ version: '2'
 services:
     php:
         build: docker/php
+        env_file:
+            - .env
         environment:
-            USER_ID: ${USER_ID}
-            GROUP_ID: ${GROUP_ID}
-            SYMFONY_DEPRECATIONS_HELPER: ${SYMFONY_DEPRECATIONS_HELPER}
-            XDEBUG: ${XDEBUG}
             XDEBUG_CONFIG: remote_host=${XDEBUG_HOST} remote_port=${XDEBUG_PORT} idekey=${XDEBUG_IDEKEY}
             PHP_IDE_CONFIG: serverName=${IDE_SERVER_NAME}
         volumes:
@@ -16,9 +14,8 @@ services:
             - tmp:/tmp
     server:
         build: docker/server
-        environment:
-            USER_ID: ${USER_ID}
-            GROUP_ID: ${GROUP_ID}
+        env_file:
+            - .env
         volumes:
             - .:/var/www/html
             - tmp:/tmp
