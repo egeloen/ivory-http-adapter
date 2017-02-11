@@ -2,6 +2,8 @@
 
 ### 1.0.3 (????-??-??)
 
+ * 0ea4ee2 - [Travis] Add docker build
+ * e29072f - Add docker support
  * 0a96602 - Add PHP-CS-Fixer support
  * 0b38fb3 - [Travis] Simplify matrix
  * cdecb3b - Fix .gitattributes
