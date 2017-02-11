@@ -11,19 +11,24 @@ RUN apt-get update && apt-get install -y \
 # PHP extensions
 RUN docker-php-ext-install intl zip
 
-# Propro & Raphf extensions must be loaded before compiling pecl-http
-COPY config/propro.ini /usr/local/etc/php/conf.d/propro.ini
-COPY config/raphf.ini /usr/local/etc/php/conf.d/raphf.ini
+# Propro & Raphf extensions must be installed/loaded before compiling pecl-http
+RUN pecl install propro raphf \
+    && docker-php-ext-enable propro raphf \
+    && rm -rf /tmp/pear
 
 # Pecl extensions
-RUN pecl install propro raphf pecl_http xdebug && rm -rf /tmp/pear
-COPY config/* /usr/local/etc/php/conf.d/
+RUN pecl install pecl_http xdebug \
+    && docker-php-ext-enable http xdebug \
+    && rm -rf /tmp/pear
 
-# Bash
-RUN chsh -s /bin/bash www-data
+# XDebug configuration
+COPY config/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --filename=composer --install-dir=/usr/local/bin
+
+# Bash
+RUN chsh -s /bin/bash www-data
 
 # Workdir
 WORKDIR /var/www/html

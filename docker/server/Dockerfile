@@ -7,4 +7,4 @@ WORKDIR /var/www/html
 EXPOSE 80
 
 # PHP Server
-CMD ["php", "-S", "0.0.0.0", "-t", "tests/Fixtures"]
+CMD ["php", "-S", "0.0.0.0:80", "-t", "tests/Fixtures"]
